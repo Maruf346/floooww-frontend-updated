@@ -128,7 +128,7 @@ function WorkflowScene() {
   const scene = WHY_SCENES.workflow;
   return (
     <>
-      <Panel className="border-[0.903px]">
+      <Panel className="!gap-[13.772px] border-[0.903px]">
         <Rise order={0} className="flex items-center gap-[12.694px]">
           <div className="flex flex-col items-start gap-[2.539px] whitespace-nowrap">
             <p className="font-inter-semibold text-[20.311px] font-semibold text-ink">
