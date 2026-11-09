@@ -201,7 +201,6 @@ export function HowItWorksMedia({ steps, index, deckKey }: HowItWorksMediaProps)
         </AnimatePresence>
       </div>
 
-      <StatusPill step={step} index={index} count={steps.length} />
     </div>
   );
 }
