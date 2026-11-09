@@ -1,0 +1,10 @@
+{
+  "description": "A creator marketing platform landing page that helps brands and agencies discover creators, plan campaigns, and connect with the right audiences.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

@@ -1,0 +1,21 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="6.45909" height="9.48049" viewBox="0 0 6.45909 9.48049" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Floooww mark" clip-path="url(#clip0_0_708)">
+<g id="Mark">
+<path d="M0.983532 5.40181H1.55078C2.09398 5.40181 2.53458 4.96148 2.53458 4.41801C2.53458 3.24638 3.48444 2.29651 4.65608 2.29651H5.3107C5.94501 2.29651 6.45909 1.78243 6.45909 1.14812C6.45909 0.514076 5.94501 0 5.3107 0H4.0223C1.80087 0 0 1.80087 0 4.02257V4.41801C0 4.96148 0.440332 5.40181 0.983532 5.40181Z" fill="url(#paint0_linear_0_708)"/>
+<path d="M4.84151 3.01766C3.94829 3.01766 3.2242 3.74175 3.2242 4.63524V6.2456H1.61731C0.724089 6.2456 0 6.96969 0 7.86291C0 8.75613 0.724089 9.48049 1.61731 9.48049C2.51053 9.48049 3.23462 8.75613 3.23462 7.86291V6.25255H4.84151C5.735 6.25255 6.45909 5.52846 6.45909 4.63524C6.45909 3.74175 5.735 3.01766 4.84151 3.01766Z" fill="url(#paint1_linear_0_708)"/>
+</g>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_708" x1="0" y1="4.74024" x2="6.45909" y2="4.74024" gradientUnits="userSpaceOnUse">
+<stop stop-color="#014EF6"/>
+<stop offset="1" stop-color="#1EB2FD"/>
+</linearGradient>
+<linearGradient id="paint1_linear_0_708" x1="0" y1="4.74024" x2="6.45909" y2="4.74024" gradientUnits="userSpaceOnUse">
+<stop stop-color="#014EF6"/>
+<stop offset="1" stop-color="#1EB2FD"/>
+</linearGradient>
+<clipPath id="clip0_0_708">
+<rect width="6.45909" height="9.48049" fill="white"/>
+</clipPath>
+</defs>
+</svg>

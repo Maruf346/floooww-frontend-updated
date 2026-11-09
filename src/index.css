@@ -1,0 +1,300 @@
+@import "tailwindcss";
+
+/*
+ * Floooww foundations (Figma: 01 · Foundations).
+ * Semantic tokens only - components never use raw hex values.
+ */
+
+@font-face {
+  font-family: "Inter:Black";
+  src: url("https://static.figma.com/font/Inter_1") format("woff2");
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter:Bold";
+  src: url("https://static.figma.com/font/Inter_1") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter:Extra Bold";
+  src: url("https://static.figma.com/font/Inter_1") format("woff2");
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter:Medium";
+  src: url("https://static.figma.com/font/Inter_1") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter:Regular";
+  src: url("https://static.figma.com/font/Inter_1") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter:Semi Bold";
+  src: url("https://static.figma.com/font/Inter_1") format("woff2");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans Math:Regular";
+  src: url("https://static.figma.com/font/NotoSansMath-Regular_1") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans Symbols2:Regular";
+  src: url("https://static.figma.com/font/NotoSansSymbols2-Regular_5") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans Symbols:Medium";
+  src: url("https://static.figma.com/font/NotoSansSymbols-VF_2") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans Symbols:Regular";
+  src: url("https://static.figma.com/font/NotoSansSymbols-VF_2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans Symbols:Bold";
+  src: url("https://static.figma.com/font/NotoSansSymbols-VF_2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans:Medium";
+  src: url("https://static.figma.com/font/NotoSans-VF_3") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans:Regular";
+  src: url("https://static.figma.com/font/NotoSans-VF_3") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans:Bold";
+  src: url("https://static.figma.com/font/NotoSans-VF_3") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Roboto Mono:Regular";
+  src: url("https://static.figma.com/font/RobotoMono_wght__2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Serif 4:Regular";
+  src: url("https://static.figma.com/font/SourceSerif4_opsz_wght__1") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@theme {
+  /* Typefaces: one family per Figma face, weights are baked into each face. */
+  --font-sans: "Inter:Regular", ui-sans-serif, system-ui, sans-serif;
+  --font-inter-regular: "Inter:Regular", ui-sans-serif, system-ui, sans-serif;
+  --font-inter-medium: "Inter:Medium", ui-sans-serif, system-ui, sans-serif;
+  --font-inter-semibold: "Inter:Semi Bold", ui-sans-serif, system-ui, sans-serif;
+  --font-inter-bold: "Inter:Bold", ui-sans-serif, system-ui, sans-serif;
+  --font-inter-extrabold: "Inter:Extra Bold", ui-sans-serif, system-ui, sans-serif;
+  --font-inter-black: "Inter:Black", ui-sans-serif, system-ui, sans-serif;
+
+  /* Backgrounds */
+  --color-page: #ffffff;
+  --color-surface: #ffffff;
+  --color-subtle: #f3f5f7;
+  --color-muted: #edeff3;
+  --color-inverse: #070b13;
+  --color-warm: #f7f6f3;
+
+  /* Borders */
+  --color-line: #e5e7eb;
+  --color-line-subtle: #edeff3;
+  --color-line-strong: #d4d7df;
+  --color-focus: #2563eb;
+
+  /* Text */
+  --color-ink: #070b13;
+  --color-secondary: #8491a3;
+  --color-tertiary: #a2a7b3;
+  --color-on-primary: #ffffff;
+  --color-link: #0f5af2;
+  --color-body: #364355;
+  --color-heading-2: #161a20;
+  --color-caption: #6b7280;
+
+  /* Icons */
+  --color-icon: #374151;
+  --color-icon-muted: #9ca3af;
+
+  /* Primary (actions) */
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4edb;
+  --color-primary-subtle: #f1f4ff;
+  --color-primary-muted: #dee8fe;
+  --color-primary-tint: #eef3ff;
+  --color-primary-soft: #7399f2;
+
+  /* Status */
+  --color-success: #149d46;
+  --color-success-bg: #e1fce3;
+  --color-warning: #f29b07;
+  --color-warning-bg: #feefce;
+  --color-danger: #db231f;
+  --color-danger-bg: #fde4e3;
+  --color-info: #2563eb;
+  --color-info-bg: #f1f4ff;
+  --color-neutral: #394357;
+  --color-neutral-bg: #f3f5f7;
+
+  --color-heading: #0f1219;
+
+  /* Highlights used over photography (How it works intro lines) */
+  --color-highlight-sky: #7dd3fc;
+  --color-highlight-amber: #fcd34d;
+
+  /* AI-assistant mockup palette (MCP section, Claude-style dark chat) */
+  --color-mock-bg: #262624;
+  --color-mock-sidebar: #1f1e1d;
+  --color-mock-raised: #2e2e2c;
+  --color-mock-bubble: #30302e;
+  --color-mock-head: #2c2c2a;
+  --color-mock-avatar: #3a3a37;
+  --color-mock-border: #3d3d3a;
+  --color-mock-divider: #2f2f2c;
+  --color-mock-frame: #34342f;
+  --color-mock-text: #ece9e1;
+  --color-mock-dim: #c9c6bd;
+  --color-mock-muted: #9b9a94;
+  --color-mock-blue: #4f8ef7;
+  --color-mock-green: #4ade80;
+
+  /* Brand mark gradient */
+  --color-brand-from: #014ef6;
+  --color-brand-to: #1eb2fd;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-float: 14px;
+
+  /* Elevation: cards use borders; shadows only for things that float. */
+  --shadow-sm: 0 1px 2px 0 rgba(8, 10, 20, 0.06);
+  --shadow-md: 0 4px 12px -2px rgba(8, 10, 20, 0.08);
+  --shadow-lg: 0 16px 40px -8px rgba(8, 10, 20, 0.16);
+  --shadow-float: 0 12px 32px 0 rgba(8, 13, 38, 0.1);
+
+  --animate-marquee: marquee var(--marquee-duration, 40s) linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-page font-sans text-ink;
+  }
+
+  ::selection {
+    background-color: var(--color-primary-muted);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
+
+@utility text-gradient-primary {
+  background-image: linear-gradient(to right, var(--color-primary), var(--color-primary-soft));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility text-gradient-brand {
+  background-image: linear-gradient(to right, var(--color-brand-from), var(--color-brand-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation-play-state: paused;
+  }
+}

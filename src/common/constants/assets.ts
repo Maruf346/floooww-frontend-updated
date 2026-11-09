@@ -1,0 +1,123 @@
+import { asset } from "@/common/utils/asset";
+
+/**
+ * Registry of every exported Figma asset in `public/assets`.
+ * Filenames are Figma export hashes; components import semantic names from here.
+ */
+export const ASSETS = {
+  logo: {
+    /** Nav lockup (Homepage nav, 37.8 px mark). */
+    navMark: asset("29e89.svg"),
+    navWordmark: asset("49d90.svg"),
+    /** Logo component (97:1091), 36 px mark. */
+    mark: asset("bad6d.svg"),
+    wordmarkOnLight: asset("10d1b.svg"),
+    wordmarkOnDark: asset("c31f0.svg"),
+  },
+  platform: {
+    Instagram: { Color: asset("b3d41.svg"), Mono: asset("b41af.svg"), White: asset("6d1fe.svg") },
+    YouTube: { Color: asset("545f5.svg"), Mono: asset("e05ec.svg"), White: asset("815a9.svg") },
+    Snapchat: { Color: asset("d9c08.svg"), Mono: asset("7c255.svg"), White: asset("38363.svg") },
+    Pinterest: { Color: asset("23ef5.svg"), Mono: asset("0437e.svg"), White: asset("07837.svg") },
+  },
+  integration: {
+    Shopify: asset("97f7e.svg"),
+    WooCommerce: asset("32986.svg"),
+    "Google Analytics": asset("d0009.svg"),
+    Meta: asset("776d5.svg"),
+    Razorpay: asset("e5458.svg"),
+    "Floooww AI": asset("ae233.svg"),
+  },
+  hero: {
+    dot: asset("10ce4.svg"),
+    liveDot: asset("836fd.svg"),
+    lines: [
+      asset("f2db0.svg"),
+      asset("20284.svg"),
+      asset("e1bed.svg"),
+      asset("6cd2e.svg"),
+      asset("8dae7.svg"),
+      asset("74f0f.svg"),
+      asset("bd5dd.svg"),
+      asset("89ee3.svg"),
+      asset("35e41.svg"),
+      asset("cbbbd.svg"),
+      asset("21e02.svg"),
+      asset("5d8c5.svg"),
+      asset("7fc96.svg"),
+      asset("e2cd6.svg"),
+    ],
+    platformYouTube: asset("4115c.svg"),
+    platformSnapchat: asset("a2522.svg"),
+    platformInstagram: asset("e9017.svg"),
+    platformPinterest: asset("065e0.svg"),
+    avatarAditi: asset("18fc6.png"),
+    avatarKavya: asset("7dedd.png"),
+  },
+  /** Rendered from the Figma "Logo marquee" main component (895:2392 children). */
+  brands: {
+    nykaa: asset("brands/nykaa.png"),
+    mamaearth: asset("brands/mamaearth.png"),
+    sugar: asset("brands/sugar.png"),
+    mcaffeine: asset("brands/mcaffeine.png"),
+    lenskart: asset("brands/lenskart.png"),
+    myntra: asset("brands/myntra.png"),
+    ajio: asset("brands/ajio.png"),
+    gap: asset("brands/gap.png"),
+    flow: asset("brands/flow.png"),
+  },
+  howItWorks: {
+    brandMedia: [
+      asset("b9ee0.png"),
+      asset("8c558.png"),
+      asset("f7265.png"),
+      asset("93f0a.png"),
+      asset("56638.png"),
+    ],
+    creatorMedia: [
+      asset("78528.png"),
+      asset("8c558.png"),
+      asset("e76fe.png"),
+      asset("609f7.png"),
+      asset("f7265.png"),
+    ],
+    reelThumb: asset("e76fe.png"),
+    avatarMeera: asset("6f0f5.png"),
+    avatarAditi: asset("50ab7.png"),
+    avatarIshita: asset("f2b31.png"),
+    avatarMeeraKit: asset("6a07b.png"),
+  },
+  why: {
+    glow: asset("e2a3c.svg"),
+    avatarMeera: asset("b0cf8.png"),
+    checks: [asset("9374b.svg"), asset("7ffb8.svg"), asset("6abbc.svg")],
+    liveDotGreen: asset("45ce1.svg"),
+    liveDotBlue: asset("43f7d.svg"),
+    toggleOn: asset("9a583.svg"),
+  },
+  creators: {
+    glow: asset("058a7.svg"),
+    photoAditi: asset("964fd.png"),
+    photoMeera: asset("75aed.png"),
+    photoTanya: asset("e76fe.png"),
+    avatarRiya: asset("fa5d0.png"),
+    avatarSneha: asset("c6abe.png"),
+    avatarPriya: asset("fa5d0.png"),
+  },
+  mcp: {
+    glow: asset("001d1.svg"),
+    iconNew: asset("4931b.svg"),
+    iconSearch: asset("acdc8.svg"),
+    iconProjects: asset("f5e58.svg"),
+    iconArtifacts: asset("f95f1.svg"),
+    iconScheduled: asset("c2781.svg"),
+    iconCustomize: asset("4b50b.svg"),
+    markHeader: asset("c10bd.svg"),
+    markTool: asset("04ad0.svg"),
+    markPrompt: asset("7a075.svg"),
+    markComposer: asset("98eca.svg"),
+    creatorMeera: asset("706a4.png"),
+    creatorIshita: asset("23387.png"),
+    creatorKavya: asset("72932.png"),
+  },
+} as const;
