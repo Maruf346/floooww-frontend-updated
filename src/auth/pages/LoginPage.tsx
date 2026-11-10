@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowRight, Check, CircleUserRound } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import type { UserRole } from "@/common/types";
 import { Button } from "@/common/components/ui/Button";
 import { TextField } from "@/common/components/ui/TextField";
@@ -28,15 +28,15 @@ export function LoginPage() {
   };
   return <AuthLayout><form noValidate onSubmit={onSubmit} className="w-full max-w-[440px]">
     <h1 className="font-inter-bold text-[30px] font-bold leading-[38px] tracking-[-.6px] text-ink">Log in</h1>
-    <p className="mt-2 text-[14px] leading-[22px] text-body">Welcome back. Use the email you signed up with.</p>
+    <p className="mt-2 text-[15px] leading-[22px] text-[#6b7280]">Welcome back. Use the email you signed up with.</p>
     <div className="mt-4 grid grid-cols-3 rounded-xl bg-subtle p-1" role="tablist" aria-label="Workspace type">
-      {roles.map((item) => <button key={item.value} type="button" role="tab" aria-selected={role === item.value} onClick={() => setRole(item.value)} className={`h-[34px] rounded-lg text-[13px] font-medium transition-all ${role === item.value ? "bg-white text-ink shadow-sm" : "text-secondary hover:text-ink"}`}>{item.label}</button>)}
+      {roles.map((item) => <button key={item.value} type="button" role="tab" aria-selected={role === item.value} onClick={() => setRole(item.value)} className={`h-[34px] rounded-lg text-[13px] transition-all ${role === item.value ? "bg-white font-semibold text-primary shadow-[0_1px_3px_rgba(0,0,0,.08)]" : "font-medium text-[#4b5563] hover:text-ink"}`}>{item.label}</button>)}
     </div>
-    <Button type="button" kind="secondary" fullWidth className="mt-4" leadingIcon={<CircleUserRound size={17} />}>Continue with Google</Button>
+    <Button type="button" kind="secondary" fullWidth className="mt-4 rounded-[8px]">Continue with Google</Button>
     <Divider />
     <div className="space-y-3.5"><TextField label="Email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@company.com" error={errors.email} /><TextField label="Password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} error={errors.password} /></div>
     <div className="mt-4 flex items-center justify-between"><button type="button" onClick={() => setKeepLoggedIn((value) => !value)} className="flex items-center gap-2 text-[13px] text-body"><span className={`grid size-[18px] place-items-center rounded-[5px] border transition-colors ${keepLoggedIn ? "border-ink bg-ink text-white" : "border-line-strong bg-white"}`}>{keepLoggedIn && <Check size={13} strokeWidth={3} />}</span>Keep me logged in</button><Link className="text-[13px] font-medium text-link hover:underline" to={ROUTES.forgotPassword}>Forgot password?</Link></div>
-    <Button type="submit" fullWidth className="mt-4" trailingIcon={<ArrowRight size={16} />}>Log in</Button>
+    <Button type="submit" fullWidth className="mt-4 rounded-[8px]" trailingIcon={<ArrowRight size={16} />}>Log in</Button>
     <p className="mt-4 text-center text-[13px] leading-5 text-body">New to Floooww? <Link to={ROUTES.signup} className="font-medium text-link hover:underline">Sign up free</Link></p>
   </form></AuthLayout>;
 }
