@@ -56,7 +56,7 @@ export function BrandProjectPartnershipPage() {
             <Button kind="secondary" onClick={() => navigate(ROUTES.brandNewProject)} leadingIcon={<ArrowLeft size={16} />}>Back</Button>
             <div className="flex-1" />
             <Button kind="ghost" onClick={() => setSaved(true)}>Save draft</Button>
-            <Button onClick={() => setSaved(true)} trailingIcon={<ArrowRight size={16} />}>Continue</Button>
+            <Button onClick={() => navigate(ROUTES.brandNewProjectDuration)} trailingIcon={<ArrowRight size={16} />}>Continue</Button>
           </footer>
         </motion.section>
         <ProjectSetupSummary partnership={partnership} />
