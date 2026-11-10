@@ -1,41 +1,7 @@
-import { useState } from "react";
-import { Bell, Check, ChevronDown, CircleHelp, ClipboardList, FileBarChart, Home, Image, LogOut, Menu, MessageSquare, Plus, Search, Settings, Store, Wallet, X } from "lucide-react";
-import { Logo } from "@/common/components/brand/Logo";
+import { BrandShell } from "@/brand/components/BrandShell";
+import { BrandOverviewWithCampaigns } from "./BrandOverviewWithCampaigns";
 
-const navGroups = [
-  ["MAIN", [[Home, "Overview"], [ClipboardList, "Projects"], [Search, "Creator discovery"], [Image, "Content hub"]]],
-  ["CONTENT & DATA", [[FileBarChart, "Custom reports"]]],
-  ["ACCOUNT", [[Wallet, "Payments"], [MessageSquare, "Messages"], [Settings, "Settings"]]],
-] as const;
-
-function Sidebar({ close }: { close?: () => void }) {
-  return <aside className="flex h-full w-[260px] shrink-0 flex-col border-r border-line bg-white px-4 pt-5 pb-4">
-    <div className="flex items-center justify-between"><Logo className="scale-[1.22] origin-left" /><button onClick={close} className="lg:hidden"><X size={20}/></button></div>
-    <nav className="mt-8 space-y-4">{navGroups.map(([heading, links]) => <div key={heading}><p className="px-3 pb-1.5 text-[12px] font-semibold tracking-[.06em] text-tertiary">{heading}</p>{links.map(([Icon, label]) => <button key={label} className={`flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] ${label === "Overview" ? "bg-primary-subtle font-semibold text-primary" : "hover:bg-subtle"}`}><Icon size={18}/><span className="flex-1">{label}</span>{label === "Projects" && <ChevronDown size={14}/>}</button>)}</div>)}</nav>
-    <div className="mt-auto border-t border-line pt-2"><button className="flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-[14px] hover:bg-subtle"><CircleHelp size={18}/>Help centre</button><button className="flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-[14px] hover:bg-subtle"><LogOut size={18}/>Logout</button></div>
-  </aside>;
-}
-
-function Topbar({ open }: { open: () => void }) {
-  return <header className="flex h-16 items-center gap-3 border-b border-line bg-white px-4 sm:px-8"><button onClick={open} className="lg:hidden"><Menu size={20}/></button><div className="hidden h-9 w-[380px] items-center gap-2 rounded-md border border-line bg-subtle px-3 md:flex"><Search size={16} className="text-secondary"/><span className="flex-1 text-[13px] text-tertiary">Search projects, creators, content…</span><kbd className="rounded border border-line bg-white px-1.5 text-[12px] text-tertiary">⌘K</kbd></div><div className="flex-1"/><button className="flex size-9 items-center justify-center rounded-md border border-line"><Bell size={18}/></button><div className="flex items-center gap-2.5"><span className="flex size-8 items-center justify-center rounded-full bg-primary-muted text-[12px] font-medium text-primary">AM</span><div className="hidden sm:block"><p className="text-[14px] font-semibold leading-5">Ananya Mehta</p><p className="text-[12px] leading-4 text-tertiary">Owner · Minimalist</p></div></div></header>;
-}
-
-function SetupStep({ number, title, description, action, complete }: { number: string; title: string; description: string; action?: string; complete?: boolean }) {
-  return <div className="flex items-center gap-3.5 border-b border-line-subtle py-3.5 last:border-0"><span className={`flex size-9 shrink-0 items-center justify-center rounded-full text-[12px] font-medium ${complete ? "bg-success-bg text-success" : "bg-subtle text-ink"}`}>{complete ? <Check size={18}/> : number}</span><div className="min-w-0 flex-1"><p className="text-[14px] font-medium leading-[22px]">{title}</p><p className="text-[12px] leading-4 text-secondary">{description}</p></div>{complete ? <span className="rounded-full bg-success-bg px-2 py-0.5 text-[12px] font-medium text-success">Complete</span> : <button className="h-8 shrink-0 rounded-md border border-line bg-white px-3 text-[13px] font-medium hover:bg-subtle">{action}</button>}</div>;
-}
-
-function EmptyOverview({ start }: { start: () => void }) {
-  return <div className="flex w-full max-w-[1180px] flex-col gap-6">
-    <div className="flex flex-wrap items-end justify-between gap-4"><div><h1 className="text-[26px] font-bold leading-[34px] tracking-[-.02em]">Welcome, Ananya</h1><p className="text-[13px] leading-5 text-secondary">Minimalist · Complete your account setup to start working with creators</p></div><button onClick={start} className="inline-flex h-10 items-center gap-2 rounded-md bg-primary px-4 text-[14px] font-medium text-white hover:bg-primary-hover"><Plus size={16}/>Create new project</button></div>
-    <section className="w-full rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6">Account setup</h2><p className="text-[12px] text-secondary">1 of 3 steps complete · approx. 5 minutes</p><div className="mt-4 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full w-1/3 rounded-full bg-primary"/></div><div className="mt-2"><SetupStep complete number="1" title="Business email verified" description="ananya@minimalist.in"/><SetupStep number="2" title="Connect your store" description="For e-commerce brands. Enables automatic attribution of creator-driven sales and orders. Supports Shopify, WooCommerce and tracking links." action="Connect store"/><SetupStep number="3" title="Create your first project" description="Select a project type. You will define the budget, brief and creator criteria in the next steps." action="Start a project"/></div><div className="ml-0 grid gap-3 pt-1 sm:ml-[52px] md:grid-cols-2"><TypeCard title="Influencer marketing" body="Creators publish sponsored content on their own channels" caption="Paid or gift exchange"/><TypeCard title="User-generated content" body="Content produced for your brand channels and ads" caption="Includes usage rights"/></div></section>
-    <section className="flex flex-col gap-4 rounded-xl bg-subtle p-5 sm:flex-row sm:items-center"><div className="flex-1"><p className="text-[14px] font-medium">Need help getting started?</p><p className="mt-0.5 text-[12px] text-secondary">Our assistant can draft a project from your brief, or you can review how similar brands structured their first project.</p></div><div className="flex gap-2"><button className="h-8 px-3 text-[13px] font-medium">Read the guide</button><button className="h-8 rounded-md border border-line bg-white px-3 text-[13px] font-medium">Watch overview</button></div></section>
-  </div>;
-}
-function TypeCard({ title, body, caption }: { title: string; body: string; caption: string }) { return <div className="rounded-md border border-line p-4"><span className="flex size-5 items-center justify-center rounded bg-primary-subtle text-[13px] text-primary">✦</span><p className="mt-2 text-[14px] font-medium">{title}</p><p className="mt-1 text-[12px] leading-4 text-secondary">{body}</p><p className="mt-2 text-[12px] text-tertiary">{caption}</p></div>; }
-
-function ProjectsPreview() { return <div className="space-y-6"><div className="flex items-end justify-between"><div><h1 className="text-[26px] font-bold">Overview</h1><p className="text-[13px] text-secondary">Here’s what needs your attention today.</p></div><button className="inline-flex h-10 items-center gap-2 rounded-md bg-primary px-4 text-[14px] font-medium text-white"><Plus size={16}/>New project</button></div><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{[["Active projects","5","1 starting 4 Nov"],["Creators accepted","38","Across 6 projects"],["Deliverables due this week","14","3 overdue"],["Shipments in transit","4","2 delivered this week"]].map(([label,value,detail])=><article key={label} className="rounded-xl border border-line-subtle p-4"><span className="flex size-9 items-center justify-center rounded-md bg-primary text-white"><ClipboardList size={18}/></span><p className="mt-3 text-[12px] text-secondary">{label}</p><p className="text-[22px] font-semibold">{value}</p><p className="mt-2 text-[12px] text-tertiary">{detail}</p></article>)}</div></div>; }
-
+/** Brand home overview with active projects. Other dashboard views remain isolated pages. */
 export function BrandDashboardPage() {
-  const [open, setOpen] = useState(false); const [projects, setProjects] = useState(false);
-  return <div className="min-h-dvh bg-page"><div className="flex min-h-dvh"><div className="hidden lg:block"><Sidebar/></div>{open && <div className="fixed inset-0 z-50 bg-ink/30 lg:hidden"><div className="h-full w-[260px] bg-white"><Sidebar close={()=>setOpen(false)}/></div></div>}<div className="min-w-0 flex-1"><Topbar open={()=>setOpen(true)}/><main className="min-h-[calc(100dvh-64px)] p-5 sm:p-8">{projects ? <ProjectsPreview/> : <EmptyOverview start={()=>setProjects(true)}/>}</main></div></div><button onClick={()=>setProjects(!projects)} className="fixed right-6 bottom-6 z-20 rounded-full bg-primary p-4 text-white shadow-[0_16px_40px_-8px_rgba(8,10,20,.14)]" aria-label="Toggle dashboard preview"><MessageSquare size={24}/></button></div>;
+  return <BrandShell><BrandOverviewWithCampaigns /></BrandShell>;
 }
