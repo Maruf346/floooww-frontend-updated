@@ -3,6 +3,7 @@ export const ROUTES = {
   home: "/",
   howItWorks: "/how-it-works",
   mcp: "/mcp",
+  docsMcp: "/docs/mcp",
   faq: "/faq",
   login: "/login",
   signup: "/signup",

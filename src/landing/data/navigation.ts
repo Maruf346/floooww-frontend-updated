@@ -17,7 +17,7 @@ export const PRIMARY_NAV: NavLinkItem[] = [
     to: LANDING_SECTIONS.howItWorks.path,
     sectionId: LANDING_SECTIONS.howItWorks.id,
   },
-  { label: "MCP", to: LANDING_SECTIONS.mcp.path, sectionId: LANDING_SECTIONS.mcp.id },
+  { label: "MCP", to: ROUTES.docsMcp },
 ];
 
 export const AUTH_NAV = {

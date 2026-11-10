@@ -3,6 +3,7 @@ import { ROUTES } from "@/common/constants/routes";
 import { NotFoundPage } from "@/common/pages/NotFoundPage";
 import { LandingLayout } from "@/landing/layouts/LandingLayout";
 import { LandingPage } from "@/landing/pages/LandingPage";
+import { McpDocsPage } from "@/landing/pages/McpDocsPage";
 import { RootLayout } from "./RootLayout";
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
@@ -15,7 +16,10 @@ export const router = createBrowserRouter(
         {
           element: <LandingLayout />,
           // One route for "/" and every section path, so the page never remounts between them.
-          children: [{ path: "/:section?", element: <LandingPage /> }],
+          children: [
+            { path: ROUTES.docsMcp, element: <McpDocsPage /> },
+            { path: "/:section?", element: <LandingPage /> },
+          ],
         },
         // Non-landing areas load on demand to keep the homepage bundle lean.
         {
