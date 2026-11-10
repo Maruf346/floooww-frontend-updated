@@ -41,6 +41,26 @@ export const router = createBrowserRouter(
           lazy: async () => ({ Component: (await import("@/auth/pages/SignupPage")).SignupPage }),
         },
         {
+          path: ROUTES.verifyEmail,
+          lazy: async () => ({ Component: (await import("@/auth/pages/VerifyEmailPage")).VerifyEmailPage }),
+        },
+        {
+          path: ROUTES.forgotPassword,
+          lazy: async () => ({ Component: (await import("@/auth/pages/ForgotPasswordPage")).ForgotPasswordPage }),
+        },
+        {
+          path: ROUTES.resetPassword,
+          lazy: async () => ({ Component: (await import("@/auth/pages/ResetPasswordPage")).ResetPasswordPage }),
+        },
+        {
+          path: ROUTES.chooseWorkspace,
+          lazy: async () => ({ Component: (await import("@/auth/pages/ChooseWorkspacePage")).ChooseWorkspacePage }),
+        },
+        {
+          path: ROUTES.onboarding,
+          lazy: async () => ({ Component: (await import("@/auth/pages/OnboardingPage")).OnboardingPage }),
+        },
+        {
           path: ROUTES.brand,
           lazy: async () => ({
             Component: (await import("@/brand/pages/BrandDashboardPage")).BrandDashboardPage,
