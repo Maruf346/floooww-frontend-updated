@@ -1,5 +1,7 @@
 import { AlertTriangle, CircleDollarSign, FileCheck2, Gift, Plus, Scale, UserCheck } from "lucide-react";
+import { Link } from "react-router-dom";
 import { ContentAwaitingReview } from "@/brand/components/ContentAwaitingReview";
+import { ROUTES } from "@/common/constants/routes";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { asset } from "@/common/utils/asset";
 
@@ -29,7 +31,7 @@ export function BrandOverviewWithCampaigns() {
   return <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-4">
     <header className="flex flex-wrap items-end justify-between gap-4">
       <div><h1 className="text-[26px] font-bold leading-[34px] tracking-[-.02em]">Welcome, Ananya</h1><p className="text-[13px] leading-5 text-secondary">Across all active projects, 1-28 Oct 2026 - updated just now</p></div>
-      <div className="flex flex-wrap gap-2"><DateRangePicker value="1 Oct - 28 Oct 2026" /><button type="button" className="inline-flex h-10 items-center gap-2 rounded-md bg-primary px-4 text-[14px] font-medium text-white"><Plus size={16} />Create new project</button></div>
+      <div className="flex flex-wrap gap-2"><DateRangePicker value="1 Oct - 28 Oct 2026" /><Link to={ROUTES.brandNewProject} className="inline-flex h-10 items-center gap-2 rounded-md bg-primary px-4 text-[14px] font-medium text-white"><Plus size={16} />Create new project</Link></div>
     </header>
     <section className="rounded-xl border border-line bg-white p-5"><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{[[CircleDollarSign, "Active projects", "5", "1 starting 4 Nov"], [UserCheck, "Creators accepted", "38", "Across 6 projects"], [FileCheck2, "Deliverables due this week", "14", "3 overdue"], [Gift, "Shipments in transit", "4", "2 delivered this week"]].map(([Icon, label, value, detail]) => { const MetricIcon = Icon as typeof Gift; return <article key={label as string} className="rounded-xl border border-line-subtle p-4"><span className="flex size-9 items-center justify-center rounded-md bg-primary text-white"><MetricIcon size={18} /></span><p className="mt-3 text-[12px] leading-4 text-secondary">{label}</p><p className="text-[22px] font-semibold leading-7 tracking-[-.015em]">{value}</p><p className="mt-2 text-[12px] font-medium leading-4 text-tertiary">{detail}</p></article>; })}</div></section>
     <div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(280px,360px)]"><ActionRequired /><UpcomingDeadlines /></div>

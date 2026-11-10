@@ -22,6 +22,7 @@ export const ROUTES = {
   chooseWorkspace: "/choose-workspace",
   onboarding: "/onboarding/:role",
   brand: "/brand",
+  brandNewProject: "/brand/projects/new",
   agency: "/agency",
   creator: "/creator",
 } as const;
