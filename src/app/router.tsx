@@ -3,6 +3,7 @@ import { ROUTES } from "@/common/constants/routes";
 import { NotFoundPage } from "@/common/pages/NotFoundPage";
 import { LandingLayout } from "@/landing/layouts/LandingLayout";
 import { LandingPage } from "@/landing/pages/LandingPage";
+import { FaqDocsPage } from "@/landing/pages/FaqDocsPage";
 import { McpDocsPage } from "@/landing/pages/McpDocsPage";
 import { RootLayout } from "./RootLayout";
 
@@ -18,6 +19,7 @@ export const router = createBrowserRouter(
           // One route for "/" and every section path, so the page never remounts between them.
           children: [
             { path: ROUTES.docsMcp, element: <McpDocsPage /> },
+            { path: ROUTES.faq, element: <FaqDocsPage /> },
             { path: "/:section?", element: <LandingPage /> },
           ],
         },
