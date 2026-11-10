@@ -88,7 +88,7 @@ function ProjectSetupSummary({ selected }: { selected: ProjectType }) {
     </div>
     <div className="my-4 h-px bg-line" />
     <div className="space-y-3">
-      <div className="flex items-center gap-2.5 text-primary"><CheckCircle2 size={16} /><span className="text-[14px] font-medium leading-[22px]">Type</span></div>
+      <div className="flex items-center gap-2.5 text-primary"><CheckCircle2 size={16} className="text-success" /><span className="text-[14px] font-medium leading-[22px]">Type</span></div>
       {remaining.map(([label, Icon]) => { const StepIcon = Icon as typeof Users; return <div key={label} className="flex items-center gap-2.5 text-tertiary"><StepIcon size={16} /><span className="text-[13px] leading-5">{label}</span></div>; })}
     </div>
   </aside>;
