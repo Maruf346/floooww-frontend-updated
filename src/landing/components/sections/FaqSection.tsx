@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
-import { ArrowRight, Mail, Plus } from "lucide-react";
+import { ArrowRight, Mail } from "lucide-react";
 import { Button } from "@/common/components/ui/Button";
 import { Container } from "@/common/components/ui/Container";
 import { Reveal, RevealGroup, RevealItem } from "@/common/components/motion/Reveal";
@@ -16,12 +16,29 @@ import {
   type FaqItem,
 } from "@/landing/data/faq";
 
-function FaqRow({ item, open, onToggle }: { item: FaqItem; open: boolean; onToggle: () => void }) {
+function FaqRow({
+  item,
+  number,
+  open,
+  onToggle,
+}: {
+  item: FaqItem;
+  number: number;
+  open: boolean;
+  onToggle: () => void;
+}) {
   const panelId = `faq-panel-${item.id}`;
   const buttonId = `faq-button-${item.id}`;
 
   return (
-    <div className="border-b border-line-subtle">
+    <div
+      className={cn(
+        "rounded-[20px] border bg-white px-[22px] py-[18px] transition-[border-color,box-shadow] duration-300",
+        open
+          ? "border-primary shadow-[0_8px_20px_rgba(37,99,235,0.06)]"
+          : "border-line hover:border-line-strong",
+      )}
+    >
       <h3>
         <button
           id={buttonId}
@@ -29,33 +46,30 @@ function FaqRow({ item, open, onToggle }: { item: FaqItem; open: boolean; onTogg
           aria-expanded={open}
           aria-controls={panelId}
           onClick={onToggle}
-          className="group flex w-full items-center gap-4 py-5 text-left sm:py-6"
+          className="group flex w-full items-center gap-4 text-left"
         >
           <span
+            aria-hidden="true"
             className={cn(
-              "flex-1 font-inter-semibold text-[16px] font-semibold leading-6 transition-colors duration-300 sm:text-[17px]",
-              open ? "text-ink" : "text-heading-2 group-hover:text-primary",
+              "flex size-9 shrink-0 items-center justify-center rounded-xl font-inter-semibold text-[13px] font-semibold transition-colors duration-300",
+              open ? "bg-primary text-white" : "bg-[#f1f4ff] text-primary",
+            )}
+          >
+            {String(number).padStart(2, "0")}
+          </span>
+          <span
+            className={cn(
+              "flex-1 font-inter-semibold text-[17px] font-semibold leading-normal transition-colors duration-300",
+              open ? "text-ink" : "text-ink group-hover:text-primary",
             )}
           >
             {item.question}
           </span>
           <span
             aria-hidden="true"
-            className={cn(
-              "flex size-8 shrink-0 items-center justify-center rounded-full border transition-[background-color,border-color,color] duration-300",
-              open
-                ? "border-primary bg-primary text-white"
-                : "border-line bg-white text-icon group-hover:border-line-strong",
-            )}
+            className="shrink-0 font-inter-medium text-[20px] font-medium leading-none text-secondary"
           >
-            <Plus
-              size={16}
-              strokeWidth={2}
-              className={cn(
-                "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                open && "rotate-45",
-              )}
-            />
+            {open ? "−" : "+"}
           </span>
         </button>
       </h3>
@@ -74,9 +88,7 @@ function FaqRow({ item, open, onToggle }: { item: FaqItem; open: boolean; onTogg
             }}
             className="overflow-hidden"
           >
-            <p className="max-w-[640px] pb-6 pr-12 text-[15px] leading-6 text-body">
-              {item.answer}
-            </p>
+            <p className="max-w-[640px] pt-2.5 text-[15px] leading-6 text-body">{item.answer}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -191,12 +203,13 @@ export function FaqSection() {
             key={category}
             stagger={0.06}
             amount={0.1}
-            className="mt-4 border-t border-line-subtle"
+            className="mt-4 flex flex-col gap-3"
           >
             {items.map((item) => (
               <RevealItem key={item.id}>
                 <FaqRow
                   item={item}
+                  number={FAQ_ITEMS.indexOf(item) + 1}
                   open={openId === item.id}
                   onToggle={() => setOpenId((current) => (current === item.id ? null : item.id))}
                 />
