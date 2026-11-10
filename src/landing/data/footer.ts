@@ -45,6 +45,14 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       { label: "Sign up free", to: ROUTES.signup },
     ],
   },
+  {
+    title: "Legal",
+    links: [
+      { label: "Terms of Service", to: ROUTES.terms },
+      { label: "Privacy Policy", to: ROUTES.privacy },
+      { label: "Refund Policy", to: ROUTES.refunds },
+    ],
+  },
 ];
 
 export const FOOTER_SOCIALS: { platform: Platform; href: string }[] = [

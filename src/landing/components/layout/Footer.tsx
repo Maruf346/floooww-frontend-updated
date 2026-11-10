@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUp } from "lucide-react";
 import { Logo } from "@/common/components/brand/Logo";
@@ -34,6 +35,16 @@ function FooterAnchor({ link }: { link: FooterLink }) {
 
 export function Footer() {
   const year = new Date().getFullYear();
+  const [cookieOpen, setCookieOpen] = useState(false);
+  const [analytics, setAnalytics] = useState(false);
+
+  const saveCookiePreferences = () => {
+    localStorage.setItem(
+      "floooww-cookie-preferences",
+      JSON.stringify({ necessary: true, analytics }),
+    );
+    setCookieOpen(false);
+  };
 
   return (
     <footer className="bg-inverse text-white">
@@ -41,9 +52,9 @@ export function Footer() {
         <RevealGroup
           stagger={0.08}
           amount={0.15}
-          className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-4 lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]"
+          className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-[minmax(0,1.6fr)_repeat(4,minmax(0,1fr))]"
         >
-          <RevealItem className="col-span-2 md:col-span-4 lg:col-span-1">
+          <RevealItem className="col-span-2 md:col-span-1">
             <Link to={ROUTES.home} aria-label="Floooww home" className="inline-flex rounded-sm">
               <Logo theme="on-dark" />
             </Link>
@@ -87,18 +98,89 @@ export function Footer() {
           <p className="text-[13px] leading-5 text-secondary">
             © {year} {FOOTER_LEGAL}
           </p>
-          <button
-            type="button"
-            onClick={() => scrollToTop()}
-            className="group inline-flex items-center gap-2 font-inter-medium text-[13px] font-medium leading-[18px] text-tertiary transition-colors duration-300 hover:text-white"
-          >
-            Back to top
-            <span className="flex size-8 items-center justify-center rounded-full border border-white/10 transition-[transform,border-color] duration-300 ease-out group-hover:-translate-y-0.5 group-hover:border-white/25">
-              <ArrowUp size={16} strokeWidth={2} aria-hidden="true" />
-            </span>
-          </button>
+          <div className="flex items-center gap-5">
+            <button
+              type="button"
+              onClick={() => setCookieOpen(true)}
+              className="font-inter-medium text-[13px] font-medium leading-[18px] text-tertiary transition-colors hover:text-white"
+            >
+              Cookie settings
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollToTop()}
+              className="group inline-flex items-center gap-2 font-inter-medium text-[13px] font-medium leading-[18px] text-tertiary transition-colors duration-300 hover:text-white"
+            >
+              Back to top
+              <span className="flex size-8 items-center justify-center rounded-full border border-white/10 transition-[transform,border-color] duration-300 ease-out group-hover:-translate-y-0.5 group-hover:border-white/25">
+                <ArrowUp size={16} strokeWidth={2} aria-hidden="true" />
+              </span>
+            </button>
+          </div>
         </div>
       </Container>
+      {cookieOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-end bg-ink/45 p-4 sm:items-center sm:justify-center"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cookie-title"
+        >
+          <div className="w-full max-w-[520px] rounded-2xl bg-white p-6 text-ink shadow-lg sm:p-8">
+            <h2
+              id="cookie-title"
+              className="font-inter-bold text-[24px] font-bold tracking-[-0.4px]"
+            >
+              Cookie preferences
+            </h2>
+            <p className="mt-2 text-[14px] leading-6 text-body">
+              We use necessary cookies to keep Floooww secure and working. Optional analytics
+              cookies help us understand how the site is used.
+            </p>
+            <div className="mt-6 divide-y divide-line rounded-xl border border-line">
+              <div className="flex items-center justify-between gap-4 p-4">
+                <div>
+                  <p className="font-inter-semibold text-[14px] font-semibold">Necessary</p>
+                  <p className="text-[13px] text-secondary">
+                    Required for core site functionality.
+                  </p>
+                </div>
+                <span className="rounded-full bg-subtle px-3 py-1 font-inter-medium text-[12px] font-medium text-neutral">
+                  Always on
+                </span>
+              </div>
+              <label className="flex cursor-pointer items-center justify-between gap-4 p-4">
+                <div>
+                  <p className="font-inter-semibold text-[14px] font-semibold">Analytics</p>
+                  <p className="text-[13px] text-secondary">Helps us improve the website.</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={analytics}
+                  onChange={(event) => setAnalytics(event.target.checked)}
+                  className="size-5 accent-primary"
+                />
+              </label>
+            </div>
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setCookieOpen(false)}
+                className="rounded-lg px-4 py-2.5 font-inter-medium text-[14px] font-medium text-neutral hover:bg-subtle"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={saveCookiePreferences}
+                className="rounded-lg bg-primary px-4 py-2.5 font-inter-medium text-[14px] font-medium text-white hover:bg-primary-hover"
+              >
+                Save preferences
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </footer>
   );
 }
