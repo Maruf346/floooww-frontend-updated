@@ -57,7 +57,7 @@ export function BrandProjectTypePage() {
             <Button kind="secondary" onClick={() => navigate(ROUTES.brand)} leadingIcon={<ArrowLeft size={16} />}>Back</Button>
             <div className="flex-1" />
             <Button kind="ghost" onClick={() => setSaved(true)}>Save draft</Button>
-            <Button onClick={() => setSaved(true)} trailingIcon={<ArrowRight size={16} />}>Continue</Button>
+            <Button onClick={() => navigate(ROUTES.brandNewProjectPartnership)} trailingIcon={<ArrowRight size={16} />}>Continue</Button>
           </footer>
         </motion.section>
         <ProjectSetupSummary selected={projectType} />

@@ -23,6 +23,7 @@ export const ROUTES = {
   onboarding: "/onboarding/:role",
   brand: "/brand",
   brandNewProject: "/brand/projects/new",
+  brandNewProjectPartnership: "/brand/projects/new/partnership",
   agency: "/agency",
   creator: "/creator",
 } as const;
