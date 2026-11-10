@@ -1,0 +1,25 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="1440" height="335" viewBox="0 0 1440 335" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="CTA glow" clip-path="url(#clip0_0_11)">
+<g id="Glow A" filter="url(#filter0_f_0_11)">
+<circle cx="90" cy="30.0001" r="230" fill="#DEE8FE" fill-opacity="0.45"/>
+</g>
+<g id="Glow B" filter="url(#filter1_f_0_11)">
+<circle cx="1290" cy="330" r="210" fill="#2563EB" fill-opacity="0.5"/>
+</g>
+</g>
+<defs>
+<filter id="filter0_f_0_11" x="-230" y="-290" width="640" height="640" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="45" result="effect1_foregroundBlur_0_11"/>
+</filter>
+<filter id="filter1_f_0_11" x="990" y="30" width="600" height="600" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="45" result="effect1_foregroundBlur_0_11"/>
+</filter>
+<clipPath id="clip0_0_11">
+<rect width="1440" height="335" fill="white"/>
+</clipPath>
+</defs>
+</svg>
