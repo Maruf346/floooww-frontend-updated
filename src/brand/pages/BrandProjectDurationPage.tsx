@@ -44,7 +44,7 @@ export function BrandProjectDurationPage() {
             })}
           </div>
 
-          <footer className="mt-5 flex flex-wrap items-center gap-3 border-t border-line pt-5"><Button kind="secondary" onClick={() => navigate(ROUTES.brandNewProjectPartnership)} leadingIcon={<ArrowLeft size={16} />}>Back</Button><div className="flex-1" /><Button kind="ghost" onClick={() => setSaved(true)}>Save draft</Button><Button onClick={() => setSaved(true)} trailingIcon={<ArrowRight size={16} />}>Continue</Button></footer>
+          <footer className="mt-5 flex flex-wrap items-center gap-3 border-t border-line pt-5"><Button kind="secondary" onClick={() => navigate(ROUTES.brandNewProjectPartnership)} leadingIcon={<ArrowLeft size={16} />}>Back</Button><div className="flex-1" /><Button kind="ghost" onClick={() => setSaved(true)}>Save draft</Button><Button onClick={() => navigate(ROUTES.brandNewProjectDetails)} trailingIcon={<ArrowRight size={16} />}>Continue</Button></footer>
         </motion.section>
         <ProjectSetupSummary duration={duration} />
       </div>
