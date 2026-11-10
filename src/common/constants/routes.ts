@@ -26,6 +26,7 @@ export const ROUTES = {
   brandNewProjectPartnership: "/brand/projects/new/partnership",
   brandNewProjectDuration: "/brand/projects/new/duration",
   brandNewProjectDetails: "/brand/projects/new/details",
+  brandNewProjectCreators: "/brand/projects/new/creators",
   agency: "/agency",
   creator: "/creator",
 } as const;
