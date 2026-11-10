@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import { ROUTES } from "@/common/constants/routes";
-import { NotFoundPage } from "@/common/pages/NotFoundPage";
+import { WebErrorPage } from "@/common/pages/WebErrorPage";
 import { LandingLayout } from "@/landing/layouts/LandingLayout";
 import { LandingPage } from "@/landing/pages/LandingPage";
 import { FaqDocsPage } from "@/landing/pages/FaqDocsPage";
@@ -28,7 +28,11 @@ export const router = createBrowserRouter(
             { path: ROUTES.terms, element: <LegalPage kind="terms" /> },
             { path: ROUTES.privacy, element: <LegalPage kind="privacy" /> },
             { path: ROUTES.refunds, element: <LegalPage kind="refunds" /> },
+            { path: ROUTES.notFound, element: <WebErrorPage kind="not-found" /> },
+            { path: ROUTES.serverError, element: <WebErrorPage kind="server-error" /> },
+            { path: ROUTES.maintenance, element: <WebErrorPage kind="maintenance" /> },
             { path: "/:section?", element: <LandingPage /> },
+            { path: "*", element: <WebErrorPage kind="not-found" /> },
           ],
         },
         // Non-landing areas load on demand to keep the homepage bundle lean.
@@ -78,7 +82,6 @@ export const router = createBrowserRouter(
             Component: (await import("@/creator/pages/CreatorDashboardPage")).CreatorDashboardPage,
           }),
         },
-        { path: "*", element: <NotFoundPage /> },
       ],
     },
   ],

@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { NotFoundPage } from "@/common/pages/NotFoundPage";
+import { WebErrorPage } from "@/common/pages/WebErrorPage";
 import { LANDING_PATHS } from "@/landing/constants/sections";
 import { FaqSection } from "@/landing/components/sections/FaqSection";
 import { BlogSection } from "@/landing/components/sections/BlogSection";
@@ -16,7 +16,7 @@ import { useLandingSectionRouting } from "@/landing/hooks/useLandingSectionRouti
 /** WEB-01 · Homepage. Sections render in Figma order. */
 export function LandingPage() {
   const { pathname } = useLocation();
-  if (!LANDING_PATHS.includes(pathname)) return <NotFoundPage />;
+  if (!LANDING_PATHS.includes(pathname)) return <WebErrorPage kind="not-found" />;
   return <LandingSections />;
 }
 
