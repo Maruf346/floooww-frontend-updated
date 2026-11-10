@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import { ROUTES } from "@/common/constants/routes";
 import { WebErrorPage } from "@/common/pages/WebErrorPage";
+import { PageLoadingSkeleton } from "@/common/components/ui/PageLoadingSkeleton";
 import { LandingLayout } from "@/landing/layouts/LandingLayout";
 import { LandingPage } from "@/landing/pages/LandingPage";
 import { FaqDocsPage } from "@/landing/pages/FaqDocsPage";
@@ -31,6 +32,7 @@ export const router = createBrowserRouter(
             { path: ROUTES.notFound, element: <WebErrorPage kind="not-found" /> },
             { path: ROUTES.serverError, element: <WebErrorPage kind="server-error" /> },
             { path: ROUTES.maintenance, element: <WebErrorPage kind="maintenance" /> },
+            { path: ROUTES.loading, element: <PageLoadingSkeleton /> },
             { path: "/:section?", element: <LandingPage /> },
             { path: "*", element: <WebErrorPage kind="not-found" /> },
           ],

@@ -13,6 +13,7 @@ export const ROUTES = {
   notFound: "/404",
   serverError: "/500",
   maintenance: "/maintenance",
+  loading: "/loading",
   login: "/login",
   signup: "/signup",
   verifyEmail: "/verify-email",
