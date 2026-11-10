@@ -1,7 +1,6 @@
 import type { Platform } from "@/common/types";
 import { ROUTES } from "@/common/constants/routes";
 import { LANDING_SECTIONS } from "@/landing/constants/sections";
-import { FAQ_COPY } from "./faq";
 
 export interface FooterLink {
   label: string;
@@ -41,7 +40,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     links: [
       { label: "FAQ", to: LANDING_SECTIONS.faq.path },
       { label: "Help Centre", to: ROUTES.help },
-      { label: "Contact us", href: `mailto:${FAQ_COPY.contactEmail}` },
+      { label: "Contact us", to: ROUTES.enquiry },
       { label: "Log in", to: ROUTES.login },
       { label: "Sign up free", to: ROUTES.signup },
     ],

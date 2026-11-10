@@ -6,6 +6,7 @@ export const ROUTES = {
   docsMcp: "/docs/mcp",
   faq: "/faq",
   help: "/help",
+  enquiry: "/enquiry",
   login: "/login",
   signup: "/signup",
   brand: "/brand",
