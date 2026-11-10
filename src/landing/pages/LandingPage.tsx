@@ -2,6 +2,8 @@ import { useLocation } from "react-router-dom";
 import { NotFoundPage } from "@/common/pages/NotFoundPage";
 import { LANDING_PATHS } from "@/landing/constants/sections";
 import { FaqSection } from "@/landing/components/sections/FaqSection";
+import { BlogSection } from "@/landing/components/sections/BlogSection";
+import { CtaSection } from "@/landing/components/sections/CtaSection";
 import { StatsSection } from "@/landing/components/sections/StatsSection";
 import { TrustedBrandsSection } from "@/landing/components/sections/TrustedBrandsSection";
 import { CreatorsSection } from "@/landing/components/sections/creators/CreatorsSection";
@@ -31,6 +33,8 @@ function LandingSections() {
       <CreatorsSection />
       <McpSection />
       <FaqSection />
+      <BlogSection />
+      <CtaSection />
     </>
   );
 }

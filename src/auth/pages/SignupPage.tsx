@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowRight, Search } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { IconSearch } from "@tabler/icons-react";
 import type { UserRole } from "@/common/types";
 import { Button } from "@/common/components/ui/Button";
 import { Select } from "@/common/components/ui/Select";
@@ -52,9 +53,9 @@ export function SignupPage() {
     >
       {query && (
         <div className="mb-5 flex items-start gap-2.5 rounded-md bg-primary-subtle px-3 py-2.5 text-[13px] leading-5 text-body">
-          <Search
+          <IconSearch
             size={16}
-            strokeWidth={2}
+            stroke={2}
             className="mt-0.5 shrink-0 text-primary"
             aria-hidden="true"
           />
