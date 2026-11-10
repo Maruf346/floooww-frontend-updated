@@ -40,6 +40,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     title: "Support",
     links: [
       { label: "FAQ", to: LANDING_SECTIONS.faq.path },
+      { label: "Help Centre", to: ROUTES.help },
       { label: "Contact us", href: `mailto:${FAQ_COPY.contactEmail}` },
       { label: "Log in", to: ROUTES.login },
       { label: "Sign up free", to: ROUTES.signup },

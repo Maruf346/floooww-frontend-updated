@@ -4,6 +4,7 @@ import { NotFoundPage } from "@/common/pages/NotFoundPage";
 import { LandingLayout } from "@/landing/layouts/LandingLayout";
 import { LandingPage } from "@/landing/pages/LandingPage";
 import { FaqDocsPage } from "@/landing/pages/FaqDocsPage";
+import { HelpCentrePage } from "@/landing/pages/HelpCentrePage";
 import { McpDocsPage } from "@/landing/pages/McpDocsPage";
 import { RootLayout } from "./RootLayout";
 
@@ -20,6 +21,7 @@ export const router = createBrowserRouter(
           children: [
             { path: ROUTES.docsMcp, element: <McpDocsPage /> },
             { path: ROUTES.faq, element: <FaqDocsPage /> },
+            { path: ROUTES.help, element: <HelpCentrePage /> },
             { path: "/:section?", element: <LandingPage /> },
           ],
         },

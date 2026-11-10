@@ -5,6 +5,7 @@ export const ROUTES = {
   mcp: "/mcp",
   docsMcp: "/docs/mcp",
   faq: "/faq",
+  help: "/help",
   login: "/login",
   signup: "/signup",
   brand: "/brand",
