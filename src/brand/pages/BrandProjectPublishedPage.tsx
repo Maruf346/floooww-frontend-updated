@@ -15,6 +15,15 @@ const standardNextSteps = [
   ["Results show in the project", "File use and ad results, shown per project."],
 ];
 
+const influencerNextSteps = [
+  ["Invite creators or approve applications", "The fee is held in escrow only when you invite a creator and set deliverables."],
+  ["Creator accepts within 48 hours", "If not, the money comes back to you automatically."],
+  ["Send products and add tracking", "Only for deliverables that need a product."],
+  ["Creator sends drafts, you approve", "Approving releases that deliverable’s payment."],
+  ["Posts go live", "We check each post is live and the tracking link works."],
+  ["Results show in the project", "Sales from codes and links, reach and engagement."],
+];
+
 const longTermNextSteps = [...standardNextSteps.slice(0, -1), ["Results show in the project each cycle", "File use and ad results, shown per project."]];
 
 const giftNextSteps = [
@@ -55,14 +64,15 @@ export function BrandProjectPublishedPage() {
   const { partnership, duration, projectType } = useProjectFlow();
   const longTerm = duration === "Long-term";
   const gift = partnership === "Gift exchange";
-  const projectName = gift ? longTerm ? "Lip Care UGC Club" : "Winter Lip Care UGC" : longTerm ? "Monthly UGC Pack" : "Glow Edit UGC Pack";
-  const nextSteps = gift ? longTerm ? giftLongTermNextSteps : giftNextSteps : longTerm ? longTermNextSteps : standardNextSteps;
+  const influencer = projectType === "Influencer marketing";
+  const projectName = influencer && partnership === "Paid" && duration === "One-time" ? "Vitamin-C Serum" : gift ? longTerm ? "Lip Care UGC Club" : "Winter Lip Care UGC" : longTerm ? "Monthly UGC Pack" : "Glow Edit UGC Pack";
+  const nextSteps = influencer && partnership === "Paid" && duration === "One-time" ? influencerNextSteps : gift ? longTerm ? giftLongTermNextSteps : giftNextSteps : longTerm ? longTermNextSteps : standardNextSteps;
   const applyBy = gift ? "20 Nov" : "12 Oct";
   const publicationMessage = gift ? `Nothing was charged, gift projects are free.${longTerm ? " The same deliverables repeat every monthly cycle." : ""}` : `Nothing is charged until you invite a creator.${longTerm ? " Fees are charged at the start of each monthly cycle." : ""}`;
 
   return <BrandShell><div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6">
     <header className="flex items-end justify-between gap-4">
-      <div><p className="text-[12px] leading-4 text-tertiary">Projects&nbsp;&nbsp;/&nbsp;&nbsp;{projectName}</p><h1 className="mt-1 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">Project published</h1><p className="text-[13px] leading-5 text-secondary">{projectName} · {partnership} · {duration} · published just now</p></div>
+      <div><p className="text-[12px] leading-4 text-tertiary">Projects&nbsp;&nbsp;/&nbsp;&nbsp;{projectName}</p><h1 className="mt-1 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">Project published</h1><p className="text-[13px] leading-5 text-secondary">{projectName} · {partnership}{influencer ? "" : ` · ${duration}`} · published just now</p></div>
       <Button kind="ghost" leadingIcon={<X size={16} />} onClick={() => navigate(ROUTES.brand)}>Exit</Button>
     </header>
     <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]"><motion.section animate={{ opacity: 1, y: 0 }} className="rounded-xl border border-line bg-white px-5 py-6 sm:px-8 sm:py-7" initial={{ opacity: 0, y: 8 }} transition={{ duration: .24, ease: "easeOut" }}>
