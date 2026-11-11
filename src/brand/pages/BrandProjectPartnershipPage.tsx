@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, Circle, Clock3, FileText, Gift, Landmark, Megaphone, Package, Users, WalletCards, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, CheckCircle2, Circle, Clock3, FileText, Gift, Info, Landmark, Megaphone, Package, Users, WalletCards, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
@@ -33,7 +33,7 @@ export function BrandProjectPartnershipPage() {
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .26 }} className="rounded-xl border border-line bg-white px-5 py-6 sm:px-8 sm:py-7">
           <div>
-            <p className="text-[12px] font-semibold leading-4 tracking-[.06em] text-primary">STEP 2 OF 9</p>
+            <p className="text-[12px] font-semibold leading-4 tracking-[.06em] text-primary">STEP 2 OF {getProjectSteps(partnership).length}</p>
             <h2 className="mt-1.5 text-[26px] font-bold leading-[34px] tracking-[-.02em]">Partnership</h2>
           </div>
 
@@ -48,6 +48,14 @@ export function BrandProjectPartnershipPage() {
               </button>;
             })}
           </div>
+
+          {partnership === "Gift exchange" && <div className="mt-5 flex items-start gap-2.5 rounded-md bg-primary-subtle px-3.5 py-3">
+            <Info size={18} className="mt-0.5 shrink-0 text-primary" />
+            <div>
+              <p className="text-[14px] font-medium leading-[22px] text-ink">Gift projects are free: nothing is charged</p>
+              <p className="mt-0.5 text-[13px] leading-5 text-body">No escrow and no fees. You choose the product for each deliverable when you invite a creator, and add tracking there.</p>
+            </div>
+          </div>}
 
           <footer className="mt-5 flex flex-wrap items-center gap-3 border-t border-line pt-5">
             <Button kind="secondary" onClick={() => navigate(ROUTES.brandNewProject)} leadingIcon={<ArrowLeft size={16} />}>Back</Button>

@@ -34,7 +34,7 @@ export function BrandProjectDurationPage() {
 
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .26 }} className="rounded-xl border border-line bg-white px-5 py-6 sm:px-8 sm:py-7">
-          <div><p className="text-[12px] font-semibold leading-4 tracking-[.06em] text-primary">STEP 3 OF 9</p><h2 className="mt-1.5 text-[26px] font-bold leading-[34px] tracking-[-.02em]">Duration</h2></div>
+          <div><p className="text-[12px] font-semibold leading-4 tracking-[.06em] text-primary">STEP 3 OF {getProjectSteps(partnership).length}</p><h2 className="mt-1.5 text-[26px] font-bold leading-[34px] tracking-[-.02em]">Duration</h2></div>
 
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             {durationOptions.map((option) => {
