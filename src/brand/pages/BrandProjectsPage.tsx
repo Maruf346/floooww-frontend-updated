@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
-import { Check, ChevronDown, Clock, Eye, Folder, MoreHorizontal, Pause, Play, Plus, Search, Trash2, UserRoundPlus } from "lucide-react";
+import { useMemo, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
+import { Archive, Check, ChevronDown, ChevronRight, Clock, Copy, Download, Eye, Folder, Mail, MoreHorizontal, Pause, Pencil, Phone, Play, Plus, QrCode, Search, Share2, Trash2, UserRoundPlus } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
@@ -88,6 +89,53 @@ function EmptyProjectsState({ paused, onGoToLive }: { paused: boolean; onGoToLiv
   </section>;
 }
 
+function ShareProjectMenu({ anchor, onClose }: { anchor: DOMRect; onClose: () => void }) {
+  const shareUrl = `${window.location.origin}${ROUTES.brandProjects}`;
+  const copyLink = async () => { await navigator.clipboard?.writeText(shareUrl); onClose(); };
+  const option = (label: string, logo: ReactNode, onClick: () => void) => <button type="button" onClick={onClick} className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-[7px] text-left text-[14px] leading-5 text-ink hover:bg-subtle"><span className="flex size-6 shrink-0 items-center justify-center rounded-lg">{logo}</span><span>{label}</span></button>;
+  const width = 232;
+  const height = 366;
+  const left = anchor.right + 8 + width <= window.innerWidth ? anchor.right + 8 : Math.max(8, anchor.left - width - 8);
+  const top = Math.max(8, Math.min(anchor.top, window.innerHeight - height - 8));
+
+  return createPortal(<div role="menu" aria-label="Share project" style={{ left, top }} className="fixed z-[10000] w-[232px] rounded-[10px] border border-line bg-white p-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.18)]">
+    {option("Copy link", <span className="flex size-6 items-center justify-center rounded-lg bg-subtle"><Copy size={14} /></span>, copyLink)}
+    <div className="mx-auto h-px w-[220px] bg-muted" />
+    {option("WhatsApp", <span className="flex size-6 items-center justify-center rounded-lg bg-[#25d366] text-white"><Phone size={14} /></span>, onClose)}
+    {option("Instagram Story", <span className="flex size-6 items-center justify-center rounded-lg border border-line bg-white"><img src="/assets/platform-instagram.svg" alt="" className="size-4" /></span>, onClose)}
+    {option("LinkedIn", <span className="flex size-6 items-center justify-center rounded-lg bg-[#0a66c2] text-[13px] font-bold text-white">in</span>, onClose)}
+    {option("X (Twitter)", <span className="flex size-6 items-center justify-center rounded-lg bg-ink text-[13px] font-bold text-white">X</span>, onClose)}
+    {option("Facebook", <span className="flex size-6 items-center justify-center rounded-lg bg-[#1877f2] text-[13px] font-bold text-white">f</span>, onClose)}
+    <div className="mx-auto h-px w-[220px] bg-muted" />
+    {option("Email", <span className="flex size-6 items-center justify-center rounded-lg bg-subtle"><Mail size={14} /></span>, () => { window.location.href = `mailto:?body=${encodeURIComponent(shareUrl)}`; onClose(); })}
+    {option("QR code", <span className="flex size-6 items-center justify-center rounded-lg bg-subtle"><QrCode size={14} /></span>, onClose)}
+  </div>, document.body);
+}
+
+function ProjectActionsMenu({ project, anchor, onView, onClose }: { project: Project; anchor: DOMRect; onView: () => void; onClose: () => void }) {
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareAnchor, setShareAnchor] = useState<DOMRect | null>(null);
+  const menuItem = (label: string, icon: ReactNode, onClick: () => void, danger = false, trailing = false, divider = false) => <button type="button" onClick={onClick} className={`flex min-h-9 w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-[13px] leading-5 hover:bg-subtle ${danger ? "text-[#db231f]" : "text-ink"} ${divider ? "mt-1 border-t border-line pt-3" : ""}`}>
+    <span className="shrink-0">{icon}</span><span className="flex-1">{label}</span>{trailing && <ChevronRight size={14} className="shrink-0 text-secondary" />}
+  </button>;
+  const width = 208;
+  const height = 320;
+  const left = Math.max(8, Math.min(anchor.right - width, window.innerWidth - width - 8));
+  const top = anchor.bottom + 6 + height <= window.innerHeight ? anchor.bottom + 6 : Math.max(8, anchor.top - height - 6);
+
+  return createPortal(<div role="menu" aria-label={`Actions for ${project.name}`} style={{ left, top }} className="fixed z-[9999] w-[208px] rounded-lg border border-line bg-white p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+    {menuItem("View project", <Eye size={14} />, onView)}
+    {menuItem("Edit project", <Pencil size={14} />, onView)}
+    <button type="button" onMouseEnter={(event) => { setShareAnchor(event.currentTarget.getBoundingClientRect()); setShareOpen(true); }} onClick={(event) => { setShareAnchor(event.currentTarget.getBoundingClientRect()); setShareOpen((open) => !open); }} className="flex min-h-9 w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-[13px] leading-5 text-ink hover:bg-subtle"><Share2 size={14} /><span className="flex-1">Share</span><ChevronRight size={14} className="text-secondary" /></button>
+    {menuItem("Duplicate", <Copy size={14} />, onClose)}
+    {menuItem("Pause project", <Pause size={14} />, onClose)}
+    {menuItem("Download report", <Download size={14} />, onClose)}
+    {menuItem("Archive", <Archive size={14} />, onClose, false, false, true)}
+    {menuItem("Delete", <Trash2 size={14} />, onClose, true)}
+    {shareOpen && shareAnchor && <ShareProjectMenu anchor={shareAnchor} onClose={onClose} />}
+  </div>, document.body);
+}
+
 export function BrandProjectsPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
@@ -100,6 +148,8 @@ export function BrandProjectsPage() {
   const [platform, setPlatform] = useState("All");
   const [selected, setSelected] = useState<number[]>([]);
   const [restoredProjectIds, setRestoredProjectIds] = useState<number[]>([]);
+  const [actionMenuId, setActionMenuId] = useState<number | null>(null);
+  const [actionMenuAnchor, setActionMenuAnchor] = useState<DOMRect | null>(null);
   const [page, setPage] = useState(1);
   const getProjectStatus = (project: Project): Status => restoredProjectIds.includes(project.id) ? "Drafts" : project.status;
 
@@ -170,7 +220,7 @@ export function BrandProjectsPage() {
           <td><span className="inline-flex h-5 items-center gap-1.5 rounded-full bg-[#fde4e3] px-2 text-[12px] font-medium leading-4 text-[#db231f]"><span className="size-1.5 rounded-full bg-[#db231f]" />Deleted</span></td>
           <td><p className="font-medium text-ink">{project.deletedAt}</p><p className="text-[12px] leading-4 text-secondary">{project.deletedBy}</p></td>
           <td><p className="font-medium text-[#db231f]">{project.removalAt}</p><p className="text-[12px] leading-4 text-secondary">{project.removalNote}</p></td>
-          <td><div className="flex items-center gap-2.5"><Button kind="secondary" size="s" onClick={() => { setRestoredProjectIds((ids) => [...ids, project.id]); setActive("Drafts"); setPage(1); }}>Restore</Button><button type="button" aria-label={`More actions for ${project.name}`} className="text-secondary hover:text-ink"><MoreHorizontal size={18} /></button></div></td>
+          <td><div className="flex items-center gap-2.5"><Button kind="secondary" size="s" onClick={() => { setRestoredProjectIds((ids) => [...ids, project.id]); setActive("Drafts"); setPage(1); }}>Restore</Button><button type="button" aria-label={`More actions for ${project.name}`} aria-expanded={actionMenuId === project.id} onClick={(event) => { setActionMenuAnchor(event.currentTarget.getBoundingClientRect()); setActionMenuId((id) => id === project.id ? null : project.id); }} className="text-secondary hover:text-ink"><MoreHorizontal size={18} /></button>{actionMenuId === project.id && actionMenuAnchor && <ProjectActionsMenu project={project} anchor={actionMenuAnchor} onView={() => { navigate(ROUTES.brandProjectPublished); setActionMenuId(null); }} onClose={() => setActionMenuId(null)} />}</div></td>
         </tr>)}</tbody>
       </table>
     </section> : <section className="mt-6 overflow-x-auto rounded-xl border border-line bg-white">
@@ -189,7 +239,7 @@ export function BrandProjectsPage() {
           <td><p className="font-medium text-ink">{project.budget}</p><p className="text-[12px] leading-4 text-secondary">{project.budgetNote}</p></td>
           <td><div className="flex items-center gap-2"><span className="h-1.5 w-[72px] overflow-hidden rounded-full bg-muted"><span className="block h-full rounded-full bg-primary" style={{ width: `${Math.min(project.progress, 100)}%` }} /></span><span className="text-[13px] text-ink">{project.progress}%</span></div>{project.showPace && <p className="mt-1 text-[12px] leading-4 text-success">Pace</p>}</td>
           <td className="text-[12px] leading-4 text-secondary">{project.updated}</td>
-          <td><div className="flex items-center gap-[10px]"><button onClick={() => navigate(ROUTES.brandProjectPublished)} type="button" className="inline-flex h-8 items-center gap-1 rounded-md border border-line px-2.5 text-[12px] font-medium text-ink"><Eye size={14} />View</button><button type="button" aria-label={`More actions for ${project.name}`} className="text-secondary hover:text-ink"><MoreHorizontal size={18} /></button></div></td>
+          <td><div className="flex items-center gap-[10px]"><button onClick={() => navigate(ROUTES.brandProjectPublished)} type="button" className="inline-flex h-8 items-center gap-1 rounded-md border border-line px-2.5 text-[12px] font-medium text-ink"><Eye size={14} />View</button><button type="button" aria-label={`More actions for ${project.name}`} aria-expanded={actionMenuId === project.id} onClick={(event) => { setActionMenuAnchor(event.currentTarget.getBoundingClientRect()); setActionMenuId((id) => id === project.id ? null : project.id); }} className="text-secondary hover:text-ink"><MoreHorizontal size={18} /></button>{actionMenuId === project.id && actionMenuAnchor && <ProjectActionsMenu project={project} anchor={actionMenuAnchor} onView={() => { navigate(ROUTES.brandProjectPublished); setActionMenuId(null); }} onClose={() => setActionMenuId(null)} />}</div></td>
         </tr>; })}</tbody>
       </table>
     </section> : <EmptyProjectsState paused={active === "Paused"} onGoToLive={() => { setSearch(""); clearFilters(); setActive("Live"); setPage(1); }} />}
