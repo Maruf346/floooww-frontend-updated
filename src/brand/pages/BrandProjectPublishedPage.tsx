@@ -40,6 +40,15 @@ const giftNextSteps = [
   ["Results show in the project", "File use and ad results, the same as any project."],
 ];
 
+const influencerGiftNextSteps = [
+  ["Invite a creator and pick a product for each deliverable", "No payment needed. The product and deliverables go out with the invite."],
+  ["Creator accepts and shares a delivery address", "The address is private to your team."],
+  ["Add tracking on each deliverable", "Create a ₹0 Shopify order or type the courier and tracking number."],
+  ["Creator confirms the product arrived", "The 7-day posting time starts here. If the courier says delivered, it confirms itself after 48 hours."],
+  ["Creator sends drafts, you approve, they post", "We remind them on day 3 and 6. Not posted by day 7? Give more time or report it."],
+  ["Results show in the project", "Engagements, reach and link clicks, the same as any project."],
+];
+
 const giftLongTermNextSteps = [...giftNextSteps.slice(0, -1), ["Results show in the project each cycle", "File use and ad results, the same as any project."]];
 
 function ProjectSetup({ partnership, duration, projectType }: { partnership: ProjectPartnership; duration: ProjectDuration; projectType: string }) {
@@ -51,7 +60,7 @@ function ProjectSetup({ partnership, duration, projectType }: { partnership: Pro
     <h2 className="text-[16px] font-semibold leading-6 text-ink">Project setup</h2>
     <p className="text-[12px] leading-4 text-secondary">Shapes your dashboard</p>
     <dl className="mt-4 space-y-3 text-[13px] leading-5">
-      <div className="flex justify-between gap-3"><dt className="text-secondary">Target</dt><dd className="text-right text-[14px] font-medium leading-[22px] text-ink">{projectType === "Influencer marketing" ? "₹6,00,000 net sales" : longTerm ? "20 usable videos a cycle" : "20 usable videos"}</dd></div>
+      <div className="flex justify-between gap-3"><dt className="text-secondary">Target</dt><dd className="text-right text-[14px] font-medium leading-[22px] text-ink">{gift && projectType === "Influencer marketing" ? "30,000 engagements" : projectType === "Influencer marketing" ? "₹6,00,000 net sales" : longTerm ? "20 usable videos a cycle" : "20 usable videos"}</dd></div>
       <div className="flex justify-between gap-3"><dt className="text-secondary">Type</dt><dd className="text-[14px] font-medium leading-[22px] text-ink">{projectType}</dd></div>
       <div className="flex justify-between gap-3"><dt className="text-secondary">Partnership</dt><dd className="text-[14px] font-medium leading-[22px] text-ink">{partnership}</dd></div>
       <div className="flex justify-between gap-3"><dt className="text-secondary">Duration</dt><dd className="text-right text-[14px] font-medium leading-[22px] text-ink">{longTerm ? gift ? "Long-term · 1 Dec – 28 Feb" : "Long-term · 7 Oct – 6 Jan" : gift ? "One-time · 1 Dec – 31 Dec" : "One-time · 7 Oct – 7 Nov"}</dd></div>
@@ -73,14 +82,15 @@ export function BrandProjectPublishedPage() {
   const influencerPaid = influencer && partnership === "Paid";
   const influencerOneTime = influencerPaid && duration === "One-time";
   const influencerLongTerm = influencerPaid && duration === "Long-term";
-  const projectName = influencerOneTime ? "Vitamin-C Serum" : influencerLongTerm ? "Glow Squad" : gift ? longTerm ? "Lip Care UGC Club" : "Winter Lip Care UGC" : longTerm ? "Monthly UGC Pack" : "Glow Edit UGC Pack";
-  const nextSteps = influencerOneTime ? influencerNextSteps : influencerLongTerm ? influencerLongTermNextSteps : gift ? longTerm ? giftLongTermNextSteps : giftNextSteps : longTerm ? longTermNextSteps : standardNextSteps;
+  const influencerGiftOneTime = influencer && gift && duration === "One-time";
+  const projectName = influencerOneTime ? "Vitamin-C Serum" : influencerLongTerm ? "Glow Squad" : influencerGiftOneTime ? "Winter Lip Care" : gift ? longTerm ? "Lip Care UGC Club" : "Winter Lip Care UGC" : longTerm ? "Monthly UGC Pack" : "Glow Edit UGC Pack";
+  const nextSteps = influencerOneTime ? influencerNextSteps : influencerLongTerm ? influencerLongTermNextSteps : influencerGiftOneTime ? influencerGiftNextSteps : gift ? longTerm ? giftLongTermNextSteps : giftNextSteps : longTerm ? longTermNextSteps : standardNextSteps;
   const applyBy = gift ? "20 Nov" : "12 Oct";
   const publicationMessage = gift ? `Nothing was charged, gift projects are free.${longTerm ? " The same deliverables repeat every monthly cycle." : ""}` : `Nothing is charged until you invite a creator.${longTerm ? " Fees are charged at the start of each monthly cycle." : ""}`;
 
   return <BrandShell><div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6">
     <header className="flex items-end justify-between gap-4">
-      <div><p className="text-[12px] leading-4 text-tertiary">Projects&nbsp;&nbsp;/&nbsp;&nbsp;{projectName}</p><h1 className="mt-1 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">Project published</h1><p className="text-[13px] leading-5 text-secondary">{projectName} · {partnership}{influencerOneTime ? "" : ` · ${duration}`} · published just now</p></div>
+      <div><p className="text-[12px] leading-4 text-tertiary">Projects&nbsp;&nbsp;/&nbsp;&nbsp;{projectName}</p><h1 className="mt-1 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">Project published</h1><p className="text-[13px] leading-5 text-secondary">{projectName} · {partnership}{influencerOneTime || influencerGiftOneTime ? "" : ` · ${duration}`} · published just now</p></div>
       <Button kind="ghost" leadingIcon={<X size={16} />} onClick={() => navigate(ROUTES.brand)}>Exit</Button>
     </header>
     <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]"><motion.section animate={{ opacity: 1, y: 0 }} className="rounded-xl border border-line bg-white px-5 py-6 sm:px-8 sm:py-7" initial={{ opacity: 0, y: 8 }} transition={{ duration: .24, ease: "easeOut" }}>
