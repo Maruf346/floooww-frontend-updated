@@ -1,10 +1,13 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 
 export type ProjectPartnership = "Paid" | "Gift exchange";
+export type ProjectDuration = "One-time" | "Long-term";
 
 type ProjectFlow = {
   partnership: ProjectPartnership;
   setPartnership: (partnership: ProjectPartnership) => void;
+  duration: ProjectDuration;
+  setDuration: (duration: ProjectDuration) => void;
 };
 
 const ProjectFlowContext = createContext<ProjectFlow | null>(null);
@@ -18,7 +21,8 @@ export function getProjectSteps(partnership: ProjectPartnership) {
 
 export function ProjectFlowProvider({ children }: { children: ReactNode }) {
   const [partnership, setPartnership] = useState<ProjectPartnership>("Paid");
-  const value = useMemo(() => ({ partnership, setPartnership }), [partnership]);
+  const [duration, setDuration] = useState<ProjectDuration>("One-time");
+  const value = useMemo(() => ({ partnership, setPartnership, duration, setDuration }), [duration, partnership]);
   return <ProjectFlowContext.Provider value={value}>{children}</ProjectFlowContext.Provider>;
 }
 

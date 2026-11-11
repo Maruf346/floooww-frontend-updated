@@ -6,11 +6,9 @@ import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
 import { Dropdown } from "@/common/components/ui/Dropdown";
 import { ROUTES } from "@/common/constants/routes";
-import { getProjectSteps, useProjectFlow, type ProjectPartnership } from "@/brand/context/ProjectFlowContext";
+import { getProjectSteps, useProjectFlow, type ProjectDuration, type ProjectPartnership } from "@/brand/context/ProjectFlowContext";
 
-type Duration = "One-time" | "Long-term";
-
-const durationOptions: { value: Duration; description: string; hint: string; icon: typeof CalendarDays }[] = [
+const durationOptions: { value: ProjectDuration; description: string; hint: string; icon: typeof CalendarDays }[] = [
   { value: "One-time", icon: CalendarDays, description: "A single round of content between two dates.", hint: "Progress to end date · projection" },
   { value: "Long-term", icon: Repeat2, description: "Monthly cycles with the same creators, content and payment repeat each month.", hint: "Contract length · cycle · renewal" },
 ];
@@ -18,8 +16,7 @@ const contractLengths = ["1 month · 1 monthly cycle", "3 months · 3 monthly cy
 
 export function BrandProjectDurationPage() {
   const navigate = useNavigate();
-  const { partnership } = useProjectFlow();
-  const [duration, setDuration] = useState<Duration>("One-time");
+  const { partnership, duration, setDuration } = useProjectFlow();
   const [contractLength, setContractLength] = useState("3 months · 3 monthly cycles");
   const [saved, setSaved] = useState(false);
 
@@ -68,7 +65,7 @@ function ProjectStepper({ partnership }: { partnership: ProjectPartnership }) {
   </div></section>;
 }
 
-function ProjectSetupSummary({ duration, partnership }: { duration: Duration; partnership: ProjectPartnership }) {
+function ProjectSetupSummary({ duration, partnership }: { duration: ProjectDuration; partnership: ProjectPartnership }) {
   const details = [["Target", "-"], ["Type", "UGC"], ["Partnership", partnership], ["Duration", duration]];
   const upcoming = [["Project details", FileText], ["Creator requirements", Users], ["Deliverables", Megaphone], ...(partnership === "Paid" ? [["Budget", WalletCards], ["Payment method", Landmark]] : []), ["Review & publish", CheckCircle2]];
   return <aside className="rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6">Project setup</h2><p className="text-[12px] leading-4 text-secondary">Shapes your dashboard</p>
