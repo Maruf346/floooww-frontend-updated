@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Check, ChevronDown, Clock, Eye, Folder, MoreHorizontal, Pause, Play, Plus, Search, UserRoundPlus } from "lucide-react";
+import { Check, ChevronDown, Clock, Eye, Folder, MoreHorizontal, Pause, Play, Plus, Search, Trash2, UserRoundPlus } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
@@ -13,6 +13,7 @@ type Project = {
   apps: number; approved: number; budget: string; budgetNote: string;
   progress: number; updated: string; image?: string; accent: string;
   cycle?: string; showPace?: boolean; rowHeight: number;
+  deletedAt?: string; deletedBy?: string; removalAt?: string; removalNote?: string;
 };
 
 const projects: Project[] = [
@@ -29,7 +30,7 @@ const projects: Project[] = [
   { id: 11, name: "Glow Routine", type: "UGC · Paid · One-time", platform: "Instagram · YouTube", status: "Completed", apps: 12, approved: 9, budget: "₹90,000", budgetNote: "fully paid", progress: 100, updated: "10 d ago", accent: "bg-purple-100", rowHeight: 73 },
   { id: 12, name: "Monsoon Edit", type: "Influencer · Paid · One-time", platform: "Instagram", status: "Archived", apps: 24, approved: 18, budget: "₹1,25,000", budgetNote: "archived", progress: 100, updated: "14 d ago", accent: "bg-slate-100", rowHeight: 73 },
   { id: 13, name: "Skin Barrier Set", type: "Influencer · Gift exchange · One-time", platform: "Instagram", status: "Archived", apps: 9, approved: 7, budget: "Gift", budgetNote: "archived", progress: 100, updated: "18 d ago", accent: "bg-stone-100", rowHeight: 73 },
-  { id: 14, name: "Holi Minis", type: "Influencer · Paid · One-time", platform: "Instagram", status: "Deleted", apps: 0, approved: 0, budget: "₹60,000", budgetNote: "deleted", progress: 0, updated: "20 d ago", accent: "bg-red-100", rowHeight: 73 },
+  { id: 14, name: "Raksha Bandhan Gifting", type: "Influencer · Gift exchange · One-time", platform: "Instagram", status: "Deleted", apps: 0, approved: 0, budget: "Gift", budgetNote: "deleted", progress: 0, updated: "20 d ago", image: asset("dashboard/project-hydration-bundle.png"), accent: "bg-red-100", rowHeight: 73, deletedAt: "28 Oct 2026", deletedBy: "Ananya Mehta", removalAt: "27 Nov 2026", removalNote: "in 30 days" },
 ];
 
 const tabs: Array<Status | "All"> = ["All", "Live", "Upcoming", "Completed", "Drafts", "Paused", "Archived", "Deleted"];
@@ -98,28 +99,34 @@ export function BrandProjectsPage() {
   const [duration, setDuration] = useState("All");
   const [platform, setPlatform] = useState("All");
   const [selected, setSelected] = useState<number[]>([]);
+  const [restoredProjectIds, setRestoredProjectIds] = useState<number[]>([]);
   const [page, setPage] = useState(1);
+  const getProjectStatus = (project: Project): Status => restoredProjectIds.includes(project.id) ? "Drafts" : project.status;
 
   const filtered = useMemo(() => projects.filter((project) =>
-    (active === "All" ? !["Archived", "Deleted"].includes(project.status) : project.status === active) &&
+    (active === "All" ? !["Archived", "Deleted"].includes(getProjectStatus(project)) : getProjectStatus(project) === active) &&
     (type === "All" || project.type.startsWith(type)) &&
     (partnership === "All" || project.type.includes(partnership)) &&
     (duration === "All" || project.type.includes(duration)) &&
     (platform === "All" || project.platform.includes(platform)) &&
     `${project.name} ${project.type}`.toLowerCase().includes(search.toLowerCase())
-  ), [active, duration, partnership, platform, search, type]);
+  ), [active, duration, partnership, platform, restoredProjectIds, search, type]);
 
-  const tabCounts = useMemo(() => Object.fromEntries(tabs.map((tab) => [tab, tab === "All" ? projects.filter((project) => !["Archived", "Deleted"].includes(project.status)).length : projects.filter((project) => project.status === tab).length])) as Record<Status | "All", number>, []);
+  const tabCounts = useMemo(() => Object.fromEntries(tabs.map((tab) => [tab, tab === "All" ? projects.filter((project) => !["Archived", "Deleted"].includes(getProjectStatus(project))).length : projects.filter((project) => getProjectStatus(project) === tab).length])) as Record<Status | "All", number>, [restoredProjectIds]);
   const totalPages = Math.max(1, Math.ceil(filtered.length / 8));
   const visibleProjects = filtered.slice((page - 1) * 8, page * 8);
   const isEmpty = filtered.length === 0;
+  const isDeletedView = active === "Deleted";
+  const pageSubtitle = isDeletedView
+    ? `${tabCounts.Deleted} deleted project${tabCounts.Deleted === 1 ? "" : "s"} · kept for 30 days`
+    : `Minimalist · ${tabCounts.All} projects · plus ${tabCounts.Archived} archived`;
   const allSelected = visibleProjects.length > 0 && visibleProjects.every((project) => selected.includes(project.id));
   const toggle = (id: number) => setSelected((current) => current.includes(id) ? current.filter((value) => value !== id) : [...current, id]);
   const clearFilters = () => { setType("All"); setPartnership("All"); setDuration("All"); setPlatform("All"); setPage(1); };
 
   return <BrandShell><div className="-mt-1 mx-auto w-full max-w-[1440px]">
     <header className="flex h-[58px] items-end justify-between gap-4">
-      <div><h1 className="text-[26px] font-bold leading-[34px] tracking-[-0.5px] text-ink">All projects</h1><p className="mt-1 text-[13px] leading-5 text-secondary">Minimalist · 11 projects · plus 2 archived</p></div>
+      <div><h1 className="text-[26px] font-bold leading-[34px] tracking-[-0.5px] text-ink">All projects</h1><p className="mt-1 text-[13px] leading-5 text-secondary">{pageSubtitle}</p></div>
       <div className="flex h-10 items-center gap-[10px]"><DateRangePicker value="1 Oct - 28 Oct 2026" /><Button className="w-[184px]" onClick={() => navigate(ROUTES.brandNewProject)} leadingIcon={<Plus size={16} />}>Create new project</Button></div>
     </header>
 
@@ -129,7 +136,7 @@ export function BrandProjectsPage() {
       </button>)}
     </nav>
 
-    {!isEmpty && <section className="mt-6 grid h-[196px] grid-cols-4 gap-3 rounded-xl border border-line bg-white p-5" aria-label="Project metrics">
+    {!isEmpty && !isDeletedView && <section className="mt-6 grid h-[196px] grid-cols-4 gap-3 rounded-xl border border-line bg-white p-5" aria-label="Project metrics">
       {kpis.map(({ icon: Icon, label, value, detail, iconClass }) => <article key={label} className="flex h-[154px] min-w-0 flex-col rounded-xl border border-line-subtle bg-white p-4">
         <span className={`flex size-9 items-center justify-center rounded-md text-white ${iconClass}`}><Icon size={18} /></span>
         <p className="mt-3 truncate text-[12px] leading-4 text-secondary">{label}</p><p className="text-[22px] font-semibold leading-7 tracking-[-.015em] text-ink">{value}</p><p className="mt-2 text-[12px] font-medium leading-4 text-tertiary">{detail}</p>
@@ -145,31 +152,50 @@ export function BrandProjectsPage() {
       <button type="button" onClick={clearFilters} className="mt-[5px] inline-flex h-[30px] w-[88px] shrink-0 items-center justify-center gap-1 rounded-full border border-line bg-white text-[13px] leading-5 text-body">Budget <ChevronDown size={14} className="text-secondary" /></button>
     </div>
 
+    {isDeletedView && !isEmpty && <div className="mt-6 flex items-center gap-2.5 rounded-md bg-[#fde4e3] px-4 py-3 text-[13px] leading-5 text-ink"><Trash2 size={16} className="shrink-0 text-[#db231f]" /><p>Deleted projects are kept for 30 days, then removed for good. Only drafts and projects with no payments can be deleted; others can be archived.</p></div>}
+
     {selected.length > 0 && <div className="absolute z-10 mt-2 flex items-center gap-3 rounded-md bg-primary-subtle px-3 py-2 text-[13px] text-primary"><span>{selected.length} selected</span><button type="button" onClick={() => setSelected([])} className="font-medium">Clear selection</button></div>}
 
-    {!isEmpty ? <section className="mt-6 overflow-x-auto rounded-xl border border-line bg-white">
+    {!isEmpty ? isDeletedView ? <section className="mt-6 overflow-x-auto rounded-xl border border-line bg-white">
+      <table className="w-full min-w-[860px] table-fixed border-collapse text-left">
+        <colgroup><col className="w-[52px]" /><col /><col className="w-[88px]" /><col className="w-[108px]" /><col className="w-[152px]" /><col className="w-[172px]" /><col className="w-[160px]" /></colgroup>
+        <thead className="bg-subtle text-[12px] font-semibold leading-4 tracking-[0.06em] text-secondary"><tr className="h-10">
+          <th className="pl-5"><input aria-label="Select all deleted projects" checked={allSelected} onChange={() => setSelected(allSelected ? selected.filter((id) => !visibleProjects.some((project) => project.id === id)) : [...new Set([...selected, ...visibleProjects.map((project) => project.id)])])} type="checkbox" className="size-[18px] rounded border-line" /></th>
+          {["PROJECT", "PLATFORM", "STATUS", "DELETED", "REMOVED FOR GOOD", "ACTIONS"].map((heading) => <th className="pr-3" key={heading}>{heading}</th>)}
+        </tr></thead>
+        <tbody>{visibleProjects.map((project) => <tr className="h-[72px] border-t border-line-subtle text-[13px] leading-5" key={project.id}>
+          <td className="pl-5"><input aria-label={`Select ${project.name}`} checked={selected.includes(project.id)} onChange={() => toggle(project.id)} type="checkbox" className="size-[18px] rounded border-line" /></td>
+          <td className="pr-3"><div className="flex items-center gap-3"><img src={project.image} alt="" className="size-11 shrink-0 rounded-lg object-cover" /><div className="min-w-0"><p className="truncate text-[14px] font-medium leading-[22px] text-ink">{project.name}</p><p className="truncate text-[12px] leading-4 text-secondary">{project.type}</p></div></div></td>
+          <td><PlatformLogos platform={project.platform} /></td>
+          <td><span className="inline-flex h-5 items-center gap-1.5 rounded-full bg-[#fde4e3] px-2 text-[12px] font-medium leading-4 text-[#db231f]"><span className="size-1.5 rounded-full bg-[#db231f]" />Deleted</span></td>
+          <td><p className="font-medium text-ink">{project.deletedAt}</p><p className="text-[12px] leading-4 text-secondary">{project.deletedBy}</p></td>
+          <td><p className="font-medium text-[#db231f]">{project.removalAt}</p><p className="text-[12px] leading-4 text-secondary">{project.removalNote}</p></td>
+          <td><div className="flex items-center gap-2.5"><Button kind="secondary" size="s" onClick={() => { setRestoredProjectIds((ids) => [...ids, project.id]); setActive("Drafts"); setPage(1); }}>Restore</Button><button type="button" aria-label={`More actions for ${project.name}`} className="text-secondary hover:text-ink"><MoreHorizontal size={18} /></button></div></td>
+        </tr>)}</tbody>
+      </table>
+    </section> : <section className="mt-6 overflow-x-auto rounded-xl border border-line bg-white">
       <table className="w-full min-w-[1114px] table-fixed border-collapse text-left">
         <colgroup><col className="w-[51px]" /><col className="w-[234px]" /><col className="w-[88px]" /><col className="w-[108px]" /><col className="w-[56px]" /><col className="w-[86px]" /><col className="w-[142px]" /><col className="w-[148px]" /><col className="w-[84px]" /><col className="w-[116px]" /></colgroup>
         <thead className="bg-subtle text-[11px] font-semibold leading-4 tracking-[0.06em] text-secondary"><tr className="h-[42px]">
           <th className="pl-5"><input aria-label="Select all visible projects" checked={allSelected} onChange={() => setSelected(allSelected ? selected.filter((id) => !visibleProjects.some((project) => project.id === id)) : [...new Set([...selected, ...visibleProjects.map((project) => project.id)])])} type="checkbox" className="size-[18px] rounded border-line" /></th>
           {["PROJECT", "PLATFORM", "STATUS", "APPS", "APPROVED", "BUDGET", "PROGRESS", "UPDATED", "ACTIONS"].map((heading) => <th className="pr-2" key={heading}>{heading}</th>)}
         </tr></thead>
-        <tbody>{visibleProjects.map((project) => <tr style={{ height: project.rowHeight }} className="border-t border-line-subtle text-[13px] leading-5 hover:bg-subtle/60" key={project.id}>
+        <tbody>{visibleProjects.map((project) => { const status = getProjectStatus(project); return <tr style={{ height: project.rowHeight }} className="border-t border-line-subtle text-[13px] leading-5 hover:bg-subtle/60" key={project.id}>
           <td className="pl-5"><input aria-label={`Select ${project.name}`} checked={selected.includes(project.id)} onChange={() => toggle(project.id)} type="checkbox" className="size-[18px] rounded border-line" /></td>
           <td className="pr-3"><div className="flex items-center gap-3">{project.image ? <img src={project.image} alt="" className="size-11 shrink-0 rounded-lg object-cover" /> : <span className={`size-11 shrink-0 rounded-lg ${project.accent}`} />}<div className="min-w-0"><p className="truncate text-[14px] font-medium leading-[22px] text-ink">{project.name}</p><p className="text-[12px] leading-4 text-secondary">{project.type}</p>{project.cycle && <span className="mt-[3px] inline-flex h-5 items-center rounded-full bg-muted px-2 text-[12px] leading-4 text-secondary">{project.cycle}</span>}</div></div></td>
           <td><PlatformLogos platform={project.platform} /></td>
-          <td><span className={`inline-flex h-5 items-center rounded-full px-2 text-[12px] font-medium leading-4 ${project.status === "Live" ? "bg-success-bg text-success" : project.status === "Drafts" ? "bg-muted text-secondary" : "bg-primary-subtle text-primary"}`}>{project.status}</span></td>
+          <td><span className={`inline-flex h-5 items-center rounded-full px-2 text-[12px] font-medium leading-4 ${status === "Live" ? "bg-success-bg text-success" : status === "Drafts" ? "bg-muted text-secondary" : "bg-primary-subtle text-primary"}`}>{status}</span></td>
           <td className="text-ink">{project.apps}</td><td className="text-ink">{project.approved}</td>
           <td><p className="font-medium text-ink">{project.budget}</p><p className="text-[12px] leading-4 text-secondary">{project.budgetNote}</p></td>
           <td><div className="flex items-center gap-2"><span className="h-1.5 w-[72px] overflow-hidden rounded-full bg-muted"><span className="block h-full rounded-full bg-primary" style={{ width: `${Math.min(project.progress, 100)}%` }} /></span><span className="text-[13px] text-ink">{project.progress}%</span></div>{project.showPace && <p className="mt-1 text-[12px] leading-4 text-success">Pace</p>}</td>
           <td className="text-[12px] leading-4 text-secondary">{project.updated}</td>
           <td><div className="flex items-center gap-[10px]"><button onClick={() => navigate(ROUTES.brandProjectPublished)} type="button" className="inline-flex h-8 items-center gap-1 rounded-md border border-line px-2.5 text-[12px] font-medium text-ink"><Eye size={14} />View</button><button type="button" aria-label={`More actions for ${project.name}`} className="text-secondary hover:text-ink"><MoreHorizontal size={18} /></button></div></td>
-        </tr>)}</tbody>
+        </tr>; })}</tbody>
       </table>
     </section> : <EmptyProjectsState paused={active === "Paused"} onGoToLive={() => { setSearch(""); clearFilters(); setActive("Live"); setPage(1); }} />}
 
-    {!isEmpty && <footer className="mt-6 flex h-7 w-[720px] items-center justify-between text-[13px] leading-5 text-secondary">
+    {!isEmpty && (isDeletedView ? <footer className="mt-6 text-[12px] leading-4 text-secondary">Showing {(page - 1) * 8 + 1} to {Math.min(page * 8, filtered.length)} of {filtered.length} deleted project{filtered.length === 1 ? "" : "s"}</footer> : <footer className="mt-6 flex h-7 w-[720px] items-center justify-between text-[13px] leading-5 text-secondary">
       <span>Showing {filtered.length ? `${(page - 1) * 8 + 1}–${Math.min(page * 8, filtered.length)}` : "0"} of {filtered.length} projects</span><div className="flex h-7 items-center gap-2"><Button kind="secondary" size="s" disabled={page === 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>Previous</Button>{Array.from({ length: totalPages }, (_, index) => index + 1).map((number) => <button type="button" key={number} onClick={() => setPage(number)} className={`size-7 rounded-md text-[12px] font-medium ${page === number ? "bg-primary text-white" : "text-secondary hover:bg-muted"}`}>{number}</button>)}<Button kind="secondary" size="s" disabled={page === totalPages} onClick={() => setPage((value) => Math.min(totalPages, value + 1))}>Next</Button></div>
-    </footer>}
+    </footer>)}
   </div></BrandShell>;
 }
