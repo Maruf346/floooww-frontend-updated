@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Archive, Check, ChevronDown, ChevronRight, Clock, Copy, Download, Eye, Folder, Mail, MoreHorizontal, Pause, Pencil, Phone, Play, Plus, QrCode, Search, Share2, Trash2, UserRoundPlus } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -26,8 +26,8 @@ const projects: Project[] = [
   { id: 6, name: "Skin Quiz Leads", type: "UGC · Paid · One-time", platform: "Instagram · YouTube", status: "Upcoming", apps: 7, approved: 3, budget: "₹1,20,000", budgetNote: "₹63,540 to fund", progress: 0, updated: "5 d ago", image: asset("dashboard/project-skin-quiz.png"), accent: "bg-teal-100", rowHeight: 73 },
   { id: 7, name: "Holi Colour Care", type: "Influencer · Paid · One-time", platform: "Instagram", status: "Drafts", apps: 0, approved: 0, budget: "₹1,60,000", budgetNote: "not funded", progress: 0, updated: "Today", accent: "bg-orange-100", rowHeight: 73 },
   { id: 8, name: "Winter Lip Care", type: "Influencer · Gift exchange · One-time", platform: "Instagram", status: "Drafts", apps: 0, approved: 0, budget: "Gift", budgetNote: "not funded", progress: 0, updated: "2 w ago", accent: "bg-pink-100", rowHeight: 86 },
-  { id: 9, name: "Summer Essentials", type: "Influencer · Paid · One-time", platform: "Instagram · YouTube", status: "Completed", apps: 22, approved: 15, budget: "₹1,80,000", budgetNote: "fully paid", progress: 100, updated: "6 d ago", accent: "bg-yellow-100", rowHeight: 73 },
-  { id: 10, name: "Daily Sunscreen", type: "Influencer · Paid · One-time", platform: "Instagram", status: "Completed", apps: 18, approved: 12, budget: "₹1,10,000", budgetNote: "fully paid", progress: 100, updated: "8 d ago", accent: "bg-lime-100", rowHeight: 73 },
+  { id: 9, name: "Summer Essentials", type: "Influencer · Paid · One-time", platform: "Instagram · Pinterest", status: "Completed", apps: 22, approved: 15, budget: "₹1,80,000", budgetNote: "fully paid", progress: 100, updated: "6 d ago", accent: "bg-yellow-100", rowHeight: 73 },
+  { id: 10, name: "Daily Sunscreen", type: "Influencer · Paid · One-time", platform: "Instagram · Snapchat", status: "Completed", apps: 18, approved: 12, budget: "₹1,10,000", budgetNote: "fully paid", progress: 100, updated: "8 d ago", accent: "bg-lime-100", rowHeight: 73 },
   { id: 11, name: "Glow Routine", type: "UGC · Paid · One-time", platform: "Instagram · YouTube", status: "Completed", apps: 12, approved: 9, budget: "₹90,000", budgetNote: "fully paid", progress: 100, updated: "10 d ago", accent: "bg-purple-100", rowHeight: 73 },
   { id: 12, name: "Monsoon Edit", type: "Influencer · Paid · One-time", platform: "Instagram", status: "Archived", apps: 24, approved: 18, budget: "₹1,25,000", budgetNote: "archived", progress: 100, updated: "14 d ago", accent: "bg-slate-100", rowHeight: 73 },
   { id: 13, name: "Skin Barrier Set", type: "Influencer · Gift exchange · One-time", platform: "Instagram", status: "Archived", apps: 9, approved: 7, budget: "Gift", budgetNote: "archived", progress: 100, updated: "18 d ago", accent: "bg-stone-100", rowHeight: 73 },
@@ -42,21 +42,32 @@ const kpis = [
   { icon: Clock, label: "Upcoming projects", value: "1", detail: "Skin Quiz Leads · starts 4 Nov", iconClass: "bg-[#16a34a]" },
 ];
 
-function FilterSelect({ label, value, values, width, onChange }: { label: string; value: string; values: string[]; width: number; onChange: (value: string) => void }) {
-  return <label className="relative mt-[5px] block h-[30px] shrink-0" style={{ width }}>
-    <span className="pointer-events-none absolute inset-0 flex items-center justify-between rounded-full border border-line bg-white pl-3 pr-2 text-[13px] leading-5 text-body">
-      {value === "All" ? label : value}<ChevronDown size={14} className="text-secondary" />
-    </span>
-    <select aria-label={label} value={value} onChange={(event) => onChange(event.target.value)} className="absolute inset-0 cursor-pointer opacity-0">
-      <option value="All">{label}</option>{values.map((item) => <option key={item}>{item}</option>)}
-    </select>
-  </label>;
+function FilterDropdown({ label, value, values, width, onChange }: { label: string; value: string; values: string[]; width: number; onChange: (value: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const menu = useRef<HTMLDivElement>(null);
+  const options = ["All", ...values];
+  const anchor = trigger.current?.getBoundingClientRect();
+
+  useEffect(() => {
+    const close = (event: MouseEvent) => { if (!trigger.current?.contains(event.target as Node) && !menu.current?.contains(event.target as Node)) setOpen(false); };
+    window.addEventListener("mousedown", close);
+    return () => window.removeEventListener("mousedown", close);
+  }, []);
+
+  const popup = open && anchor && createPortal(<div ref={menu} role="listbox" aria-label={label} style={{ left: Math.max(8, Math.min(anchor.left, window.innerWidth - Math.max(width, 176) - 8)), top: Math.min(anchor.bottom + 6, window.innerHeight - (options.length * 36 + 20)) }} className="fixed z-[10000] min-w-[176px] rounded-lg border border-line bg-white p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+    {options.map((option) => { const selected = option === value; return <button key={option} type="button" role="option" aria-selected={selected} onClick={() => { onChange(option); setOpen(false); }} className={`flex h-9 w-full items-center gap-2.5 rounded-md px-2.5 text-left text-[13px] leading-5 ${selected ? "bg-primary-subtle text-primary" : "text-ink hover:bg-subtle"}`}><span className="flex-1">{option === "All" ? `All ${label.toLowerCase()}s` : option}</span>{selected && <Check size={14} />}</button>; })}
+  </div>, document.body);
+
+  return <><button ref={trigger} type="button" aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen((current) => !current)} style={{ width }} className={`mt-[5px] inline-flex h-[30px] shrink-0 items-center justify-between gap-1 rounded-full border bg-white pl-3 pr-2 text-[13px] leading-5 outline-none transition ${open ? "border-primary text-primary" : "border-line text-body"}`}><span className="truncate">{value === "All" ? label : value}</span><ChevronDown size={14} className={`shrink-0 text-secondary transition-transform ${open ? "rotate-180" : ""}`} /></button>{popup}</>;
 }
 
 function PlatformLogos({ platform }: { platform: string }) {
   return <div className="flex items-center gap-1.5">
     {platform.includes("Instagram") && <img src="/assets/platform-instagram.svg" alt="Instagram" className="size-5" />}
     {platform.includes("YouTube") && <img src="/assets/platform-youtube.svg" alt="YouTube" className="size-5" />}
+    {platform.includes("Pinterest") && <img src="/assets/platform-pinterest.svg" alt="Pinterest" className="size-5" />}
+    {platform.includes("Snapchat") && <img src="/assets/platform-snapchat.svg" alt="Snapchat" className="size-5" />}
   </div>;
 }
 
@@ -146,6 +157,7 @@ export function BrandProjectsPage() {
   const [partnership, setPartnership] = useState("All");
   const [duration, setDuration] = useState("All");
   const [platform, setPlatform] = useState("All");
+  const [budget, setBudget] = useState("All");
   const [selected, setSelected] = useState<number[]>([]);
   const [restoredProjectIds, setRestoredProjectIds] = useState<number[]>([]);
   const [actionMenuId, setActionMenuId] = useState<number | null>(null);
@@ -153,14 +165,19 @@ export function BrandProjectsPage() {
   const [page, setPage] = useState(1);
   const getProjectStatus = (project: Project): Status => restoredProjectIds.includes(project.id) ? "Drafts" : project.status;
 
-  const filtered = useMemo(() => projects.filter((project) =>
+  const filtered = useMemo(() => projects.filter((project) => {
+    const budgetAmount = Number(project.budget.replace(/[^\d]/g, ""));
+    const budgetMatches = budget === "All" || (budget === "Gift only" && project.budget === "Gift") || (budget === "Under ₹1,00,000" && budgetAmount > 0 && budgetAmount < 100000) || (budget === "₹1,00,000–₹2,00,000" && budgetAmount >= 100000 && budgetAmount <= 200000) || (budget === "Over ₹2,00,000" && budgetAmount > 200000);
+    return (
     (active === "All" ? !["Archived", "Deleted"].includes(getProjectStatus(project)) : getProjectStatus(project) === active) &&
     (type === "All" || project.type.startsWith(type)) &&
     (partnership === "All" || project.type.includes(partnership)) &&
     (duration === "All" || project.type.includes(duration)) &&
     (platform === "All" || project.platform.includes(platform)) &&
+    budgetMatches &&
     `${project.name} ${project.type}`.toLowerCase().includes(search.toLowerCase())
-  ), [active, duration, partnership, platform, restoredProjectIds, search, type]);
+    );
+  }), [active, budget, duration, partnership, platform, restoredProjectIds, search, type]);
 
   const tabCounts = useMemo(() => Object.fromEntries(tabs.map((tab) => [tab, tab === "All" ? projects.filter((project) => !["Archived", "Deleted"].includes(getProjectStatus(project))).length : projects.filter((project) => getProjectStatus(project) === tab).length])) as Record<Status | "All", number>, [restoredProjectIds]);
   const totalPages = Math.max(1, Math.ceil(filtered.length / 8));
@@ -172,7 +189,7 @@ export function BrandProjectsPage() {
     : `Minimalist · ${tabCounts.All} projects · plus ${tabCounts.Archived} archived`;
   const allSelected = visibleProjects.length > 0 && visibleProjects.every((project) => selected.includes(project.id));
   const toggle = (id: number) => setSelected((current) => current.includes(id) ? current.filter((value) => value !== id) : [...current, id]);
-  const clearFilters = () => { setType("All"); setPartnership("All"); setDuration("All"); setPlatform("All"); setPage(1); };
+  const clearFilters = () => { setType("All"); setPartnership("All"); setDuration("All"); setPlatform("All"); setBudget("All"); setPage(1); };
 
   return <BrandShell><div className="-mt-1 mx-auto w-full max-w-[1440px]">
     <header className="flex h-[58px] items-end justify-between gap-4">
@@ -195,11 +212,11 @@ export function BrandProjectsPage() {
 
     <div className="mt-6 flex h-10 items-start gap-2">
       <label className="flex h-10 w-[280px] shrink-0 items-center gap-2 rounded-md border border-line bg-white px-3"><Search size={16} className="text-tertiary" /><input className="min-w-0 flex-1 bg-transparent text-[13px] leading-5 text-ink outline-none placeholder:text-tertiary" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Search projects" /></label>
-      <FilterSelect label="Type" value={type} values={["Influencer", "UGC"]} width={75} onChange={(value) => { setType(value); setPage(1); }} />
-      <FilterSelect label="Partnership" value={partnership} values={["Paid", "Gift exchange"]} width={113} onChange={(value) => { setPartnership(value); setPage(1); }} />
-      <FilterSelect label="Duration" value={duration} values={["One-time", "Long-term"]} width={96} onChange={(value) => { setDuration(value); setPage(1); }} />
-      <FilterSelect label="Platform" value={platform} values={["Instagram", "YouTube"]} width={95} onChange={(value) => { setPlatform(value); setPage(1); }} />
-      <button type="button" onClick={clearFilters} className="mt-[5px] inline-flex h-[30px] w-[88px] shrink-0 items-center justify-center gap-1 rounded-full border border-line bg-white text-[13px] leading-5 text-body">Budget <ChevronDown size={14} className="text-secondary" /></button>
+      <FilterDropdown label="Type" value={type} values={["Influencer", "UGC"]} width={75} onChange={(value) => { setType(value); setPage(1); }} />
+      <FilterDropdown label="Partnership" value={partnership} values={["Paid", "Gift exchange"]} width={113} onChange={(value) => { setPartnership(value); setPage(1); }} />
+      <FilterDropdown label="Duration" value={duration} values={["One-time", "Long-term"]} width={96} onChange={(value) => { setDuration(value); setPage(1); }} />
+      <FilterDropdown label="Platform" value={platform} values={["Instagram", "YouTube", "Pinterest", "Snapchat"]} width={95} onChange={(value) => { setPlatform(value); setPage(1); }} />
+      <FilterDropdown label="Budget" value={budget} values={["Under ₹1,00,000", "₹1,00,000–₹2,00,000", "Over ₹2,00,000", "Gift only"]} width={88} onChange={(value) => { setBudget(value); setPage(1); }} />
     </div>
 
     {isDeletedView && !isEmpty && <div className="mt-6 flex items-center gap-2.5 rounded-md bg-[#fde4e3] px-4 py-3 text-[13px] leading-5 text-ink"><Trash2 size={16} className="shrink-0 text-[#db231f]" /><p>Deleted projects are kept for 30 days, then removed for good. Only drafts and projects with no payments can be deleted; others can be archived.</p></div>}
