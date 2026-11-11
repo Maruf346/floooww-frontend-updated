@@ -26,6 +26,8 @@ const giftNextSteps = [
   ["Results show in the project", "File use and ad results, the same as any project."],
 ];
 
+const giftLongTermNextSteps = [...giftNextSteps.slice(0, -1), ["Results show in the project each cycle", "File use and ad results, the same as any project."]];
+
 function ProjectSetup({ partnership, duration }: { partnership: ProjectPartnership; duration: ProjectDuration }) {
   const longTerm = duration === "Long-term";
   const gift = partnership === "Gift exchange";
@@ -38,7 +40,7 @@ function ProjectSetup({ partnership, duration }: { partnership: ProjectPartnersh
       <div className="flex justify-between gap-3"><dt className="text-secondary">Target</dt><dd className="text-right text-[14px] font-medium leading-[22px] text-ink">{longTerm ? "20 usable videos a cycle" : "20 usable videos"}</dd></div>
       <div className="flex justify-between gap-3"><dt className="text-secondary">Type</dt><dd className="text-[14px] font-medium leading-[22px] text-ink">UGC</dd></div>
       <div className="flex justify-between gap-3"><dt className="text-secondary">Partnership</dt><dd className="text-[14px] font-medium leading-[22px] text-ink">{partnership}</dd></div>
-      <div className="flex justify-between gap-3"><dt className="text-secondary">Duration</dt><dd className="text-right text-[14px] font-medium leading-[22px] text-ink">{longTerm ? "Long-term · 7 Oct – 6 Jan" : gift ? "One-time · 1 Dec – 31 Dec" : "One-time · 7 Oct – 7 Nov"}</dd></div>
+      <div className="flex justify-between gap-3"><dt className="text-secondary">Duration</dt><dd className="text-right text-[14px] font-medium leading-[22px] text-ink">{longTerm ? gift ? "Long-term · 1 Dec – 28 Feb" : "Long-term · 7 Oct – 6 Jan" : gift ? "One-time · 1 Dec – 31 Dec" : "One-time · 7 Oct – 7 Nov"}</dd></div>
     </dl>
     <div className="my-4 h-px bg-line" />
     <div className="space-y-3">
@@ -53,10 +55,10 @@ export function BrandProjectPublishedPage() {
   const { partnership, duration } = useProjectFlow();
   const longTerm = duration === "Long-term";
   const gift = partnership === "Gift exchange";
-  const projectName = longTerm ? "Monthly UGC Pack" : gift ? "Winter Lip Care UGC" : "Glow Edit UGC Pack";
-  const nextSteps = gift ? giftNextSteps : longTerm ? longTermNextSteps : standardNextSteps;
+  const projectName = gift ? longTerm ? "Lip Care UGC Club" : "Winter Lip Care UGC" : longTerm ? "Monthly UGC Pack" : "Glow Edit UGC Pack";
+  const nextSteps = gift ? longTerm ? giftLongTermNextSteps : giftNextSteps : longTerm ? longTermNextSteps : standardNextSteps;
   const applyBy = gift ? "20 Nov" : "12 Oct";
-  const publicationMessage = gift ? "Nothing was charged, gift projects are free." : `Nothing is charged until you invite a creator.${longTerm ? " Fees are charged at the start of each monthly cycle." : ""}`;
+  const publicationMessage = gift ? `Nothing was charged, gift projects are free.${longTerm ? " The same deliverables repeat every monthly cycle." : ""}` : `Nothing is charged until you invite a creator.${longTerm ? " Fees are charged at the start of each monthly cycle." : ""}`;
 
   return <BrandShell><div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6">
     <header className="flex items-end justify-between gap-4">
