@@ -97,6 +97,7 @@ export const router = createBrowserRouter(
         { path: ROUTES.brandNewProjectCreators, lazy: async () => ({ Component: (await import("@/brand/pages/BrandProjectCreatorsPage")).BrandProjectCreatorsPage }) },
         { path: ROUTES.brandNewProjectDeliverables, lazy: async () => ({ Component: (await import("@/brand/pages/BrandProjectDeliverablesPage")).BrandProjectDeliverablesPage }) },
         { path: ROUTES.brandNewProjectBudget, lazy: async () => ({ Component: (await import("@/brand/pages/BrandProjectBudgetPage")).BrandProjectBudgetPage }) },
+        { path: ROUTES.brandNewProjectPayment, lazy: async () => ({ Component: (await import("@/brand/pages/BrandProjectPaymentPage")).BrandProjectPaymentPage }) },
         {
           path: ROUTES.agency,
           lazy: async () => ({
