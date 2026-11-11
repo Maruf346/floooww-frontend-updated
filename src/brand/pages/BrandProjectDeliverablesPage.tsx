@@ -37,7 +37,7 @@ export function BrandProjectDeliverablesPage() {
           </motion.div>)}</AnimatePresence>
         </section>
         <button type="button" onClick={add} className="mt-4 inline-flex items-center gap-1 text-[14px] font-medium leading-[22px] text-primary transition hover:text-primary-hover"><Plus size={16} />Add deliverable</button>
-        <footer className="mt-5 flex flex-wrap items-center gap-3 border-t border-line pt-5"><Button kind="secondary" onClick={() => navigate(ROUTES.brandNewProjectCreators)} leadingIcon={<ArrowLeft size={16} />}>Back</Button><div className="flex-1" /><Button kind="ghost" onClick={() => setSaved(true)}>Save draft</Button><Button type="submit" trailingIcon={<ArrowRight size={16} />}>Continue</Button></footer>
+        <footer className="mt-5 flex flex-wrap items-center gap-3 border-t border-line pt-5"><Button kind="secondary" onClick={() => navigate(ROUTES.brandNewProjectCreators)} leadingIcon={<ArrowLeft size={16} />}>Back</Button><div className="flex-1" /><Button kind="ghost" onClick={() => setSaved(true)}>Save draft</Button><Button type="button" onClick={() => navigate(ROUTES.brandNewProjectBudget)} trailingIcon={<ArrowRight size={16} />}>Continue</Button></footer>
       </motion.form>
       <ProjectSetup />
     </div>
