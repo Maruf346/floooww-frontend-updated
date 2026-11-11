@@ -30,6 +30,7 @@ export const ROUTES = {
   brandNewProjectDeliverables: "/brand/projects/new/deliverables",
   brandNewProjectBudget: "/brand/projects/new/budget",
   brandNewProjectPayment: "/brand/projects/new/payment",
+  brandNewProjectReview: "/brand/projects/new/review",
   agency: "/agency",
   creator: "/creator",
 } as const;
