@@ -1,11 +1,11 @@
 import { useState, type ReactNode } from "react";
 import { ArrowLeft, Check, CheckCircle2, CircleCheck, Pencil, Send, X } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
 import { ROUTES } from "@/common/constants/routes";
-import { getProjectSteps, useProjectFlow, type ProjectPartnership } from "@/brand/context/ProjectFlowContext";
+import { getProjectDurationLabel, getProjectSteps, getProjectTarget, useProjectFlow, type ProjectDuration, type ProjectPartnership, type ProjectType } from "@/brand/context/ProjectFlowContext";
 
 type ReviewRow = { label: string; value: string };
 
@@ -61,13 +61,13 @@ function SetupItem({ children, active = false }: { children: ReactNode; active?:
   return <div className={`flex items-center gap-2.5 text-[13px] leading-5 ${active ? "font-medium text-primary" : "text-ink"}`}>{active ? <CircleCheck size={16} /> : <CheckCircle2 className="text-success" size={16} />}{children}</div>;
 }
 
-function ProjectSetup({ partnership, projectType }: { partnership: ProjectPartnership; projectType: string }) {
+function ProjectSetup({ partnership, duration, projectType }: { partnership: ProjectPartnership; duration: ProjectDuration; projectType: ProjectType }) {
   return <aside className="h-fit rounded-xl border border-line bg-white p-5 xl:w-80"><h2 className="text-base font-semibold leading-6 text-ink">Project setup</h2><p className="mt-0.5 text-xs leading-4 text-secondary">Shapes your dashboard</p>
     <dl className="mt-4 space-y-3 text-sm leading-[22px]">
-      <div className="flex justify-between gap-3"><dt className="text-secondary">Target</dt><dd className="font-medium text-ink">{projectType === "Influencer marketing" ? "₹6,00,000 net sales" : "20 usable videos"}</dd></div>
+      <div className="flex justify-between gap-3"><dt className="text-secondary">Target</dt><dd className="font-medium text-ink">{getProjectTarget(projectType, partnership, duration)}</dd></div>
       <div className="flex justify-between gap-3"><dt className="text-secondary">Type</dt><dd className="font-medium text-ink">{projectType}</dd></div>
       <div className="flex justify-between gap-3"><dt className="text-secondary">Partnership</dt><dd className="font-medium text-ink">{partnership}</dd></div>
-      <div className="flex justify-between gap-3"><dt className="text-secondary">Duration</dt><dd className="text-right font-medium text-ink">One-time · 7 Oct – 7 Nov</dd></div>
+      <div className="flex justify-between gap-3"><dt className="text-secondary">Duration</dt><dd className="text-right font-medium text-ink">{getProjectDurationLabel(partnership, duration)}</dd></div>
     </dl><div className="my-4 border-t border-line" /><div className="space-y-3">
       <SetupItem>Type</SetupItem><SetupItem>Partnership</SetupItem><SetupItem>Duration</SetupItem><SetupItem>Project details</SetupItem><SetupItem>Creator requirements</SetupItem><SetupItem>Deliverables</SetupItem>{partnership === "Paid" && <><SetupItem>Budget</SetupItem><SetupItem>Payment method</SetupItem></>}<SetupItem active>Review &amp; publish</SetupItem>
     </div>
@@ -76,7 +76,7 @@ function ProjectSetup({ partnership, projectType }: { partnership: ProjectPartne
 
 export function BrandProjectReviewPage() {
   const navigate = useNavigate();
-  const { partnership, projectType } = useProjectFlow();
+  const { partnership, duration, projectType } = useProjectFlow();
   const [agreed, setAgreed] = useState(true);
   const [saved, setSaved] = useState(false);
   return <BrandShell><div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6">
@@ -93,7 +93,7 @@ export function BrandProjectReviewPage() {
         <label className="mt-5 flex cursor-pointer items-center gap-2 text-[13px] leading-5 text-ink"><input aria-label="Agree to project terms" checked={agreed} className="size-[18px] rounded accent-primary" onChange={(event) => setAgreed(event.target.checked)} type="checkbox" /><span>I agree to the project terms and creator code of conduct</span></label>
         <footer className="mt-5 flex flex-wrap items-center gap-3 border-t border-line pt-5"><Button kind="secondary" leadingIcon={<ArrowLeft size={16} />} onClick={() => navigate(partnership === "Gift exchange" ? ROUTES.brandNewProjectDeliverables : ROUTES.brandNewProjectPayment)}>Back</Button><div className="hidden flex-1 sm:block" /><Button kind="ghost" onClick={() => { setSaved(true); window.setTimeout(() => setSaved(false), 2500); }}>Save draft</Button><Button disabled={!agreed} leadingIcon={<Send size={16} />} type="submit">Publish project</Button></footer>
       </motion.form>
-      <ProjectSetup partnership={partnership} projectType={projectType} />
+      <ProjectSetup partnership={partnership} duration={duration} projectType={projectType} />
     </div>
   </div></BrandShell>;
 }

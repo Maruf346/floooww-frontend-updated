@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Camera, CheckCircle2, Circle, Clock3, FileText, Landmark, Megaphone, Users, WalletCards, X } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { ROUTES } from "@/common/constants/routes";

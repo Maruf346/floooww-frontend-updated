@@ -1,5 +1,5 @@
 import { Check, CheckCircle2, CircleCheck, X } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
@@ -83,7 +83,8 @@ export function BrandProjectPublishedPage() {
   const influencerOneTime = influencerPaid && duration === "One-time";
   const influencerLongTerm = influencerPaid && duration === "Long-term";
   const influencerGiftOneTime = influencer && gift && duration === "One-time";
-  const projectName = influencerOneTime ? "Vitamin-C Serum" : influencerLongTerm ? "Glow Squad" : influencerGiftOneTime ? "Winter Lip Care" : gift ? longTerm ? "Lip Care UGC Club" : "Winter Lip Care UGC" : longTerm ? "Monthly UGC Pack" : "Glow Edit UGC Pack";
+  const influencerGiftLongTerm = influencer && gift && duration === "Long-term";
+  const projectName = influencerOneTime ? "Vitamin-C Serum" : influencerLongTerm ? "Glow Squad" : influencerGiftOneTime ? "Winter Lip Care" : influencerGiftLongTerm ? "Lip Care Club" : gift ? longTerm ? "Lip Care UGC Club" : "Winter Lip Care UGC" : longTerm ? "Monthly UGC Pack" : "Glow Edit UGC Pack";
   const nextSteps = influencerOneTime ? influencerNextSteps : influencerLongTerm ? influencerLongTermNextSteps : influencerGiftOneTime ? influencerGiftNextSteps : gift ? longTerm ? giftLongTermNextSteps : giftNextSteps : longTerm ? longTermNextSteps : standardNextSteps;
   const applyBy = gift ? "20 Nov" : "12 Oct";
   const publicationMessage = gift ? `Nothing was charged, gift projects are free.${longTerm ? " The same deliverables repeat every monthly cycle." : ""}` : `Nothing is charged until you invite a creator.${longTerm ? " Fees are charged at the start of each monthly cycle." : ""}`;

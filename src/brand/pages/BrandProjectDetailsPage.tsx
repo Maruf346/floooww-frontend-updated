@@ -1,12 +1,12 @@
 import { useState, type ChangeEvent } from "react";
 import { ArrowLeft, ArrowRight, CalendarDays, Check, CheckCircle2, ChevronLeft, ChevronRight, FileImage, FileText, Landmark, Megaphone, Package, Upload, Users, WalletCards, X } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
 import { MultiDropdown } from "@/common/components/ui/Dropdown";
 import { ROUTES } from "@/common/constants/routes";
-import { getProjectSteps, useProjectFlow, type ProjectPartnership } from "@/brand/context/ProjectFlowContext";
+import { getProjectDurationLabel, getProjectSteps, getProjectTarget, useProjectFlow, type ProjectPartnership } from "@/brand/context/ProjectFlowContext";
 
 const field = "w-full rounded-md border border-line bg-white px-3 py-2 text-[13px] leading-5 text-ink outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15";
 const platformLogos: Record<string, string> = { Instagram: "/assets/platform-instagram.svg", YouTube: "/assets/platform-youtube.svg", Snapchat: "/assets/platform-snapchat.svg", Pinterest: "/assets/platform-pinterest.svg" };
@@ -52,13 +52,13 @@ function ProjectDate({ label, value, onChange, required }: { label: string; valu
 }
 function Stepper({ partnership }: { partnership: ProjectPartnership }) { const steps = getProjectSteps(partnership); return <section className="overflow-x-auto rounded-xl border border-line bg-white px-5 py-4"><div className="flex min-w-[760px]">{steps.map((step, index) => <div className="flex flex-1 flex-col items-center gap-1.5" key={step}>{index < 3 ? <span className="flex size-7 items-center justify-center rounded-full bg-success text-white"><Check size={14} /></span> : <span className={index === 3 ? "flex size-7 items-center justify-center rounded-full bg-primary text-[12px] text-white" : "flex size-7 items-center justify-center rounded-full border border-line-strong text-[12px] text-tertiary"}>{index + 1}</span>}<span className={index === 3 ? "text-[12px] font-medium text-primary" : index < 3 ? "text-[12px] text-secondary" : "text-[12px] text-tertiary"}>{step}</span></div>)}</div></section>; }
 function Summary() {
-  const { projectType } = useProjectFlow();
+  const { projectType, partnership, duration } = useProjectFlow();
   const rows = [
-    ["Target", projectType === "Influencer marketing" ? "₹6,00,000 net sales" : "20 usable videos"],
+    ["Target", getProjectTarget(projectType, partnership, duration)],
     ["Type", projectType],
-    ["Partnership", "Paid"],
-    ["Duration", "One-time · 7 Oct – 7 Nov"],
+    ["Partnership", partnership],
+    ["Duration", getProjectDurationLabel(partnership, duration)],
   ];
-  const upcoming = [["Creator requirements", Users], ["Deliverables", Megaphone], ["Budget", WalletCards], ["Payment method", Landmark], ["Review & publish", CheckCircle2]];
+  const upcoming = [["Creator requirements", Users], ["Deliverables", Megaphone], ...(partnership === "Paid" ? [["Budget", WalletCards], ["Payment method", Landmark]] : []), ["Review & publish", CheckCircle2]];
   return <aside className="rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6">Project setup</h2><p className="text-[12px] text-secondary">Shapes your dashboard</p><div className="mt-4 space-y-3">{rows.map(([label, value]) => <div className="flex justify-between gap-3 text-[13px]" key={label}><span className="text-secondary">{label}</span><span className="text-right text-[14px] font-medium">{value}</span></div>)}</div><div className="my-4 h-px bg-line" /><div className="space-y-3">{["Type", "Partnership", "Duration"].map((item) => <div className="flex gap-2.5 text-[13px]" key={item}><CheckCircle2 size={16} className="text-success" />{item}</div>)}<div className="flex gap-2.5 text-[14px] font-medium text-primary"><FileText size={16} />Project details</div>{upcoming.map(([item, Icon]) => { const I = Icon as typeof Package; return <div className="flex gap-2.5 text-[13px] text-tertiary" key={item}><I size={16} />{item}</div>; })}</div></aside>;
 }

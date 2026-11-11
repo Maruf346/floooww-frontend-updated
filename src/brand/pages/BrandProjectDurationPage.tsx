@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, CalendarDays, Check, CheckCircle2, Circle, Clock3, FileText, Landmark, Megaphone, Package, Repeat2, Users, WalletCards, X } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";

@@ -22,6 +22,16 @@ export function getProjectSteps(partnership: ProjectPartnership) {
   return partnership === "Gift exchange" ? giftProjectSteps : paidProjectSteps;
 }
 
+export function getProjectTarget(projectType: ProjectType, partnership: ProjectPartnership, duration: ProjectDuration) {
+  if (projectType === "Influencer marketing") return partnership === "Gift exchange" ? "30,000 engagements" : "₹6,00,000 net sales";
+  return duration === "Long-term" ? "20 usable videos a cycle" : "20 usable videos";
+}
+
+export function getProjectDurationLabel(partnership: ProjectPartnership, duration: ProjectDuration) {
+  if (partnership === "Gift exchange") return duration === "Long-term" ? "Long-term · 1 Dec – 28 Feb" : "One-time · 1 Dec – 31 Dec";
+  return duration === "Long-term" ? "Long-term · 7 Oct – 6 Jan" : "One-time · 7 Oct – 7 Nov";
+}
+
 export function ProjectFlowProvider({ children }: { children: ReactNode }) {
   const [partnership, setPartnership] = useState<ProjectPartnership>("Paid");
   const [duration, setDuration] = useState<ProjectDuration>("One-time");
