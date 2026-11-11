@@ -1,0 +1,43 @@
+import { useEffect, useId, useRef, useState } from "react";
+import { Check, ChevronDown, Plus } from "lucide-react";
+
+export type DropdownOption = { value: string; label?: string };
+
+type DropdownProps = {
+  value: string;
+  options: DropdownOption[] | string[];
+  onChange: (value: string) => void;
+  ariaLabel: string;
+  icon?: React.ReactNode;
+  placeholder?: string;
+  otherLabel?: string;
+  onOther?: () => void;
+  compact?: boolean;
+  className?: string;
+};
+
+export function Dropdown({ value, options, onChange, ariaLabel, icon, placeholder, otherLabel, onOther, compact = false, className = "" }: DropdownProps) {
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  const menuId = useId();
+  const items = options.map((option) => typeof option === "string" ? { value: option } : option);
+  const selected = items.find((item) => item.value === value);
+
+  useEffect(() => {
+    const close = (event: MouseEvent) => { if (!root.current?.contains(event.target as Node)) setOpen(false); };
+    window.addEventListener("mousedown", close);
+    return () => window.removeEventListener("mousedown", close);
+  }, []);
+
+  const choose = (next: string) => { onChange(next); setOpen(false); };
+  return <div className={`relative min-w-0 ${className}`} ref={root}>
+    <button aria-controls={menuId} aria-expanded={open} aria-haspopup="listbox" aria-label={ariaLabel} className={`flex w-full items-center gap-2 rounded-md border bg-white text-left text-[13px] leading-5 text-ink outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 ${compact ? "h-8 px-2.5" : "h-10 px-3"} ${open ? "border-primary" : "border-line"}`} onClick={() => setOpen((current) => !current)} type="button">
+      {icon && <span className="flex size-4 shrink-0 items-center justify-center">{icon}</span>}
+      <span className="min-w-0 flex-1 truncate">{selected?.label ?? selected?.value ?? placeholder}</span><ChevronDown className={`shrink-0 text-secondary transition-transform duration-150 ${open ? "rotate-180" : ""}`} size={compact ? 13 : 16} />
+    </button>
+    {open && <div className="absolute left-0 top-[calc(100%+6px)] z-30 w-full min-w-max overflow-hidden rounded-md border border-line bg-white p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.12)]" id={menuId} role="listbox" aria-label={ariaLabel}>
+      {items.map((item) => { const active = item.value === value; return <button aria-selected={active} className={`flex w-full items-center gap-2.5 rounded-sm px-2.5 py-2 text-left text-[13px] leading-5 transition-colors ${active ? "bg-primary-subtle text-primary" : "text-ink hover:bg-subtle"}`} key={item.value} onClick={() => choose(item.value)} role="option" type="button"><span className="flex-1">{item.label ?? item.value}</span>{active && <Check size={14} />}</button>; })}
+      {otherLabel && <><div className="my-1 h-px bg-line-subtle" /><button className="flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-left text-[13px] leading-5 text-link transition-colors hover:bg-primary-subtle" onClick={() => { setOpen(false); onOther?.(); }} type="button"><Plus size={14} />{otherLabel}</button></>}
+    </div>}
+  </div>;
+}
