@@ -83,7 +83,8 @@ function ProjectStepper({ partnership }: { partnership: ProjectPartnership }) {
 }
 
 function ProjectSetupSummary({ partnership }: { partnership: ProjectPartnership }) {
-  const details = [["Target", "-"], ["Type", "UGC"], ["Partnership", partnership], ["Duration", "-"]];
+  const { projectType } = useProjectFlow();
+  const details = [["Target", "-"], ["Type", projectType], ["Partnership", partnership], ["Duration", "-"]];
   const upcoming = [["Duration", Clock3], ["Project details", FileText], ["Creator requirements", Users], ["Deliverables", Megaphone], ...(partnership === "Paid" ? [["Budget", WalletCards], ["Payment method", Landmark]] : []), ["Review & publish", CheckCircle2]];
   return <aside className="rounded-xl border border-line bg-white p-5">
     <h2 className="text-[16px] font-semibold leading-6">Project setup</h2>

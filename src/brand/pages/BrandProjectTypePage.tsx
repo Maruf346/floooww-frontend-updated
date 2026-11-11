@@ -5,8 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { ROUTES } from "@/common/constants/routes";
 import { Button } from "@/common/components/ui/Button";
-
-type ProjectType = "UGC" | "Influencer marketing";
+import { useProjectFlow, type ProjectType } from "@/brand/context/ProjectFlowContext";
 
 const steps = ["Type", "Partnership", "Duration", "Details", "Creators", "Deliverables", "Budget", "Payment", "Review"];
 
@@ -17,7 +16,7 @@ const typeOptions: { value: ProjectType; title: string; description: string; ico
 
 export function BrandProjectTypePage() {
   const navigate = useNavigate();
-  const [projectType, setProjectType] = useState<ProjectType>("UGC");
+  const { projectType, setProjectType } = useProjectFlow();
   const [saved, setSaved] = useState(false);
   const activeOption = typeOptions.find((option) => option.value === projectType)!;
 

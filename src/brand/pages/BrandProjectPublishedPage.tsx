@@ -28,7 +28,7 @@ const giftNextSteps = [
 
 const giftLongTermNextSteps = [...giftNextSteps.slice(0, -1), ["Results show in the project each cycle", "File use and ad results, the same as any project."]];
 
-function ProjectSetup({ partnership, duration }: { partnership: ProjectPartnership; duration: ProjectDuration }) {
+function ProjectSetup({ partnership, duration, projectType }: { partnership: ProjectPartnership; duration: ProjectDuration; projectType: string }) {
   const longTerm = duration === "Long-term";
   const gift = partnership === "Gift exchange";
   const complete = ["Type", "Partnership", "Duration", "Project details", "Creator requirements", "Deliverables", ...(partnership === "Paid" ? ["Budget", "Payment method"] : [])];
@@ -37,8 +37,8 @@ function ProjectSetup({ partnership, duration }: { partnership: ProjectPartnersh
     <h2 className="text-[16px] font-semibold leading-6 text-ink">Project setup</h2>
     <p className="text-[12px] leading-4 text-secondary">Shapes your dashboard</p>
     <dl className="mt-4 space-y-3 text-[13px] leading-5">
-      <div className="flex justify-between gap-3"><dt className="text-secondary">Target</dt><dd className="text-right text-[14px] font-medium leading-[22px] text-ink">{longTerm ? "20 usable videos a cycle" : "20 usable videos"}</dd></div>
-      <div className="flex justify-between gap-3"><dt className="text-secondary">Type</dt><dd className="text-[14px] font-medium leading-[22px] text-ink">UGC</dd></div>
+      <div className="flex justify-between gap-3"><dt className="text-secondary">Target</dt><dd className="text-right text-[14px] font-medium leading-[22px] text-ink">{projectType === "Influencer marketing" ? "₹6,00,000 net sales" : longTerm ? "20 usable videos a cycle" : "20 usable videos"}</dd></div>
+      <div className="flex justify-between gap-3"><dt className="text-secondary">Type</dt><dd className="text-[14px] font-medium leading-[22px] text-ink">{projectType}</dd></div>
       <div className="flex justify-between gap-3"><dt className="text-secondary">Partnership</dt><dd className="text-[14px] font-medium leading-[22px] text-ink">{partnership}</dd></div>
       <div className="flex justify-between gap-3"><dt className="text-secondary">Duration</dt><dd className="text-right text-[14px] font-medium leading-[22px] text-ink">{longTerm ? gift ? "Long-term · 1 Dec – 28 Feb" : "Long-term · 7 Oct – 6 Jan" : gift ? "One-time · 1 Dec – 31 Dec" : "One-time · 7 Oct – 7 Nov"}</dd></div>
     </dl>
@@ -52,7 +52,7 @@ function ProjectSetup({ partnership, duration }: { partnership: ProjectPartnersh
 
 export function BrandProjectPublishedPage() {
   const navigate = useNavigate();
-  const { partnership, duration } = useProjectFlow();
+  const { partnership, duration, projectType } = useProjectFlow();
   const longTerm = duration === "Long-term";
   const gift = partnership === "Gift exchange";
   const projectName = gift ? longTerm ? "Lip Care UGC Club" : "Winter Lip Care UGC" : longTerm ? "Monthly UGC Pack" : "Glow Edit UGC Pack";
@@ -71,6 +71,6 @@ export function BrandProjectPublishedPage() {
         <ol>{nextSteps.map(([title, description], index) => <li className="flex gap-3.5 border-t border-muted px-5 py-3" key={title}><span className="flex size-[26px] shrink-0 items-center justify-center rounded-full bg-primary-subtle text-[12px] font-semibold text-primary">{index + 1}</span><div><h4 className="text-[14px] font-medium leading-5 text-ink">{title}</h4><p className="mt-0.5 text-[13px] leading-5 text-secondary">{description}</p></div></li>)}</ol>
       </section>
       <footer className="mt-5 flex flex-wrap items-center gap-3 border-t border-line pt-5"><Button kind="secondary" onClick={() => navigate(ROUTES.brand)}>Back to projects</Button><div className="flex-1" /><Button kind="ghost" onClick={() => navigate(ROUTES.brand)}>View project</Button><Button onClick={() => navigate(ROUTES.brand)}>Invite creators</Button></footer>
-    </motion.section><ProjectSetup partnership={partnership} duration={duration} /></div>
+    </motion.section><ProjectSetup partnership={partnership} duration={duration} projectType={projectType} /></div>
   </div></BrandShell>;
 }

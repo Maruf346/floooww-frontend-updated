@@ -66,7 +66,8 @@ function ProjectStepper({ partnership }: { partnership: ProjectPartnership }) {
 }
 
 function ProjectSetupSummary({ duration, partnership }: { duration: ProjectDuration; partnership: ProjectPartnership }) {
-  const details = [["Target", "-"], ["Type", "UGC"], ["Partnership", partnership], ["Duration", duration]];
+  const { projectType } = useProjectFlow();
+  const details = [["Target", "-"], ["Type", projectType], ["Partnership", partnership], ["Duration", duration]];
   const upcoming = [["Project details", FileText], ["Creator requirements", Users], ["Deliverables", Megaphone], ...(partnership === "Paid" ? [["Budget", WalletCards], ["Payment method", Landmark]] : []), ["Review & publish", CheckCircle2]];
   return <aside className="rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6">Project setup</h2><p className="text-[12px] leading-4 text-secondary">Shapes your dashboard</p>
     <div className="mt-4 space-y-3">{details.map(([label, value]) => <div key={label} className="flex items-center justify-between gap-3 text-[13px] leading-5"><span className="text-secondary">{label}</span><span className={value === "-" ? "font-medium text-tertiary" : "text-[14px] font-medium leading-[22px] text-ink"}>{value}</span></div>)}</div>

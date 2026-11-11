@@ -61,11 +61,11 @@ function SetupItem({ children, active = false }: { children: ReactNode; active?:
   return <div className={`flex items-center gap-2.5 text-[13px] leading-5 ${active ? "font-medium text-primary" : "text-ink"}`}>{active ? <CircleCheck size={16} /> : <CheckCircle2 className="text-success" size={16} />}{children}</div>;
 }
 
-function ProjectSetup({ partnership }: { partnership: ProjectPartnership }) {
+function ProjectSetup({ partnership, projectType }: { partnership: ProjectPartnership; projectType: string }) {
   return <aside className="h-fit rounded-xl border border-line bg-white p-5 xl:w-80"><h2 className="text-base font-semibold leading-6 text-ink">Project setup</h2><p className="mt-0.5 text-xs leading-4 text-secondary">Shapes your dashboard</p>
     <dl className="mt-4 space-y-3 text-sm leading-[22px]">
-      <div className="flex justify-between gap-3"><dt className="text-secondary">Target</dt><dd className="font-medium text-ink">20 usable videos</dd></div>
-      <div className="flex justify-between gap-3"><dt className="text-secondary">Type</dt><dd className="font-medium text-ink">UGC</dd></div>
+      <div className="flex justify-between gap-3"><dt className="text-secondary">Target</dt><dd className="font-medium text-ink">{projectType === "Influencer marketing" ? "₹6,00,000 net sales" : "20 usable videos"}</dd></div>
+      <div className="flex justify-between gap-3"><dt className="text-secondary">Type</dt><dd className="font-medium text-ink">{projectType}</dd></div>
       <div className="flex justify-between gap-3"><dt className="text-secondary">Partnership</dt><dd className="font-medium text-ink">{partnership}</dd></div>
       <div className="flex justify-between gap-3"><dt className="text-secondary">Duration</dt><dd className="text-right font-medium text-ink">One-time · 7 Oct – 7 Nov</dd></div>
     </dl><div className="my-4 border-t border-line" /><div className="space-y-3">
@@ -76,7 +76,7 @@ function ProjectSetup({ partnership }: { partnership: ProjectPartnership }) {
 
 export function BrandProjectReviewPage() {
   const navigate = useNavigate();
-  const { partnership } = useProjectFlow();
+  const { partnership, projectType } = useProjectFlow();
   const [agreed, setAgreed] = useState(true);
   const [saved, setSaved] = useState(false);
   return <BrandShell><div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6">
@@ -85,7 +85,7 @@ export function BrandProjectReviewPage() {
     <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
       <motion.form animate={{ opacity: 1, y: 0 }} className="rounded-xl border border-line bg-white px-5 py-6 sm:px-8 sm:py-7" initial={{ opacity: 0, y: 8 }} onSubmit={(event) => { event.preventDefault(); if (agreed) navigate(ROUTES.brandProjectPublished); }} transition={{ duration: 0.24, ease: "easeOut" }}>
         <div><p className="text-xs font-semibold leading-4 tracking-[0.72px] text-primary">STEP {partnership === "Gift exchange" ? "7 OF 7" : "9 OF 9"}</p><h2 className="mt-1.5 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">Review and publish</h2><p className="mt-1.5 text-sm leading-[22px] text-secondary">Check everything once. Some fields lock after creators apply.</p></div>
-        <div className="mt-5 space-y-3">{cards.filter((card) => partnership === "Paid" || (card.title !== "Budget" && card.title !== "Payment")).map((card) => <ReviewCard {...card} key={card.title} onEdit={() => navigate(card.route)} />)}</div>
+        <div className="mt-5 space-y-3">{cards.map((card) => card.title === "Setup" ? { ...card, rows: card.rows.map((row) => row.label === "Type" ? { ...row, value: projectType } : row) } : card).filter((card) => partnership === "Paid" || (card.title !== "Budget" && card.title !== "Payment")).map((card) => <ReviewCard {...card} key={card.title} onEdit={() => navigate(card.route)} />)}</div>
         {partnership === "Gift exchange" && <section className="mt-5 flex items-start gap-2.5 rounded-md bg-success-bg px-3.5 py-3">
           <CircleCheck size={18} className="mt-0.5 shrink-0 text-success" />
           <div><h3 className="text-[14px] font-medium leading-[22px] text-ink">Nothing to pay</h3><p className="mt-0.5 text-[13px] leading-5 text-body">Gift projects have no escrow and no fees. After publishing, invite creators and choose the product for each deliverable.</p></div>
@@ -93,7 +93,7 @@ export function BrandProjectReviewPage() {
         <label className="mt-5 flex cursor-pointer items-center gap-2 text-[13px] leading-5 text-ink"><input aria-label="Agree to project terms" checked={agreed} className="size-[18px] rounded accent-primary" onChange={(event) => setAgreed(event.target.checked)} type="checkbox" /><span>I agree to the project terms and creator code of conduct</span></label>
         <footer className="mt-5 flex flex-wrap items-center gap-3 border-t border-line pt-5"><Button kind="secondary" leadingIcon={<ArrowLeft size={16} />} onClick={() => navigate(partnership === "Gift exchange" ? ROUTES.brandNewProjectDeliverables : ROUTES.brandNewProjectPayment)}>Back</Button><div className="hidden flex-1 sm:block" /><Button kind="ghost" onClick={() => { setSaved(true); window.setTimeout(() => setSaved(false), 2500); }}>Save draft</Button><Button disabled={!agreed} leadingIcon={<Send size={16} />} type="submit">Publish project</Button></footer>
       </motion.form>
-      <ProjectSetup partnership={partnership} />
+      <ProjectSetup partnership={partnership} projectType={projectType} />
     </div>
   </div></BrandShell>;
 }
