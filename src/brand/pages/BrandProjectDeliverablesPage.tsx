@@ -7,9 +7,17 @@ import { Button } from "@/common/components/ui/Button";
 import { Dropdown } from "@/common/components/ui/Dropdown";
 import { ROUTES } from "@/common/constants/routes";
 
-type Deliverable = { id: number; platform: "Instagram" | "YouTube"; content: string; quantity: number };
+type Platform = "Instagram" | "YouTube" | "Snapchat" | "Pinterest";
+type Deliverable = { id: number; platform: Platform; content: string; quantity: number };
 const steps = ["Type", "Partnership", "Duration", "Details", "Creators", "Deliverables", "Budget", "Payment", "Review"];
 const contentOptions = ["Product demo (30 s)", "Unboxing (45 s)", "Product photo set (5)", "Before and after (15 s)", "Testimonial (60 s)", "How-to (30 s)", "Lifestyle photo set (5)", "Short ad cut (15 s)", "Routine walkthrough (60 s)"];
+const platformOptions: Platform[] = ["Instagram", "YouTube", "Snapchat", "Pinterest"];
+const platformIcons: Partial<Record<Platform, string>> = {
+  Instagram: "/assets/platform-instagram.svg",
+  YouTube: "/assets/platform-youtube.svg",
+  Snapchat: "/assets/platform-snapchat.svg",
+  Pinterest: "/assets/platform-pinterest.svg",
+};
 
 export function BrandProjectDeliverablesPage() {
   const navigate = useNavigate();
@@ -32,7 +40,7 @@ export function BrandProjectDeliverablesPage() {
         <section className="relative z-0 mt-5 overflow-visible rounded-xl border border-line" aria-label="Deliverables">
           <div className="grid grid-cols-[minmax(132px,156px)_minmax(0,1fr)_64px] gap-2 bg-subtle px-3 py-2"><span className="text-[11px] font-semibold leading-4 text-secondary">Platform</span><span className="text-[11px] font-semibold leading-4 text-secondary">Content</span><span className="text-[11px] font-semibold leading-4 text-secondary">Qty</span></div>
           <AnimatePresence initial={false}>{deliverables.map((item) => <motion.div key={item.id} layout initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: .18 }} className="relative z-0 grid grid-cols-[minmax(132px,156px)_minmax(0,1fr)_64px] items-center gap-2 border-t border-line-subtle px-3 py-1.5 focus-within:z-20">
-            <Dropdown compact value={item.platform} onChange={(value) => update(item.id, { platform: value as Deliverable["platform"] })} icon={<img alt="" src={item.platform === "Instagram" ? "/assets/platform-instagram.svg" : "/assets/platform-youtube.svg"} className="size-4" />} ariaLabel="Platform" options={["Instagram", "YouTube"]} />
+            <Dropdown compact value={item.platform} onChange={(value) => update(item.id, { platform: value as Platform })} icon={platformIcons[item.platform] ? <img alt="" src={platformIcons[item.platform]} className="size-4" /> : undefined} ariaLabel="Platform" options={platformOptions} />
             <Dropdown compact value={item.content} onChange={(value) => update(item.id, { content: value })} ariaLabel="Content type" options={[...contentOptions, ...customContentOptions]} otherLabel="Other, describe the content" onOther={(content) => setCustomContentOptions((current) => current.includes(content) ? current : [...current, content])} />
             <input aria-label="Quantity" className="h-8 w-full rounded-md border border-line bg-white px-2.5 text-[13px] leading-5 text-ink outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" min="1" onChange={(event) => update(item.id, { quantity: Math.max(1, Number(event.target.value) || 1) })} type="number" value={item.quantity} />
           </motion.div>)}</AnimatePresence>
