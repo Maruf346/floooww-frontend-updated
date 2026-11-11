@@ -5,19 +5,16 @@ import { useNavigate } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
 import { ROUTES } from "@/common/constants/routes";
+import { getProjectSteps, useProjectFlow, type ProjectPartnership } from "@/brand/context/ProjectFlowContext";
 
-type Partnership = "Paid" | "Gift exchange";
-
-const steps = ["Type", "Partnership", "Duration", "Details", "Creators", "Deliverables", "Budget", "Payment", "Review"];
-
-const partnershipOptions: { value: Partnership; description: string; hint?: string; icon: typeof WalletCards }[] = [
+const partnershipOptions: { value: ProjectPartnership; description: string; hint?: string; icon: typeof WalletCards }[] = [
   { value: "Paid", icon: WalletCards, description: "You pay creators a fee from escrow. Money is held when you invite them and released after you approve." },
   { value: "Gift exchange", icon: Gift, description: "Creators get your product in return for content. No fee, you ship the product.", hint: "Product value per creator · shipping" },
 ];
 
 export function BrandProjectPartnershipPage() {
   const navigate = useNavigate();
-  const [partnership, setPartnership] = useState<Partnership>("Paid");
+  const { partnership, setPartnership } = useProjectFlow();
   const [saved, setSaved] = useState(false);
 
   return <BrandShell>
@@ -31,7 +28,7 @@ export function BrandProjectPartnershipPage() {
         <Button kind="ghost" onClick={() => navigate(ROUTES.brand)} leadingIcon={<X size={16} />}>Exit</Button>
       </header>
 
-      <ProjectStepper />
+      <ProjectStepper partnership={partnership} />
 
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .26 }} className="rounded-xl border border-line bg-white px-5 py-6 sm:px-8 sm:py-7">
@@ -65,7 +62,8 @@ export function BrandProjectPartnershipPage() {
   </BrandShell>;
 }
 
-function ProjectStepper() {
+function ProjectStepper({ partnership }: { partnership: ProjectPartnership }) {
+  const steps = getProjectSteps(partnership);
   return <section className="overflow-x-auto rounded-xl border border-line bg-white px-5 py-4">
     <div className="flex min-w-[760px] items-start">
       {steps.map((step, index) => <div key={step} className="flex flex-1 flex-col items-center gap-1.5">
@@ -76,9 +74,9 @@ function ProjectStepper() {
   </section>;
 }
 
-function ProjectSetupSummary({ partnership }: { partnership: Partnership }) {
+function ProjectSetupSummary({ partnership }: { partnership: ProjectPartnership }) {
   const details = [["Target", "-"], ["Type", "UGC"], ["Partnership", partnership], ["Duration", "-"]];
-  const upcoming = [["Duration", Clock3], ["Project details", FileText], ["Creator requirements", Users], ["Deliverables", Megaphone], ["Budget", WalletCards], ["Payment method", Landmark], ["Review & publish", CheckCircle2]];
+  const upcoming = [["Duration", Clock3], ["Project details", FileText], ["Creator requirements", Users], ["Deliverables", Megaphone], ...(partnership === "Paid" ? [["Budget", WalletCards], ["Payment method", Landmark]] : []), ["Review & publish", CheckCircle2]];
   return <aside className="rounded-xl border border-line bg-white p-5">
     <h2 className="text-[16px] font-semibold leading-6">Project setup</h2>
     <p className="text-[12px] leading-4 text-secondary">Shapes your dashboard</p>

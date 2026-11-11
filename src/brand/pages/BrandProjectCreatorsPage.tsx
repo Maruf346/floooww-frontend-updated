@@ -6,8 +6,8 @@ import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
 import { Dropdown, MultiDropdown } from "@/common/components/ui/Dropdown";
 import { ROUTES } from "@/common/constants/routes";
+import { getProjectSteps, useProjectFlow, type ProjectPartnership } from "@/brand/context/ProjectFlowContext";
 
-const steps = ["Type", "Partnership", "Duration", "Details", "Creators", "Deliverables", "Budget", "Payment", "Review"];
 const niches = ["Beauty", "Skincare", "Fashion", "Lifestyle", "Wellness", "Fitness", "Other"];
 const audienceGenderOptions = [
   { value: "Any", description: "All creators, whatever their audience" },
@@ -23,6 +23,7 @@ const audienceLocationOptions = ["Bengaluru", "Mumbai", "Delhi", "Andra Pradesh"
 
 export function BrandProjectCreatorsPage() {
   const navigate = useNavigate();
+  const { partnership } = useProjectFlow();
   const [saved, setSaved] = useState(false);
   const [selectedNiches, setSelectedNiches] = useState(["Beauty", "Skincare"]);
   const [minimum, setMinimum] = useState(3);
@@ -41,7 +42,7 @@ export function BrandProjectCreatorsPage() {
 
   return <BrandShell><div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6">
     <header className="flex items-end justify-between gap-4"><div><p className="text-[12px] leading-4 text-tertiary">Projects&nbsp;&nbsp;/&nbsp;&nbsp;New project</p><h1 className="mt-1 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">Creator requirements</h1><p className="text-[13px] leading-5 text-secondary">{saved ? "Draft saved just now" : "Saved as a draft automatically"}</p></div><Button kind="ghost" onClick={() => navigate(ROUTES.brand)} leadingIcon={<X size={16} />}>Exit</Button></header>
-    <Stepper />
+    <Stepper partnership={partnership} />
     <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
       <motion.form initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .26 }} onSubmit={(event) => { event.preventDefault(); setSaved(true); }} className="rounded-xl border border-line bg-white px-5 py-6 sm:px-8 sm:py-7">
         <div><p className="text-[12px] font-semibold leading-4 tracking-[.06em] text-primary">STEP 5 OF 9</p><h2 className="mt-1.5 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">Creator requirements</h2><p className="mt-1.5 text-[14px] leading-[22px] text-secondary">We use this to rank creators by match score. Only “required” fields hide creators.</p></div>
@@ -58,6 +59,6 @@ export function BrandProjectCreatorsPage() {
 }
 
 function Range({ label, value, onChange }: { label: string; value: number; onChange: (value: number) => void }) { return <input aria-label={label} type="range" min="1" max="20" value={value} onChange={(event) => onChange(Number(event.target.value))} className="absolute inset-0 h-4 w-full cursor-pointer appearance-none bg-transparent [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:cursor-grab [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary [&::-moz-range-thumb]:bg-white [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary [&::-webkit-slider-thumb]:bg-white" />; }
-function Stepper() { return <section className="overflow-x-auto rounded-xl border border-line bg-white px-5 py-4"><div className="flex min-w-[760px]">{steps.map((step, index) => <div className="flex flex-1 flex-col items-center gap-1.5" key={step}>{index < 4 ? <span className="flex size-7 items-center justify-center rounded-full bg-success text-white"><Check size={14} strokeWidth={2.5} /></span> : <span className={index === 4 ? "flex size-7 items-center justify-center rounded-full bg-primary text-[12px] font-medium text-white" : "flex size-7 items-center justify-center rounded-full border border-line-strong text-[12px] font-medium text-tertiary"}>{index + 1}</span>}<span className={index === 4 ? "text-[12px] font-medium leading-4 text-primary" : index < 4 ? "text-[12px] leading-4 text-secondary" : "text-[12px] leading-4 text-tertiary"}>{step}</span></div>)}</div></section>; }
+function Stepper({ partnership }: { partnership: ProjectPartnership }) { const steps = getProjectSteps(partnership); return <section className="overflow-x-auto rounded-xl border border-line bg-white px-5 py-4"><div className="flex min-w-[760px]">{steps.map((step, index) => <div className="flex flex-1 flex-col items-center gap-1.5" key={step}>{index < 4 ? <span className="flex size-7 items-center justify-center rounded-full bg-success text-white"><Check size={14} strokeWidth={2.5} /></span> : <span className={index === 4 ? "flex size-7 items-center justify-center rounded-full bg-primary text-[12px] font-medium text-white" : "flex size-7 items-center justify-center rounded-full border border-line-strong text-[12px] font-medium text-tertiary"}>{index + 1}</span>}<span className={index === 4 ? "text-[12px] font-medium leading-4 text-primary" : index < 4 ? "text-[12px] leading-4 text-secondary" : "text-[12px] leading-4 text-tertiary"}>{step}</span></div>)}</div></section>; }
 function ProjectSetup() { const details = [["Target", "20 usable videos"], ["Type", "UGC"], ["Partnership", "Paid"], ["Duration", "One-time · 7 Oct – 7 Nov"]]; const upcoming = ["Deliverables", "Budget", "Payment method", "Review & publish"]; return <aside className="rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Project setup</h2><p className="text-[12px] leading-4 text-secondary">Shapes your dashboard</p><div className="mt-4 space-y-3">{details.map(([label, value]) => <div className="flex items-center gap-2 text-[13px] leading-5" key={label}><span className="flex-1 text-secondary">{label}</span><span className="text-right text-[14px] font-medium leading-[22px] text-ink">{value}</span></div>)}</div><div className="my-4 h-px bg-line" /><div className="space-y-3"><Completed label="Type" /><Completed label="Partnership" /><Completed label="Duration" /><Completed label="Project details" /><div className="flex items-center gap-2.5 text-[14px] font-medium leading-[22px] text-primary"><CircleCheck size={16} />Creator requirements</div>{upcoming.map((label, index) => <div className="flex items-center gap-2.5 text-[13px] leading-5 text-tertiary" key={label}><span className="flex size-4 items-center justify-center rounded-full border border-line-strong text-[10px]">{index + 6}</span>{label}</div>)}</div></aside>; }
 function Completed({ label }: { label: string }) { return <div className="flex items-center gap-2.5 text-[13px] leading-5 text-ink"><CheckCircle2 size={16} className="text-success" />{label}</div>; }
