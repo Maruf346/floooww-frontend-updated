@@ -22,6 +22,7 @@ export const ROUTES = {
   chooseWorkspace: "/choose-workspace",
   onboarding: "/onboarding/:role",
   brand: "/brand",
+  brandProjects: "/brand/projects",
   brandNewProject: "/brand/projects/new",
   brandNewProjectPartnership: "/brand/projects/new/partnership",
   brandNewProjectDuration: "/brand/projects/new/duration",

@@ -10,6 +10,7 @@ function Sidebar({ close }: { close?: () => void }) {
   const location = useLocation();
   const [projectsOpen, setProjectsOpen] = useState(true);
   const isNewProject = location.pathname === ROUTES.brandNewProject;
+  const isProjects = location.pathname === ROUTES.brandProjects;
   const isOverview = location.pathname === ROUTES.brand;
   const closeMenu = () => close?.();
   const topLink = (active: boolean) => active ? "bg-primary-subtle font-semibold text-primary" : "text-ink hover:bg-subtle";
@@ -23,8 +24,8 @@ function Sidebar({ close }: { close?: () => void }) {
       <div className="mt-0.5"><button type="button" onClick={() => setProjectsOpen((isOpen) => !isOpen)} aria-expanded={projectsOpen} aria-controls="brand-projects-menu" className="flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] font-normal leading-[22px] text-ink transition-colors hover:bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"><ClipboardList size={18} /><span className="flex-1">Projects</span><ChevronDown size={14} className={`transition-transform duration-200 ${projectsOpen ? "" : "-rotate-90"}`} /></button>
         {projectsOpen && <div id="brand-projects-menu">
         <Link to={ROUTES.brandNewProject} onClick={closeMenu} className={isNewProject ? "flex h-8 items-center gap-2.5 rounded-md px-3 pl-10 text-[13px] font-medium text-primary" : "flex h-8 items-center gap-2.5 rounded-md px-3 pl-10 text-[13px] text-secondary hover:bg-subtle"}><span className="size-1 rounded-full bg-current" />Create new project</Link>
-        <button type="button" className="flex h-8 w-full items-center gap-2.5 rounded-md px-3 pl-10 text-left text-[13px] text-secondary hover:bg-subtle"><span className="size-1 rounded-full bg-current" /><span className="flex-1">All projects</span><Count value="11" /></button>
-        {projectFilters.map(([label, count]) => <button type="button" key={label} className="flex h-8 w-full items-center gap-2.5 rounded-md px-3 pl-[58px] text-left text-[13px] text-secondary hover:bg-subtle"><span className="size-1 rounded-full bg-current" /><span className="flex-1">{label}</span>{count && <Count value={count} />}</button>)}
+        <Link to={ROUTES.brandProjects} onClick={closeMenu} className={isProjects && !location.search ? "flex h-8 items-center gap-2.5 rounded-md px-3 pl-10 text-[13px] font-medium text-primary" : "flex h-8 items-center gap-2.5 rounded-md px-3 pl-10 text-[13px] text-secondary hover:bg-subtle"}><span className="size-1 rounded-full bg-current" /><span className="flex-1">All projects</span><Count value="11" /></Link>
+        {projectFilters.map(([label, count]) => <Link to={`${ROUTES.brandProjects}?status=${encodeURIComponent(label)}`} onClick={closeMenu} key={label} className={location.pathname === ROUTES.brandProjects && new URLSearchParams(location.search).get("status") === label ? "flex h-8 items-center gap-2.5 rounded-md px-3 pl-[58px] text-[13px] font-medium text-primary" : "flex h-8 items-center gap-2.5 rounded-md px-3 pl-[58px] text-[13px] text-secondary hover:bg-subtle"}><span className="size-1 rounded-full bg-current" /><span className="flex-1">{label}</span>{count && <Count value={count} />}</Link>)}
         </div>}
       </div>
       <button type="button" className="mt-0.5 flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] hover:bg-subtle"><Search size={18} /><span>Creator discovery</span></button>
