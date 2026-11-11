@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ChevronDown, Clock, Eye, Folder, MoreHorizontal, Play, Plus, Search, UserRoundPlus } from "lucide-react";
+import { Check, ChevronDown, Clock, Eye, Folder, MoreHorizontal, Pause, Play, Plus, Search, UserRoundPlus } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
@@ -58,6 +58,35 @@ function PlatformLogos({ platform }: { platform: string }) {
   </div>;
 }
 
+function EmptyProjectsState({ paused, onGoToLive }: { paused: boolean; onGoToLive: () => void }) {
+  const title = paused ? "No paused projects" : "No projects found";
+  const description = paused
+    ? "Pause a live project from its ⋯ menu when you need a break, for example while stock runs out. You can resume it any time."
+    : "Try changing your search or filters to find the projects you’re looking for.";
+  const details = paused
+    ? [
+      "New applications and invites stop. Creators already working are told to hold.",
+      "Deadlines stop counting down and restart when you resume.",
+      "Money in escrow stays held. Nothing new is charged while paused.",
+      "Content that is already live stays live and keeps being tracked.",
+    ]
+    : [
+      "Change or clear a filter to broaden the list.",
+      "Check your spelling in the project search.",
+    ];
+
+  return <section className="mt-6 flex w-full flex-col items-center rounded-xl border border-line bg-white px-10 py-14 text-center">
+    <span className="flex size-[50px] items-center justify-center rounded-full bg-subtle text-secondary"><Pause size={22} /></span>
+    <h2 className="mt-3 text-[16px] font-semibold leading-6 text-ink">{title}</h2>
+    <p className="mt-3 w-full max-w-[520px] text-[13px] leading-5 text-secondary">{description}</p>
+    <div className="mt-5 w-full max-w-[560px] rounded-md bg-subtle p-5 text-left">
+      <h3 className="text-[14px] font-medium leading-[22px] text-ink">{paused ? "What happens when you pause" : "What you can do"}</h3>
+      <div className="mt-2.5 space-y-2.5">{details.map((detail) => <div className="flex items-start gap-2" key={detail}><Check size={14} className="mt-0.5 shrink-0 text-secondary" /><p className="text-[12px] leading-4 text-secondary">{detail}</p></div>)}</div>
+    </div>
+    {paused && <Button kind="secondary" size="s" className="mt-5" onClick={onGoToLive}>Go to live projects</Button>}
+  </section>;
+}
+
 export function BrandProjectsPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
@@ -83,6 +112,7 @@ export function BrandProjectsPage() {
   const tabCounts = useMemo(() => Object.fromEntries(tabs.map((tab) => [tab, tab === "All" ? projects.filter((project) => !["Archived", "Deleted"].includes(project.status)).length : projects.filter((project) => project.status === tab).length])) as Record<Status | "All", number>, []);
   const totalPages = Math.max(1, Math.ceil(filtered.length / 8));
   const visibleProjects = filtered.slice((page - 1) * 8, page * 8);
+  const isEmpty = filtered.length === 0;
   const allSelected = visibleProjects.length > 0 && visibleProjects.every((project) => selected.includes(project.id));
   const toggle = (id: number) => setSelected((current) => current.includes(id) ? current.filter((value) => value !== id) : [...current, id]);
   const clearFilters = () => { setType("All"); setPartnership("All"); setDuration("All"); setPlatform("All"); setPage(1); };
@@ -99,12 +129,12 @@ export function BrandProjectsPage() {
       </button>)}
     </nav>
 
-    <section className="mt-6 grid h-[196px] grid-cols-4 gap-3 rounded-xl border border-line bg-white p-5" aria-label="Project metrics">
+    {!isEmpty && <section className="mt-6 grid h-[196px] grid-cols-4 gap-3 rounded-xl border border-line bg-white p-5" aria-label="Project metrics">
       {kpis.map(({ icon: Icon, label, value, detail, iconClass }) => <article key={label} className="flex h-[154px] min-w-0 flex-col rounded-xl border border-line-subtle bg-white p-4">
         <span className={`flex size-9 items-center justify-center rounded-md text-white ${iconClass}`}><Icon size={18} /></span>
         <p className="mt-3 truncate text-[12px] leading-4 text-secondary">{label}</p><p className="text-[22px] font-semibold leading-7 tracking-[-.015em] text-ink">{value}</p><p className="mt-2 text-[12px] font-medium leading-4 text-tertiary">{detail}</p>
       </article>)}
-    </section>
+    </section>}
 
     <div className="mt-6 flex h-10 items-start gap-2">
       <label className="flex h-10 w-[280px] shrink-0 items-center gap-2 rounded-md border border-line bg-white px-3"><Search size={16} className="text-tertiary" /><input className="min-w-0 flex-1 bg-transparent text-[13px] leading-5 text-ink outline-none placeholder:text-tertiary" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Search projects" /></label>
@@ -117,7 +147,7 @@ export function BrandProjectsPage() {
 
     {selected.length > 0 && <div className="absolute z-10 mt-2 flex items-center gap-3 rounded-md bg-primary-subtle px-3 py-2 text-[13px] text-primary"><span>{selected.length} selected</span><button type="button" onClick={() => setSelected([])} className="font-medium">Clear selection</button></div>}
 
-    <section className="mt-6 overflow-x-auto rounded-xl border border-line bg-white">
+    {!isEmpty ? <section className="mt-6 overflow-x-auto rounded-xl border border-line bg-white">
       <table className="w-full min-w-[1114px] table-fixed border-collapse text-left">
         <colgroup><col className="w-[51px]" /><col className="w-[234px]" /><col className="w-[88px]" /><col className="w-[108px]" /><col className="w-[56px]" /><col className="w-[86px]" /><col className="w-[142px]" /><col className="w-[148px]" /><col className="w-[84px]" /><col className="w-[116px]" /></colgroup>
         <thead className="bg-subtle text-[11px] font-semibold leading-4 tracking-[0.06em] text-secondary"><tr className="h-[42px]">
@@ -136,11 +166,10 @@ export function BrandProjectsPage() {
           <td><div className="flex items-center gap-[10px]"><button onClick={() => navigate(ROUTES.brandProjectPublished)} type="button" className="inline-flex h-8 items-center gap-1 rounded-md border border-line px-2.5 text-[12px] font-medium text-ink"><Eye size={14} />View</button><button type="button" aria-label={`More actions for ${project.name}`} className="text-secondary hover:text-ink"><MoreHorizontal size={18} /></button></div></td>
         </tr>)}</tbody>
       </table>
-      {filtered.length === 0 && <p className="px-5 py-12 text-center text-[14px] text-secondary">No projects match these filters.</p>}
-    </section>
+    </section> : <EmptyProjectsState paused={active === "Paused"} onGoToLive={() => { setSearch(""); clearFilters(); setActive("Live"); setPage(1); }} />}
 
-    <footer className="mt-6 flex h-7 w-[720px] items-center justify-between text-[13px] leading-5 text-secondary">
+    {!isEmpty && <footer className="mt-6 flex h-7 w-[720px] items-center justify-between text-[13px] leading-5 text-secondary">
       <span>Showing {filtered.length ? `${(page - 1) * 8 + 1}–${Math.min(page * 8, filtered.length)}` : "0"} of {filtered.length} projects</span><div className="flex h-7 items-center gap-2"><Button kind="secondary" size="s" disabled={page === 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>Previous</Button>{Array.from({ length: totalPages }, (_, index) => index + 1).map((number) => <button type="button" key={number} onClick={() => setPage(number)} className={`size-7 rounded-md text-[12px] font-medium ${page === number ? "bg-primary text-white" : "text-secondary hover:bg-muted"}`}>{number}</button>)}<Button kind="secondary" size="s" disabled={page === totalPages} onClick={() => setPage((value) => Math.min(totalPages, value + 1))}>Next</Button></div>
-    </footer>
+    </footer>}
   </div></BrandShell>;
 }
