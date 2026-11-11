@@ -31,6 +31,7 @@ export const ROUTES = {
   brandNewProjectBudget: "/brand/projects/new/budget",
   brandNewProjectPayment: "/brand/projects/new/payment",
   brandNewProjectReview: "/brand/projects/new/review",
+  brandProjectPublished: "/brand/projects/new/published",
   agency: "/agency",
   creator: "/creator",
 } as const;
