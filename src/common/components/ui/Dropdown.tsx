@@ -11,7 +11,7 @@ type DropdownProps = {
   icon?: React.ReactNode;
   placeholder?: string;
   otherLabel?: string;
-  onOther?: () => void;
+  onOther?: (value: string) => void;
   compact?: boolean;
   className?: string;
 };
@@ -27,6 +27,8 @@ type MultiDropdownProps = Omit<DropdownProps, "value" | "onChange" | "onOther"> 
 
 export function Dropdown({ value, options, onChange, ariaLabel, icon, placeholder, otherLabel, onOther, compact = false, className = "" }: DropdownProps) {
   const [open, setOpen] = useState(false);
+  const [addingOther, setAddingOther] = useState(false);
+  const [otherValue, setOtherValue] = useState("");
   const root = useRef<HTMLDivElement>(null);
   const menuId = useId();
   const items = options.map((option) => typeof option === "string" ? { value: option } : option);
@@ -39,6 +41,7 @@ export function Dropdown({ value, options, onChange, ariaLabel, icon, placeholde
   }, []);
 
   const choose = (next: string) => { onChange(next); setOpen(false); };
+  const saveOther = () => { const next = otherValue.trim(); if (!next) return; onOther?.(next); choose(next); setOtherValue(""); setAddingOther(false); };
   return <div className={`relative min-w-0 ${className}`} ref={root}>
     <button aria-controls={menuId} aria-expanded={open} aria-haspopup="listbox" aria-label={ariaLabel} className={`flex w-full items-center gap-2 rounded-md border bg-white text-left text-[13px] leading-5 text-ink outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 ${compact ? "h-8 px-2.5" : "h-10 px-3"} ${open ? "border-primary" : "border-line"}`} onClick={() => setOpen((current) => !current)} type="button">
       {icon && <span className="flex size-4 shrink-0 items-center justify-center">{icon}</span>}
@@ -46,7 +49,7 @@ export function Dropdown({ value, options, onChange, ariaLabel, icon, placeholde
     </button>
     {open && <div className="absolute left-0 top-[calc(100%+6px)] z-30 w-full min-w-max overflow-hidden rounded-md border border-line bg-white p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.12)]" id={menuId} role="listbox" aria-label={ariaLabel}>
       {items.map((item) => { const active = item.value === value; return <button aria-selected={active} className={`flex w-full items-center gap-2.5 rounded-sm px-2.5 py-2 text-left text-[13px] leading-5 transition-colors ${active ? "bg-primary-subtle text-primary" : "text-ink hover:bg-subtle"}`} key={item.value} onClick={() => choose(item.value)} role="option" type="button"><span className="flex-1">{item.label ?? item.value}</span>{active && <Check size={14} />}</button>; })}
-      {otherLabel && <><div className="my-1 h-px bg-line-subtle" /><button className="flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-left text-[13px] leading-5 text-link transition-colors hover:bg-primary-subtle" onClick={() => { setOpen(false); onOther?.(); }} type="button"><Plus size={14} />{otherLabel}</button></>}
+      {otherLabel && <><div className="my-1 h-px bg-line-subtle" />{addingOther ? <div className="flex gap-2 px-2.5 py-2"><input autoFocus aria-label="Custom option" className="h-8 min-w-0 flex-1 rounded-md border border-line px-2 text-[13px] leading-5 outline-none focus:border-primary focus:ring-2 focus:ring-primary/15" onChange={(event) => setOtherValue(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); saveOther(); } }} placeholder="Describe the content" value={otherValue} /><button className="h-8 rounded-md bg-primary px-3 text-[13px] font-medium text-white disabled:opacity-45" disabled={!otherValue.trim()} onClick={saveOther} type="button">Save</button></div> : <button className="flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-left text-[13px] leading-5 text-link transition-colors hover:bg-primary-subtle" onClick={() => setAddingOther(true)} type="button"><Plus size={14} />{otherLabel}</button>}</>}
     </div>}
   </div>;
 }

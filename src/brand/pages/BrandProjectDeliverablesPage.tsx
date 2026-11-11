@@ -9,7 +9,7 @@ import { ROUTES } from "@/common/constants/routes";
 
 type Deliverable = { id: number; platform: "Instagram" | "YouTube"; content: string; quantity: number };
 const steps = ["Type", "Partnership", "Duration", "Details", "Creators", "Deliverables", "Budget", "Payment", "Review"];
-const contentOptions = ["Product demo (30 s)", "Product photo set (5)", "Unboxing (45 s)", "Tutorial (30 s)"];
+const contentOptions = ["Product demo (30 s)", "Unboxing (45 s)", "Product photo set (5)", "Before and after (15 s)", "Testimonial (60 s)", "How-to (30 s)", "Lifestyle photo set (5)", "Short ad cut (15 s)", "Routine walkthrough (60 s)"];
 
 export function BrandProjectDeliverablesPage() {
   const navigate = useNavigate();
@@ -19,6 +19,7 @@ export function BrandProjectDeliverablesPage() {
     { id: 2, platform: "Instagram", content: "Product photo set (5)", quantity: 1 },
     { id: 3, platform: "YouTube", content: "Unboxing (45 s)", quantity: 1 },
   ]);
+  const [customContentOptions, setCustomContentOptions] = useState<string[]>([]);
   const update = (id: number, patch: Partial<Deliverable>) => setDeliverables((items) => items.map((item) => item.id === id ? { ...item, ...patch } : item));
   const add = () => setDeliverables((items) => [...items, { id: Date.now(), platform: "Instagram", content: "Product demo (30 s)", quantity: 1 }]);
 
@@ -28,12 +29,12 @@ export function BrandProjectDeliverablesPage() {
     <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
       <motion.form initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .26 }} onSubmit={(event) => { event.preventDefault(); setSaved(true); }} className="rounded-xl border border-line bg-white px-5 py-6 sm:px-8 sm:py-7">
         <div><p className="text-[12px] font-semibold leading-4 tracking-[.06em] text-primary">STEP 6 OF 9</p><h2 className="mt-1.5 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">Deliverables</h2><p className="mt-1.5 max-w-4xl text-[14px] leading-[22px] text-secondary">Choose what each creator will deliver. You pick the product and set the deadline for each deliverable when you invite creators and can edit it afterwards. Payment is released when each deliverable is approved.</p></div>
-        <section className="mt-5 overflow-x-auto rounded-xl border border-line" aria-label="Deliverables">
-          <div className="grid grid-cols-[minmax(132px,156px)_minmax(0,1fr)_46px] gap-2 bg-subtle px-3 py-2"><span className="text-[11px] font-semibold leading-4 text-secondary">Platform</span><span className="text-[11px] font-semibold leading-4 text-secondary">Content</span><span className="text-[11px] font-semibold leading-4 text-secondary">Qty</span></div>
-          <AnimatePresence initial={false}>{deliverables.map((item) => <motion.div key={item.id} layout initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: .18 }} className="grid grid-cols-[minmax(132px,156px)_minmax(0,1fr)_46px] items-center gap-2 border-t border-line-subtle px-3 py-1.5">
+        <section className="relative z-0 mt-5 overflow-visible rounded-xl border border-line" aria-label="Deliverables">
+          <div className="grid grid-cols-[minmax(132px,156px)_minmax(0,1fr)_64px] gap-2 bg-subtle px-3 py-2"><span className="text-[11px] font-semibold leading-4 text-secondary">Platform</span><span className="text-[11px] font-semibold leading-4 text-secondary">Content</span><span className="text-[11px] font-semibold leading-4 text-secondary">Qty</span></div>
+          <AnimatePresence initial={false}>{deliverables.map((item) => <motion.div key={item.id} layout initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: .18 }} className="relative z-0 grid grid-cols-[minmax(132px,156px)_minmax(0,1fr)_64px] items-center gap-2 border-t border-line-subtle px-3 py-1.5 focus-within:z-20">
             <Dropdown compact value={item.platform} onChange={(value) => update(item.id, { platform: value as Deliverable["platform"] })} icon={<img alt="" src={item.platform === "Instagram" ? "/assets/platform-instagram.svg" : "/assets/platform-youtube.svg"} className="size-4" />} ariaLabel="Platform" options={["Instagram", "YouTube"]} />
-            <Dropdown compact value={item.content} onChange={(value) => update(item.id, { content: value })} ariaLabel="Content type" options={contentOptions} otherLabel="Other, describe the content" />
-            <Dropdown compact value={String(item.quantity)} onChange={(value) => update(item.id, { quantity: Number(value) })} ariaLabel="Quantity" options={["1", "2", "3", "4", "5"]} />
+            <Dropdown compact value={item.content} onChange={(value) => update(item.id, { content: value })} ariaLabel="Content type" options={[...contentOptions, ...customContentOptions]} otherLabel="Other, describe the content" onOther={(content) => setCustomContentOptions((current) => current.includes(content) ? current : [...current, content])} />
+            <input aria-label="Quantity" className="h-8 w-full rounded-md border border-line bg-white px-2.5 text-[13px] leading-5 text-ink outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" min="1" onChange={(event) => update(item.id, { quantity: Math.max(1, Number(event.target.value) || 1) })} type="number" value={item.quantity} />
           </motion.div>)}</AnimatePresence>
         </section>
         <button type="button" onClick={add} className="mt-4 inline-flex items-center gap-1 text-[14px] font-medium leading-[22px] text-primary transition hover:text-primary-hover"><Plus size={16} />Add deliverable</button>
