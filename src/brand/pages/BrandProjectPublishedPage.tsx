@@ -24,6 +24,14 @@ import { motion } from "motion/react";
 
 type Lifecycle = "Upcoming" | "Live" | "Paused" | "Completed" | "Archived" | "Deleted";
 type Confirm = "Pause" | "Archive" | "Delete" | null;
+type ProjectCreator = {
+  name: string;
+  handle: string;
+  avatar: string;
+  delivered: string;
+  nextStep: string;
+  stage: "Accepted" | "Invited";
+};
 const tabs = [
   "Overview",
   "Applications",
@@ -52,6 +60,48 @@ const meta: Record<Lifecycle, { tone: string; detail: string }> = {
   Archived: { tone: "bg-muted text-secondary", detail: "Archived · read-only" },
   Deleted: { tone: "bg-[#fde4e3] text-[#db231f]", detail: "Deleted · kept for 30 days" },
 };
+const invitedCreators: ProjectCreator[] = [
+  {
+    name: "Meera Iyer",
+    handle: "@meerabeauty",
+    avatar: "/assets/creators/meera-iyer.png",
+    delivered: "0 / 4",
+    nextStep: "Accepted · brief shared",
+    stage: "Accepted",
+  },
+  {
+    name: "Ishita Rao",
+    handle: "@ishitarao",
+    avatar: "/assets/creators/ishita-rao.png",
+    delivered: "0 / 4",
+    nextStep: "Accepted · brief shared",
+    stage: "Accepted",
+  },
+  {
+    name: "Emma Clarke",
+    handle: "@emmaclarke",
+    avatar: "/assets/creators/emma-clarke.png",
+    delivered: "0 / 4",
+    nextStep: "Accepted · brief shared",
+    stage: "Accepted",
+  },
+  {
+    name: "Kavya Reddy",
+    handle: "@kavyareddy",
+    avatar: "/assets/creators/kavya-reddy.png",
+    delivered: "–",
+    nextStep: "Invite pending · expires 3 Oct",
+    stage: "Invited",
+  },
+  {
+    name: "Tara Bose",
+    handle: "@tarabose",
+    avatar: "/assets/creators/tara-bose.png",
+    delivered: "–",
+    nextStep: "Invite pending · expires 3 Oct",
+    stage: "Invited",
+  },
+];
 
 function Badge({ status }: { status: Lifecycle }) {
   return (
@@ -130,6 +180,8 @@ export function BrandProjectPublishedPage() {
   const [more, setMore] = useState(false);
   const [confirm, setConfirm] = useState<Confirm>(null);
   const locked = status === "Archived" || status === "Deleted";
+  // Replace this derived sample with the accepted/invited creator records from the project API.
+  const creators = status === "Live" ? invitedCreators : [];
   const resolve = () => {
     if (confirm === "Pause") setStatus("Paused");
     if (confirm === "Archive") setStatus("Archived");
@@ -342,8 +394,19 @@ export function BrandProjectPublishedPage() {
                       transition={{ duration: 0.45, ease: "easeOut" }}
                       className="relative grid size-[120px] shrink-0 place-items-center"
                     >
-                      <svg aria-hidden="true" className="absolute inset-0 size-full" viewBox="0 0 120 120">
-                        <circle cx="60" cy="60" r="50" fill="none" stroke="#edeff3" strokeWidth="18" />
+                      <svg
+                        aria-hidden="true"
+                        className="absolute inset-0 size-full"
+                        viewBox="0 0 120 120"
+                      >
+                        <circle
+                          cx="60"
+                          cy="60"
+                          r="50"
+                          fill="none"
+                          stroke="#edeff3"
+                          strokeWidth="18"
+                        />
                       </svg>
                       <div className="relative grid size-[56px] place-items-center rounded-full bg-white text-center">
                         <p className="text-[14px] font-medium leading-[22px] text-ink">0 of 16</p>
@@ -400,17 +463,80 @@ export function BrandProjectPublishedPage() {
                   className="rounded-xl border border-line bg-white p-5"
                 >
                   <h2 className="text-[16px] font-semibold text-ink">Creators</h2>
-                  <p className="text-[12px] text-secondary">No creators yet</p>
-                  <div className="mt-4 rounded-lg bg-[#f8f9fb] px-5 py-10 text-center">
-                    <p className="text-[14px] font-medium">No creators invited yet</p>
-                    <p className="mx-auto mt-2 max-w-[560px] text-[12px] leading-4 text-secondary">
-                      Invite creators you’ve shortlisted, or find new ones in Creator discovery.
-                      Accepted creators will appear here.
-                    </p>
-                    <Button className="mt-4" disabled={locked} leadingIcon={<Users size={16} />}>
-                      Invite creators
-                    </Button>
-                  </div>
+                  <p className="text-[12px] text-secondary">
+                    {creators.length ? "Who has accepted · launch on 7 Oct" : "No creators yet"}
+                  </p>
+                  {creators.length ? (
+                    <div className="mt-4 overflow-x-auto rounded-lg border border-line">
+                      <div className="min-w-[640px]">
+                        <div className="grid grid-cols-[minmax(0,1fr)_110px_190px_110px] gap-3 bg-subtle px-3.5 py-2.5 text-[12px] font-semibold tracking-[.06em] text-secondary">
+                          <span>CREATOR</span>
+                          <span>DELIVERED</span>
+                          <span>NEXT STEP</span>
+                          <span>STAGE</span>
+                        </div>
+                        {creators.map((creator) => {
+                          const accepted = creator.stage === "Accepted";
+                          return (
+                            <div
+                              className="grid grid-cols-[minmax(0,1fr)_110px_190px_110px] items-center gap-3 border-t border-line-subtle px-3.5 py-[11px]"
+                              key={creator.handle}
+                            >
+                              <div className="flex min-w-0 items-center gap-2.5">
+                                <img
+                                  src={creator.avatar}
+                                  alt=""
+                                  className="size-8 shrink-0 rounded-full object-cover"
+                                />
+                                <div className="min-w-0">
+                                  <p className="truncate text-[14px] font-medium leading-[22px] text-ink">
+                                    {creator.name}
+                                  </p>
+                                  <p className="truncate text-[12px] leading-4 text-secondary">
+                                    {creator.handle}
+                                  </p>
+                                </div>
+                              </div>
+                              <p className="text-[13px] font-medium leading-5 text-ink">
+                                {creator.delivered}
+                              </p>
+                              <p
+                                className={`text-[13px] font-medium leading-5 ${accepted ? "text-ink" : "text-[#f29b07]"}`}
+                              >
+                                {creator.nextStep}
+                              </p>
+                              <div className="space-y-[5px]">
+                                <div className="flex h-2 w-[85px] items-center gap-1">
+                                  {Array.from({ length: 5 }, (_, index) => (
+                                    <span
+                                      className={`size-2 rounded-full ${accepted ? (index < 2 ? "bg-success" : "bg-line") : index === 0 ? "bg-[#f29b07]" : "bg-line"}`}
+                                      key={index}
+                                    />
+                                  ))}
+                                </div>
+                                <p
+                                  className={`text-[12px] font-medium ${accepted ? "text-success" : "text-[#f29b07]"}`}
+                                >
+                                  {creator.stage}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="mt-4 rounded-lg bg-[#f8f9fb] px-5 py-10 text-center">
+                      <p className="text-[14px] font-medium">No creators invited yet</p>
+                      <p className="mx-auto mt-2 max-w-[560px] text-[12px] leading-4 text-secondary">
+                        Invite creators you’ve shortlisted, or find new ones in Creator discovery.
+                        Accepted creators will appear here.
+                      </p>
+                      <Button className="mt-4" disabled={locked} leadingIcon={<Users size={16} />}>
+                        Invite creators
+                      </Button>
+                    </div>
+                  )}
                 </motion.section>
               </div>
               <aside className="rounded-xl border border-line bg-white p-5">
