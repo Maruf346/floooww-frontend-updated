@@ -139,7 +139,7 @@ export function BrandProjectPublishedPage() {
   };
   return (
     <BrandShell>
-      <main className="mx-auto w-full max-w-[1440px] pb-10">
+      <main className="w-full pb-10">
         <header className="flex flex-col justify-between gap-4 lg:h-[122px] lg:flex-row">
           <div>
             <p className="text-[12px] leading-4 text-tertiary">
@@ -253,7 +253,7 @@ export function BrandProjectPublishedPage() {
           </section>
         ) : (
           <>
-            <section className="mt-6 grid gap-3 rounded-xl border border-line bg-white p-2 sm:grid-cols-2 xl:grid-cols-4">
+            <section className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               <Metric
                 icon={Megaphone}
                 color="bg-primary"
@@ -343,9 +343,9 @@ export function BrandProjectPublishedPage() {
                       className="relative grid size-[120px] shrink-0 place-items-center"
                     >
                       <svg aria-hidden="true" className="absolute inset-0 size-full" viewBox="0 0 120 120">
-                        <circle cx="60" cy="60" r="55" fill="none" stroke="#edeff3" strokeWidth="10" />
+                        <circle cx="60" cy="60" r="50" fill="none" stroke="#edeff3" strokeWidth="18" />
                       </svg>
-                      <div className="relative grid size-[100px] place-items-center rounded-full bg-white text-center">
+                      <div className="relative grid size-[56px] place-items-center rounded-full bg-white text-center">
                         <p className="text-[14px] font-medium leading-[22px] text-ink">0 of 16</p>
                         <p className="text-[12px] leading-4 text-tertiary">filled</p>
                       </div>
