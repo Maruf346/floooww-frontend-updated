@@ -68,7 +68,7 @@ export function ProjectConfirmModal({
         `All ${creatorCount} creators get a message in Messages`,
       ],
       field: {
-        label: "Message to creators (optional)",
+        label: "Reason (shared with creators)",
         placeholder: "e.g. Waiting on restock from factory, back in 10 days",
       },
       confirmButtonText: "Pause project",
@@ -103,8 +103,8 @@ export function ProjectConfirmModal({
         "Payments and GST invoices stay in Payments",
       ],
       field: {
-        label: "Reason for deleting (optional)",
-        placeholder: "e.g. Campaign cancelled, created by mistake",
+        label: "Type the project name to confirm",
+        placeholder: project.name,
       },
       confirmButtonText: "Delete project",
       confirmButtonIcon: <Trash2 size={16} />,
@@ -209,6 +209,9 @@ export function ProjectConfirmModal({
             </Button>
             <Button
               kind={action === "Delete" ? "danger" : undefined}
+              disabled={
+                action === "Delete" && note.trim().toLowerCase() !== project.name.toLowerCase()
+              }
               leadingIcon={config.confirmButtonIcon}
               onClick={() => onConfirm(action, note)}
               className={`h-10 min-w-[148px] px-4 font-medium shadow-sm transition active:scale-[0.98] ${config.confirmButtonClass}`}

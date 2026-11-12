@@ -23,6 +23,7 @@ import {
   ProjectConfirmModal,
   type ProjectConfirmAction,
 } from "@/brand/components/ProjectConfirmModal";
+import { ShareProjectModal } from "@/brand/components/ShareProjectModal";
 import { ROUTES } from "@/common/constants/routes";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "motion/react";
@@ -334,6 +335,7 @@ export function BrandProjectPublishedPage() {
   const [status, setStatus] = useState<Lifecycle>(project.detailStatus);
   const [tab, setTab] = useState("Overview");
   const [more, setMore] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [confirm, setConfirm] = useState<Confirm>(null);
   const locked = status === "Archived" || status === "Deleted";
   useEffect(() => setStatus(project.detailStatus), [project.id, project.detailStatus]);
@@ -418,7 +420,7 @@ export function BrandProjectPublishedPage() {
             <Button
               kind="secondary"
               leadingIcon={<Share2 size={16} />}
-              onClick={() => navigator.clipboard?.writeText(window.location.href)}
+              onClick={() => setShareOpen(true)}
             >
               Share
             </Button>
@@ -980,6 +982,8 @@ export function BrandProjectPublishedPage() {
         onConfirm={resolve}
         onCancel={() => setConfirm(null)}
       />
+      <ShareProjectModal project={project} isOpen={shareOpen} onClose={() => setShareOpen(false)} />
+      <ShareProjectModal project={project} isOpen={shareOpen} onClose={() => setShareOpen(false)} />
     </BrandShell>
   );
 }
