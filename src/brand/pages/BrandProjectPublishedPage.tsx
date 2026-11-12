@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Archive,
   CalendarDays,
@@ -19,10 +19,11 @@ import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { ROUTES } from "@/common/constants/routes";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "motion/react";
+import { getProject } from "@/brand/data/projects";
 
-type Lifecycle = "Upcoming" | "Live" | "Paused" | "Completed" | "Archived" | "Deleted";
+type Lifecycle = "Draft" | "Upcoming" | "Live" | "Paused" | "Completed" | "Archived" | "Deleted";
 type Confirm = "Pause" | "Archive" | "Delete" | null;
 type ProjectCreator = {
   name: string;
@@ -50,6 +51,7 @@ const timeline = [
   ["Project ends", "Usage rights until 7 Dec", "7 Nov"],
 ];
 const meta: Record<Lifecycle, { tone: string; detail: string }> = {
+  Draft: { tone: "bg-muted text-secondary", detail: "Draft · not published" },
   Upcoming: {
     tone: "bg-primary-subtle text-primary",
     detail: "7 Oct – 7 Nov 2026 · starts in 17 days",
@@ -60,6 +62,188 @@ const meta: Record<Lifecycle, { tone: string; detail: string }> = {
   Archived: { tone: "bg-muted text-secondary", detail: "Archived · read-only" },
   Deleted: { tone: "bg-[#fde4e3] text-[#db231f]", detail: "Deleted · kept for 30 days" },
 };
+type ProjectProfile = {
+  id: number;
+  name: string;
+  status: Lifecycle;
+  type: string;
+  partnership: string;
+  duration: string;
+  budget: string;
+  budgetNote: string;
+  creators: number;
+  deliverables: number;
+};
+const projectProfiles: ProjectProfile[] = [
+  {
+    id: 1,
+    name: "Vitamin-C Serum",
+    status: "Live",
+    type: "Influencer",
+    partnership: "Paid · one-time",
+    duration: "7 Oct – 7 Nov",
+    budget: "₹2 L",
+    budgetNote: "₹58,000 in escrow",
+    creators: 16,
+    deliverables: 64,
+  },
+  {
+    id: 2,
+    name: "Lip Tint Drop",
+    status: "Live",
+    type: "UGC",
+    partnership: "Paid · one-time",
+    duration: "10 Oct – 24 Oct",
+    budget: "₹80,000",
+    budgetNote: "₹15,200 in escrow",
+    creators: 6,
+    deliverables: 18,
+  },
+  {
+    id: 3,
+    name: "Glow Squad",
+    status: "Live",
+    type: "Influencer",
+    partnership: "Paid · long-term",
+    duration: "1 Sep – 28 Feb",
+    budget: "₹75,000 / month",
+    budgetNote: "₹4.5 L total commitment",
+    creators: 6,
+    deliverables: 36,
+  },
+  {
+    id: 4,
+    name: "Monsoon Sunscreen",
+    status: "Live",
+    type: "Influencer",
+    partnership: "Paid · one-time",
+    duration: "15 Sep – 15 Oct",
+    budget: "₹1.5 L",
+    budgetNote: "₹24,000 in escrow",
+    creators: 12,
+    deliverables: 48,
+  },
+  {
+    id: 5,
+    name: "Hydration Bundle",
+    status: "Live",
+    type: "Influencer",
+    partnership: "Gift exchange",
+    duration: "1 Oct – 31 Oct",
+    budget: "₹52,000",
+    budgetNote: "Product-only partnerships",
+    creators: 8,
+    deliverables: 24,
+  },
+  {
+    id: 6,
+    name: "Skin Quiz Leads",
+    status: "Upcoming",
+    type: "UGC",
+    partnership: "Paid · one-time",
+    duration: "4 Nov – 4 Dec",
+    budget: "₹1.2 L",
+    budgetNote: "₹63,540 left to fund",
+    creators: 0,
+    deliverables: 24,
+  },
+  {
+    id: 7,
+    name: "Holi Colour Care",
+    status: "Draft",
+    type: "Influencer",
+    partnership: "Paid · one-time",
+    duration: "1 Mar – 31 Mar",
+    budget: "₹1.6 L",
+    budgetNote: "Not funded",
+    creators: 0,
+    deliverables: 40,
+  },
+  {
+    id: 8,
+    name: "Winter Lip Care",
+    status: "Draft",
+    type: "Influencer",
+    partnership: "Gift exchange",
+    duration: "1 Dec – 31 Dec",
+    budget: "Gift",
+    budgetNote: "Not funded",
+    creators: 0,
+    deliverables: 20,
+  },
+  {
+    id: 9,
+    name: "Summer Essentials",
+    status: "Completed",
+    type: "Influencer",
+    partnership: "Paid · one-time",
+    duration: "1 Jun – 30 Jun",
+    budget: "₹1.8 L",
+    budgetNote: "Fully paid",
+    creators: 15,
+    deliverables: 60,
+  },
+  {
+    id: 10,
+    name: "Daily Sunscreen",
+    status: "Completed",
+    type: "Influencer",
+    partnership: "Paid · one-time",
+    duration: "1 May – 31 May",
+    budget: "₹1.1 L",
+    budgetNote: "Fully paid",
+    creators: 12,
+    deliverables: 36,
+  },
+  {
+    id: 11,
+    name: "Glow Routine",
+    status: "Completed",
+    type: "UGC",
+    partnership: "Paid · one-time",
+    duration: "1 Apr – 30 Apr",
+    budget: "₹90,000",
+    budgetNote: "Fully paid",
+    creators: 9,
+    deliverables: 27,
+  },
+  {
+    id: 12,
+    name: "Monsoon Edit",
+    status: "Archived",
+    type: "Influencer",
+    partnership: "Paid · one-time",
+    duration: "1 Jul – 31 Jul",
+    budget: "₹1.25 L",
+    budgetNote: "Archived",
+    creators: 18,
+    deliverables: 54,
+  },
+  {
+    id: 13,
+    name: "Skin Barrier Set",
+    status: "Archived",
+    type: "Influencer",
+    partnership: "Gift exchange",
+    duration: "1 Aug – 31 Aug",
+    budget: "Gift",
+    budgetNote: "Archived",
+    creators: 7,
+    deliverables: 21,
+  },
+  {
+    id: 14,
+    name: "Raksha Bandhan Gifting",
+    status: "Deleted",
+    type: "Influencer",
+    partnership: "Gift exchange",
+    duration: "1 Aug – 20 Aug",
+    budget: "Gift",
+    budgetNote: "Deleted",
+    creators: 0,
+    deliverables: 16,
+  },
+];
 const invitedCreators: ProjectCreator[] = [
   {
     name: "Meera Iyer",
@@ -175,13 +359,53 @@ function ConfirmDialog({
 
 export function BrandProjectPublishedPage() {
   const navigate = useNavigate();
-  const [status, setStatus] = useState<Lifecycle>("Upcoming");
+  const { projectId } = useParams();
+  const project = getProject(Number(projectId));
+  const [status, setStatus] = useState<Lifecycle>(project.detailStatus);
   const [tab, setTab] = useState("Overview");
   const [more, setMore] = useState(false);
   const [confirm, setConfirm] = useState<Confirm>(null);
   const locked = status === "Archived" || status === "Deleted";
-  // Replace this derived sample with the accepted/invited creator records from the project API.
-  const creators = status === "Live" ? invitedCreators : [];
+  useEffect(() => setStatus(project.detailStatus), [project.id, project.detailStatus]);
+  // Replace this sample with the accepted/invited creator records from the project API.
+  // An empty API response continues to render the existing empty state.
+  const creators = project.creatorCount > 0 ? invitedCreators : [];
+  const creatorProgress =
+    project.creators > 0
+      ? (() => {
+          const allDelivered = Math.max(1, Math.round(project.creators * 0.19));
+          const inProgress = Math.max(1, Math.round(project.creators * 0.31));
+          const notStarted = Math.max(0, Math.round(project.creators * 0.38));
+          const behind = Math.max(0, project.creators - allDelivered - inProgress - notStarted);
+          const stages = [
+            {
+              label: "All delivered",
+              count: allDelivered,
+              color: "#149D46",
+              className: "bg-success",
+            },
+            {
+              label: "In progress",
+              count: inProgress,
+              color: "#2563EB",
+              className: "bg-[#2563EB]",
+            },
+            {
+              label: "Not started",
+              count: notStarted,
+              color: "#7399F2",
+              className: "bg-[#7399F2]",
+            },
+            {
+              label: "Behind or disputed",
+              count: behind,
+              color: "#F29B07",
+              className: "bg-[#F29B07]",
+            },
+          ];
+          return { delivered: allDelivered + inProgress, stages };
+        })()
+      : null;
   const resolve = () => {
     if (confirm === "Pause") setStatus("Paused");
     if (confirm === "Archive") setStatus("Archived");
@@ -195,10 +419,10 @@ export function BrandProjectPublishedPage() {
         <header className="flex flex-col justify-between gap-4 lg:h-[122px] lg:flex-row">
           <div>
             <p className="text-[12px] leading-4 text-tertiary">
-              Projects&nbsp;&nbsp;/&nbsp;&nbsp;Vitamin-C Serum
+              Projects&nbsp;&nbsp;/&nbsp;&nbsp;{project.name}
             </p>
             <h1 className="mt-1 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">
-              Vitamin-C Serum
+              {project.name}
             </h1>
             <div className="mt-1 flex flex-wrap items-center gap-2">
               <Badge status={status} />
@@ -310,29 +534,37 @@ export function BrandProjectPublishedPage() {
                 icon={Megaphone}
                 color="bg-primary"
                 label="Project type"
-                value="Influencer"
-                detail="Paid · one-time · 7 Oct – 7 Nov"
+                value={project.type}
+                detail={`${project.partnership} · ${project.duration}`}
               />
               <Metric
                 icon={Users}
                 color="bg-[#1eb2fd]"
                 label="Creators"
-                value="0"
-                detail="of 16 places · none invited yet"
+                value={String(project.creators)}
+                detail={
+                  project.creators
+                    ? `of ${project.creators} places · creator team active`
+                    : "No creators invited yet"
+                }
               />
               <Metric
                 icon={WalletCards}
                 color="bg-[#f29b07]"
                 label="Budget"
-                value="₹6 L"
-                detail="₹2 L funded at publish · ₹0 released"
+                value={project.budget}
+                detail={project.budgetNote}
               />
               <Metric
                 icon={Video}
                 color="bg-[#1eb2fd]"
                 label="Content"
-                value="0"
-                detail="of 64 deliverables · starts 7 Oct"
+                value={
+                  project.status === "Draft" || project.status === "Upcoming"
+                    ? "0"
+                    : String(Math.round(project.deliverables / 2))
+                }
+                detail={`of ${project.deliverables} deliverables · ${project.status === "Completed" ? "complete" : "in progress"}`}
               />
             </section>
             <section className="mt-6 rounded-xl border border-line bg-white p-5">
@@ -385,7 +617,9 @@ export function BrandProjectPublishedPage() {
                 >
                   <h2 className="text-[16px] font-semibold leading-6 text-ink">Project progress</h2>
                   <p className="text-[12px] leading-4 text-secondary">
-                    16 places · no creators invited yet
+                    {creators.length
+                      ? `${project.creators} creators in this project`
+                      : "No creators invited yet"}
                   </p>
                   <div className="mt-4 flex flex-col items-center gap-5 sm:flex-row">
                     <motion.div
@@ -407,25 +641,92 @@ export function BrandProjectPublishedPage() {
                           stroke="#edeff3"
                           strokeWidth="18"
                         />
+                        {creators.length > 0 && (
+                          <>
+                            <circle
+                              cx="60"
+                              cy="60"
+                              r="50"
+                              fill="none"
+                              pathLength="100"
+                              stroke="#149D46"
+                              strokeWidth="18"
+                              strokeDasharray="17.5 82.5"
+                              transform="rotate(-90 60 60)"
+                            />
+                            <circle
+                              cx="60"
+                              cy="60"
+                              r="50"
+                              fill="none"
+                              pathLength="100"
+                              stroke="#2563EB"
+                              strokeWidth="18"
+                              strokeDasharray="30 70"
+                              strokeDashoffset="-18.75"
+                              transform="rotate(-90 60 60)"
+                            />
+                            <circle
+                              cx="60"
+                              cy="60"
+                              r="50"
+                              fill="none"
+                              pathLength="100"
+                              stroke="#7399F2"
+                              strokeWidth="18"
+                              strokeDasharray="36.25 63.75"
+                              strokeDashoffset="-50"
+                              transform="rotate(-90 60 60)"
+                            />
+                            <circle
+                              cx="60"
+                              cy="60"
+                              r="50"
+                              fill="none"
+                              pathLength="100"
+                              stroke="#F29B07"
+                              strokeWidth="18"
+                              strokeDasharray="11.25 88.75"
+                              strokeDashoffset="-87.5"
+                              transform="rotate(-90 60 60)"
+                            />
+                          </>
+                        )}
                       </svg>
                       <div className="relative grid size-[56px] place-items-center rounded-full bg-white text-center">
-                        <p className="text-[14px] font-medium leading-[22px] text-ink">0 of 16</p>
-                        <p className="text-[12px] leading-4 text-tertiary">filled</p>
+                        <p className="text-[14px] font-medium leading-[22px] text-ink">
+                          {creatorProgress
+                            ? `${creatorProgress.delivered} of ${project.creators}`
+                            : "0 of 16"}
+                        </p>
+                        <p className="text-[12px] leading-4 text-tertiary">
+                          {creators.length ? "delivered" : "filled"}
+                        </p>
                       </div>
                     </motion.div>
                     <div className="w-full space-y-2.5">
-                      <div className="flex items-center gap-2 text-[13px] leading-5 text-ink">
-                        <span className="size-2.5 rounded-full bg-success" />
-                        <span className="flex-1">Accepted</span>
-                        <span className="font-medium text-secondary">0</span>
-                        <span className="font-medium">0%</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-[13px] leading-5 text-ink">
-                        <span className="size-2.5 rounded-full bg-primary" />
-                        <span className="flex-1">Places open</span>
-                        <span className="font-medium text-secondary">16</span>
-                        <span className="font-medium">100%</span>
-                      </div>
+                      {(creatorProgress
+                        ? creatorProgress.stages.map((stage) => [
+                            stage.label,
+                            String(stage.count),
+                            `${Math.round((stage.count / project.creators) * 100)}%`,
+                            stage.className,
+                          ])
+                        : [
+                            ["Accepted", "0", "0%", "bg-success"],
+                            ["Places open", "16", "100%", "bg-primary"],
+                          ]
+                      ).map(([label, count, percent, color]) => (
+                        <div
+                          className="flex items-center gap-2 text-[13px] leading-5 text-ink"
+                          key={label}
+                        >
+                          <span className={`size-2.5 rounded-full ${color}`} />
+                          <span className="flex-1">{label}</span>
+                          <span className="font-medium text-secondary">{count}</span>
+                          <span className="font-medium">{percent}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </motion.section>

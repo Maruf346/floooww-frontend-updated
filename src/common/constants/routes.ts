@@ -33,8 +33,11 @@ export const ROUTES = {
   brandNewProjectPayment: "/brand/projects/new/payment",
   brandNewProjectReview: "/brand/projects/new/review",
   brandProjectPublished: "/brand/projects/new/published",
+  brandProject: "/brand/projects/:projectId",
   agency: "/agency",
   creator: "/creator",
 } as const;
+
+export const brandProjectRoute = (projectId: number | string) => `/brand/projects/${projectId}`;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];

@@ -1,0 +1,52 @@
+import { asset } from "@/common/utils/asset";
+
+export type ProjectStatus = "Live" | "Upcoming" | "Completed" | "Drafts" | "Paused" | "Archived" | "Deleted";
+export type DetailStatus = "Draft" | "Upcoming" | "Live" | "Paused" | "Completed" | "Archived" | "Deleted";
+
+export type Project = {
+  id: number;
+  name: string;
+  type: string;
+  platform: string;
+  status: ProjectStatus;
+  apps: number;
+  approved: number;
+  budget: string;
+  budgetNote: string;
+  progress: number;
+  updated: string;
+  image?: string;
+  accent: string;
+  cycle?: string;
+  showPace?: boolean;
+  rowHeight: number;
+  deletedAt?: string;
+  deletedBy?: string;
+  removalAt?: string;
+  removalNote?: string;
+  projectType: string;
+  partnership: string;
+  duration: string;
+  detailStatus: DetailStatus;
+  creatorCount: number;
+  deliverableCount: number;
+};
+
+export const projects: Project[] = [
+  { id: 1, name: "Vitamin-C Serum", type: "Influencer · Paid · One-time", platform: "Instagram · YouTube", status: "Live", apps: 28, approved: 16, budget: "₹2,00,000", budgetNote: "29% in escrow", progress: 69, updated: "2 h ago", image: asset("dashboard/project-vitamin-c.png"), accent: "bg-amber-100", rowHeight: 73, projectType: "Influencer", partnership: "Paid · one-time", duration: "7 Oct – 7 Nov", detailStatus: "Live", creatorCount: 16, deliverableCount: 64 },
+  { id: 2, name: "Lip Tint Drop", type: "UGC · Paid · One-time", platform: "Instagram", status: "Live", apps: 10, approved: 6, budget: "₹80,000", budgetNote: "19% in escrow", progress: 108, updated: "Yesterday", image: asset("dashboard/project-lip-tint.png"), accent: "bg-rose-100", showPace: true, rowHeight: 73, projectType: "UGC", partnership: "Paid · one-time", duration: "10 Oct – 24 Oct", detailStatus: "Live", creatorCount: 6, deliverableCount: 18 },
+  { id: 3, name: "Glow Squad", type: "Influencer · Paid · Long-term", platform: "Instagram · YouTube", status: "Live", apps: 14, approved: 6, budget: "₹75,000 / month", budgetNote: "₹4,50,000 total", progress: 95, updated: "3 d ago", image: asset("dashboard/project-glow-squad.png"), accent: "bg-violet-100", cycle: "M3/6", rowHeight: 93, projectType: "Influencer", partnership: "Paid · long-term", duration: "1 Sep – 28 Feb", detailStatus: "Live", creatorCount: 6, deliverableCount: 36 },
+  { id: 4, name: "Monsoon Sunscreen", type: "Influencer · Paid · One-time", platform: "Instagram · YouTube", status: "Live", apps: 19, approved: 12, budget: "₹1,50,000", budgetNote: "16% in escrow", progress: 85, updated: "1 d ago", image: asset("dashboard/project-monsoon-sunscreen.png"), accent: "bg-sky-100", rowHeight: 73, projectType: "Influencer", partnership: "Paid · one-time", duration: "15 Sep – 15 Oct", detailStatus: "Live", creatorCount: 12, deliverableCount: 48 },
+  { id: 5, name: "Hydration Bundle", type: "Influencer · Gift exchange · One-time", platform: "Instagram", status: "Live", apps: 8, approved: 8, budget: "₹52,000", budgetNote: "product, no fee", progress: 69, updated: "4 d ago", image: asset("dashboard/project-hydration-bundle.png"), accent: "bg-emerald-100", showPace: true, rowHeight: 86, projectType: "Influencer", partnership: "Gift exchange", duration: "1 Oct – 31 Oct", detailStatus: "Live", creatorCount: 8, deliverableCount: 24 },
+  { id: 6, name: "Skin Quiz Leads", type: "UGC · Paid · One-time", platform: "Instagram · YouTube", status: "Upcoming", apps: 7, approved: 3, budget: "₹1,20,000", budgetNote: "₹63,540 to fund", progress: 0, updated: "5 d ago", image: asset("dashboard/project-skin-quiz.png"), accent: "bg-teal-100", rowHeight: 73, projectType: "UGC", partnership: "Paid · one-time", duration: "4 Nov – 4 Dec", detailStatus: "Upcoming", creatorCount: 0, deliverableCount: 24 },
+  { id: 7, name: "Holi Colour Care", type: "Influencer · Paid · One-time", platform: "Instagram", status: "Drafts", apps: 0, approved: 0, budget: "₹1,60,000", budgetNote: "not funded", progress: 0, updated: "Today", accent: "bg-orange-100", rowHeight: 73, projectType: "Influencer", partnership: "Paid · one-time", duration: "1 Mar – 31 Mar", detailStatus: "Draft", creatorCount: 0, deliverableCount: 40 },
+  { id: 8, name: "Winter Lip Care", type: "Influencer · Gift exchange · One-time", platform: "Instagram", status: "Drafts", apps: 0, approved: 0, budget: "Gift", budgetNote: "not funded", progress: 0, updated: "2 w ago", accent: "bg-pink-100", rowHeight: 86, projectType: "Influencer", partnership: "Gift exchange", duration: "1 Dec – 31 Dec", detailStatus: "Draft", creatorCount: 0, deliverableCount: 20 },
+  { id: 9, name: "Summer Essentials", type: "Influencer · Paid · One-time", platform: "Instagram · Pinterest", status: "Completed", apps: 22, approved: 15, budget: "₹1,80,000", budgetNote: "fully paid", progress: 100, updated: "6 d ago", accent: "bg-yellow-100", rowHeight: 73, projectType: "Influencer", partnership: "Paid · one-time", duration: "1 Jun – 30 Jun", detailStatus: "Completed", creatorCount: 15, deliverableCount: 60 },
+  { id: 10, name: "Daily Sunscreen", type: "Influencer · Paid · One-time", platform: "Instagram · Snapchat", status: "Completed", apps: 18, approved: 12, budget: "₹1,10,000", budgetNote: "fully paid", progress: 100, updated: "8 d ago", accent: "bg-lime-100", rowHeight: 73, projectType: "Influencer", partnership: "Paid · one-time", duration: "1 May – 31 May", detailStatus: "Completed", creatorCount: 12, deliverableCount: 36 },
+  { id: 11, name: "Glow Routine", type: "UGC · Paid · One-time", platform: "Instagram · YouTube", status: "Completed", apps: 12, approved: 9, budget: "₹90,000", budgetNote: "fully paid", progress: 100, updated: "10 d ago", accent: "bg-purple-100", rowHeight: 73, projectType: "UGC", partnership: "Paid · one-time", duration: "1 Apr – 30 Apr", detailStatus: "Completed", creatorCount: 9, deliverableCount: 27 },
+  { id: 12, name: "Monsoon Edit", type: "Influencer · Paid · One-time", platform: "Instagram", status: "Archived", apps: 24, approved: 18, budget: "₹1,25,000", budgetNote: "archived", progress: 100, updated: "14 d ago", accent: "bg-slate-100", rowHeight: 73, projectType: "Influencer", partnership: "Paid · one-time", duration: "1 Jul – 31 Jul", detailStatus: "Archived", creatorCount: 18, deliverableCount: 54 },
+  { id: 13, name: "Skin Barrier Set", type: "Influencer · Gift exchange · One-time", platform: "Instagram", status: "Archived", apps: 9, approved: 7, budget: "Gift", budgetNote: "archived", progress: 100, updated: "18 d ago", accent: "bg-stone-100", rowHeight: 73, projectType: "Influencer", partnership: "Gift exchange", duration: "1 Aug – 31 Aug", detailStatus: "Archived", creatorCount: 7, deliverableCount: 21 },
+  { id: 14, name: "Raksha Bandhan Gifting", type: "Influencer · Gift exchange · One-time", platform: "Instagram", status: "Deleted", apps: 0, approved: 0, budget: "Gift", budgetNote: "deleted", progress: 0, updated: "20 d ago", image: asset("dashboard/project-hydration-bundle.png"), accent: "bg-red-100", rowHeight: 73, deletedAt: "28 Oct 2026", deletedBy: "Ananya Mehta", removalAt: "27 Nov 2026", removalNote: "in 30 days", projectType: "Influencer", partnership: "Gift exchange", duration: "1 Aug – 20 Aug", detailStatus: "Deleted", creatorCount: 0, deliverableCount: 16 },
+];
+
+export const getProject = (id: number) => projects.find((project) => project.id === id) ?? projects[0];

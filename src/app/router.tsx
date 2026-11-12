@@ -48,23 +48,33 @@ export const router = createBrowserRouter(
         },
         {
           path: ROUTES.verifyEmail,
-          lazy: async () => ({ Component: (await import("@/auth/pages/VerifyEmailPage")).VerifyEmailPage }),
+          lazy: async () => ({
+            Component: (await import("@/auth/pages/VerifyEmailPage")).VerifyEmailPage,
+          }),
         },
         {
           path: ROUTES.forgotPassword,
-          lazy: async () => ({ Component: (await import("@/auth/pages/ForgotPasswordPage")).ForgotPasswordPage }),
+          lazy: async () => ({
+            Component: (await import("@/auth/pages/ForgotPasswordPage")).ForgotPasswordPage,
+          }),
         },
         {
           path: ROUTES.resetPassword,
-          lazy: async () => ({ Component: (await import("@/auth/pages/ResetPasswordPage")).ResetPasswordPage }),
+          lazy: async () => ({
+            Component: (await import("@/auth/pages/ResetPasswordPage")).ResetPasswordPage,
+          }),
         },
         {
           path: ROUTES.chooseWorkspace,
-          lazy: async () => ({ Component: (await import("@/auth/pages/ChooseWorkspacePage")).ChooseWorkspacePage }),
+          lazy: async () => ({
+            Component: (await import("@/auth/pages/ChooseWorkspacePage")).ChooseWorkspacePage,
+          }),
         },
         {
           path: ROUTES.onboarding,
-          lazy: async () => ({ Component: (await import("@/auth/pages/OnboardingPage")).OnboardingPage }),
+          lazy: async () => ({
+            Component: (await import("@/auth/pages/OnboardingPage")).OnboardingPage,
+          }),
         },
         {
           path: ROUTES.brand,
@@ -74,7 +84,9 @@ export const router = createBrowserRouter(
         },
         {
           path: ROUTES.brandProjects,
-          lazy: async () => ({ Component: (await import("@/brand/pages/BrandProjectsPage")).BrandProjectsPage }),
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandProjectsPage")).BrandProjectsPage,
+          }),
         },
         {
           path: ROUTES.brandNewProject,
@@ -85,25 +97,73 @@ export const router = createBrowserRouter(
         {
           path: ROUTES.brandNewProjectPartnership,
           lazy: async () => ({
-            Component: (await import("@/brand/pages/BrandProjectPartnershipPage")).BrandProjectPartnershipPage,
+            Component: (await import("@/brand/pages/BrandProjectPartnershipPage"))
+              .BrandProjectPartnershipPage,
           }),
         },
         {
           path: ROUTES.brandNewProjectDuration,
           lazy: async () => ({
-            Component: (await import("@/brand/pages/BrandProjectDurationPage")).BrandProjectDurationPage,
+            Component: (await import("@/brand/pages/BrandProjectDurationPage"))
+              .BrandProjectDurationPage,
           }),
         },
         {
           path: ROUTES.brandNewProjectDetails,
-          lazy: async () => ({ Component: (await import("@/brand/pages/BrandProjectDetailsPage")).BrandProjectDetailsPage }),
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandProjectDetailsPage"))
+              .BrandProjectDetailsPage,
+          }),
         },
-        { path: ROUTES.brandNewProjectCreators, lazy: async () => ({ Component: (await import("@/brand/pages/BrandProjectCreatorsPage")).BrandProjectCreatorsPage }) },
-        { path: ROUTES.brandNewProjectDeliverables, lazy: async () => ({ Component: (await import("@/brand/pages/BrandProjectDeliverablesPage")).BrandProjectDeliverablesPage }) },
-        { path: ROUTES.brandNewProjectBudget, lazy: async () => ({ Component: (await import("@/brand/pages/BrandProjectBudgetPage")).BrandProjectBudgetPage }) },
-        { path: ROUTES.brandNewProjectPayment, lazy: async () => ({ Component: (await import("@/brand/pages/BrandProjectPaymentPage")).BrandProjectPaymentPage }) },
-        { path: ROUTES.brandNewProjectReview, lazy: async () => ({ Component: (await import("@/brand/pages/BrandProjectReviewPage")).BrandProjectReviewPage }) },
-        { path: ROUTES.brandProjectPublished, lazy: async () => ({ Component: (await import("@/brand/pages/BrandProjectPublishedPage")).BrandProjectPublishedPage }) },
+        {
+          path: ROUTES.brandNewProjectCreators,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandProjectCreatorsPage"))
+              .BrandProjectCreatorsPage,
+          }),
+        },
+        {
+          path: ROUTES.brandNewProjectDeliverables,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandProjectDeliverablesPage"))
+              .BrandProjectDeliverablesPage,
+          }),
+        },
+        {
+          path: ROUTES.brandNewProjectBudget,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandProjectBudgetPage"))
+              .BrandProjectBudgetPage,
+          }),
+        },
+        {
+          path: ROUTES.brandNewProjectPayment,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandProjectPaymentPage"))
+              .BrandProjectPaymentPage,
+          }),
+        },
+        {
+          path: ROUTES.brandNewProjectReview,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandProjectReviewPage"))
+              .BrandProjectReviewPage,
+          }),
+        },
+        {
+          path: ROUTES.brandProjectPublished,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandProjectPublishedPage"))
+              .BrandProjectPublishedPage,
+          }),
+        },
+        {
+          path: ROUTES.brandProject,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandProjectPublishedPage"))
+              .BrandProjectPublishedPage,
+          }),
+        },
         {
           path: ROUTES.agency,
           lazy: async () => ({
