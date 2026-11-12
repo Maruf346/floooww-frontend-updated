@@ -15,7 +15,11 @@ export function Skeleton({ className = "" }: SkeletonProps) {
 /** WEB-L1: the responsive marketing-page loading layout. */
 export function PageLoadingSkeleton() {
   return (
-    <section aria-label="Loading page" aria-live="polite" className="flex flex-col items-center gap-10 px-5 py-16 sm:gap-14 sm:px-8 sm:py-24 lg:px-[120px] lg:py-24">
+    <section
+      aria-label="Loading page"
+      aria-live="polite"
+      className="flex flex-col items-center gap-10 px-5 py-16 sm:gap-14 sm:px-8 sm:py-24 lg:px-[120px] lg:py-24"
+    >
       <div className="flex w-full max-w-[720px] flex-col items-center gap-4">
         <Skeleton className="h-[22px] w-[140px] rounded-full" />
         <Skeleton className="h-10 w-full rounded-[10px] sm:h-12" />

@@ -200,7 +200,6 @@ export function HowItWorksMedia({ steps, index, deckKey }: HowItWorksMediaProps)
           </motion.p>
         </AnimatePresence>
       </div>
-
     </div>
   );
 }

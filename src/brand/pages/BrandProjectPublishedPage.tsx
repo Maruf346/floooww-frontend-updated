@@ -9,6 +9,7 @@ import {
   MoreHorizontal,
   Pause,
   Play,
+  RotateCcw,
   Share2,
   Trash2,
   Users,
@@ -18,13 +19,17 @@ import {
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
+import {
+  ProjectConfirmModal,
+  type ProjectConfirmAction,
+} from "@/brand/components/ProjectConfirmModal";
 import { ROUTES } from "@/common/constants/routes";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "motion/react";
 import { getProject } from "@/brand/data/projects";
 
 type Lifecycle = "Draft" | "Upcoming" | "Live" | "Paused" | "Completed" | "Archived" | "Deleted";
-type Confirm = "Pause" | "Archive" | "Delete" | null;
+type Confirm = ProjectConfirmAction | null;
 type ProjectCreator = {
   name: string;
   handle: string;
@@ -321,41 +326,6 @@ function Metric({
     </article>
   );
 }
-function ConfirmDialog({
-  action,
-  done,
-  cancel,
-}: {
-  action: Exclude<Confirm, null>;
-  done: () => void;
-  cancel: () => void;
-}) {
-  const desc =
-    action === "Pause"
-      ? "New applications and invites will stop. Existing creators will be told to hold, and deadlines will pause."
-      : action === "Archive"
-        ? "It will become read-only and move to archived projects. You can restore it later."
-        : "It will be kept for 30 days before removal.";
-  return (
-    <div className="fixed inset-0 z-[10000] grid place-items-center bg-ink/30 p-4">
-      <section className="w-full max-w-[420px] rounded-xl border border-line bg-white p-6 shadow-[0_16px_40px_rgba(8,10,20,.18)]">
-        <h2 className="text-[18px] font-semibold text-ink">{action} this project?</h2>
-        <p className="mt-2 text-[14px] leading-[22px] text-secondary">{desc}</p>
-        <div className="mt-6 flex justify-end gap-2">
-          <Button kind="secondary" onClick={cancel}>
-            Cancel
-          </Button>
-          <Button
-            className={action === "Delete" ? "bg-[#db231f] hover:bg-[#b91c1c]" : ""}
-            onClick={done}
-          >
-            {action} project
-          </Button>
-        </div>
-      </section>
-    </div>
-  );
-}
 
 export function BrandProjectPublishedPage() {
   const navigate = useNavigate();
@@ -406,10 +376,24 @@ export function BrandProjectPublishedPage() {
           return { delivered: allDelivered + inProgress, stages };
         })()
       : null;
-  const resolve = () => {
-    if (confirm === "Pause") setStatus("Paused");
-    if (confirm === "Archive") setStatus("Archived");
-    if (confirm === "Delete") setStatus("Deleted");
+
+  const resolve = (action: ProjectConfirmAction) => {
+    if (action === "Pause") {
+      setStatus("Paused");
+      project.detailStatus = "Paused";
+      project.status = "Paused";
+    } else if (action === "Archive") {
+      setStatus("Archived");
+      project.detailStatus = "Archived";
+      project.status = "Archived";
+    } else if (action === "Delete") {
+      setStatus("Deleted");
+      project.detailStatus = "Deleted";
+      project.status = "Deleted";
+      project.deletedAt = "Today";
+      project.deletedBy = "Ananya Mehta";
+      project.removalAt = "In 30 days";
+    }
     setConfirm(null);
     setMore(false);
   };
@@ -446,60 +430,167 @@ export function BrandProjectPublishedPage() {
                 title="More project actions"
                 type="button"
                 onClick={() => setMore(!more)}
-                className="flex size-10 items-center justify-center rounded-md border border-line bg-white hover:bg-subtle"
+                className="flex size-10 items-center justify-center rounded-md border border-line bg-white transition hover:bg-subtle"
               >
                 <MoreHorizontal size={18} />
               </button>
               {more && (
-                <div className="absolute right-0 top-12 z-50 w-[196px] rounded-lg border border-line bg-white p-1.5 shadow-[0_8px_24px_rgba(0,0,0,.12)]">
-                  <button
-                    className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-[13px] hover:bg-subtle"
-                    onClick={() => navigate(ROUTES.brandProjects)}
-                  >
-                    <Eye size={14} />
-                    Back to projects
-                  </button>
-                  {status === "Paused" ? (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setMore(false)}
+                    aria-hidden="true"
+                  />
+                  <div className="absolute right-0 top-12 z-50 w-[204px] rounded-lg border border-line bg-white p-1.5 shadow-[0_8px_24px_rgba(0,0,0,.12)]">
                     <button
                       className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-[13px] hover:bg-subtle"
-                      onClick={() => {
-                        setStatus("Live");
-                        setMore(false);
-                      }}
+                      onClick={() => navigate(ROUTES.brandProjects)}
                     >
-                      <Play size={14} />
-                      Resume project
+                      <Eye size={14} />
+                      Back to projects
                     </button>
-                  ) : (
-                    !locked && (
+                    {status === "Paused" ? (
                       <button
-                        className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-[13px] hover:bg-subtle"
-                        onClick={() => setConfirm("Pause")}
+                        className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-[13px] font-medium text-[#c77900] hover:bg-[#fff3da]/50"
+                        onClick={() => {
+                          setStatus("Live");
+                          project.detailStatus = "Live";
+                          project.status = "Live";
+                          setMore(false);
+                        }}
                       >
-                        <Pause size={14} />
-                        Pause project
+                        <Play size={14} />
+                        Resume project
                       </button>
-                    )
-                  )}
-                  <button
-                    className="mt-1 flex w-full items-center gap-2.5 border-t border-line px-2.5 pt-3 pb-2 text-left text-[13px] hover:bg-subtle"
-                    onClick={() => setConfirm("Archive")}
-                  >
-                    <Archive size={14} />
-                    Archive
-                  </button>
-                  <button
-                    className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-[13px] text-[#db231f] hover:bg-[#fde4e3]"
-                    onClick={() => setConfirm("Delete")}
-                  >
-                    <Trash2 size={14} />
-                    Delete
-                  </button>
-                </div>
+                    ) : (
+                      !locked && (
+                        <button
+                          className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-[13px] hover:bg-subtle"
+                          onClick={() => {
+                            setConfirm("Pause");
+                            setMore(false);
+                          }}
+                        >
+                          <Pause size={14} />
+                          Pause project
+                        </button>
+                      )
+                    )}
+                    {locked && (
+                      <button
+                        className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-[13px] font-medium text-primary hover:bg-primary-subtle/50"
+                        onClick={() => {
+                          setStatus("Live");
+                          project.detailStatus = "Live";
+                          project.status = "Live";
+                          setMore(false);
+                        }}
+                      >
+                        <RotateCcw size={14} />
+                        Restore project
+                      </button>
+                    )}
+                    {status !== "Archived" && status !== "Deleted" && (
+                      <button
+                        className="mt-1 flex w-full items-center gap-2.5 border-t border-line px-2.5 pt-3 pb-2 text-left text-[13px] hover:bg-subtle"
+                        onClick={() => {
+                          setConfirm("Archive");
+                          setMore(false);
+                        }}
+                      >
+                        <Archive size={14} />
+                        Archive
+                      </button>
+                    )}
+                    {status !== "Deleted" && (
+                      <button
+                        className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-[13px] text-[#db231f] hover:bg-[#fde4e3]"
+                        onClick={() => {
+                          setConfirm("Delete");
+                          setMore(false);
+                        }}
+                      >
+                        <Trash2 size={14} />
+                        Delete
+                      </button>
+                    )}
+                  </div>
+                </>
               )}
             </div>
           </div>
         </header>
+        {status === "Paused" && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#f5d996] bg-[#fff9eb] px-4 py-3 text-[13px] leading-5 text-[#945800]">
+            <div className="flex items-center gap-2.5">
+              <Pause size={16} className="shrink-0 fill-[#945800]" />
+              <span>
+                Project is paused. Deadlines are on hold and creators cannot post new content.
+                Nothing is cancelled and no money moves.
+              </span>
+            </div>
+            <Button
+              size="s"
+              onClick={() => {
+                setStatus("Live");
+                project.detailStatus = "Live";
+                project.status = "Live";
+              }}
+              className="bg-[#c77900] hover:bg-[#a36300] text-white"
+            >
+              Resume project
+            </Button>
+          </div>
+        )}
+        {status === "Archived" && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-muted px-4 py-3 text-[13px] leading-5 text-secondary">
+            <div className="flex items-center gap-2.5">
+              <Archive size={16} className="shrink-0 text-secondary" />
+              <span>
+                This project is archived and read-only. Results, content and invoices stay
+                available.
+              </span>
+            </div>
+            <Button
+              size="s"
+              kind="secondary"
+              onClick={() => {
+                setStatus("Live");
+                project.detailStatus = "Live";
+                project.status = "Live";
+              }}
+            >
+              Restore project
+            </Button>
+          </div>
+        )}
+        {status === "Deleted" && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#f9c0be] bg-[#fde4e3] px-4 py-3 text-[13px] leading-5 text-[#991b1b]">
+            <div className="flex items-center gap-2.5">
+              <Trash2 size={16} className="shrink-0 text-[#db231f]" />
+              <span>
+                This project has been moved to Deleted. It will be kept for 30 days before permanent
+                removal.
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                size="s"
+                kind="secondary"
+                onClick={() => {
+                  setStatus("Live");
+                  project.detailStatus = "Live";
+                  project.status = "Live";
+                }}
+              >
+                Restore project
+              </Button>
+              <Button size="s" kind="ghost" onClick={() => navigate(ROUTES.brandProjects)}>
+                Back to projects
+              </Button>
+            </div>
+          </div>
+        )}
         <nav className="mt-6 flex h-[37px] gap-6 overflow-x-auto border-b border-line">
           {tabs.map((item) => (
             <button
@@ -882,7 +973,13 @@ export function BrandProjectPublishedPage() {
           </>
         )}
       </main>
-      {confirm && <ConfirmDialog action={confirm} done={resolve} cancel={() => setConfirm(null)} />}
+      <ProjectConfirmModal
+        action={confirm}
+        project={project}
+        isOpen={Boolean(confirm)}
+        onConfirm={resolve}
+        onCancel={() => setConfirm(null)}
+      />
     </BrandShell>
   );
 }

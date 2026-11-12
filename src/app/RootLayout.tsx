@@ -8,7 +8,9 @@ export function RootLayout() {
   return (
     <>
       <ScrollManager skipPaths={LANDING_PATHS} />
-      <ProjectFlowProvider><Outlet /></ProjectFlowProvider>
+      <ProjectFlowProvider>
+        <Outlet />
+      </ProjectFlowProvider>
       <NavigationLoadingOverlay />
     </>
   );

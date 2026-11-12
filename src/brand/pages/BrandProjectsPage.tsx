@@ -30,6 +30,10 @@ import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { brandProjectRoute, ROUTES } from "@/common/constants/routes";
 import { asset } from "@/common/utils/asset";
 import { projects } from "@/brand/data/projects";
+import {
+  ProjectConfirmModal,
+  type ProjectConfirmAction,
+} from "@/brand/components/ProjectConfirmModal";
 
 type Status = "Live" | "Upcoming" | "Completed" | "Drafts" | "Paused" | "Archived" | "Deleted";
 type Project = {
@@ -584,11 +588,13 @@ function ProjectActionsMenu({
   anchor,
   onView,
   onClose,
+  onAction,
 }: {
   project: Project;
   anchor: DOMRect;
   onView: () => void;
   onClose: () => void;
+  onAction?: (action: ProjectConfirmAction, project: Project) => void;
 }) {
   const [shareOpen, setShareOpen] = useState(false);
   const [shareAnchor, setShareAnchor] = useState<DOMRect | null>(null);
@@ -644,10 +650,31 @@ function ProjectActionsMenu({
         <ChevronRight size={14} className="text-secondary" />
       </button>
       {menuItem("Duplicate", <Copy size={14} />, onClose)}
-      {menuItem("Pause project", <Pause size={14} />, onClose)}
+      {menuItem("Pause project", <Pause size={14} />, () => {
+        onClose();
+        onAction?.("Pause", project);
+      })}
       {menuItem("Download report", <Download size={14} />, onClose)}
-      {menuItem("Archive", <Archive size={14} />, onClose, false, false, true)}
-      {menuItem("Delete", <Trash2 size={14} />, onClose, true)}
+      {menuItem(
+        "Archive",
+        <Archive size={14} />,
+        () => {
+          onClose();
+          onAction?.("Archive", project);
+        },
+        false,
+        false,
+        true,
+      )}
+      {menuItem(
+        "Delete",
+        <Trash2 size={14} />,
+        () => {
+          onClose();
+          onAction?.("Delete", project);
+        },
+        true,
+      )}
       {shareOpen && shareAnchor && <ShareProjectMenu anchor={shareAnchor} onClose={onClose} />}
     </div>,
     document.body,
@@ -674,6 +701,34 @@ export function BrandProjectsPage() {
   const [actionMenuId, setActionMenuId] = useState<number | null>(null);
   const [actionMenuAnchor, setActionMenuAnchor] = useState<DOMRect | null>(null);
   const [page, setPage] = useState(1);
+  const [confirmAction, setConfirmAction] = useState<ProjectConfirmAction | null>(null);
+  const [targetProject, setTargetProject] = useState<Project | null>(null);
+  const [, setTick] = useState(0);
+
+  const handleAction = (action: ProjectConfirmAction, project: Project) => {
+    setTargetProject(project);
+    setConfirmAction(action);
+  };
+
+  const handleConfirmAction = (action: ProjectConfirmAction) => {
+    if (!targetProject) return;
+    if (action === "Pause") {
+      targetProject.status = "Paused";
+      targetProject.detailStatus = "Paused";
+    } else if (action === "Archive") {
+      targetProject.status = "Archived";
+      targetProject.detailStatus = "Archived";
+    } else if (action === "Delete") {
+      targetProject.status = "Deleted";
+      targetProject.detailStatus = "Deleted";
+      targetProject.deletedAt = "Today";
+      targetProject.deletedBy = "Ananya Mehta";
+      targetProject.removalAt = "In 30 days";
+    }
+    setTick((t) => t + 1);
+    setConfirmAction(null);
+    setTargetProject(null);
+  };
   const getProjectStatus = (project: Project): Status =>
     restoredProjectIds.includes(project.id) ? "Drafts" : project.status;
 
@@ -1029,6 +1084,7 @@ export function BrandProjectsPage() {
                                 setActionMenuId(null);
                               }}
                               onClose={() => setActionMenuId(null)}
+                              onAction={handleAction}
                             />
                           )}
                         </div>
@@ -1200,6 +1256,7 @@ export function BrandProjectsPage() {
                                   setActionMenuId(null);
                                 }}
                                 onClose={() => setActionMenuId(null)}
+                                onAction={handleAction}
                               />
                             )}
                           </div>
@@ -1269,6 +1326,18 @@ export function BrandProjectsPage() {
             </footer>
           ))}
       </div>
+      {targetProject && (
+        <ProjectConfirmModal
+          action={confirmAction}
+          project={targetProject}
+          isOpen={Boolean(confirmAction)}
+          onConfirm={handleConfirmAction}
+          onCancel={() => {
+            setConfirmAction(null);
+            setTargetProject(null);
+          }}
+        />
+      )}
     </BrandShell>
   );
 }

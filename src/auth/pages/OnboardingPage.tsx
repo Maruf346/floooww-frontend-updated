@@ -13,16 +13,147 @@ import { Progress } from "./SignupPage";
 
 type Setup = { title: string; subtitle: string; eyebrow: string };
 const setup: Record<UserRole, Setup[]> = {
-  brand: [{ title: "Tell us about your brand", subtitle: "This shows on your projects so creators know who they’ll work with.", eyebrow: "BRAND SETUP · STEP 1 OF 3" }, { title: "Connect your store and analytics", subtitle: "Needed to track sales, sign-ups and website visits from creators. You can do this later in Settings.", eyebrow: "BRAND SETUP · STEP 2 OF 3" }, { title: "Invite your team", subtitle: "Teammates can review applications, approve content and see payments. You can add more later.", eyebrow: "BRAND SETUP · STEP 3 OF 3" }],
-  creator: [{ title: "Build your creator profile", subtitle: "Brands see this before they invite you. A complete profile gets more invites.", eyebrow: "CREATOR SETUP · STEP 1 OF 3" }, { title: "Connect your accounts", subtitle: "We read your followers, reach and engagement so brands see real numbers, no screenshots.", eyebrow: "CREATOR SETUP · STEP 2 OF 3" }, { title: "Set up payouts", subtitle: "Brands pay into escrow first. You’re paid 2 working days after they approve your work.", eyebrow: "CREATOR SETUP · STEP 3 OF 3" }],
-  agency: [{ title: "Tell us about your agency", subtitle: "Clients see this on proposals and invoices. Creators always see the client brand.", eyebrow: "AGENCY SETUP · STEP 1 OF 3" }, { title: "Add your first client", subtitle: "Same steps a brand completes: about the brand, then their store and analytics. You can also add clients later from Clients.", eyebrow: "AGENCY SETUP · STEP 2 OF 3" }, { title: "Invite your team", subtitle: "Give each member a role and pick which clients and projects they can access.", eyebrow: "AGENCY SETUP · STEP 3 OF 3" }],
+  brand: [
+    {
+      title: "Tell us about your brand",
+      subtitle: "This shows on your projects so creators know who they’ll work with.",
+      eyebrow: "BRAND SETUP · STEP 1 OF 3",
+    },
+    {
+      title: "Connect your store and analytics",
+      subtitle:
+        "Needed to track sales, sign-ups and website visits from creators. You can do this later in Settings.",
+      eyebrow: "BRAND SETUP · STEP 2 OF 3",
+    },
+    {
+      title: "Invite your team",
+      subtitle:
+        "Teammates can review applications, approve content and see payments. You can add more later.",
+      eyebrow: "BRAND SETUP · STEP 3 OF 3",
+    },
+  ],
+  creator: [
+    {
+      title: "Build your creator profile",
+      subtitle: "Brands see this before they invite you. A complete profile gets more invites.",
+      eyebrow: "CREATOR SETUP · STEP 1 OF 3",
+    },
+    {
+      title: "Connect your accounts",
+      subtitle:
+        "We read your followers, reach and engagement so brands see real numbers, no screenshots.",
+      eyebrow: "CREATOR SETUP · STEP 2 OF 3",
+    },
+    {
+      title: "Set up payouts",
+      subtitle:
+        "Brands pay into escrow first. You’re paid 2 working days after they approve your work.",
+      eyebrow: "CREATOR SETUP · STEP 3 OF 3",
+    },
+  ],
+  agency: [
+    {
+      title: "Tell us about your agency",
+      subtitle: "Clients see this on proposals and invoices. Creators always see the client brand.",
+      eyebrow: "AGENCY SETUP · STEP 1 OF 3",
+    },
+    {
+      title: "Add your first client",
+      subtitle:
+        "Same steps a brand completes: about the brand, then their store and analytics. You can also add clients later from Clients.",
+      eyebrow: "AGENCY SETUP · STEP 2 OF 3",
+    },
+    {
+      title: "Invite your team",
+      subtitle: "Give each member a role and pick which clients and projects they can access.",
+      eyebrow: "AGENCY SETUP · STEP 3 OF 3",
+    },
+  ],
 };
-const integrations = { brand: [["S", "Shopify", "Orders and net sales from creator codes and links"], ["W", "WooCommerce", "Orders from WordPress stores"], ["G", "Google Analytics 4", "Sessions and conversions from tracking links"], ["M", "Meta Ads", "Results when you run creator content as ads"]], creator: [["I", "Instagram", "Followers and engagement"], ["Y", "YouTube", "Subscribers and video stats"], ["P", "Pinterest", "Pins, saves and outbound clicks"], ["S", "Snapchat", "Story views and Spotlight"]] } as const;
+const integrations = {
+  brand: [
+    ["S", "Shopify", "Orders and net sales from creator codes and links"],
+    ["W", "WooCommerce", "Orders from WordPress stores"],
+    ["G", "Google Analytics 4", "Sessions and conversions from tracking links"],
+    ["M", "Meta Ads", "Results when you run creator content as ads"],
+  ],
+  creator: [
+    ["I", "Instagram", "Followers and engagement"],
+    ["Y", "YouTube", "Subscribers and video stats"],
+    ["P", "Pinterest", "Pins, saves and outbound clicks"],
+    ["S", "Snapchat", "Story views and Spotlight"],
+  ],
+} as const;
 
 export function OnboardingPage() {
-  const navigate = useNavigate(); const { role: routeRole } = useParams(); const role = parseRole(routeRole ?? null) ?? "brand"; const [step, setStep] = useState(1); const content = setup[role][step - 1];
-  const next = () => step === 3 ? navigate(ROLE_HOME[role]) : setStep((value) => value + 1); const back = () => step === 1 ? navigate(ROUTES.home) : setStep((value) => value - 1);
-  return <AuthLayout visual={role === "creator" ? "creator-onboarding" : "onboarding"}><form className="w-full max-w-[440px]" onSubmit={(event: FormEvent) => { event.preventDefault(); next(); }}><div className="flex items-center justify-between"><Progress step={step} /><button type="button" className="ml-4 shrink-0 text-[13px] font-medium text-link hover:underline" onClick={() => navigate(ROLE_HOME[role])}>Save and finish later</button></div><p className="mt-3 text-[12px] font-semibold tracking-[.06em] text-primary">{content.eyebrow}</p><h1 className="mt-3 font-inter-bold text-[30px] font-bold leading-[38px] tracking-[-.6px] text-ink">{content.title}</h1><p className="mt-2 text-[14px] leading-[22px] text-body">{content.subtitle}</p><div className="mt-5">{step === 1 ? <Details role={role} /> : step === 2 ? <Connections role={role} /> : role === "creator" ? <Payouts /> : <Invite />}</div><div className="mt-5 flex items-center justify-between"><Button type="button" kind="secondary" onClick={back} leadingIcon={<ArrowLeft size={16} />}>Back</Button><Button type="submit" className="rounded-[8px]" trailingIcon={step === 3 ? undefined : <ArrowRight size={16} />}>{step === 3 && (role === "brand" || role === "agency") ? "Open my dashboard" : step === 3 && role === "creator" ? "Finish and see projects" : "Continue"}</Button></div></form></AuthLayout>;
+  const navigate = useNavigate();
+  const { role: routeRole } = useParams();
+  const role = parseRole(routeRole ?? null) ?? "brand";
+  const [step, setStep] = useState(1);
+  const content = setup[role][step - 1];
+  const next = () => (step === 3 ? navigate(ROLE_HOME[role]) : setStep((value) => value + 1));
+  const back = () => (step === 1 ? navigate(ROUTES.home) : setStep((value) => value - 1));
+  return (
+    <AuthLayout visual={role === "creator" ? "creator-onboarding" : "onboarding"}>
+      <form
+        className="w-full max-w-[440px]"
+        onSubmit={(event: FormEvent) => {
+          event.preventDefault();
+          next();
+        }}
+      >
+        <div className="flex items-center justify-between">
+          <Progress step={step} />
+          <button
+            type="button"
+            className="ml-4 shrink-0 text-[13px] font-medium text-link hover:underline"
+            onClick={() => navigate(ROLE_HOME[role])}
+          >
+            Save and finish later
+          </button>
+        </div>
+        <p className="mt-3 text-[12px] font-semibold tracking-[.06em] text-primary">
+          {content.eyebrow}
+        </p>
+        <h1 className="mt-3 font-inter-bold text-[30px] font-bold leading-[38px] tracking-[-.6px] text-ink">
+          {content.title}
+        </h1>
+        <p className="mt-2 text-[14px] leading-[22px] text-body">{content.subtitle}</p>
+        <div className="mt-5">
+          {step === 1 ? (
+            <Details role={role} />
+          ) : step === 2 ? (
+            <Connections role={role} />
+          ) : role === "creator" ? (
+            <Payouts />
+          ) : (
+            <Invite />
+          )}
+        </div>
+        <div className="mt-5 flex items-center justify-between">
+          <Button
+            type="button"
+            kind="secondary"
+            onClick={back}
+            leadingIcon={<ArrowLeft size={16} />}
+          >
+            Back
+          </Button>
+          <Button
+            type="submit"
+            className="rounded-[8px]"
+            trailingIcon={step === 3 ? undefined : <ArrowRight size={16} />}
+          >
+            {step === 3 && (role === "brand" || role === "agency")
+              ? "Open my dashboard"
+              : step === 3 && role === "creator"
+                ? "Finish and see projects"
+                : "Continue"}
+          </Button>
+        </div>
+      </form>
+    </AuthLayout>
+  );
 }
 
 function Details({ role }: { role: UserRole }) {
@@ -30,12 +161,304 @@ function Details({ role }: { role: UserRole }) {
   if (role === "brand") return <BrandDetails />;
   if (role === "agency") return <AgencyDetails />;
   const title = role === "agency" ? "Agency" : "Brand";
-  return <div className="space-y-3.5"><div className="grid gap-3 sm:grid-cols-2"><TextField label={`${title} name`} required placeholder={role === "agency" ? "Brightside Agency" : "Minimalist"} /><TextField label="Website" placeholder="www.example.com" /></div><div className="grid gap-3 sm:grid-cols-2"><TextField label="Industry" required placeholder="Beauty & personal care" /><TextField label="Based in" required placeholder="Mumbai, India" /></div><TextField label="About your brand" placeholder="What should creators know about you?" /><TextField label="Your role" required placeholder="Marketing lead" /></div>;
+  return (
+    <div className="space-y-3.5">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <TextField
+          label={`${title} name`}
+          required
+          placeholder={role === "agency" ? "Brightside Agency" : "Minimalist"}
+        />
+        <TextField label="Website" placeholder="www.example.com" />
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <TextField label="Industry" required placeholder="Beauty & personal care" />
+        <TextField label="Based in" required placeholder="Mumbai, India" />
+      </div>
+      <TextField label="About your brand" placeholder="What should creators know about you?" />
+      <TextField label="Your role" required placeholder="Marketing lead" />
+    </div>
+  );
 }
-function BrandDetails() { const [category, setCategory] = useState<string | null>("Beauty & personal care"); const [size, setSize] = useState<string | null>("11–50 people"); const [state, setState] = useState<string | null>("Maharashtra"); return <div className="space-y-3.5"><div className="grid gap-3 sm:grid-cols-2"><TextField label="Brand name" required placeholder="Glowly Skincare" /><TextField label="Website" placeholder="glowlyskincare.in" /></div><div className="grid gap-3 sm:grid-cols-2"><Select label="Category" options={[{ value: "Beauty & personal care", label: "Beauty & personal care" }, { value: "Fashion", label: "Fashion" }, { value: "Food & beverage", label: "Food & beverage" }]} value={category} onChange={setCategory} /><Select label="Company size" options={[{ value: "1–10 people", label: "1–10 people" }, { value: "11–50 people", label: "11–50 people" }, { value: "51–200 people", label: "51–200 people" }]} value={size} onChange={setSize} /></div><TextField label="GSTIN (optional)" placeholder="27AABCG1234M1Z5" helper="Added to service fee invoices so you can claim input tax credit." /><Select label="Billing state" options={[{ value: "Maharashtra", label: "Maharashtra" }, { value: "Delhi", label: "Delhi" }, { value: "Karnataka", label: "Karnataka" }]} value={state} onChange={setState} /></div>; }
-function AgencyDetails() { const [category, setCategory] = useState<string | null>("Beauty & personal care"); const [size, setSize] = useState<string | null>("11–50 people"); const [state, setState] = useState<string | null>("Maharashtra"); const categories = [{ value: "Beauty & personal care", label: "Beauty & personal care" }, { value: "Fashion", label: "Fashion" }, { value: "Food & beverage", label: "Food & beverage" }]; const sizes = [{ value: "1–10 people", label: "1–10 people" }, { value: "11–50 people", label: "11–50 people" }, { value: "51–200 people", label: "51–200 people" }]; const states = [{ value: "Maharashtra", label: "Maharashtra" }, { value: "Delhi", label: "Delhi" }, { value: "Karnataka", label: "Karnataka" }]; return <div className="space-y-3.5"><div className="grid gap-3 sm:grid-cols-2"><TextField label="Agency name" required placeholder="Glowly Skincare" /><TextField label="Website" placeholder="glowlyskincare.in" /></div><div className="grid gap-3 sm:grid-cols-2"><Select label="Category" options={categories} value={category} onChange={setCategory} /><Select label="Company size" options={sizes} value={size} onChange={setSize} /></div><TextField label="GSTIN (optional)" placeholder="27AABCG1234M1Z5" helper="Added to service fee invoices so you can claim input tax credit." /><Select label="Billing state" options={states} value={state} onChange={setState} /></div>; }
-function Connections({ role }: { role: UserRole }) { const [connected, setConnected] = useState<number[]>([0]); const entries = integrations[role === "creator" ? "creator" : "brand"]; return <div className="space-y-3">{entries.map(([mark, name, detail], index) => { const active = connected.includes(index); const creatorConnected = role === "creator" && index === 0; return <div key={name} className="flex min-h-[62px] items-center gap-3 rounded-xl border border-line px-3.5 py-3"><span className="grid size-9 place-items-center rounded-lg bg-primary-subtle text-[16px] font-bold text-primary">{mark}</span><span className="min-w-0 flex-1"><span className="block text-[14px] font-semibold text-ink">{creatorConnected ? "Instagram · @meerabeauty" : name}</span><span className="block truncate text-[12px] leading-4 text-secondary">{creatorConnected ? "1.12 L followers · synced just now" : active ? "Orders and net sales from creator codes and links" : detail}</span></span><button type="button" onClick={() => setConnected((value) => active ? value.filter((item) => item !== index) : [...value, index])} className={`rounded-lg px-3 py-1.5 text-[12px] font-medium ${active ? "bg-success-bg text-success" : "border border-line text-link"}`}>{active ? "Connected" : "Connect"}</button></div>; })}{role === "creator" && <p className="pt-1 text-[12px] leading-5 text-secondary">We only read stats. We never post for you or see your messages.</p>}</div>; }
-function Invite() { const [rows, setRows] = useState([{ email: "arjun@glowlyskincare.in", role: "Manager" }, { email: "tanvi@glowlyskincare.in", role: "Content approver" }, { email: "nisha@glowlyskincare.in", role: "Finance" }]); return <div><div className="space-y-3">{rows.map((row, index) => <div className="grid gap-3 sm:grid-cols-[1fr_160px]" key={`${row.email}-${index}`}><TextField label="Work email" value={row.email} onChange={(event) => setRows((value) => value.map((item, itemIndex) => itemIndex === index ? { ...item, email: event.target.value } : item))} /><Select label="Role" options={[{ value: "Manager", label: "Manager" }, { value: "Content approver", label: "Content approver" }, { value: "Finance", label: "Finance" }]} value={row.role} onChange={(role) => setRows((value) => value.map((item, itemIndex) => itemIndex === index ? { ...item, role } : item))} /></div>)}</div><button type="button" onClick={() => setRows((value) => [...value, { email: "", role: "Manager" }])} className="mt-4 inline-flex items-center gap-1 text-[13px] font-medium text-link hover:underline"><Plus size={15} />Add another teammate</button><p className="mt-3 text-[12px] leading-5 text-secondary">Teammates join with their own work email. Only owners and finance can see payments.</p></div>; }
-function Payouts() { return <div className="space-y-3.5"><TextField label="Account holder name" required placeholder="Meera Iyer" /><div className="grid gap-3 sm:grid-cols-2"><TextField label="Bank account number" required placeholder="•••• •••• 4821" /><TextField label="IFSC" required placeholder="HDFC0001234" /></div><TextField label="PAN" required placeholder="ABCPI1234K" helper="Needed for payouts in India. We verify it once." /><TextField label="UPI ID (backup)" placeholder="meera@okhdfcbank" /><p className="text-[13px] leading-5 text-[#6b7280]">No payout fees. Every offer shows exactly what you’ll receive before you accept.</p></div>; }
-function CreatorDetails() { const [niches, setNiches] = useState(["Beauty", "Skincare", "Lifestyle"]); const [languages, setLanguages] = useState(["English", "Hindi"]); const toggle = (value: string, selected: string[], setter: (items: string[]) => void) => setter(selected.includes(value) ? selected.filter((item) => item !== value) : [...selected, value]); return <div className="space-y-3.5"><div className="flex items-center gap-3"><img src={ASSETS.howItWorks.avatarMeera} alt="Meera Iyer" className="size-16 rounded-full object-cover" /><div><Button type="button" kind="secondary" size="s">Change photo</Button><p className="mt-1 text-[12px] text-tertiary">JPG or PNG, square, at least 400 px</p></div></div><div className="grid gap-3 sm:grid-cols-2"><TextField label="Display name" required placeholder="Meera Iyer" /><TextField label="City" required placeholder="Chennai" /></div><ChipGroup label="Niches (up to 3)" values={["Beauty", "Skincare", "Lifestyle", "Fashion", "Food", "Travel", "Fitness", "Tech"]} selected={niches} onToggle={(value) => toggle(value, niches, setNiches)} /><ChipGroup label="Languages you create in" values={["English", "Hindi", "Tamil", "Telugu", "Malayalam", "Bengali", "Marathi"]} selected={languages} onToggle={(value) => toggle(value, languages, setLanguages)} /></div>; }
-function ChipGroup({ label, values, selected, onToggle }: { label: string; values: string[]; selected: string[]; onToggle: (value: string) => void }) { return <div><p className="text-[12px] font-medium text-ink">{label}</p><div className="mt-2 flex flex-wrap gap-2">{values.map((value) => <button key={value} type="button" onClick={() => onToggle(value)} className={`rounded-full border px-3 py-1.5 text-[12px] font-medium transition ${selected.includes(value) ? "border-primary bg-primary text-white" : "border-line bg-white text-body"}`}>{value}</button>)}</div></div>; }
+function BrandDetails() {
+  const [category, setCategory] = useState<string | null>("Beauty & personal care");
+  const [size, setSize] = useState<string | null>("11–50 people");
+  const [state, setState] = useState<string | null>("Maharashtra");
+  return (
+    <div className="space-y-3.5">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <TextField label="Brand name" required placeholder="Glowly Skincare" />
+        <TextField label="Website" placeholder="glowlyskincare.in" />
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Select
+          label="Category"
+          options={[
+            { value: "Beauty & personal care", label: "Beauty & personal care" },
+            { value: "Fashion", label: "Fashion" },
+            { value: "Food & beverage", label: "Food & beverage" },
+          ]}
+          value={category}
+          onChange={setCategory}
+        />
+        <Select
+          label="Company size"
+          options={[
+            { value: "1–10 people", label: "1–10 people" },
+            { value: "11–50 people", label: "11–50 people" },
+            { value: "51–200 people", label: "51–200 people" },
+          ]}
+          value={size}
+          onChange={setSize}
+        />
+      </div>
+      <TextField
+        label="GSTIN (optional)"
+        placeholder="27AABCG1234M1Z5"
+        helper="Added to service fee invoices so you can claim input tax credit."
+      />
+      <Select
+        label="Billing state"
+        options={[
+          { value: "Maharashtra", label: "Maharashtra" },
+          { value: "Delhi", label: "Delhi" },
+          { value: "Karnataka", label: "Karnataka" },
+        ]}
+        value={state}
+        onChange={setState}
+      />
+    </div>
+  );
+}
+function AgencyDetails() {
+  const [category, setCategory] = useState<string | null>("Beauty & personal care");
+  const [size, setSize] = useState<string | null>("11–50 people");
+  const [state, setState] = useState<string | null>("Maharashtra");
+  const categories = [
+    { value: "Beauty & personal care", label: "Beauty & personal care" },
+    { value: "Fashion", label: "Fashion" },
+    { value: "Food & beverage", label: "Food & beverage" },
+  ];
+  const sizes = [
+    { value: "1–10 people", label: "1–10 people" },
+    { value: "11–50 people", label: "11–50 people" },
+    { value: "51–200 people", label: "51–200 people" },
+  ];
+  const states = [
+    { value: "Maharashtra", label: "Maharashtra" },
+    { value: "Delhi", label: "Delhi" },
+    { value: "Karnataka", label: "Karnataka" },
+  ];
+  return (
+    <div className="space-y-3.5">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <TextField label="Agency name" required placeholder="Glowly Skincare" />
+        <TextField label="Website" placeholder="glowlyskincare.in" />
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Select label="Category" options={categories} value={category} onChange={setCategory} />
+        <Select label="Company size" options={sizes} value={size} onChange={setSize} />
+      </div>
+      <TextField
+        label="GSTIN (optional)"
+        placeholder="27AABCG1234M1Z5"
+        helper="Added to service fee invoices so you can claim input tax credit."
+      />
+      <Select label="Billing state" options={states} value={state} onChange={setState} />
+    </div>
+  );
+}
+function Connections({ role }: { role: UserRole }) {
+  const [connected, setConnected] = useState<number[]>([0]);
+  const entries = integrations[role === "creator" ? "creator" : "brand"];
+  return (
+    <div className="space-y-3">
+      {entries.map(([mark, name, detail], index) => {
+        const active = connected.includes(index);
+        const creatorConnected = role === "creator" && index === 0;
+        return (
+          <div
+            key={name}
+            className="flex min-h-[62px] items-center gap-3 rounded-xl border border-line px-3.5 py-3"
+          >
+            <span className="grid size-9 place-items-center rounded-lg bg-primary-subtle text-[16px] font-bold text-primary">
+              {mark}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-[14px] font-semibold text-ink">
+                {creatorConnected ? "Instagram · @meerabeauty" : name}
+              </span>
+              <span className="block truncate text-[12px] leading-4 text-secondary">
+                {creatorConnected
+                  ? "1.12 L followers · synced just now"
+                  : active
+                    ? "Orders and net sales from creator codes and links"
+                    : detail}
+              </span>
+            </span>
+            <button
+              type="button"
+              onClick={() =>
+                setConnected((value) =>
+                  active ? value.filter((item) => item !== index) : [...value, index],
+                )
+              }
+              className={`rounded-lg px-3 py-1.5 text-[12px] font-medium ${active ? "bg-success-bg text-success" : "border border-line text-link"}`}
+            >
+              {active ? "Connected" : "Connect"}
+            </button>
+          </div>
+        );
+      })}
+      {role === "creator" && (
+        <p className="pt-1 text-[12px] leading-5 text-secondary">
+          We only read stats. We never post for you or see your messages.
+        </p>
+      )}
+    </div>
+  );
+}
+function Invite() {
+  const [rows, setRows] = useState([
+    { email: "arjun@glowlyskincare.in", role: "Manager" },
+    { email: "tanvi@glowlyskincare.in", role: "Content approver" },
+    { email: "nisha@glowlyskincare.in", role: "Finance" },
+  ]);
+  return (
+    <div>
+      <div className="space-y-3">
+        {rows.map((row, index) => (
+          <div className="grid gap-3 sm:grid-cols-[1fr_160px]" key={`${row.email}-${index}`}>
+            <TextField
+              label="Work email"
+              value={row.email}
+              onChange={(event) =>
+                setRows((value) =>
+                  value.map((item, itemIndex) =>
+                    itemIndex === index ? { ...item, email: event.target.value } : item,
+                  ),
+                )
+              }
+            />
+            <Select
+              label="Role"
+              options={[
+                { value: "Manager", label: "Manager" },
+                { value: "Content approver", label: "Content approver" },
+                { value: "Finance", label: "Finance" },
+              ]}
+              value={row.role}
+              onChange={(role) =>
+                setRows((value) =>
+                  value.map((item, itemIndex) => (itemIndex === index ? { ...item, role } : item)),
+                )
+              }
+            />
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => setRows((value) => [...value, { email: "", role: "Manager" }])}
+        className="mt-4 inline-flex items-center gap-1 text-[13px] font-medium text-link hover:underline"
+      >
+        <Plus size={15} />
+        Add another teammate
+      </button>
+      <p className="mt-3 text-[12px] leading-5 text-secondary">
+        Teammates join with their own work email. Only owners and finance can see payments.
+      </p>
+    </div>
+  );
+}
+function Payouts() {
+  return (
+    <div className="space-y-3.5">
+      <TextField label="Account holder name" required placeholder="Meera Iyer" />
+      <div className="grid gap-3 sm:grid-cols-2">
+        <TextField label="Bank account number" required placeholder="•••• •••• 4821" />
+        <TextField label="IFSC" required placeholder="HDFC0001234" />
+      </div>
+      <TextField
+        label="PAN"
+        required
+        placeholder="ABCPI1234K"
+        helper="Needed for payouts in India. We verify it once."
+      />
+      <TextField label="UPI ID (backup)" placeholder="meera@okhdfcbank" />
+      <p className="text-[13px] leading-5 text-[#6b7280]">
+        No payout fees. Every offer shows exactly what you’ll receive before you accept.
+      </p>
+    </div>
+  );
+}
+function CreatorDetails() {
+  const [niches, setNiches] = useState(["Beauty", "Skincare", "Lifestyle"]);
+  const [languages, setLanguages] = useState(["English", "Hindi"]);
+  const toggle = (value: string, selected: string[], setter: (items: string[]) => void) =>
+    setter(
+      selected.includes(value) ? selected.filter((item) => item !== value) : [...selected, value],
+    );
+  return (
+    <div className="space-y-3.5">
+      <div className="flex items-center gap-3">
+        <img
+          src={ASSETS.howItWorks.avatarMeera}
+          alt="Meera Iyer"
+          className="size-16 rounded-full object-cover"
+        />
+        <div>
+          <Button type="button" kind="secondary" size="s">
+            Change photo
+          </Button>
+          <p className="mt-1 text-[12px] text-tertiary">JPG or PNG, square, at least 400 px</p>
+        </div>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <TextField label="Display name" required placeholder="Meera Iyer" />
+        <TextField label="City" required placeholder="Chennai" />
+      </div>
+      <ChipGroup
+        label="Niches (up to 3)"
+        values={["Beauty", "Skincare", "Lifestyle", "Fashion", "Food", "Travel", "Fitness", "Tech"]}
+        selected={niches}
+        onToggle={(value) => toggle(value, niches, setNiches)}
+      />
+      <ChipGroup
+        label="Languages you create in"
+        values={["English", "Hindi", "Tamil", "Telugu", "Malayalam", "Bengali", "Marathi"]}
+        selected={languages}
+        onToggle={(value) => toggle(value, languages, setLanguages)}
+      />
+    </div>
+  );
+}
+function ChipGroup({
+  label,
+  values,
+  selected,
+  onToggle,
+}: {
+  label: string;
+  values: string[];
+  selected: string[];
+  onToggle: (value: string) => void;
+}) {
+  return (
+    <div>
+      <p className="text-[12px] font-medium text-ink">{label}</p>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {values.map((value) => (
+          <button
+            key={value}
+            type="button"
+            onClick={() => onToggle(value)}
+            className={`rounded-full border px-3 py-1.5 text-[12px] font-medium transition ${selected.includes(value) ? "border-primary bg-primary text-white" : "border-line bg-white text-body"}`}
+          >
+            {value}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
