@@ -19,6 +19,7 @@ import {
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
+import { KpiTile } from "@/common/components/ui/KpiTile";
 import {
   ProjectConfirmModal,
   type ProjectConfirmAction,
@@ -301,30 +302,6 @@ function Badge({ status }: { status: Lifecycle }) {
       <span className="size-1.5 rounded-full bg-current" />
       {status}
     </span>
-  );
-}
-function Metric({
-  icon: Icon,
-  color,
-  label,
-  value,
-  detail,
-}: {
-  icon: typeof Megaphone;
-  color: string;
-  label: string;
-  value: string;
-  detail: string;
-}) {
-  return (
-    <article className="rounded-xl border border-line-subtle bg-white p-4">
-      <span className={`flex size-9 items-center justify-center rounded-md text-white ${color}`}>
-        <Icon size={18} />
-      </span>
-      <p className="mt-3 text-[12px] leading-4 text-secondary">{label}</p>
-      <p className="text-[22px] font-semibold leading-7 tracking-[-.06em] text-ink">{value}</p>
-      <p className="mt-2 text-[12px] font-medium leading-4 text-tertiary">{detail}</p>
-    </article>
   );
 }
 
@@ -623,16 +600,17 @@ export function BrandProjectPublishedPage() {
         ) : (
           <>
             <section className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <Metric
+              <KpiTile
                 icon={Megaphone}
-                color="bg-primary"
+                iconBg="bg-primary"
                 label="Project type"
                 value={project.type}
                 detail={`${project.partnership} · ${project.duration}`}
+                dataNodeId="1473:597"
               />
-              <Metric
+              <KpiTile
                 icon={Users}
-                color="bg-[#1eb2fd]"
+                iconBg="bg-[#1eb2fd]"
                 label="Creators"
                 value={String(project.creators)}
                 detail={
@@ -641,16 +619,16 @@ export function BrandProjectPublishedPage() {
                     : "No creators invited yet"
                 }
               />
-              <Metric
+              <KpiTile
                 icon={WalletCards}
-                color="bg-[#f29b07]"
+                iconBg="bg-[#f29b07]"
                 label="Budget"
                 value={project.budget}
                 detail={project.budgetNote}
               />
-              <Metric
+              <KpiTile
                 icon={Video}
-                color="bg-[#1eb2fd]"
+                iconBg="bg-[#1eb2fd]"
                 label="Content"
                 value={
                   project.status === "Draft" || project.status === "Upcoming"

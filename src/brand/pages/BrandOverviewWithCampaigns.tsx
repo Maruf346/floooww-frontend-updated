@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { ContentAwaitingReview } from "@/brand/components/ContentAwaitingReview";
 import { ROUTES } from "@/common/constants/routes";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
+import { KpiTile } from "@/common/components/ui/KpiTile";
 import { asset } from "@/common/utils/asset";
 
 const actions = [
@@ -134,14 +135,14 @@ export function BrandOverviewWithCampaigns() {
           ].map(([Icon, label, value, detail]) => {
             const MetricIcon = Icon as typeof Gift;
             return (
-              <article key={label as string} className="rounded-xl border border-line-subtle p-4">
-                <span className="flex size-9 items-center justify-center rounded-md bg-primary text-white">
-                  <MetricIcon size={18} />
-                </span>
-                <p className="mt-3 text-[12px] leading-4 text-secondary">{label}</p>
-                <p className="text-[22px] font-semibold leading-7 tracking-[-.015em]">{value}</p>
-                <p className="mt-2 text-[12px] font-medium leading-4 text-tertiary">{detail}</p>
-              </article>
+              <KpiTile
+                key={label as string}
+                icon={MetricIcon}
+                iconBg="bg-primary"
+                label={label as string}
+                value={value as string}
+                detail={detail as string}
+              />
             );
           })}
         </div>

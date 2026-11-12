@@ -27,6 +27,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
+import { KpiTile } from "@/common/components/ui/KpiTile";
 import { brandProjectRoute, ROUTES } from "@/common/constants/routes";
 import { asset } from "@/common/utils/asset";
 import { projects } from "@/brand/data/projects";
@@ -845,21 +846,14 @@ export function BrandProjectsPage() {
             aria-label="Project metrics"
           >
             {kpis.map(({ icon: Icon, label, value, detail, iconClass }) => (
-              <article
+              <KpiTile
                 key={label}
-                className="flex h-[154px] min-w-0 flex-col rounded-xl border border-line-subtle bg-white p-4"
-              >
-                <span
-                  className={`flex size-9 items-center justify-center rounded-md text-white ${iconClass}`}
-                >
-                  <Icon size={18} />
-                </span>
-                <p className="mt-3 truncate text-[12px] leading-4 text-secondary">{label}</p>
-                <p className="text-[22px] font-semibold leading-7 tracking-[-.015em] text-ink">
-                  {value}
-                </p>
-                <p className="mt-2 text-[12px] font-medium leading-4 text-tertiary">{detail}</p>
-              </article>
+                icon={Icon}
+                iconBg={iconClass}
+                label={label}
+                value={value}
+                detail={detail}
+              />
             ))}
           </section>
         )}
