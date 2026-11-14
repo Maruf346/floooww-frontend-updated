@@ -1537,6 +1537,13 @@ export function BrandCreatorInvitePage() {
   const ready = entries.filter(
     (entry) => entry.type && entry.platform && entry.deadline,
   );
+  const readyFee = ready.reduce(
+    (total, entry) => total + Number(entry.fee || 0),
+    0,
+  );
+  const sentCharge = readyFee + Math.round(readyFee * 0.18);
+  const sentProjectName = repeat ? "Glow Squad" : "Vitamin-C Serum";
+  const oneTimeDueDate = reviewDateRange(ready);
   return (
     <BrandShell>
       <div className="w-full pb-10">
@@ -1561,7 +1568,7 @@ export function BrandCreatorInvitePage() {
               Invite sent to {creator.name}
             </h1>
             <p className="mt-1 text-[13px] text-secondary">
-              {creator.handle} · {creator.city} · Instagram 1.54 L · Glow Squad
+              {creator.handle} · {creator.city} · Instagram 1.54 L · {sentProjectName}
             </p>
           </header>
         ) : (
@@ -1759,23 +1766,25 @@ export function BrandCreatorInvitePage() {
                   </span>
                 </div>
                 <p className="mt-4 text-[13px] text-secondary">
-                  ₹14,750 paid for cycle 1 · held until you approve the content
+                  {repeat
+                    ? `₹${sentCharge.toLocaleString("en-IN")} paid for cycle 1 · held until you approve the content`
+                    : `₹${sentCharge.toLocaleString("en-IN")} paid · held in escrow until you approve the content`}
                 </p>
-                <div className="mt-4 grid gap-2 md:grid-cols-3">
+                {repeat ? <div className="mt-4 grid gap-2 md:grid-cols-3">
                   {[
                     [
                       "Cycle 1 · 2 Nov – 1 Dec",
-                      "Paid · ₹14,750 held",
+                      `Paid · ₹${sentCharge.toLocaleString("en-IN")} held`,
                       "success",
                     ],
                     [
                       "Cycle 2 · 2 Dec – 1 Jan",
-                      "Charged 2 Dec · ₹14,750",
+                      `Charged 2 Dec · ₹${sentCharge.toLocaleString("en-IN")}`,
                       "neutral",
                     ],
                     [
                       "Cycle 3 · 2 Jan – 31 Jan",
-                      "Charged 2 Jan · ₹14,750",
+                      `Charged 2 Jan · ₹${sentCharge.toLocaleString("en-IN")}`,
                       "neutral",
                     ],
                   ].map(([title, detail, tone]) => (
@@ -1793,7 +1802,7 @@ export function BrandCreatorInvitePage() {
                       </span>
                     </div>
                   ))}
-                </div>
+                </div> : null}
                 <section className="mt-4 rounded-lg bg-subtle px-4 py-3">
                   <h2 className="text-[14px] font-medium text-ink">
                     What happens next
@@ -1807,13 +1816,13 @@ export function BrandCreatorInvitePage() {
                     <li className="flex gap-2">
                       <Check size={14} className="shrink-0 text-success" />
                       The creator has 48 hours to accept. If not accepted,
-                      ₹14,750 is refunded automatically.
+                      ₹{sentCharge.toLocaleString("en-IN")} is refunded automatically.
                     </li>
                     <li className="flex gap-2">
                       <Check size={14} className="shrink-0 text-success" />
-                      On 2 Dec and 2 Jan you’re charged automatically. If a
-                      payment fails, the cycle is delayed and work is paused
-                      until you pay.
+                      {repeat
+                        ? "On 2 Dec and 2 Jan you’re charged automatically. If a payment fails, the cycle is delayed and work is paused until you pay."
+                        : `${creator.name.split(" ")[0]} posts each deliverable by ${oneTimeDueDate}. Payment is released when you approve the content.`}
                     </li>
                   </ul>
                 </section>
@@ -1821,10 +1830,14 @@ export function BrandCreatorInvitePage() {
               <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-subtle/70 px-5 py-4">
                 <div>
                   <p className="text-[14px] font-medium text-ink">
-                    Glow Squad · 7 creators invited
+                    {repeat
+                      ? "Glow Squad · 7 creators invited"
+                      : "Vitamin-C Serum · 17 creators invited"}
                   </p>
                   <p className="mt-1 text-[12px] text-secondary">
-                    Budget now ₹4,87,500 for the project
+                    {repeat
+                      ? "Budget now ₹4,87,500 for the project"
+                      : "Budget now ₹21,500 committed for the project"}
                   </p>
                 </div>
                 <div className="flex gap-2">
