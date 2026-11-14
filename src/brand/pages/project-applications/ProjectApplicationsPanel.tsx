@@ -5,6 +5,7 @@ import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import { Button } from "@/common/components/ui/Button";
 import { Dropdown } from "@/common/components/ui/Dropdown";
 import type { Platform } from "@/common/types";
+import { ApplicantProfileDrawer } from "./ApplicantProfileDrawer";
 
 type ApplicationStatus = "New" | "Shortlisted" | "Reviewed" | "Declined";
 type Applicant = {
@@ -99,6 +100,7 @@ type ProjectApplicationsViewProps = {
 };
 
 function ContextApplicantCard({ applicant, index, type, partnership, duration, objective, status, onStatus }: { applicant: Applicant; index: number; type: string; partnership: string; duration: string; objective: string; status: ApplicationStatus; onStatus: (status: ApplicationStatus) => void }) {
+  const [profileOpen, setProfileOpen] = useState(false);
   const isUgc = /ugc/i.test(type);
   const isAi = /ai/i.test(type);
   const videoProject = isUgc || isAi;
@@ -122,7 +124,7 @@ function ContextApplicantCard({ applicant, index, type, partnership, duration, o
   const feeNote = isGift
     ? applicant.counter ? "Would like their standard creator fee alongside the product kit" : "Product kit accepted · no additional cash ask"
     : applicant.counter ? `₹${Math.max(0, rate - 12500).toLocaleString("en-IN")} above your ₹12,500 fee${unit}` : `Same as your ₹12,500 fee${unit} · no extra ask`;
-  return <article className="relative h-[461px] overflow-hidden rounded-xl border border-line bg-white">
+  return <article onClickCapture={(event) => { const button = (event.target as HTMLElement).closest("button"); if (button?.textContent === "View profile") { event.preventDefault(); event.stopPropagation(); setProfileOpen(true); } }} className="relative h-[461px] overflow-hidden rounded-xl border border-line bg-white">{profileOpen && <ApplicantProfileDrawer applicant={applicant} projectName="Vitamin-C Serum" status={status} onClose={() => setProfileOpen(false)} onInvite={() => { onStatus("Reviewed"); setProfileOpen(false); }} />}
     <div className="absolute left-5 right-5 top-5 flex h-14 items-center gap-3"><img src={`/assets/creators/${applicant.avatar}.png`} alt="" className="size-11 rounded-full object-cover" /><div className="min-w-0 flex-1"><h2 className="truncate text-[14px] font-semibold leading-[22px] text-ink">{applicant.name}</h2><p className="truncate text-[12px] leading-4 text-secondary">{applicant.handle} · {applicant.city}</p></div><motion.div className="grid size-14 place-items-center rounded-full" style={{ background: `conic-gradient(#2563eb ${match}%, #e5e7eb 0)` }} initial={{ opacity: 0, scale: .72, rotate: -45 }} whileInView={{ opacity: 1, scale: 1, rotate: 0 }} viewport={{ once: true, amount: .5 }} transition={{ duration: .75, ease: [0.22, 1, 0.36, 1] }}><span className="grid size-[46px] place-items-center rounded-full bg-white text-[14px] font-semibold leading-5 text-ink">{match}%</span></motion.div></div>
     <div className="absolute left-5 right-5 top-[91px] flex h-5 items-center gap-1.5">{channel ? <p className="min-w-0 truncate text-[12px] leading-5 text-ink">{channel}</p> : <div className="flex min-w-0 gap-2">{applicant.platforms.map(([platform, followers]) => <span className="flex items-center gap-1 text-[12px] leading-5 text-ink" key={platform}><PlatformLogo platform={platform} size={16} /><span>{followers}</span></span>)}</div>}<span className="h-px min-w-2 flex-1 bg-line" /><span className="inline-flex h-5 items-center gap-1 rounded-full bg-success-bg px-2 text-[11px] font-medium text-success"><Check size={11} strokeWidth={3} />Verified</span></div>
     <p className="absolute left-5 top-[125px] text-[10px] leading-[13px] text-tertiary">{videoProject ? "Portfolio reviewed · last 30 days" : "Creator stats · last 30 days"}</p>
