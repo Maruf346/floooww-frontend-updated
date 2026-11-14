@@ -7,10 +7,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ApplicantSocialStats } from "./ApplicantSocialStats";
 import { ApplicantPortfolio } from "./ApplicantPortfolio";
 import { ApplicantReviews } from "./ApplicantReviews";
+import { getCreatorProfile } from "./creatorProfileData";
 
 type ApplicationStatus = "New" | "Shortlisted" | "Reviewed" | "Declined";
 
 export type ApplicantProfile = {
+  id?: string;
   name: string;
   handle: string;
   city: string;
@@ -22,6 +24,7 @@ export type ApplicantProfile = {
   engagement: number;
   views: string;
   audience: string;
+  platforms?: Array<[import("@/common/types").Platform, string]>;
 };
 
 type ApplicantProfileDrawerProps = {
@@ -47,15 +50,16 @@ function DetailCell({ value, label }: { value: string; label: string }) {
 }
 
 function ProfileBody({ applicant }: { applicant: ApplicantProfile }) {
+  const profile = getCreatorProfile(applicant);
   return <div className="space-y-4 p-6">
     <section>
       <h3 className="text-[14px] font-semibold leading-5 text-ink">About</h3>
-      <p className="mt-2 text-[14px] leading-[22px] text-secondary">Skincare and festive-makeup creator from {applicant.city}. Honest routines for Indian skin in Hindi and English, filmed at home in natural light. 4 years on Instagram.</p>
-      <div className="mt-3 flex flex-wrap gap-1.5">{["Skincare", "Festive looks", "GRWM", "Budget beauty"].map((niche) => <span className="rounded-full bg-subtle px-2 py-0.5 text-[12px] font-medium leading-4 text-[#394357]" key={niche}>{niche}</span>)}</div>
+      <p className="mt-2 text-[14px] leading-[22px] text-secondary">{profile.bio}</p>
+      <div className="mt-3 flex flex-wrap gap-1.5">{profile.niches.map((niche) => <span className="rounded-full bg-subtle px-2 py-0.5 text-[12px] font-medium leading-4 text-[#394357]" key={niche}>{niche}</span>)}</div>
     </section>
     <section>
       <h3 className="text-[14px] font-semibold leading-5 text-ink">Details</h3>
-      <div className="mt-3 grid grid-cols-2 gap-2"><DetailCell value="Hindi, English, Marathi" label="Languages" /><DetailCell value="Reels, Stories, Carousels" label="Formats" /><DetailCell value="within 2 hours" label="Usually replies" /><DetailCell value="Mar 2025" label="On Floooww since" /><DetailCell value="18" label="Projects completed" /><DetailCell value="96%" label="On-time delivery" /></div>
+      <div className="mt-3 grid grid-cols-2 gap-2"><DetailCell value={profile.languages} label="Languages" /><DetailCell value={profile.platforms.map(([platform]) => platform).join(", ")} label="Channels" /><DetailCell value={profile.responseTime} label="Usually replies" /><DetailCell value={profile.memberSince} label="On Floooww since" /><DetailCell value={String(Math.max(4, profile.reviewCount - 5))} label="Projects completed" /><DetailCell value={profile.onTime} label="On-time delivery" /></div>
     </section>
     <section>
       <h3 className="text-[14px] font-semibold leading-5 text-ink">Brand fit</h3>
