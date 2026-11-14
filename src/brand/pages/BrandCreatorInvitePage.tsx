@@ -7,8 +7,11 @@ import {
   Check,
   ChevronLeft,
   Copy,
+  CreditCard,
   Link2,
   Plus,
+  Send,
+  Smartphone,
   Tag,
   Trash2,
 } from "lucide-react";
@@ -315,19 +318,19 @@ function CycleSchedule({ fee }: { fee: number }) {
 }
 
 function Review({
-  creatorName,
   entries,
-  repeat,
   payWith,
   onPayWith,
+  agreement,
+  onAgreementChange,
   edit,
   send,
 }: {
-  creatorName: string;
   entries: Deliverable[];
-  repeat: boolean;
   payWith: string;
   onPayWith: (value: string) => void;
+  agreement: boolean;
+  onAgreementChange: (value: boolean) => void;
   edit: () => void;
   send: () => void;
 }) {
@@ -335,61 +338,148 @@ function Review({
     (total, entry) => total + Number(entry.fee || 0),
     0,
   );
+  const gst = Math.round(fee * 0.18);
+  const chargedNow = fee + gst;
+  const paymentMethods = [
+    {
+      value: "UPI AutoPay · minimalist@okhdfcbank",
+      detail:
+        "Mandate up to ₹16,000 a cycle · approve once in your UPI app · covers fee changes",
+      icon: (
+        <span className="grid size-5 place-items-center rounded-full bg-primary text-white">
+          <Smartphone size={13} />
+        </span>
+      ),
+    },
+    {
+      value: "Visa •••• 4242",
+      detail: "Card auto-charged at each cycle start · expires 08/28",
+      icon: <CreditCard size={18} className="text-secondary" />,
+    },
+  ];
+
   return (
     <section className="overflow-hidden rounded-xl border border-line bg-white">
       <div className="p-5">
-        <h2 className="text-[16px] font-semibold leading-6 text-ink">
-          Review invitation
-        </h2>
-        <p className="mt-1 text-[13px] leading-5 text-secondary">
-          Confirm {creatorName}’s deliverables and fund the first cycle.
-        </p>
-        <div className="mt-5 space-y-3">
-          {entries.map((entry) => (
-            <div key={entry.id} className="rounded-lg bg-subtle p-3">
-              <div className="flex items-center justify-between gap-3 text-[14px] font-medium text-ink">
-                <span>{entry.type}</span>
-                <span>₹{Number(entry.fee || 0).toLocaleString("en-IN")}</span>
-              </div>
-              <p className="mt-1 text-[12px] leading-4 text-secondary">
-                {entry.platform} · due {entry.deadline} · {entry.usage}
+        <div className="overflow-hidden rounded-lg border border-line">
+          <div className="space-y-4 px-3.5 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 text-[13px]">
+              <p className="text-secondary">
+                Cycle 1 · 2 Nov – 1 Dec · {entries.length} deliverables ·
+                creator fee
+              </p>
+              <p className="font-medium text-ink">
+                ₹{fee.toLocaleString("en-IN")}
               </p>
             </div>
-          ))}
-        </div>
-        <div className="mt-5 grid gap-3 border-t border-line pt-5 sm:grid-cols-2">
-          <Dropdown
-            value={payWith}
-            options={[
-              "Business card ending 8421",
-              "Bank transfer",
-              "Add payment method",
-            ]}
-            onChange={onPayWith}
-            ariaLabel="Pay with"
-            displayValue={`Pay with  ${payWith}`}
-          />
-          <div className="rounded-lg bg-subtle px-3 py-2">
-            <p className="text-[12px] text-secondary">
-              Fee per cycle {repeat ? "· repeats monthly" : "· one cycle"}
-            </p>
-            <p className="mt-1 text-[18px] font-semibold text-ink">
-              ₹{fee.toLocaleString("en-IN")}
-            </p>
+            <div className="flex items-center justify-between gap-3 text-[13px]">
+              <p className="text-secondary">Floooww fee</p>
+              <p className="text-ink">Free</p>
+            </div>
+            <div className="flex items-center justify-between gap-3 text-[13px]">
+              <p className="text-secondary">GST (18%)</p>
+              <p className="text-ink">₹{gst.toLocaleString("en-IN")}</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-between gap-3 border-t border-line bg-subtle px-3.5 py-3 text-[14px] font-medium text-ink">
+            <span>Charged now · cycle 1</span>
+            <span>₹{chargedNow.toLocaleString("en-IN")}</span>
           </div>
         </div>
-      </div>
-      <footer className="flex items-center justify-between border-t border-line bg-subtle/60 px-5 py-4">
-        <Button
-          kind="secondary"
-          onClick={edit}
-          leadingIcon={<ChevronLeft size={16} />}
+
+        <label
+          className={`mt-5 flex cursor-pointer items-start gap-3 rounded-lg border px-3 py-3 ${agreement ? "border-primary bg-primary-subtle/45" : "border-line bg-white"}`}
         >
-          Edit deliverables
-        </Button>
-        <Button onClick={send} trailingIcon={<ArrowRight size={16} />}>
-          Send invite
-        </Button>
+          <input
+            type="checkbox"
+            checked={agreement}
+            onChange={(event) => onAgreementChange(event.target.checked)}
+            className="mt-0.5 size-4 accent-primary"
+          />
+          <span>
+            <span className="block text-[14px] font-medium text-ink">
+              I agree to be charged at the start of every cycle until 31 Jan
+              2027
+            </span>
+            <span className="mt-1 block text-[12px] leading-4 text-secondary">
+              ₹{chargedNow.toLocaleString("en-IN")} on 2 Dec and 2 Jan, held in
+              escrow and released to the creator only after you approve that
+              cycle’s content. If a payment fails, the cycle is delayed and work
+              is paused until you pay. You can edit or stop repeating any time.
+            </span>
+          </span>
+        </label>
+
+        <section className="mt-4">
+          <p className="text-[12px] text-secondary">Pay with</p>
+          <div className="mt-3 overflow-hidden rounded-lg border border-line">
+            {paymentMethods.map((method) => {
+              const selected = payWith === method.value;
+              return (
+                <button
+                  type="button"
+                  key={method.value}
+                  onClick={() => onPayWith(method.value)}
+                  className={`flex w-full items-start gap-3 px-3 py-3 text-left transition ${selected ? "bg-primary-subtle/70" : "bg-white hover:bg-subtle"}`}
+                >
+                  <span
+                    className={`mt-1 grid size-[18px] place-items-center rounded-full border-2 ${selected ? "border-primary" : "border-line-strong"}`}
+                  >
+                    {selected ? (
+                      <span className="size-2 rounded-full bg-primary" />
+                    ) : null}
+                  </span>
+                  <span className="flex size-5 shrink-0 items-center justify-center">
+                    {method.icon}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[14px] font-medium text-ink">
+                      {method.value}
+                    </span>
+                    <span className="mt-1 block text-[12px] leading-4 text-secondary">
+                      {method.detail}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+            <button
+              type="button"
+              className="flex h-9 w-full items-center gap-2 border-t border-line px-3 text-[13px] font-medium text-ink hover:bg-subtle"
+            >
+              <Plus size={16} className="text-primary" />
+              Add another payment method
+            </button>
+          </div>
+        </section>
+      </div>
+      <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-subtle/60 px-5 py-4">
+        <div>
+          <p className="text-[14px] font-medium text-ink">
+            Today ₹{chargedNow.toLocaleString("en-IN")} · then ₹
+            {chargedNow.toLocaleString("en-IN")} on 2 Dec and 2 Jan
+          </p>
+          <p className="mt-1 text-[12px] text-secondary">
+            ₹{(chargedNow * 3).toLocaleString("en-IN")} over 3 cycles · GST
+            invoice each cycle
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            kind="secondary"
+            onClick={edit}
+            leadingIcon={<ChevronLeft size={16} />}
+          >
+            Back
+          </Button>
+          <Button
+            disabled={!agreement || !payWith}
+            onClick={send}
+            leadingIcon={<Send size={16} />}
+          >
+            Pay ₹{chargedNow.toLocaleString("en-IN")} &amp; send invite
+          </Button>
+        </div>
       </footer>
     </section>
   );
@@ -402,7 +492,8 @@ export function BrandCreatorInvitePage() {
   const [step, setStep] = useState<Step>("setup");
   const [entries, setEntries] = useState<Deliverable[]>([blank(1)]);
   const [repeat, setRepeat] = useState(false);
-  const [payWith, setPayWith] = useState("Business card ending 8421");
+  const [payWith, setPayWith] = useState("UPI AutoPay · minimalist@okhdfcbank");
+  const [agreement, setAgreement] = useState(true);
   const valid = entries.some(
     (entry) => entry.type && entry.platform && entry.deadline,
   );
@@ -608,11 +699,11 @@ export function BrandCreatorInvitePage() {
             </section>
           ) : step === "review" ? (
             <Review
-              creatorName={creator.name}
               entries={ready}
-              repeat={repeat}
               payWith={payWith}
               onPayWith={setPayWith}
+              agreement={agreement}
+              onAgreementChange={setAgreement}
               edit={() => setStep("setup")}
               send={() => setStep("sent")}
             />
