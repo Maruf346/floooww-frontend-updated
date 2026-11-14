@@ -1,5 +1,7 @@
 # Dashboard UI Guidelines
 
+- Individual creator Invite actions always navigate to the shared three-step invite route. The route is data-driven by project and creator, preserves the BrandShell gutter, and implements setup/editable deliverables, review-and-pay, then invite-sent confirmation. Setup fields use the shared Dropdown and MultiDropdown controls for deliverable type, platform, usage, products, coupon codes, shipments, and payment method; incomplete deliverables keep review disabled.
+
 - Creator profile UIs are data-driven. The applicant drawer and full-profile route must resolve the selected creator from shared profile data rather than reuse a single creator's copy, metrics, channels, services, or rail information. Connected channels stay selectable; absent channels render disabled with `Not connected`.
 
 - Dashboard page content uses the BrandShell's shared responsive outer gutter (`p-5 sm:p-8`) and must remain `w-full` rather than adding an independent page-level maximum width. Grid columns may be constrained for their design, but the page itself must line up with the left and right edges used by other dashboard pages.

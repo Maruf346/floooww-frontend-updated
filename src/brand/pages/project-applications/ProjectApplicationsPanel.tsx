@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Check, ChevronDown, ExternalLink, MessageCircle, Search, Share2, X } from "lucide-react";
 import { motion } from "motion/react";
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import { Button } from "@/common/components/ui/Button";
 import { Dropdown } from "@/common/components/ui/Dropdown";
+import { brandCreatorInviteRoute } from "@/common/constants/routes";
 import type { Platform } from "@/common/types";
 import { ApplicantProfileDrawer } from "./ApplicantProfileDrawer";
 
@@ -100,6 +102,10 @@ type ProjectApplicationsViewProps = {
 };
 
 function ContextApplicantCard({ applicant, index, type, partnership, duration, objective, status, onStatus }: { applicant: Applicant; index: number; type: string; partnership: string; duration: string; objective: string; status: ApplicationStatus; onStatus: (status: ApplicationStatus) => void }) {
+  const navigate = useNavigate();
+  const { projectId = "1" } = useParams();
+  const updateStatus = onStatus;
+  onStatus = (next) => next === "Reviewed" ? navigate(brandCreatorInviteRoute(projectId, applicant.handle.slice(1))) : updateStatus(next);
   const [profileOpen, setProfileOpen] = useState(false);
   const isUgc = /ugc/i.test(type);
   const isAi = /ai/i.test(type);
