@@ -5,11 +5,13 @@ import {
   Check,
   Eye,
   FileText,
+  Inbox,
   Megaphone,
   MoreHorizontal,
   Pause,
   Play,
   RotateCcw,
+  Search,
   Share2,
   Trash2,
   Users,
@@ -18,6 +20,7 @@ import {
 } from "lucide-react";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
+import { Dropdown } from "@/common/components/ui/Dropdown";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { KpiTile } from "@/common/components/ui/KpiTile";
 import {
@@ -325,12 +328,104 @@ function Badge({ status }: { status: Lifecycle }) {
   );
 }
 
+function InvitedCreatorsEmptyState({
+  onGoToApplications,
+  onFindCreators,
+}: {
+  onGoToApplications: () => void;
+  onFindCreators: () => void;
+}) {
+  const [status, setStatus] = useState("All");
+  const [platform, setPlatform] = useState("Platform");
+  const [deadline, setDeadline] = useState("Deadline");
+  const [sort, setSort] = useState("Sort: Next deadline");
+  const segments = ["All", "Posting", "Awaiting approval", "Overdue", "Not started"];
+
+  return (
+    <section className="mt-5">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-[10px] bg-subtle p-1">
+          {segments.map((item) => (
+            <button
+              type="button"
+              key={item}
+              onClick={() => setStatus(item)}
+              className={`flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-[13px] leading-5 transition ${status === item ? "bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,.08)]" : "text-secondary hover:text-ink"}`}
+            >
+              <span>{item}</span>
+              <span className="text-[12px] leading-4 text-secondary">0</span>
+            </button>
+          ))}
+        </div>
+        <span className="hidden h-px min-w-4 flex-1 bg-line xl:block" />
+        <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2">
+          <Dropdown
+            compact
+            ariaLabel="Filter invited creators by platform"
+            value={platform}
+            onChange={setPlatform}
+            options={["Platform", "Instagram", "YouTube", "Pinterest", "Snapchat"]}
+            className="w-[98px] [&>button]:h-[38px]"
+          />
+          <Dropdown
+            compact
+            ariaLabel="Filter invited creators by deadline"
+            value={deadline}
+            onChange={setDeadline}
+            options={["Deadline", "This week", "Next 7 days", "This month"]}
+            className="w-[105px] [&>button]:h-[38px]"
+          />
+          <Dropdown
+            compact
+            ariaLabel="Sort invited creators"
+            value={sort}
+            onChange={setSort}
+            options={["Sort: Next deadline", "Sort: Status", "Sort: Creator"]}
+            className="w-[164px] [&>button]:h-[38px] [&>button]:border-0 [&>button]:bg-transparent [&>button]:px-2"
+          />
+        </div>
+      </div>
+      <motion.section
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="mt-5 flex min-h-[290px] flex-col items-center justify-center rounded-xl border border-line bg-white px-6 py-12 text-center"
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.76 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.65, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+          className="grid size-14 place-items-center rounded-full bg-subtle text-secondary"
+        >
+          <Inbox size={26} strokeWidth={1.7} />
+        </motion.div>
+        <h2 className="mt-3 text-[14px] font-semibold leading-5 text-ink">
+          No creators invited yet
+        </h2>
+        <p className="mt-1 max-w-[600px] text-[13px] leading-5 text-secondary">
+          Invite shortlisted creators from Applications. You’re charged when you
+          invite and set deliverables, and the fee is held until you approve their content.
+        </p>
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
+          <Button kind="secondary" onClick={onGoToApplications}>
+            Go to Applications
+          </Button>
+          <Button leadingIcon={<Search size={16} />} onClick={onFindCreators}>
+            Find creators
+          </Button>
+        </div>
+      </motion.section>
+    </section>
+  );
+}
+
 export function BrandProjectPublishedPage() {
   const navigate = useNavigate();
   const { projectId } = useParams();
   const project = getProject(Number(projectId));
   const [status, setStatus] = useState<Lifecycle>(project.detailStatus);
   const [tab, setTab] = useState("Overview");
+  const [invitedCreatorCount] = useState(0);
   const [more, setMore] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [confirm, setConfirm] = useState<Confirm>(null);
@@ -461,7 +556,11 @@ export function BrandProjectPublishedPage() {
             >
               Share
             </Button>
-            <Button disabled={locked} leadingIcon={<Users size={16} />}>
+            <Button
+              disabled={locked}
+              leadingIcon={<Users size={16} />}
+              onClick={() => setTab("Applications")}
+            >
               Invite creators
             </Button>
             <div className="relative">
@@ -645,13 +744,18 @@ export function BrandProjectPublishedPage() {
               {item}
               {["Applications", "Invited creators", "Content"].includes(item) && (
                 <span className="ml-1.5 rounded-full bg-muted px-[7px] py-px text-[12px] leading-4">
-                  {item === "Applications" ? project.apps : item === "Invited creators" ? project.creatorCount : project.deliverableCount}
+                  {item === "Applications" ? project.apps : item === "Invited creators" ? invitedCreatorCount : project.deliverableCount}
                 </span>
               )}
             </button>
           ))}
         </nav>
-        {tab === "Applications" ? <ProjectApplicationsView projectName={project.name} applicationCount={project.apps} hasApplications={project.apps > 0} objective={objective} projectType={project.projectType} partnership={project.partnership} duration={project.duration} onOpenShare={() => setShareOpen(true)} /> : false ? (
+        {tab === "Applications" ? <ProjectApplicationsView projectName={project.name} applicationCount={project.apps} hasApplications={project.apps > 0} objective={objective} projectType={project.projectType} partnership={project.partnership} duration={project.duration} onOpenShare={() => setShareOpen(true)} /> : tab === "Invited creators" ? (
+          <InvitedCreatorsEmptyState
+            onGoToApplications={() => setTab("Applications")}
+            onFindCreators={() => navigate(ROUTES.brandNewProjectCreators)}
+          />
+        ) : false ? (
           <section className="mt-6">
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-[10px] bg-subtle p-1">
