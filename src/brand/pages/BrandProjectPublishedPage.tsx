@@ -25,7 +25,7 @@ import {
   type ProjectConfirmAction,
 } from "@/brand/components/ProjectConfirmModal";
 import { ShareProjectModal } from "@/brand/components/ShareProjectModal";
-import { ROUTES } from "@/common/constants/routes";
+import { brandProjectPerformanceRoute, ROUTES } from "@/common/constants/routes";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "motion/react";
 import { getProject } from "@/brand/data/projects";
@@ -49,14 +49,33 @@ const tabs = [
   "Performance",
   "Brief",
 ];
-const timeline = [
-  ["Project created", "Brief and deliverables added", "20 Sep"],
-  ["Published", "₹2,00,000 funded to escrow", "20 Sep"],
-  ["Invite creators", "16 places to fill", "Now"],
-  ["Launch", "Creators can start delivering", "7 Oct"],
-  ["Final deadline", "Last creator deadline", "3 Nov"],
-  ["Project ends", "Usage rights until 7 Dec", "7 Nov"],
-];
+type Objective = "Sales" | "Awareness" | "Engagement" | "Traffic" | "Leads";
+
+const projectObjective = (projectId: number): Objective =>
+  ({
+    1: "Sales",
+    2: "Engagement",
+    3: "Awareness",
+    4: "Awareness",
+    5: "Engagement",
+    6: "Leads",
+    7: "Awareness",
+    8: "Engagement",
+    9: "Sales",
+    10: "Awareness",
+    11: "Traffic",
+    12: "Awareness",
+    13: "Engagement",
+    14: "Awareness",
+  } as Record<number, Objective>)[projectId] ?? "Awareness";
+
+const objectiveMetrics: Record<Objective, [string, string, string, string, string]> = {
+  Sales: ["Net sales", "Orders", "CVR", "ROAS", "CPO"],
+  Awareness: ["Reach", "Views", "Profile visits", "Impressions", "CPM"],
+  Engagement: ["Engagement rate", "Engagements", "Saves", "Shares", "CPE"],
+  Traffic: ["Sessions", "Clicks", "CTR", "Engaged sessions", "CPC"],
+  Leads: ["Leads", "Quiz starts", "Completion", "Qualified leads", "CPL"],
+};
 const meta: Record<Lifecycle, { tone: string; detail: string }> = {
   Draft: { tone: "bg-muted text-secondary", detail: "Draft · not published" },
   Upcoming: {
@@ -315,6 +334,46 @@ export function BrandProjectPublishedPage() {
   const [shareOpen, setShareOpen] = useState(false);
   const [confirm, setConfirm] = useState<Confirm>(null);
   const locked = status === "Archived" || status === "Deleted";
+  const objective = projectObjective(project.id);
+  const longTerm = project.partnership.toLowerCase().includes("long-term");
+  const giftExchange = project.partnership.toLowerCase().includes("gift");
+  const fileDelivery = /ugc|ai video/i.test(project.projectType);
+  const contentUnit = fileDelivery ? (project.projectType.toLowerCase().includes("ai") ? "videos" : "files") : "posts";
+  const deliveryVerb = fileDelivery ? "Delivered" : "Posted";
+  const deliveryAction = fileDelivery ? "Delivering" : "Posting";
+  const deadlineLabel = fileDelivery ? "Delivery deadline" : "Posting deadline";
+  const milestoneItems = longTerm
+    ? [
+        ["Launched", "Project is live", "7 Oct"],
+        [giftExchange ? "Kits delivered" : "Creators accepted", giftExchange ? "Products are on their way" : "Creator team confirmed", "9 Oct"],
+        ["Month 2 of 6", "Current delivery cycle", "Oct"],
+        ["Next month starts", "Brief is sent for the next cycle", "1 Nov"],
+        ["Project ends", "Final cycle and usage rights end", "28 Feb"],
+      ]
+    : [
+        ["Launched", "Project is live", "7 Oct"],
+        [giftExchange ? "Kits delivered" : "Creators accepted", giftExchange ? "Products are on their way" : "Creator team confirmed", "9 Oct"],
+        [fileDelivery ? "First files delivered" : "First post live", `First ${contentUnit.slice(0, -1)} is expected`, "15 Oct"],
+        [deadlineLabel, `Final ${contentUnit} due from creators`, "3 Nov"],
+        ["Project ends", "Usage rights end 7 Dec", "7 Nov"],
+      ];
+  const keyDates = longTerm
+    ? [["This month's due date", "3 Nov"], ["Next cycle charge", "1 Nov"], ["Project ends", "28 Feb 2027"]]
+    : [[deadlineLabel, "3 Nov 2026"], ["Usage rights end", "7 Dec 2026"], ["Payments", giftExchange ? "Products sent" : "On track"]];
+  const resultMetrics = objectiveMetrics[objective];
+  const resultValues: Record<Objective, string[]> = {
+    Sales: ["₹5.42L", "1,315", "4.8%", "2.7×", "₹412"],
+    Awareness: ["1.8M", "6.2L", "48.6K", "2.4M", "₹83"],
+    Engagement: ["5.4%", "48.2K", "8.6K", "3.9K", "₹26"],
+    Traffic: ["14.8K", "18.2K", "3.1%", "8.4K", "₹11"],
+    Leads: ["1,284", "3,041", "42%", "714", "₹156"],
+  };
+  const quickAction = locked
+    ? status === "Paused" ? "Resume project" : "Restore project"
+    : status === "Completed" ? "Leave reviews" : `Review ${Math.max(1, Math.round(project.deliverableCount / Math.max(project.creatorCount, 1)))} ${contentUnit}`;
+  const creatorDeliverable = longTerm && /ambassador/i.test(project.projectType)
+    ? "Month 3: 0 / 3"
+    : `0 / ${fileDelivery ? 2 : 4} ${contentUnit}`;
   useEffect(() => setStatus(project.detailStatus), [project.id, project.detailStatus]);
   // Replace this sample with the accepted/invited creator records from the project API.
   // An empty API response continues to render the existing empty state.
@@ -328,13 +387,13 @@ export function BrandProjectPublishedPage() {
           const behind = Math.max(0, project.creators - allDelivered - inProgress - notStarted);
           const stages = [
             {
-              label: "All delivered",
+              label: `All ${deliveryVerb.toLowerCase()}`,
               count: allDelivered,
               color: "#149D46",
               className: "bg-success",
             },
             {
-              label: "In progress",
+              label: deliveryAction,
               count: inProgress,
               color: "#2563EB",
               className: "bg-[#2563EB]",
@@ -575,7 +634,11 @@ export function BrandProjectPublishedPage() {
             <button
               key={item}
               type="button"
-              onClick={() => setTab(item)}
+              onClick={() =>
+                item === "Performance"
+                  ? navigate(brandProjectPerformanceRoute(project.id))
+                  : setTab(item)
+              }
               className={`h-9 shrink-0 border-b-2 text-[14px] leading-[22px] ${tab === item ? "border-primary font-medium text-primary" : "border-transparent text-secondary"}`}
             >
               {item}
@@ -641,15 +704,15 @@ export function BrandProjectPublishedPage() {
             <section className="mt-6 rounded-xl border border-line bg-white p-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h2 className="text-[16px] font-semibold leading-6 text-ink">Project timeline</h2>
+                  <h2 className="text-[16px] font-semibold leading-6 text-ink">Project milestones</h2>
                   <p className="text-[12px] leading-4 text-secondary">
-                    Showing 20 Sep – 7 Nov · today 20 Sep · next: invite creators
+                    Milestones update automatically as your project moves forward.
                   </p>
                 </div>
                 <Badge status={status} />
               </div>
               <div className="mt-5 grid gap-5 sm:grid-cols-3 xl:grid-cols-6">
-                {timeline.map(([title, detail, date], index) => (
+                {milestoneItems.map(([title, detail, date], index) => (
                   <div className="min-w-0" key={title}>
                     <div className="mb-2 flex items-center">
                       <span
@@ -771,7 +834,7 @@ export function BrandProjectPublishedPage() {
                             : "0 of 16"}
                         </p>
                         <p className="text-[12px] leading-4 text-tertiary">
-                          {creators.length ? "delivered" : "filled"}
+                          {creators.length ? deliveryVerb.toLowerCase() : "filled"}
                         </p>
                       </div>
                     </motion.div>
@@ -801,6 +864,63 @@ export function BrandProjectPublishedPage() {
                     </div>
                   </div>
                 </motion.section>
+                <section className="grid gap-5 lg:grid-cols-2">
+                  <section className="rounded-xl border border-line bg-white p-5">
+                    <h2 className="text-[16px] font-semibold text-ink">Key dates</h2>
+                    <div className="mt-4 divide-y divide-line-subtle">
+                      {keyDates.map(([label, value]) => (
+                        <div className="flex items-center justify-between gap-3 py-2.5 text-[13px]" key={label}>
+                          <span className="text-secondary">{label}</span>
+                          <span className={label === "Payments" ? "rounded-full bg-success-bg px-2 py-0.5 text-[12px] font-medium text-success" : "font-medium text-ink"}>{value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                  <section className="rounded-xl border border-line bg-white p-5">
+                    <h2 className="text-[16px] font-semibold text-ink">Results so far</h2>
+                    <p className="mt-0.5 text-[12px] text-secondary">{objective} performance to date</p>
+                    <div className="mt-4 grid grid-cols-2 gap-3">
+                      {resultMetrics.slice(0, 4).map((metric, index) => (
+                        <div className="rounded-lg bg-subtle px-3 py-2.5" key={metric}>
+                          <p className="text-[12px] text-secondary">{metric}</p>
+                          <p className="mt-1 text-[16px] font-semibold text-ink">{resultValues[objective][index]}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-3 flex items-center justify-between border-t border-line pt-3 text-[13px]">
+                      <span className="text-secondary">{resultMetrics[4]}</span>
+                      <span className="font-semibold text-ink">{resultValues[objective][4]}</span>
+                    </div>
+                  </section>
+                </section>
+                <section className="grid gap-5 lg:grid-cols-2">
+                  <section className="rounded-xl border border-line bg-white p-5">
+                    <h2 className="text-[16px] font-semibold text-ink">Budget</h2>
+                    <div className="mt-4 space-y-3 text-[13px]">
+                      {(giftExchange
+                        ? [["Shipped", "₹24,000"], ["Ships next", "₹16,000"], ["Still to ship", "₹12,000"]]
+                        : [["Paid to creators", "₹1,02,000"], ["Held in escrow", "₹58,000"], ["Not committed", "₹40,000"]]
+                      ).map(([label, value]) => (
+                        <div className="flex items-center justify-between" key={label}>
+                          <span className="text-secondary">{label}</span>
+                          <span className="font-medium text-ink">{value}</span>
+                        </div>
+                      ))}
+                      {longTerm && <p className="border-t border-line pt-3 text-[12px] text-secondary">{project.budget} · current cycle of 6</p>}
+                    </div>
+                  </section>
+                  <section className="rounded-xl border border-line bg-white p-5">
+                    <h2 className="text-[16px] font-semibold text-ink">Project details</h2>
+                    <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-3 text-[13px]">
+                      {[["Objective", objective], ["Type", project.projectType], ["Partnership", project.partnership], ["Duration", longTerm ? "Long-term" : "One-time"], ["Platforms", project.platform], ["Tracking", objective === "Sales" ? "Shopify connected" : objective === "Traffic" ? "UTM + GA4" : objective === "Leads" ? "Quiz form + UTM" : "Connected accounts"]].map(([label, value]) => (
+                        <div key={label}>
+                          <p className="text-[12px] text-tertiary">{label}</p>
+                          <p className="mt-0.5 truncate font-medium text-ink">{value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                </section>
                 <motion.section
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -816,7 +936,7 @@ export function BrandProjectPublishedPage() {
                       ["Awaiting approval", "bg-[#f29b07]"],
                       ["Changes requested", "bg-[#db231f]"],
                       ["Approved · not live yet", "bg-primary"],
-                      ["Live", "bg-success"],
+                      [deliveryVerb, "bg-success"],
                     ].map(([label, color]) => (
                       <div className="rounded-md border border-line p-3.5" key={label}>
                         <p className="flex items-center gap-1.5 text-[12px] text-secondary">
@@ -843,7 +963,7 @@ export function BrandProjectPublishedPage() {
                       <div className="min-w-[640px]">
                         <div className="grid grid-cols-[minmax(0,1fr)_110px_190px_110px] gap-3 bg-subtle px-3.5 py-2.5 text-[12px] font-semibold tracking-[.06em] text-secondary">
                           <span>CREATOR</span>
-                          <span>DELIVERED</span>
+                          <span>{deliveryVerb.toUpperCase()}</span>
                           <span>NEXT STEP</span>
                           <span>STAGE</span>
                         </div>
@@ -870,7 +990,7 @@ export function BrandProjectPublishedPage() {
                                 </div>
                               </div>
                               <p className="text-[13px] font-medium leading-5 text-ink">
-                                {creator.delivered}
+                                {creator.stage === "Accepted" ? creatorDeliverable : "—"}
                               </p>
                               <p
                                 className={`text-[13px] font-medium leading-5 ${accepted ? "text-ink" : "text-[#f29b07]"}`}
@@ -912,18 +1032,18 @@ export function BrandProjectPublishedPage() {
                 </motion.section>
               </div>
               <aside className="rounded-xl border border-line bg-white p-5">
-                <h2 className="text-[16px] font-semibold text-ink">Next actions</h2>
-                <p className="text-[12px] text-secondary">3 things to do before launch on 7 Oct</p>
+                <h2 className="text-[16px] font-semibold text-ink">What to do next</h2>
+                <p className="text-[12px] text-secondary">Recommended actions for this project</p>
                 <div className="mt-4 space-y-3">
                   {[
                     [
-                      "Invite creators",
+                      quickAction,
                       "16 places to fill · invites need a few days to be accepted",
                       "Now",
                       "text-[#db231f] bg-[#fde4e3]",
                     ],
                     [
-                      "Connect Shopify",
+                      objective === "Sales" ? "Connect Shopify" : objective === "Traffic" ? "Confirm UTM tracking" : "Check creator progress",
                       "Needed for codes and tracking links",
                       "Before 7 Oct",
                       "text-[#db231f] bg-[#fde4e3]",

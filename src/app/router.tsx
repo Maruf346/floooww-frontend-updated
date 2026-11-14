@@ -158,6 +158,13 @@ export const router = createBrowserRouter(
           }),
         },
         {
+          path: ROUTES.brandProjectPerformance,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandProjectPerformancePage"))
+              .BrandProjectPerformancePage,
+          }),
+        },
+        {
           path: ROUTES.brandProject,
           lazy: async () => ({
             Component: (await import("@/brand/pages/BrandProjectPublishedPage"))
