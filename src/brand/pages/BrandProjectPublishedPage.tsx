@@ -10,7 +10,6 @@ import {
   Pause,
   Play,
   RotateCcw,
-  Search,
   Share2,
   Trash2,
   Users,
@@ -20,13 +19,13 @@ import {
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
-import { Dropdown } from "@/common/components/ui/Dropdown";
 import { KpiTile } from "@/common/components/ui/KpiTile";
 import {
   ProjectConfirmModal,
   type ProjectConfirmAction,
 } from "@/brand/components/ProjectConfirmModal";
 import { ShareProjectModal } from "@/brand/components/ShareProjectModal";
+import { ProjectApplicationsView } from "@/brand/pages/project-applications/ProjectApplicationsPanel";
 import { brandProjectPerformanceRoute, ROUTES } from "@/common/constants/routes";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "motion/react";
@@ -335,13 +334,6 @@ export function BrandProjectPublishedPage() {
   const [more, setMore] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [confirm, setConfirm] = useState<Confirm>(null);
-  const [applicationStatus, setApplicationStatus] = useState("All");
-  const [applicationPlatform, setApplicationPlatform] = useState("Platform");
-  const [applicationFollowers, setApplicationFollowers] = useState("Followers");
-  const [applicationEngagement, setApplicationEngagement] = useState("Eng. rate");
-  const [applicationFee, setApplicationFee] = useState("Fee");
-  const [applicationCity, setApplicationCity] = useState("City");
-  const [applicationSort, setApplicationSort] = useState("Match");
   const locked = status === "Archived" || status === "Deleted";
   const objective = projectObjective(project.id);
   const longTerm = project.partnership.toLowerCase().includes("long-term");
@@ -653,13 +645,13 @@ export function BrandProjectPublishedPage() {
               {item}
               {["Applications", "Invited creators", "Content"].includes(item) && (
                 <span className="ml-1.5 rounded-full bg-muted px-[7px] py-px text-[12px] leading-4">
-                  0
+                  {item === "Applications" ? (project.apps > 0 ? 23 : 0) : item === "Invited creators" ? project.creatorCount : project.deliverableCount}
                 </span>
               )}
             </button>
           ))}
         </nav>
-        {tab === "Applications" ? (
+        {tab === "Applications" ? <ProjectApplicationsView projectName={project.name} hasApplications={project.apps > 0} objective={objective} projectType={project.projectType} partnership={project.partnership} duration={project.duration} onOpenShare={() => setShareOpen(true)} /> : false ? (
           <section className="mt-6">
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-[10px] bg-subtle p-1">
@@ -682,7 +674,7 @@ export function BrandProjectPublishedPage() {
                 <Dropdown compact ariaLabel="Filter by fee" value={applicationFee} onChange={setApplicationFee} options={["Fee", "Under ₹10K", "₹10K–₹25K", "₹25K+"]} className="w-[84px] [&>button]:h-9" />
                 <Dropdown compact ariaLabel="Filter by city" value={applicationCity} onChange={setApplicationCity} options={["City", "Bengaluru", "Mumbai", "Delhi NCR", "Chennai"]} className="w-[94px] [&>button]:h-9" />
               </div>
-              <button type="button" aria-label="Change application sort" className="ml-auto flex h-9 items-center gap-1.5 px-2 text-[13px] text-secondary transition hover:text-ink" onClick={() => setApplicationSort((value) => value === "Match" ? "Recent" : "Match")}>Sort: {applicationSort} <span className="text-[16px] leading-none">⌄</span></button>
+              <button type="button" aria-label="Change application sort" className="ml-auto flex h-9 items-center gap-1.5 px-2 text-[13px] text-secondary transition hover:text-ink" onClick={() => setApplicationSort((value) => value === "Match" ? "Recent" : "Match")}>Sort: {applicationSort} <ChevronDown size={14} strokeWidth={2} /></button>
             </div>
             <motion.section
               initial={{ opacity: 0, y: 12 }}
