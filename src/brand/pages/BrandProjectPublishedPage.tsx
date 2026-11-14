@@ -1031,7 +1031,7 @@ export function BrandProjectPublishedPage() {
                   )}
                 </motion.section>
               </div>
-              <aside className="rounded-xl border border-line bg-white p-5">
+              <aside className="rounded-xl border border-line bg-white p-5 xl:sticky xl:top-6 xl:self-start">
                 <h2 className="text-[16px] font-semibold text-ink">What to do next</h2>
                 <p className="text-[12px] text-secondary">Recommended actions for this project</p>
                 <div className="mt-4 space-y-3">
