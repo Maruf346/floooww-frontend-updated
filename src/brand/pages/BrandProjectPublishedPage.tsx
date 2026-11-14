@@ -10,6 +10,7 @@ import {
   Pause,
   Play,
   RotateCcw,
+  Search,
   Share2,
   Trash2,
   Users,
@@ -19,6 +20,7 @@ import {
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
+import { Dropdown } from "@/common/components/ui/Dropdown";
 import { KpiTile } from "@/common/components/ui/KpiTile";
 import {
   ProjectConfirmModal,
@@ -333,6 +335,13 @@ export function BrandProjectPublishedPage() {
   const [more, setMore] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [confirm, setConfirm] = useState<Confirm>(null);
+  const [applicationStatus, setApplicationStatus] = useState("All");
+  const [applicationPlatform, setApplicationPlatform] = useState("Platform");
+  const [applicationFollowers, setApplicationFollowers] = useState("Followers");
+  const [applicationEngagement, setApplicationEngagement] = useState("Eng. rate");
+  const [applicationFee, setApplicationFee] = useState("Fee");
+  const [applicationCity, setApplicationCity] = useState("City");
+  const [applicationSort, setApplicationSort] = useState("Match");
   const locked = status === "Archived" || status === "Deleted";
   const objective = projectObjective(project.id);
   const longTerm = project.partnership.toLowerCase().includes("long-term");
@@ -650,7 +659,47 @@ export function BrandProjectPublishedPage() {
             </button>
           ))}
         </nav>
-        {tab !== "Overview" ? (
+        {tab === "Applications" ? (
+          <section className="mt-6">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-[10px] bg-subtle p-1">
+                {["All", "New", "Shortlisted", "Reviewed", "Declined"].map((item) => (
+                  <button
+                    type="button"
+                    key={item}
+                    onClick={() => setApplicationStatus(item)}
+                    className={`flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-[13px] leading-5 transition ${applicationStatus === item ? "bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,.08)]" : "text-secondary hover:text-ink"}`}
+                  >
+                    <span>{item}</span><span className="text-[12px] leading-4 text-secondary">0</span>
+                  </button>
+                ))}
+              </div>
+              <div className="hidden flex-1 xl:block" />
+              <div className="flex min-w-0 flex-1 flex-wrap justify-end gap-2 xl:flex-none">
+                <Dropdown compact ariaLabel="Filter by platform" value={applicationPlatform} onChange={setApplicationPlatform} options={["Platform", "Instagram", "TikTok", "YouTube"]} className="w-[110px] [&>button]:h-9" />
+                <Dropdown compact ariaLabel="Filter by followers" value={applicationFollowers} onChange={setApplicationFollowers} options={["Followers", "Under 10K", "10K–50K", "50K–100K", "100K+"]} className="w-[112px] [&>button]:h-9" />
+                <Dropdown compact ariaLabel="Filter by engagement rate" value={applicationEngagement} onChange={setApplicationEngagement} options={["Eng. rate", "2%+", "4%+", "6%+"]} className="w-[112px] [&>button]:h-9" />
+                <Dropdown compact ariaLabel="Filter by fee" value={applicationFee} onChange={setApplicationFee} options={["Fee", "Under ₹10K", "₹10K–₹25K", "₹25K+"]} className="w-[84px] [&>button]:h-9" />
+                <Dropdown compact ariaLabel="Filter by city" value={applicationCity} onChange={setApplicationCity} options={["City", "Bengaluru", "Mumbai", "Delhi NCR", "Chennai"]} className="w-[94px] [&>button]:h-9" />
+              </div>
+              <button type="button" aria-label="Change application sort" className="ml-auto flex h-9 items-center gap-1.5 px-2 text-[13px] text-secondary transition hover:text-ink" onClick={() => setApplicationSort((value) => value === "Match" ? "Recent" : "Match")}>Sort: {applicationSort} <span className="text-[16px] leading-none">⌄</span></button>
+            </div>
+            <motion.section
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="mt-4 flex min-h-[294px] flex-col items-center justify-center rounded-xl border border-line bg-white px-6 py-12 text-center"
+            >
+              <motion.div initial={{ opacity: 0, scale: 0.76 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.65, delay: 0.12, ease: [0.22, 1, 0.36, 1] }} className="grid size-14 place-items-center rounded-[28px] bg-subtle text-secondary"><Users size={26} strokeWidth={1.7} /></motion.div>
+              <h2 className="mt-3 text-[14px] font-semibold leading-5 text-ink">No applications yet</h2>
+              <p className="mt-1 max-w-[520px] text-[13px] leading-5 text-secondary">{project.name} is live. Creators who match it can apply from the marketplace; you’ll see them here with their match score and fee. Share the project link or invite creators yourself.</p>
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
+                <Button kind="secondary" leadingIcon={<Share2 size={16} />} onClick={() => setShareOpen(true)}>Copy project link</Button>
+                <Button leadingIcon={<Search size={16} />}>Find creators</Button>
+              </div>
+            </motion.section>
+          </section>
+        ) : tab !== "Overview" ? (
           <section className="mt-6 rounded-xl border border-line bg-white px-10 py-20 text-center">
             <FileText className="mx-auto text-tertiary" size={28} />
             <h2 className="mt-3 text-[16px] font-semibold text-ink">{tab}</h2>
@@ -1080,7 +1129,6 @@ export function BrandProjectPublishedPage() {
         onConfirm={resolve}
         onCancel={() => setConfirm(null)}
       />
-      <ShareProjectModal project={project} isOpen={shareOpen} onClose={() => setShareOpen(false)} />
       <ShareProjectModal project={project} isOpen={shareOpen} onClose={() => setShareOpen(false)} />
     </BrandShell>
   );
