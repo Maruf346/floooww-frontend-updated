@@ -645,13 +645,13 @@ export function BrandProjectPublishedPage() {
               {item}
               {["Applications", "Invited creators", "Content"].includes(item) && (
                 <span className="ml-1.5 rounded-full bg-muted px-[7px] py-px text-[12px] leading-4">
-                  {item === "Applications" ? (project.apps > 0 ? 23 : 0) : item === "Invited creators" ? project.creatorCount : project.deliverableCount}
+                  {item === "Applications" ? project.apps : item === "Invited creators" ? project.creatorCount : project.deliverableCount}
                 </span>
               )}
             </button>
           ))}
         </nav>
-        {tab === "Applications" ? <ProjectApplicationsView projectName={project.name} hasApplications={project.apps > 0} objective={objective} projectType={project.projectType} partnership={project.partnership} duration={project.duration} onOpenShare={() => setShareOpen(true)} /> : false ? (
+        {tab === "Applications" ? <ProjectApplicationsView projectName={project.name} applicationCount={project.apps} hasApplications={project.apps > 0} objective={objective} projectType={project.projectType} partnership={project.partnership} duration={project.duration} onOpenShare={() => setShareOpen(true)} /> : false ? (
           <section className="mt-6">
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-[10px] bg-subtle p-1">
