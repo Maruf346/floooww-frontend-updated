@@ -19,6 +19,7 @@ import {
   WalletCards,
 } from "lucide-react";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import { Button } from "@/common/components/ui/Button";
 import { Dropdown } from "@/common/components/ui/Dropdown";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
@@ -29,7 +30,13 @@ import {
 } from "@/brand/components/ProjectConfirmModal";
 import { ShareProjectModal } from "@/brand/components/ShareProjectModal";
 import { ProjectApplicationsView } from "@/brand/pages/project-applications/ProjectApplicationsPanel";
-import { brandProjectPerformanceRoute, ROUTES } from "@/common/constants/routes";
+import {
+  brandCreatorDeliverablesRoute,
+  brandCreatorProfileRoute,
+  brandProjectPerformanceRoute,
+  ROUTES,
+} from "@/common/constants/routes";
+import type { Platform } from "@/common/types";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "motion/react";
 import { getProject } from "@/brand/data/projects";
@@ -317,6 +324,45 @@ const invitedCreators: ProjectCreator[] = [
   },
 ];
 
+type InvitedCreatorStatus = "Posting" | "Awaiting approval" | "Overdue" | "Not started";
+type InvitedCreatorCard = {
+  id: string;
+  name: string;
+  handle: string;
+  city: string;
+  avatar: string;
+  progress: string;
+  progressValue: number;
+  status: InvitedCreatorStatus;
+  platforms: [Platform, string][];
+  primaryPlatform: Platform;
+  deliverables: string;
+  escrow: string;
+  sales: string;
+  next: string;
+  fee: string;
+  released: string;
+};
+
+const invitedCreatorCards: InvitedCreatorCard[] = [
+  { id: "meera", name: "Meera Iyer", handle: "@meerabeauty", city: "Mumbai", avatar: "meera-iyer", progress: "2/3", progressValue: 67, status: "Awaiting approval", platforms: [["Instagram", "1.4 L"], ["YouTube", "32K"], ["Snapchat", "12K"]], primaryPlatform: "Instagram", deliverables: "2 / 3", escrow: "₹3,000", sales: "₹1,42,800", next: "Next: leave a review · 4 of 4 delivered · last Story approved 26 Oct", fee: "₹30,000", released: "₹27,000 released" },
+  { id: "ishita", name: "Ishita Rao", handle: "@ishitarao", city: "Bengaluru", avatar: "ishita-rao", progress: "3/4", progressValue: 75, status: "Posting", platforms: [["Instagram", "1.1 L"], ["YouTube", "21K"]], primaryPlatform: "Instagram", deliverables: "3 / 4", escrow: "₹4,250", sales: "₹68,400", next: "Next: Story · last-day reminder · due 30 Oct", fee: "₹17,000", released: "₹12,750 released" },
+  { id: "emma", name: "Emma Clarke", handle: "@emmaclarke", city: "Mumbai", avatar: "emma-clarke", progress: "3/4", progressValue: 75, status: "Posting", platforms: [["Instagram", "96K"], ["YouTube", "40K"], ["Snapchat", "15K"]], primaryPlatform: "Instagram", deliverables: "3 / 4", escrow: "₹3,750", sales: "₹54,000", next: "Next: Story · results check-in · due 30 Oct", fee: "₹15,000", released: "₹11,250 released" },
+  { id: "kavya", name: "Kavya Reddy", handle: "@kavyareddy", city: "Hyderabad", avatar: "kavya-reddy", progress: "3/4", progressValue: 75, status: "Posting", platforms: [["Instagram", "88K"], ["Snapchat", "11K"]], primaryPlatform: "Instagram", deliverables: "3 / 4", escrow: "₹3,750", sales: "₹49,600", next: "Next: Story · code reminder · due 30 Oct", fee: "₹15,000", released: "₹11,250 released" },
+  { id: "riya", name: "Riya Sen", handle: "@riyasen", city: "Kolkata", avatar: "ishita-rao", progress: "3/4", progressValue: 75, status: "Posting", platforms: [["Instagram", "72K"], ["Pinterest", "8K"]], primaryPlatform: "Instagram", deliverables: "3 / 4", escrow: "₹3,000", sales: "₹22,000", next: "Next: Story · last-day reminder · due 30 Oct", fee: "₹12,000", released: "₹9,000 released" },
+  { id: "sneha", name: "Sneha Patil", handle: "@snehapatil", city: "Pune", avatar: "meera-iyer", progress: "2/4", progressValue: 50, status: "Posting", platforms: [["Instagram", "64K"], ["YouTube", "14K"]], primaryPlatform: "Instagram", deliverables: "2 / 4", escrow: "₹6,000", sales: "₹32,000", next: "Next: Reel · results · due 1 Nov", fee: "₹12,000", released: "₹6,000 released" },
+  { id: "nisha", name: "Nisha Verma", handle: "@niashverma", city: "Delhi", avatar: "kavya-reddy", progress: "2/4", progressValue: 50, status: "Posting", platforms: [["YouTube", "58K"], ["Instagram", "1.4 L"]], primaryPlatform: "YouTube", deliverables: "2 / 4", escrow: "₹6,000", sales: "₹26,000", next: "Next: Short · routine · due 1 Nov", fee: "₹12,000", released: "₹6,000 released" },
+  { id: "tara", name: "Tara Bose", handle: "@tarabose", city: "Kolkata", avatar: "tara-bose", progress: "2/4", progressValue: 50, status: "Overdue", platforms: [["Instagram", "81K"], ["YouTube", "19K"]], primaryPlatform: "Instagram", deliverables: "2 / 4", escrow: "₹7,500", sales: "₹18,000", next: "Story 2 was due 26 Oct · 2 days late · dispute open", fee: "₹15,000", released: "₹7,500 released" },
+  { id: "pooja", name: "Pooja Menon", handle: "@poojamenon", city: "Kochi", avatar: "emma-clarke", progress: "0/4", progressValue: 0, status: "Not started", platforms: [["Instagram", "49K"], ["Pinterest", "6K"]], primaryPlatform: "Instagram", deliverables: "0 / 4", escrow: "₹12,500", sales: "–", next: "Next: Reel · festive GRWM · due 2 Nov", fee: "₹12,500", released: "₹0 released" },
+  { id: "aanya", name: "Aanya Shah", handle: "@aanyashah", city: "Mumbai", avatar: "meera-iyer", progress: "1/4", progressValue: 25, status: "Not started", platforms: [["Instagram", "110K"]], primaryPlatform: "Instagram", deliverables: "1 / 4", escrow: "₹8,000", sales: "₹12,400", next: "Next: Carousel · due 3 Nov", fee: "₹16,000", released: "₹8,000 released" },
+  { id: "zoya", name: "Zoya Ahmed", handle: "@zoyaahmed", city: "Hyderabad", avatar: "ishita-rao", progress: "0/3", progressValue: 0, status: "Not started", platforms: [["Instagram", "76K"]], primaryPlatform: "Instagram", deliverables: "0 / 3", escrow: "₹9,000", sales: "–", next: "Next: Reel · due 4 Nov", fee: "₹18,000", released: "₹0 released" },
+  { id: "simran", name: "Simran Kaur", handle: "@simrankaur", city: "Chandigarh", avatar: "emma-clarke", progress: "1/3", progressValue: 33, status: "Awaiting approval", platforms: [["Instagram", "91K"], ["YouTube", "15K"]], primaryPlatform: "Instagram", deliverables: "1 / 3", escrow: "₹5,000", sales: "₹21,600", next: "Next: approve Reel · submitted 28 Oct", fee: "₹15,000", released: "₹10,000 released" },
+  { id: "lina", name: "Lina George", handle: "@linageorge", city: "Kochi", avatar: "kavya-reddy", progress: "3/4", progressValue: 75, status: "Posting", platforms: [["YouTube", "42K"], ["Instagram", "67K"]], primaryPlatform: "YouTube", deliverables: "3 / 4", escrow: "₹4,000", sales: "₹37,200", next: "Next: Short · due 5 Nov", fee: "₹16,000", released: "₹12,000 released" },
+  { id: "rhea", name: "Rhea Kapoor", handle: "@rheakapoor", city: "Delhi", avatar: "tara-bose", progress: "2/3", progressValue: 67, status: "Posting", platforms: [["Instagram", "58K"], ["Pinterest", "9K"]], primaryPlatform: "Instagram", deliverables: "2 / 3", escrow: "₹3,500", sales: "₹16,900", next: "Next: Idea Pin · due 5 Nov", fee: "₹10,500", released: "₹7,000 released" },
+  { id: "mira", name: "Mira Das", handle: "@miradas", city: "Bengaluru", avatar: "meera-iyer", progress: "1/4", progressValue: 25, status: "Not started", platforms: [["Instagram", "63K"]], primaryPlatform: "Instagram", deliverables: "1 / 4", escrow: "₹7,000", sales: "₹8,600", next: "Next: Story · due 6 Nov", fee: "₹14,000", released: "₹7,000 released" },
+  { id: "anika", name: "Anika Roy", handle: "@anikaroy", city: "Pune", avatar: "ishita-rao", progress: "2/4", progressValue: 50, status: "Posting", platforms: [["Instagram", "82K"], ["YouTube", "12K"]], primaryPlatform: "Instagram", deliverables: "2 / 4", escrow: "₹4,800", sales: "₹28,500", next: "Next: Reel · due 6 Nov", fee: "₹16,000", released: "₹11,200 released" },
+];
+
 function Badge({ status }: { status: Lifecycle }) {
   return (
     <span
@@ -419,13 +465,200 @@ function InvitedCreatorsEmptyState({
   );
 }
 
+function InvitedCreatorCard({
+  creator,
+  index,
+  onViewProfile,
+  onEditDeliverables,
+}: {
+  creator: InvitedCreatorCard;
+  index: number;
+  onViewProfile: (creatorId: string) => void;
+  onEditDeliverables: (creatorId: string) => void;
+}) {
+  const tone = {
+    Posting: "bg-success-bg text-success",
+    "Awaiting approval": "bg-[#fff3da] text-[#c77900]",
+    Overdue: "bg-danger-subtle text-danger",
+    "Not started": "bg-muted text-secondary",
+  }[creator.status];
+  const ringColor = creator.status === "Awaiting approval" ? "#149d46" : creator.status === "Overdue" ? "#e52e2e" : creator.status === "Not started" ? "#e7eaf0" : "#2563eb";
+  const ringValue = creator.progressValue * 3.6;
+  const isOverdue = creator.status === "Overdue";
+
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.7, delay: Math.min(index, 8) * 0.06, ease: [0.22, 1, 0.36, 1] }}
+      className="rounded-xl border border-line bg-white p-5"
+    >
+      <div className="flex items-start gap-3">
+        <img
+          src={`/assets/creators/${creator.avatar}.png`}
+          alt=""
+          className="size-11 shrink-0 rounded-full object-cover"
+        />
+        <div className="min-w-0 flex-1 pt-0.5">
+          <h2 className="truncate text-[14px] font-medium leading-5 text-ink">{creator.name}</h2>
+          <p className="truncate text-[12px] leading-4 text-secondary">{creator.handle} · {creator.city}</p>
+        </div>
+        <div
+          className="grid size-[56px] shrink-0 place-items-center rounded-full p-[4px]"
+          style={{ background: `conic-gradient(${ringColor} ${ringValue}deg, #e9edf3 ${ringValue}deg)` }}
+          aria-label={`${creator.progress} deliverables complete`}
+        >
+          <span className="grid size-full place-items-center rounded-full bg-white text-[14px] font-medium text-ink">{creator.progress}</span>
+        </div>
+      </div>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          {creator.platforms.map(([platform, value]) => (
+            <span className="flex items-center gap-1 text-[12px] leading-4 text-ink" key={`${platform}-${value}`}>
+              <PlatformLogo platform={platform} size={16} />
+              {value}
+            </span>
+          ))}
+        </div>
+        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] leading-4 ${tone}`}>
+          <span className="size-1.5 rounded-full bg-current" />
+          {creator.status}
+        </span>
+      </div>
+      <p className="mt-3 text-[12px] leading-4 text-secondary">
+        {creator.primaryPlatform} · last 30 days
+      </p>
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        {[
+          [creator.deliverables, "Deliverables"],
+          [creator.escrow, "In escrow"],
+          [creator.sales, "Net sales"],
+        ].map(([value, label]) => (
+          <div key={label} className="min-w-0 rounded-lg bg-subtle px-2.5 py-2">
+            <p className="truncate text-[14px] font-medium leading-5 text-ink">{value}</p>
+            <p className="mt-0.5 truncate text-[12px] leading-4 text-secondary">{label}</p>
+          </div>
+        ))}
+      </div>
+      <p className={`mt-4 min-h-10 text-[12px] leading-5 ${isOverdue ? "text-danger" : "text-secondary"}`}>
+        {creator.next}
+      </p>
+      <div className="mt-3 flex items-center justify-between rounded-lg bg-subtle px-3 py-2.5">
+        <span className="text-[14px] font-medium text-ink">₹ Fee {creator.fee.replace("₹", "")}</span>
+        <span className="text-[12px] text-secondary">{creator.released}</span>
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={() => { window.location.href = `mailto:?subject=${encodeURIComponent(`Vitamin-C Serum collaboration — ${creator.name}`)}`; }}
+          className="h-8 rounded-md border border-line bg-white text-[13px] font-medium text-ink transition hover:bg-subtle"
+        >
+          Message
+        </button>
+        <button
+          type="button"
+          onClick={() => onViewProfile(creator.id)}
+          className="h-8 rounded-md border border-line bg-white text-[13px] font-medium text-ink transition hover:bg-subtle"
+        >
+          View profile
+        </button>
+      </div>
+      <button
+        type="button"
+        onClick={() => onEditDeliverables(creator.id)}
+        className="mt-2 h-8 w-full rounded-md border border-line bg-white text-[13px] font-medium text-ink transition hover:bg-subtle"
+      >
+        Edit deliverables
+      </button>
+    </motion.article>
+  );
+}
+
+function InvitedCreatorsGrid({ projectId, creatorCount }: { projectId: number; creatorCount: number }) {
+  const navigate = useNavigate();
+  const [status, setStatus] = useState("All");
+  const [platform, setPlatform] = useState("Platform");
+  const [deadline, setDeadline] = useState("Deadline");
+  const [sort, setSort] = useState("Sort: Next deadline");
+  const [showAll, setShowAll] = useState(false);
+  const creators = Array.from({ length: creatorCount }, (_, index) => {
+    const creator = invitedCreatorCards[index % invitedCreatorCards.length];
+    return index < invitedCreatorCards.length ? creator : { ...creator, id: `${creator.id}-${index + 1}` };
+  });
+  const counts: Record<string, number> = creators.reduce<Record<string, number>>(
+    (totals, creator) => ({ ...totals, All: totals.All + 1, [creator.status]: totals[creator.status] + 1 }),
+    { All: 0, Posting: 0, "Awaiting approval": 0, Overdue: 0, "Not started": 0 },
+  );
+  const segments = ["All", "Posting", "Awaiting approval", "Overdue", "Not started"];
+  const filtered = creators
+    .filter((creator) => status === "All" || creator.status === status)
+    .filter((creator) => platform === "Platform" || creator.platforms.some(([item]) => item === platform))
+    .filter((creator) => deadline === "Deadline" || creator.next.includes("due"))
+    .sort((a, b) => sort === "Sort: Creator" ? a.name.localeCompare(b.name) : sort === "Sort: Status" ? a.status.localeCompare(b.status) : a.next.localeCompare(b.next));
+  const visible = showAll ? filtered : filtered.slice(0, 9);
+
+  return (
+    <section className="mt-5">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-[10px] bg-subtle p-1">
+          {segments.map((item) => (
+            <button
+              type="button"
+              key={item}
+              onClick={() => { setStatus(item); setShowAll(false); }}
+              className={`flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-[13px] leading-5 transition ${status === item ? "bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,.08)]" : "text-secondary hover:text-ink"}`}
+            >
+              <span>{item}</span><span className="text-[12px] leading-4 text-secondary">{counts[item]}</span>
+            </button>
+          ))}
+        </div>
+        <span className="hidden h-px min-w-4 flex-1 bg-line xl:block" />
+        <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2">
+          <Dropdown compact ariaLabel="Filter invited creators by platform" value={platform} onChange={setPlatform} options={["Platform", "Instagram", "YouTube", "Pinterest", "Snapchat"]} className="w-[98px] [&>button]:h-[38px]" />
+          <Dropdown compact ariaLabel="Filter invited creators by deadline" value={deadline} onChange={setDeadline} options={["Deadline", "This week", "Next 7 days", "This month"]} className="w-[105px] [&>button]:h-[38px]" />
+          <Dropdown compact ariaLabel="Sort invited creators" value={sort} onChange={setSort} options={["Sort: Next deadline", "Sort: Status", "Sort: Creator"]} className="w-[164px] [&>button]:h-[38px] [&>button]:border-0 [&>button]:bg-transparent [&>button]:px-2" />
+        </div>
+      </div>
+      <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {visible.map((creator, index) => (
+          <InvitedCreatorCard
+            key={creator.id}
+            creator={creator}
+            index={index}
+            onViewProfile={(creatorId) => navigate(brandCreatorProfileRoute(projectId, creatorId))}
+            onEditDeliverables={(creatorId) => navigate(brandCreatorDeliverablesRoute(projectId, creatorId))}
+          />
+        ))}
+      </div>
+      {!visible.length ? <div className="mt-5 rounded-xl border border-line bg-white px-6 py-12 text-center text-[13px] text-secondary">No invited creators match these filters.</div> : null}
+      <div className="mt-5 flex flex-wrap items-center gap-1 text-[12px] leading-5 text-secondary">
+        <span>Showing {visible.length} of {filtered.length} ·</span>
+        {!showAll && filtered.length > visible.length ? <button type="button" onClick={() => setShowAll(true)} className="font-medium text-primary hover:underline">show {filtered.length - visible.length} more</button> : null}
+        <span>· fees held in escrow until you approve</span>
+      </div>
+    </section>
+  );
+}
+
 export function BrandProjectPublishedPage() {
   const navigate = useNavigate();
   const { projectId } = useParams();
   const project = getProject(Number(projectId));
   const [status, setStatus] = useState<Lifecycle>(project.detailStatus);
-  const [tab, setTab] = useState("Overview");
-  const [invitedCreatorCount] = useState(0);
+  const [tab, setTab] = useState(() => {
+    if (typeof window === "undefined") return "Overview";
+    const key = `floooww-project-${project.id}-active-tab`;
+    const requestedTab = window.sessionStorage.getItem(key);
+    window.sessionStorage.removeItem(key);
+    return requestedTab === "Invited creators" ? requestedTab : "Overview";
+  });
+  const [invitedCreatorCount] = useState(() => {
+    const newlyInvited =
+      typeof window !== "undefined" &&
+      window.sessionStorage.getItem(`floooww-project-${project.id}-invited`) === "true";
+    return Math.max(project.creatorCount, newlyInvited ? 1 : 0);
+  });
   const [more, setMore] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [confirm, setConfirm] = useState<Confirm>(null);
@@ -751,7 +984,7 @@ export function BrandProjectPublishedPage() {
           ))}
         </nav>
         {tab === "Applications" ? <ProjectApplicationsView projectName={project.name} applicationCount={project.apps} hasApplications={project.apps > 0} objective={objective} projectType={project.projectType} partnership={project.partnership} duration={project.duration} onOpenShare={() => setShareOpen(true)} /> : tab === "Invited creators" ? (
-          <InvitedCreatorsEmptyState
+          invitedCreatorCount > 0 ? <InvitedCreatorsGrid projectId={project.id} creatorCount={invitedCreatorCount} /> : <InvitedCreatorsEmptyState
             onGoToApplications={() => setTab("Applications")}
             onFindCreators={() => navigate(ROUTES.brandNewProjectCreators)}
           />

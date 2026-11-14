@@ -1750,7 +1750,13 @@ export function BrandCreatorInvitePage() {
               agreement={agreement}
               onAgreementChange={setAgreement}
               edit={() => setStep("setup")}
-              send={() => setStep("sent")}
+              send={() => {
+                window.sessionStorage.setItem(
+                  `floooww-project-${projectId}-invited`,
+                  "true",
+                );
+                setStep("sent");
+              }}
             />
           ) : (
             <motion.section
@@ -1848,7 +1854,13 @@ export function BrandCreatorInvitePage() {
                     Done
                   </Button>
                   <Button
-                    onClick={() => navigate(brandProjectRoute(projectId))}
+                    onClick={() => {
+                      window.sessionStorage.setItem(
+                        `floooww-project-${projectId}-active-tab`,
+                        "Invited creators",
+                      );
+                      navigate(brandProjectRoute(projectId));
+                    }}
                     trailingIcon={<ArrowRight size={16} />}
                   >
                     View invited creators
