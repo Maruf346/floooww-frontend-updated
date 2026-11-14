@@ -1,5 +1,7 @@
 # Dashboard UI Guidelines
 
+- Applicant drawer Reviews tab: use the supplied 4.8 score, orange five-row distribution (19/3/1/0/0), muted quality tiles, and three review cards. Animate bars and cards once while preserving the fixed footer actions.
+
 - Animate dashboard content when it enters the viewport. Use slow, restrained motion: approximately 0.65–0.9 seconds for card reveals and 1.2–1.4 seconds for graph strokes.
 - Prefer opacity plus a small upward translation for cards. Stagger related tiles by about 60–90ms.
 - Animate data visualizations progressively where practical: line paths draw, bars grow from zero, and donut/chart content gently scales in. Respect `viewport: { once: true }` to avoid distracting repeated motion while scrolling.
