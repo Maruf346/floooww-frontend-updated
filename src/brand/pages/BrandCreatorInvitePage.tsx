@@ -1,23 +1,29 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { createPortal } from "react-dom";
 import { motion } from "motion/react";
 import {
   ArrowRight,
   CalendarDays,
   Check,
+  ChevronDown,
   ChevronLeft,
+  ChevronRight,
   Copy,
   CreditCard,
   Link2,
   Plus,
+  PenLine,
   Send,
   Smartphone,
-  Tag,
   Trash2,
+  Video,
 } from "lucide-react";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import { Button } from "@/common/components/ui/Button";
 import { Dropdown, MultiDropdown } from "@/common/components/ui/Dropdown";
+import type { Platform } from "@/common/types";
 import {
   brandCreatorProfileRoute,
   brandProjectRoute,
@@ -51,24 +57,85 @@ const blank = (id: number): Deliverable => ({
   shipments: [],
   brief: "",
 });
-const types = [
-  "1 Reel · kit routine",
-  "1 Story · code reminder",
-  "1 Story · results check-in",
-  "Instagram Reel",
-  "Instagram Story",
-  "Instagram Post",
-  "YouTube Short",
-  "YouTube video",
-  "Pinterest Idea Pin",
-  "Snapchat Story",
-];
-const channels = ["Instagram", "YouTube", "Pinterest", "Snapchat"];
 const generatedLinks: Record<string, string> = {
   "1 Reel · kit routine": "flw.to/diya-reel",
   "1 Story · code reminder": "flw.to/diya-st1",
   "1 Story · results check-in": "flw.to/diya-st2",
 };
+const shipmentChoices = [
+  {
+    value: "Vitamin C Glow Serum · DLV4829173650",
+    name: "Vitamin C Glow Serum",
+    detail: "Delhivery · DLV4829173650 · delivered 27 Oct",
+    tracking: "DLV4829173650",
+  },
+  {
+    value: "Sunscreen gel · SPF 50 · D60318842271",
+    name: "Sunscreen gel · SPF 50",
+    detail: "DTDC · D60318842271 · out for delivery",
+    tracking: "D60318842271",
+  },
+  {
+    value: "Glow Squad kit · BD7731045…",
+    name: "Glow Squad kit · cleanser + serum",
+    detail: "Blue Dart · BD7731045528 · in transit",
+    tracking: "BD7731045528",
+  },
+];
+const productChoices = [
+  {
+    value: "Vitamin C Glow Serum",
+    name: "Vitamin C Glow Serum",
+    detail: "minimalist.in/products/vitamin-c-serum · ₹899 · in stock",
+  },
+  {
+    value: "Sunscreen gel · SPF 50",
+    name: "Sunscreen gel · SPF 50",
+    detail: "minimalist.in/products/sunscreen-spf50 · ₹649 · in stock",
+  },
+  {
+    value: "Glow Squad kit",
+    name: "Glow Squad kit · cleanser + serum",
+    detail: "minimalist.in/products/glow-squad-kit · ₹1,499 · in stock",
+  },
+  {
+    value: "Festive gift set",
+    name: "Festive gift set",
+    detail: "minimalist.in/products/festive-gift-set · ₹1,999 · in stock",
+  },
+  {
+    value: "Glow Cleanser",
+    name: "Glow Cleanser",
+    detail: "minimalist.in/products/glow-cleanser · ₹599 · in stock",
+  },
+  {
+    value: "SPF 50",
+    name: "SPF 50",
+    detail: "minimalist.in/products/spf-50 · ₹649 · in stock",
+  },
+];
+const couponChoices = [
+  {
+    value: "DIYAVITC10",
+    detail: "10% off · Vitamin C Glow Serum · used 42 times",
+  },
+  {
+    value: "DIYASPF10",
+    detail: "10% off · Sunscreen gel SPF 50 · new",
+  },
+  {
+    value: "DIYAGLOW15",
+    detail: "15% off · whole store · expired 31 Oct",
+  },
+  {
+    value: "SQUADDIYA",
+    detail: "10% off · Glow Squad products · used 42 times",
+  },
+  {
+    value: "GLOW10",
+    detail: "10% off · whole store · active",
+  },
+];
 const filledCycleDeliverables: Deliverable[] = [
   {
     id: 1,
@@ -136,57 +203,1003 @@ function Stepper({ step }: { step: Step }) {
   );
 }
 
+type DeliverableChoice = {
+  label: string;
+  platform?: Platform;
+  kind: "platform" | "live";
+};
+
+const deliverableChoices: DeliverableChoice[] = [
+  { label: "Reel", platform: "Instagram", kind: "platform" },
+  { label: "Story", platform: "Instagram", kind: "platform" },
+  { label: "Carousel", platform: "Instagram", kind: "platform" },
+  { label: "Static post", platform: "Instagram", kind: "platform" },
+  { label: "Short", platform: "YouTube", kind: "platform" },
+  { label: "Video (dedicated)", platform: "YouTube", kind: "platform" },
+  { label: "Idea Pin", platform: "Pinterest", kind: "platform" },
+  { label: "Story", platform: "Snapchat", kind: "platform" },
+  { label: "Live session", kind: "live" },
+];
+
+function DeliverableTypeDropdown({
+  value,
+  platform,
+  onChange,
+}: {
+  value: string;
+  platform: string;
+  onChange: (choice: { type: string; platform: string }) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [custom, setCustom] = useState(false);
+  const [customValue, setCustomValue] = useState("");
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ left: 0, top: 0, width: 270 });
+
+  const updatePosition = () => {
+    const bounds = triggerRef.current?.getBoundingClientRect();
+    if (!bounds) return;
+    setPosition({
+      left: Math.max(12, Math.min(bounds.left, window.innerWidth - 282)),
+      top: bounds.bottom + 6,
+      width: Math.max(270, bounds.width),
+    });
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    updatePosition();
+    const close = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (
+        !triggerRef.current?.contains(target) &&
+        !menuRef.current?.contains(target)
+      ) {
+        setOpen(false);
+        setCustom(false);
+      }
+    };
+    window.addEventListener("mousedown", close);
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+    return () => {
+      window.removeEventListener("mousedown", close);
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [open]);
+
+  const choose = (choice: DeliverableChoice) => {
+    onChange({ type: choice.label, platform: choice.platform ?? "Instagram" });
+    setOpen(false);
+    setCustom(false);
+  };
+  const saveCustom = () => {
+    const type = customValue.trim();
+    if (!type) return;
+    onChange({ type, platform: "Instagram" });
+    setOpen(false);
+    setCustom(false);
+    setCustomValue("");
+  };
+
+  const menu = open
+    ? createPortal(
+        <div
+          ref={menuRef}
+          id="deliverable-type-menu"
+          role="listbox"
+          aria-label="Deliverable type"
+          className="fixed z-[10000] overflow-hidden rounded-lg border border-line bg-white p-1.5 shadow-[0_14px_30px_rgba(11,20,39,0.22)]"
+          style={position}
+        >
+          {deliverableChoices.map((choice) => {
+            const selected =
+              value === choice.label &&
+              (!choice.platform || platform === choice.platform);
+            return (
+              <button
+                key={`${choice.platform ?? "general"}-${choice.label}`}
+                type="button"
+                role="option"
+                aria-selected={selected}
+                onClick={() => choose(choice)}
+                className={`flex h-9 w-full items-center gap-2 rounded-md px-2.5 text-left text-[14px] leading-5 transition ${selected ? "bg-primary-subtle text-primary" : "text-ink hover:bg-subtle"}`}
+              >
+                {choice.platform ? (
+                  <PlatformLogo platform={choice.platform} size={16} />
+                ) : (
+                  <Video size={16} className="text-secondary" />
+                )}
+                <span className="min-w-0 flex-1 truncate">{choice.label}</span>
+                {selected ? <Check size={16} className="shrink-0" /> : null}
+              </button>
+            );
+          })}
+          <div className="my-1 h-px bg-line-subtle" />
+          {custom ? (
+            <div className="flex gap-2 px-1 py-1">
+              <input
+                autoFocus
+                value={customValue}
+                onChange={(event) => setCustomValue(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") saveCustom();
+                }}
+                placeholder="Type deliverable"
+                className="h-8 min-w-0 flex-1 rounded-md border border-line px-2 text-[13px] outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
+              />
+              <button
+                type="button"
+                onClick={saveCustom}
+                disabled={!customValue.trim()}
+                className="h-8 rounded-md bg-primary px-3 text-[13px] font-medium text-white disabled:opacity-45"
+              >
+                Save
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setCustom(true)}
+              className="flex h-9 w-full items-center gap-2 rounded-md px-2.5 text-left text-[14px] text-primary transition hover:bg-primary-subtle"
+            >
+              <PenLine size={16} />
+              Other: type your own
+            </button>
+          )}
+        </div>,
+        document.body,
+      )
+    : null;
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-controls="deliverable-type-menu"
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        onClick={() => setOpen((current) => !current)}
+        className={`flex h-10 w-full items-center gap-2 rounded-md border bg-white px-3 text-left text-[13px] leading-5 text-ink outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 ${open ? "border-primary" : "border-line"}`}
+      >
+        <span className="min-w-0 flex-1 truncate">
+          {value || "Choose a deliverable"}
+        </span>
+        <ChevronDown
+          size={16}
+          className={`shrink-0 text-secondary transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {menu}
+    </>
+  );
+}
+
+function PlatformDropdown({
+  value,
+  creatorName,
+  onChange,
+}: {
+  value: string;
+  creatorName: string;
+  onChange: (platform: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ left: 0, top: 0, width: 236 });
+  const accounts: { platform: Platform; detail: string; connected: boolean }[] =
+    [
+      {
+        platform: "Instagram",
+        detail: "1.2M followers · connected",
+        connected: true,
+      },
+      {
+        platform: "YouTube",
+        detail: `Not connected for ${creatorName}`,
+        connected: false,
+      },
+      {
+        platform: "Pinterest",
+        detail: `Not connected for ${creatorName}`,
+        connected: false,
+      },
+      {
+        platform: "Snapchat",
+        detail: `Not connected for ${creatorName}`,
+        connected: false,
+      },
+    ];
+  const updatePosition = () => {
+    const bounds = triggerRef.current?.getBoundingClientRect();
+    if (!bounds) return;
+    setPosition({
+      left: Math.max(12, Math.min(bounds.left, window.innerWidth - 248)),
+      top: bounds.bottom + 6,
+      width: Math.max(236, bounds.width),
+    });
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    updatePosition();
+    const close = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (
+        !triggerRef.current?.contains(target) &&
+        !menuRef.current?.contains(target)
+      ) {
+        setOpen(false);
+      }
+    };
+    window.addEventListener("mousedown", close);
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+    return () => {
+      window.removeEventListener("mousedown", close);
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [open]);
+
+  const menu = open
+    ? createPortal(
+        <div
+          ref={menuRef}
+          role="listbox"
+          aria-label="Platform"
+          className="fixed z-[10000] overflow-hidden rounded-md border border-line bg-white p-1 shadow-[0_14px_30px_rgba(11,20,39,0.18)]"
+          style={position}
+        >
+          {accounts.map((account) => {
+            const selected = value === account.platform;
+            return (
+              <button
+                key={account.platform}
+                type="button"
+                role="option"
+                aria-selected={selected}
+                disabled={!account.connected}
+                onClick={() => {
+                  onChange(account.platform);
+                  setOpen(false);
+                }}
+                className={`flex min-h-10 w-full items-center gap-2 rounded-sm px-2 text-left transition ${selected ? "bg-primary-subtle text-primary" : "text-ink hover:bg-subtle"} ${account.connected ? "" : "cursor-not-allowed opacity-45"}`}
+              >
+                <PlatformLogo platform={account.platform} size={14} />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[12px] leading-4">
+                    {account.platform}
+                  </span>
+                  <span className="block truncate text-[10px] leading-3 text-secondary">
+                    {account.detail}
+                  </span>
+                </span>
+                {selected ? <Check size={14} className="shrink-0" /> : null}
+              </button>
+            );
+          })}
+        </div>,
+        document.body,
+      )
+    : null;
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        onClick={() => setOpen((current) => !current)}
+        className={`flex h-10 w-full items-center gap-2 rounded-md border bg-white px-3 text-left text-[13px] leading-5 text-ink outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 ${open ? "border-primary" : "border-line"}`}
+      >
+        <span className="min-w-0 flex-1 truncate">{value || "Platform"}</span>
+        <ChevronDown
+          size={16}
+          className={`shrink-0 text-secondary transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {menu}
+    </>
+  );
+}
+
+function CouponDropdown({
+  values,
+  onChange,
+}: {
+  values: string[];
+  onChange: (values: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuId = useId();
+  const [position, setPosition] = useState({ left: 0, top: 0, width: 280 });
+  const selectedCodes = couponChoices.filter((coupon) =>
+    values.includes(coupon.value),
+  );
+  const selectionLabel = selectedCodes.length
+    ? `Coupons: ${selectedCodes.map((coupon) => coupon.value).join(", ")}`
+    : "Generate codes";
+
+  useEffect(() => {
+    if (!open) return;
+    const positionMenu = () => {
+      const bounds = triggerRef.current?.getBoundingClientRect();
+      if (!bounds) return;
+      const width = Math.max(bounds.width, 280);
+      setPosition({
+        left: Math.max(8, Math.min(bounds.left, window.innerWidth - width - 8)),
+        top: bounds.bottom + 6,
+        width,
+      });
+    };
+    positionMenu();
+    const close = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (!triggerRef.current?.contains(target) && !menuRef.current?.contains(target)) {
+        setOpen(false);
+      }
+    };
+    window.addEventListener("mousedown", close);
+    window.addEventListener("resize", positionMenu);
+    window.addEventListener("scroll", positionMenu, true);
+    return () => {
+      window.removeEventListener("mousedown", close);
+      window.removeEventListener("resize", positionMenu);
+      window.removeEventListener("scroll", positionMenu, true);
+    };
+  }, [open]);
+
+  const toggleCoupon = (coupon: string) => {
+    onChange(
+      values.includes(coupon)
+        ? values.filter((value) => value !== coupon)
+        : [...values, coupon],
+    );
+  };
+  const generateCoupon = () => {
+    const nextCoupon = couponChoices.find(
+      (coupon) => !values.includes(coupon.value),
+    );
+    if (nextCoupon) onChange([...values, nextCoupon.value]);
+  };
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-controls={menuId}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        aria-label="Coupon codes"
+        onClick={() => setOpen((current) => !current)}
+        className={`flex h-10 w-full items-center gap-2 rounded-md border bg-white px-3 text-left text-[13px] leading-5 text-ink outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 ${open ? "border-[1.5px] border-primary" : "border-line"}`}
+      >
+        <span className={`min-w-0 flex-1 truncate ${selectedCodes.length ? "text-ink" : "text-tertiary"}`}>
+          {selectionLabel}
+        </span>
+        <ChevronDown
+          size={16}
+          className={`shrink-0 text-secondary transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open &&
+        createPortal(
+          <div
+            ref={menuRef}
+            id={menuId}
+            role="listbox"
+            aria-label="Coupon codes"
+            aria-multiselectable="true"
+            className="fixed z-[10000] overflow-hidden rounded-md border border-line bg-white p-1.5 shadow-[0_14px_30px_rgba(11,20,39,0.18)]"
+            style={position}
+          >
+            <p className="px-2.5 pb-1.5 pt-1 text-[10px] font-medium uppercase tracking-[0.04em] text-secondary">
+              Diya&apos;s codes · Shopify · {selectedCodes.length} selected
+            </p>
+            {couponChoices.map((coupon) => {
+              const selected = values.includes(coupon.value);
+              return (
+                <button
+                  key={coupon.value}
+                  type="button"
+                  role="option"
+                  aria-selected={selected}
+                  onClick={() => toggleCoupon(coupon.value)}
+                  className={`flex w-full items-start gap-2.5 rounded-md px-2.5 py-2 text-left transition-colors ${selected ? "bg-primary-subtle" : "hover:bg-subtle"}`}
+                >
+                  <span
+                    className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-[4px] border ${selected ? "border-primary bg-primary text-white" : "border-line-strong bg-white"}`}
+                  >
+                    {selected && <Check size={12} strokeWidth={3} />}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[13px] leading-5 text-ink">
+                      {coupon.value}
+                    </span>
+                    <span className="block text-[12px] leading-4 text-secondary">
+                      {coupon.detail}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+            <div className="my-1 h-px bg-line-subtle" />
+            <button
+              type="button"
+              onClick={generateCoupon}
+              className="flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-left text-[13px] leading-5 text-link transition-colors hover:bg-primary-subtle"
+            >
+              <Plus size={14} />
+              Generate a new code
+            </button>
+            <p className="px-2.5 pb-1 pt-0.5 text-[12px] leading-4 text-tertiary">
+              Pick one or more. Codes are created in your store and each one
+              tracks its own sales.
+            </p>
+          </div>,
+          document.body,
+        )}
+    </>
+  );
+}
+
+function ProductDropdown({
+  values,
+  onChange,
+}: {
+  values: string[];
+  onChange: (values: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuId = useId();
+  const [position, setPosition] = useState({ left: 0, top: 0, width: 320 });
+  const selectedProducts = productChoices.filter((product) =>
+    values.includes(product.value),
+  );
+  const visibleProducts = productChoices.filter((product) =>
+    `${product.name} ${product.detail}`.toLowerCase().includes(search.toLowerCase()),
+  );
+  const selectionLabel = selectedProducts.length
+    ? `Products: ${selectedProducts.map((product) => product.name).join(", ")}`
+    : "Select products";
+
+  useEffect(() => {
+    if (!open) return;
+    const positionMenu = () => {
+      const bounds = triggerRef.current?.getBoundingClientRect();
+      if (!bounds) return;
+      const width = Math.max(bounds.width, 320);
+      setPosition({
+        left: Math.max(8, Math.min(bounds.left, window.innerWidth - width - 8)),
+        top: bounds.bottom + 6,
+        width,
+      });
+    };
+    positionMenu();
+    const close = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (!triggerRef.current?.contains(target) && !menuRef.current?.contains(target)) {
+        setOpen(false);
+        setSearch("");
+      }
+    };
+    window.addEventListener("mousedown", close);
+    window.addEventListener("resize", positionMenu);
+    window.addEventListener("scroll", positionMenu, true);
+    return () => {
+      window.removeEventListener("mousedown", close);
+      window.removeEventListener("resize", positionMenu);
+      window.removeEventListener("scroll", positionMenu, true);
+    };
+  }, [open]);
+
+  const toggleProduct = (product: string) => {
+    onChange(
+      values.includes(product)
+        ? values.filter((value) => value !== product)
+        : [...values, product],
+    );
+  };
+  const addProduct = () => {
+    const nextProduct = productChoices.find(
+      (product) => !values.includes(product.value),
+    );
+    if (nextProduct) onChange([...values, nextProduct.value]);
+  };
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-controls={menuId}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        aria-label="Select products"
+        onClick={() => setOpen((current) => !current)}
+        className={`flex h-10 w-full items-center gap-2 rounded-md border bg-white px-3 text-left text-[13px] leading-5 text-ink outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 ${open ? "border-[1.5px] border-primary" : "border-line"}`}
+      >
+        <span className={`min-w-0 flex-1 truncate ${selectedProducts.length ? "text-ink" : "text-tertiary"}`}>
+          {selectionLabel}
+        </span>
+        <ChevronDown
+          size={16}
+          className={`shrink-0 text-secondary transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open &&
+        createPortal(
+          <div
+            ref={menuRef}
+            id={menuId}
+            role="listbox"
+            aria-label="Products"
+            aria-multiselectable="true"
+            className="fixed z-[10000] overflow-hidden rounded-md border border-line bg-white p-1.5 shadow-[0_14px_30px_rgba(11,20,39,0.18)]"
+            style={position}
+          >
+            <label className="mb-1.5 block">
+              <span className="sr-only">Search products</span>
+              <input
+                autoFocus
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search products on minimalist.in"
+                className="h-8 w-full rounded-md bg-subtle px-2.5 text-[13px] text-ink outline-none placeholder:text-tertiary focus:ring-2 focus:ring-primary/15"
+              />
+            </label>
+            <p className="px-2.5 pb-1.5 pt-0.5 text-[10px] font-medium uppercase tracking-[0.04em] text-secondary">
+              From your website · Shopify · {selectedProducts.length} selected
+            </p>
+            <div className="max-h-[248px] overflow-y-auto">
+              {visibleProducts.map((product) => {
+                const selected = values.includes(product.value);
+                return (
+                  <button
+                    key={product.value}
+                    type="button"
+                    role="option"
+                    aria-selected={selected}
+                    onClick={() => toggleProduct(product.value)}
+                    className={`flex w-full items-start gap-2.5 rounded-md px-2.5 py-2 text-left transition-colors ${selected ? "bg-primary-subtle" : "hover:bg-subtle"}`}
+                  >
+                    <span
+                      className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-[4px] border ${selected ? "border-primary bg-primary text-white" : "border-line-strong bg-white"}`}
+                    >
+                      {selected && <Check size={12} strokeWidth={3} />}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-[13px] leading-5 text-ink">
+                        {product.name}
+                      </span>
+                      <span className="block text-[12px] leading-4 text-secondary">
+                        {product.detail}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+              {!visibleProducts.length && (
+                <p className="px-2.5 py-3 text-[12px] text-tertiary">
+                  No matching products
+                </p>
+              )}
+            </div>
+            <div className="my-1 h-px bg-line-subtle" />
+            <button
+              type="button"
+              onClick={addProduct}
+              className="flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-left text-[13px] leading-5 text-link transition-colors hover:bg-primary-subtle"
+            >
+              <Plus size={14} />
+              Add another product link
+            </button>
+            <p className="px-2.5 pb-1 pt-0.5 text-[12px] leading-4 text-tertiary">
+              Pick one or more. Each product gets its own tracking link; the
+              coupon works on all of them.
+            </p>
+          </div>,
+          document.body,
+        )}
+    </>
+  );
+}
+
+function ShipmentDropdown({
+  values,
+  onChange,
+}: {
+  values: string[];
+  onChange: (values: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuId = useId();
+  const [position, setPosition] = useState({ left: 0, top: 0, width: 280 });
+  const selectedShipments = shipmentChoices.filter((shipment) =>
+    values.includes(shipment.value),
+  );
+  const selectionLabel = selectedShipments.length
+    ? `Shipping: ${selectedShipments.length} shipment${selectedShipments.length === 1 ? "" : "s"} · ${selectedShipments.map((shipment) => shipment.tracking).join(", ")}`
+    : "Select shipments";
+
+  useEffect(() => {
+    if (!open) return;
+    const positionMenu = () => {
+      const bounds = triggerRef.current?.getBoundingClientRect();
+      if (!bounds) return;
+      const width = Math.max(bounds.width, 280);
+      setPosition({
+        left: Math.max(8, Math.min(bounds.left, window.innerWidth - width - 8)),
+        top: bounds.bottom + 6,
+        width,
+      });
+    };
+    positionMenu();
+    const close = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (!triggerRef.current?.contains(target) && !menuRef.current?.contains(target)) {
+        setOpen(false);
+      }
+    };
+    window.addEventListener("mousedown", close);
+    window.addEventListener("resize", positionMenu);
+    window.addEventListener("scroll", positionMenu, true);
+    return () => {
+      window.removeEventListener("mousedown", close);
+      window.removeEventListener("resize", positionMenu);
+      window.removeEventListener("scroll", positionMenu, true);
+    };
+  }, [open]);
+
+  const toggleShipment = (shipment: string) => {
+    onChange(
+      values.includes(shipment)
+        ? values.filter((value) => value !== shipment)
+        : [...values, shipment],
+    );
+  };
+  const addShipment = () => {
+    const nextShipment = shipmentChoices.find(
+      (shipment) => !values.includes(shipment.value),
+    );
+    if (nextShipment) onChange([...values, nextShipment.value]);
+  };
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-controls={menuId}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        aria-label="Select shipments"
+        onClick={() => setOpen((current) => !current)}
+        className={`flex h-10 w-full items-center gap-2 rounded-md border bg-white px-3 text-left text-[13px] leading-5 text-ink outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 ${open ? "border-[1.5px] border-primary" : "border-line"}`}
+      >
+        <span className={`min-w-0 flex-1 truncate ${selectedShipments.length ? "text-ink" : "text-tertiary"}`}>
+          {selectionLabel}
+        </span>
+        <ChevronDown
+          size={16}
+          className={`shrink-0 text-secondary transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open &&
+        createPortal(
+          <div
+            ref={menuRef}
+            id={menuId}
+            role="listbox"
+            aria-label="Shipments"
+            aria-multiselectable="true"
+            className="fixed z-[10000] overflow-hidden rounded-md border border-line bg-white p-1.5 shadow-[0_14px_30px_rgba(11,20,39,0.18)]"
+            style={position}
+          >
+            <p className="px-2.5 pb-1.5 pt-1 text-[10px] font-medium uppercase tracking-[0.04em] text-secondary">
+              Shipped to Diya · {selectedShipments.length} selected
+            </p>
+            {shipmentChoices.map((shipment) => {
+              const selected = values.includes(shipment.value);
+              return (
+                <button
+                  key={shipment.value}
+                  type="button"
+                  role="option"
+                  aria-selected={selected}
+                  onClick={() => toggleShipment(shipment.value)}
+                  className={`flex w-full items-start gap-2.5 rounded-md px-2.5 py-2 text-left transition-colors ${selected ? "bg-primary-subtle" : "hover:bg-subtle"}`}
+                >
+                  <span
+                    className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-[4px] border ${selected ? "border-primary bg-primary text-white" : "border-line-strong bg-white"}`}
+                  >
+                    {selected && <Check size={12} strokeWidth={3} />}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[13px] leading-5 text-ink">
+                      {shipment.name}
+                    </span>
+                    <span className="block truncate text-[12px] leading-4 text-secondary">
+                      {shipment.detail}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+            <div className="my-1 h-px bg-line-subtle" />
+            <button
+              type="button"
+              onClick={addShipment}
+              className="flex w-full items-center gap-2 rounded-sm px-2.5 py-2 text-left text-[13px] leading-5 text-link transition-colors hover:bg-primary-subtle"
+            >
+              <Plus size={14} />
+              Add a new shipment
+            </button>
+            <p className="px-2.5 pb-1 pt-0.5 text-[12px] leading-4 text-tertiary">
+              Pick every shipment for this deliverable. Courier and tracking
+              numbers fill in automatically.
+            </p>
+          </div>,
+          document.body,
+        )}
+    </>
+  );
+}
+
+const formatDeadline = (iso: string) =>
+  new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(`${iso}T00:00:00`));
+
+const toIsoDate = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+function DeadlinePicker({
+  value,
+  onChange,
+  pickerId,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  pickerId: string;
+}) {
+  const selectedDate = value ? new Date(`${value}T00:00:00`) : null;
+  const [open, setOpen] = useState(false);
+  const [visibleMonth, setVisibleMonth] = useState(
+    () => selectedDate ?? new Date(2026, 11, 1),
+  );
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ left: 0, top: 0, width: 300 });
+  const calendarStart = new Date(2026, 10, 2);
+  const calendarEnd = new Date(2027, 0, 31);
+  const monthStart = new Date(
+    visibleMonth.getFullYear(),
+    visibleMonth.getMonth(),
+    1,
+  );
+  const mondayOffset = (monthStart.getDay() + 6) % 7;
+  const daysInMonth = new Date(
+    visibleMonth.getFullYear(),
+    visibleMonth.getMonth() + 1,
+    0,
+  ).getDate();
+  const cellCount = Math.ceil((mondayOffset + daysInMonth) / 7) * 7;
+  const gridStart = new Date(
+    visibleMonth.getFullYear(),
+    visibleMonth.getMonth(),
+    1 - mondayOffset,
+  );
+  const days = Array.from({ length: cellCount }, (_, index) => {
+    const date = new Date(gridStart);
+    date.setDate(gridStart.getDate() + index);
+    return date;
+  });
+  const updatePosition = () => {
+    const bounds = triggerRef.current?.getBoundingClientRect();
+    if (!bounds) return;
+    setPosition({
+      left: Math.max(12, Math.min(bounds.left, window.innerWidth - 312)),
+      top: bounds.bottom + 6,
+      width: 300,
+    });
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    updatePosition();
+    const close = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (
+        !triggerRef.current?.contains(target) &&
+        !menuRef.current?.contains(target)
+      )
+        setOpen(false);
+    };
+    window.addEventListener("mousedown", close);
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+    return () => {
+      window.removeEventListener("mousedown", close);
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [open]);
+
+  const toggle = () => {
+    if (!open) setVisibleMonth(selectedDate ?? new Date(2026, 11, 1));
+    setOpen((current) => !current);
+  };
+  const cycleDescription = () => {
+    if (!selectedDate)
+      return "Choose a deadline to see which project cycle it belongs to.";
+    const iso = toIsoDate(selectedDate);
+    if (iso >= "2026-12-02" && iso <= "2027-01-01")
+      return `${formatDeadline(iso).replace(" 2026", "")} falls in Cycle 2 · 2 Dec – 1 Jan`;
+    if (iso >= "2027-01-02")
+      return `${formatDeadline(iso).replace(" 2027", "")} falls in Cycle 3 · 2 Jan – 31 Jan`;
+    return `${formatDeadline(iso).replace(" 2026", "")} falls in Cycle 1 · 2 Nov – 1 Dec`;
+  };
+
+  const menu = open
+    ? createPortal(
+        <div
+          ref={menuRef}
+          id={pickerId}
+          role="dialog"
+          aria-label="Choose deadline"
+          className="fixed z-[10000] overflow-hidden rounded-lg border border-line bg-white p-3 shadow-[0_14px_30px_rgba(11,20,39,0.22)]"
+          style={position}
+        >
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() =>
+                setVisibleMonth(
+                  (date) =>
+                    new Date(date.getFullYear(), date.getMonth() - 1, 1),
+                )
+              }
+              className="grid size-7 place-items-center rounded-md text-secondary hover:bg-subtle"
+              aria-label="Previous month"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <p className="text-[14px] font-medium text-ink">
+              {new Intl.DateTimeFormat("en-GB", {
+                month: "long",
+                year: "numeric",
+              }).format(visibleMonth)}
+            </p>
+            <button
+              type="button"
+              onClick={() =>
+                setVisibleMonth(
+                  (date) =>
+                    new Date(date.getFullYear(), date.getMonth() + 1, 1),
+                )
+              }
+              className="grid size-7 place-items-center rounded-md text-secondary hover:bg-subtle"
+              aria-label="Next month"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+          <div className="mt-2 grid grid-cols-7 gap-1 text-center">
+            {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((day) => (
+              <span
+                className="h-5 text-[12px] leading-5 text-secondary"
+                key={day}
+              >
+                {day}
+              </span>
+            ))}
+            {days.map((date) => {
+              const iso = toIsoDate(date);
+              const selected = iso === value;
+              const outside = date.getMonth() !== visibleMonth.getMonth();
+              const blocked =
+                date < calendarStart || date > calendarEnd || outside;
+              return (
+                <button
+                  key={iso}
+                  type="button"
+                  disabled={blocked}
+                  onClick={() => {
+                    onChange(iso);
+                    setOpen(false);
+                  }}
+                  className={`h-8 rounded-md text-[13px] transition ${selected ? "bg-primary text-white" : outside || blocked ? "text-tertiary" : "bg-subtle text-ink hover:bg-primary-subtle"}`}
+                >
+                  {date.getDate()}
+                </button>
+              );
+            })}
+          </div>
+          <div className="mt-3 rounded-md bg-primary-subtle px-3 py-2">
+            <p className="text-[12px] font-medium text-ink">
+              {cycleDescription()}
+            </p>
+            <p className="mt-1 text-[12px] leading-4 text-secondary">
+              Shaded days are cycle 2. Dates after 31 Jan 2027 are blocked; the
+              project ends then.
+            </p>
+          </div>
+        </div>,
+        document.body,
+      )
+    : null;
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-controls={pickerId}
+        aria-expanded={open}
+        aria-haspopup="dialog"
+        onClick={toggle}
+        className={`flex h-10 w-full items-center gap-2 rounded-md border bg-white px-3 text-left text-[13px] text-ink outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 ${open ? "border-primary" : "border-line"}`}
+      >
+        <CalendarDays size={15} className="shrink-0 text-secondary" />
+        <span className="min-w-0 flex-1 truncate">
+          {value ? formatDeadline(value) : "dd/mm/yyyy"}
+        </span>
+      </button>
+      {menu}
+    </>
+  );
+}
+
 function FieldRow({
   value,
   onChange,
   remove,
   position,
+  creatorName,
 }: {
   value: Deliverable;
   onChange: (next: Deliverable) => void;
   remove: () => void;
   position: number;
+  creatorName: string;
 }) {
   const update = (data: Partial<Deliverable>) =>
     onChange({ ...value, ...data });
   return (
     <div className="border-b border-line-subtle px-4 py-4 last:border-0">
       <div className="grid gap-2 lg:grid-cols-[minmax(190px,1.4fr)_150px_150px_minmax(150px,1fr)_minmax(160px,1fr)_32px]">
-        <Dropdown
+        <DeliverableTypeDropdown
           value={value.type}
-          options={types}
-          onChange={(type) =>
-            update({
-              type,
-              platform: type.includes("YouTube")
-                ? "YouTube"
-                : type.includes("Pinterest")
-                  ? "Pinterest"
-                  : type.includes("Snapchat")
-                    ? "Snapchat"
-                    : "Instagram",
-            })
-          }
-          ariaLabel={`Deliverable ${position} type`}
-          displayValue={value.type || "Choose a deliverable"}
+          platform={value.platform}
+          onChange={({ type, platform }) => update({ type, platform })}
         />
-        <Dropdown
+        <PlatformDropdown
           value={value.platform}
-          options={channels}
+          creatorName={creatorName.split(" ")[0]}
           onChange={(platform) => update({ platform })}
-          ariaLabel={`Deliverable ${position} platform`}
-          displayValue={value.platform || "Platform"}
         />
-        <label className="flex h-10 items-center gap-2 rounded-md border border-line bg-white px-3">
-          <CalendarDays size={15} className="text-secondary" />
-          <input
-            type="date"
-            value={value.deadline}
-            onChange={(event) => update({ deadline: event.target.value })}
-            aria-label={`Deadline for deliverable ${position}`}
-            className="min-w-0 flex-1 bg-transparent text-[13px] text-ink outline-none"
-          />
-        </label>
+        <DeadlinePicker
+          value={value.deadline}
+          onChange={(deadline) => update({ deadline })}
+          pickerId={`deadline-${position}`}
+        />
         <button
           type="button"
           onClick={() => update({ tracking: !value.tracking })}
@@ -198,13 +1211,9 @@ function FieldRow({
             : "Generate UTM"}
           <Copy className="ml-auto" size={14} />
         </button>
-        <MultiDropdown
+        <CouponDropdown
           values={value.coupons}
-          options={["SQUADDIYA", "GLOW10", "CREATOR15", "WELCOME20"]}
           onChange={(coupons) => update({ coupons })}
-          ariaLabel={`Coupon codes for ${position}`}
-          icon={<Tag size={15} />}
-          placeholder="Generate codes"
         />
         <button
           type="button"
@@ -230,39 +1239,21 @@ function FieldRow({
         </label>
         <Dropdown
           value={value.usage}
-          options={[
-            "Organic",
-            "Paid social · 30 days",
-            "Paid social · 90 days",
-            "Perpetual",
-          ]}
+          options={["Organic", "Paid Ads", "Paid ads", "Perpetual"]}
           onChange={(usage) => update({ usage })}
           ariaLabel="Usage rights"
-          displayValue={`Usage  ${value.usage}`}
+          displayValue={value.usage}
+          otherLabel="Other type your own"
+          otherIcon={<PenLine size={14} />}
+          otherPlaceholder="Describe usage rights"
         />
-        <MultiDropdown
+        <ProductDropdown
           values={value.products}
-          options={[
-            "Glow Squad kit",
-            "Vitamin C Glow Serum",
-            "Vitamin-C Serum",
-            "Glow Cleanser",
-            "SPF 50",
-          ]}
           onChange={(products) => update({ products })}
-          ariaLabel="Products"
-          placeholder="Select products"
         />
-        <MultiDropdown
+        <ShipmentDropdown
           values={value.shipments}
-          options={[
-            "Glow Squad kit · BD7731045…",
-            "Serum kit · dispatch 3 Nov",
-            "Creator bundle · dispatch 5 Nov",
-          ]}
           onChange={(shipments) => update({ shipments })}
-          ariaLabel="Shipments"
-          placeholder="Select shipments"
         />
       </div>
       <label className="mt-2 flex min-h-[76px] items-start rounded-md border border-line bg-white px-3 py-3 text-[13px]">
@@ -621,6 +1612,7 @@ export function BrandCreatorInvitePage() {
                           key={entry.id}
                           value={entry}
                           position={index + 1}
+                          creatorName={creator.name}
                           onChange={(next) => update(entry.id, next)}
                           remove={() => remove(entry.id)}
                         />
