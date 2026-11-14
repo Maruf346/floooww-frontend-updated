@@ -1,5 +1,8 @@
 # Dashboard UI Guidelines
 
+- Dashboard page content uses the BrandShell's shared responsive outer gutter (`p-5 sm:p-8`) and must remain `w-full` rather than adding an independent page-level maximum width. Grid columns may be constrained for their design, but the page itself must line up with the left and right edges used by other dashboard pages.
+- Full creator profiles use the BrandShell and a responsive `minmax(0, 1fr) / 340px` desktop main-and-rail layout. The application summary, intro video, four profile tabs, profile cards, creator rail, and floating assistant follow the supplied BR-05c composition. The rail's channel list is interactive: All channels is the default and single-channel selections update channel-specific followers, rates, services, fees, social metrics, and portfolio content; Reviews and project fit remain unchanged.
+
 - Applicant drawer Reviews tab: use the supplied 4.8 score, orange five-row distribution (19/3/1/0/0), muted quality tiles, and three review cards. Animate bars and cards once while preserving the fixed footer actions.
 
 - Animate dashboard content when it enters the viewport. Use slow, restrained motion: approximately 0.65–0.9 seconds for card reveals and 1.2–1.4 seconds for graph strokes.

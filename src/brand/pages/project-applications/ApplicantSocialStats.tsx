@@ -4,7 +4,7 @@ import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import type { Platform } from "@/common/types";
 import type { ApplicantProfile } from "./ApplicantProfileDrawer";
 
-type SocialPlatform = "Instagram" | "YouTube" | "Pinterest" | "Snapchat";
+export type SocialPlatform = "Instagram" | "YouTube" | "Pinterest" | "Snapchat";
 
 const platformDetails: Record<SocialPlatform, { audience: string; followers: string; trend?: string; metrics: Array<[string, string]>; reachMetrics: Array<[string, string]> }> = {
   Instagram: { audience: "1.2 L · Connected", followers: "1.2 L followers", metrics: [["5.8%", "Eng. rate"], ["64K", "Avg. views"], ["4.1%", "Save + share rate"]], reachMetrics: [["38%", "Reach from non-followers"], ["48K", "Avg. reach per post"], ["14K", "Avg. Story views"], ["0:14", "Avg. Reel watch time"], ["4 a week", "Posts"], ["₹0.23", "Cost per view at her ask"]] },
@@ -47,8 +47,13 @@ function FollowerGrowth({ title }: { title: string }) {
   return <section className="rounded-xl border border-line bg-white p-5"><h3 className="text-[14px] font-medium leading-[22px] text-ink">{title}</h3><div className="mt-3 flex h-40 items-end justify-between border-b border-line px-1">{values.map(([value, date, height], index) => <div className="flex h-full min-w-0 flex-1 flex-col justify-end text-center" key={date}><motion.p className="mb-1 text-[11px] leading-4 text-secondary" initial={{ opacity: 0, y: 5 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 + index * 0.08 }}>{value}</motion.p><motion.span className="mx-auto block w-[56px] max-w-[78%] origin-bottom rounded-t-[4px] bg-[#8da2f7]" initial={{ height: 0 }} whileInView={{ height }} viewport={{ once: true }} transition={{ duration: 0.9, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }} /><p className="mt-1 text-[11px] leading-4 text-secondary">{date}</p></div>)}</div></section>;
 }
 
-export function ApplicantSocialStats({ applicant }: { applicant: ApplicantProfile }) {
-  const [platform, setPlatform] = useState<SocialPlatform>("Instagram");
+export function ApplicantSocialStats({ applicant, selectedPlatform, onPlatformChange }: { applicant: ApplicantProfile; selectedPlatform?: SocialPlatform; onPlatformChange?: (platform: SocialPlatform) => void }) {
+  const [localPlatform, setLocalPlatform] = useState<SocialPlatform>("Instagram");
+  const platform = selectedPlatform ?? localPlatform;
+  const setPlatform = (next: SocialPlatform) => {
+    if (onPlatformChange) onPlatformChange(next);
+    else setLocalPlatform(next);
+  };
   const selected = platformDetails[platform];
   const reachRows = selected.reachMetrics;
   const countries = [["India", 92], ["UAE", 3], ["United States", 2], ["United Kingdom", 1], ["Singapore", 1], ["Other", 1]] as Array<[string, number]>;

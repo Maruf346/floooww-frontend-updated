@@ -35,6 +35,7 @@ export const ROUTES = {
   brandProjectPublished: "/brand/projects/new/published",
   brandProject: "/brand/projects/:projectId",
   brandProjectPerformance: "/brand/projects/:projectId/performance",
+  brandCreatorProfile: "/brand/projects/:projectId/applications/:creatorId",
   agency: "/agency",
   creator: "/creator",
 } as const;
@@ -42,5 +43,7 @@ export const ROUTES = {
 export const brandProjectRoute = (projectId: number | string) => `/brand/projects/${projectId}`;
 export const brandProjectPerformanceRoute = (projectId: number | string) =>
   `/brand/projects/${projectId}/performance`;
+export const brandCreatorProfileRoute = (projectId: number | string, creatorId: string) =>
+  `/brand/projects/${projectId}/applications/${creatorId}`;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];
