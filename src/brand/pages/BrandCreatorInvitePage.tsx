@@ -17,6 +17,7 @@ import { Button } from "@/common/components/ui/Button";
 import { Dropdown, MultiDropdown } from "@/common/components/ui/Dropdown";
 import {
   brandCreatorProfileRoute,
+  brandCreatorDeliverablesRoute,
   brandProjectRoute,
 } from "@/common/constants/routes";
 import { getCreatorProfile } from "./project-applications/creatorProfileData";
@@ -78,7 +79,8 @@ const filledCycleDeliverables: Deliverable[] = [
     usage: "Organic",
     products: ["Glow Squad kit"],
     shipments: ["Glow Squad kit · BD7731045…"],
-    brief: "Unbox the kit in the first 3 seconds; say code SQUADDIYA at the end",
+    brief:
+      "Unbox the kit in the first 3 seconds; say code SQUADDIYA at the end",
   },
   {
     id: 2,
@@ -216,9 +218,7 @@ function FieldRow({
           Fee
           <input
             inputMode="numeric"
-            value={
-              value.fee ? Number(value.fee).toLocaleString("en-IN") : ""
-            }
+            value={value.fee ? Number(value.fee).toLocaleString("en-IN") : ""}
             onChange={(event) =>
               update({ fee: event.target.value.replace(/[^0-9]/g, "") })
             }
@@ -291,7 +291,10 @@ function CycleSchedule({ fee }: { fee: number }) {
       </p>
       <div className="mt-3 grid gap-2 md:grid-cols-3">
         {cycles.map(([title, detail]) => (
-          <div key={title} className="rounded-md border border-line bg-white px-3 py-2">
+          <div
+            key={title}
+            className="rounded-md border border-line bg-white px-3 py-2"
+          >
             <p className="text-[13px] font-medium text-ink">{title}</p>
             <p className="mt-1 text-[12px] text-secondary">{detail}</p>
           </div>
@@ -302,8 +305,9 @@ function CycleSchedule({ fee }: { fee: number }) {
           You’ll be charged at the start of every cycle
         </p>
         <p className="mt-1 text-[12px] leading-4 text-secondary">
-          ₹{fee.toLocaleString("en-IN")} is charged into escrow on 2 Dec and 2 Jan. Each
-          cycle’s UTM links and coupon codes are generated automatically and sent to the creator.
+          ₹{fee.toLocaleString("en-IN")} is charged into escrow on 2 Dec and 2
+          Jan. Each cycle’s UTM links and coupon codes are generated
+          automatically and sent to the creator.
         </p>
       </div>
     </div>
@@ -490,7 +494,9 @@ export function BrandCreatorInvitePage() {
                 </div>
                 <div className="mt-5">
                   <h2 className="text-[14px] font-semibold text-ink">
-                    {valid ? "Cycle 1 · 2 Nov – 1 Dec 2026 · deliverables" : "Cycle 1 deliverables"}
+                    {valid
+                      ? "Cycle 1 · 2 Nov – 1 Dec 2026 · deliverables"
+                      : "Cycle 1 deliverables"}
                   </h2>
                   <p className="mt-1 text-[12px] text-secondary">
                     {valid
@@ -628,8 +634,18 @@ export function BrandCreatorInvitePage() {
                 project’s invited creators tab.
               </p>
               <div className="mt-6 flex flex-wrap justify-center gap-2">
-                <Button kind="secondary" onClick={() => setStep("setup")}>
-                  Edit invite
+                <Button
+                  kind="secondary"
+                  onClick={() =>
+                    navigate(
+                      brandCreatorDeliverablesRoute(
+                        projectId,
+                        creator.handle.slice(1),
+                      ),
+                    )
+                  }
+                >
+                  Edit deliverables
                 </Button>
                 <Button onClick={() => navigate(brandProjectRoute(projectId))}>
                   Back to project

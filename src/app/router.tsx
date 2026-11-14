@@ -29,9 +29,18 @@ export const router = createBrowserRouter(
             { path: ROUTES.terms, element: <LegalPage kind="terms" /> },
             { path: ROUTES.privacy, element: <LegalPage kind="privacy" /> },
             { path: ROUTES.refunds, element: <LegalPage kind="refunds" /> },
-            { path: ROUTES.notFound, element: <WebErrorPage kind="not-found" /> },
-            { path: ROUTES.serverError, element: <WebErrorPage kind="server-error" /> },
-            { path: ROUTES.maintenance, element: <WebErrorPage kind="maintenance" /> },
+            {
+              path: ROUTES.notFound,
+              element: <WebErrorPage kind="not-found" />,
+            },
+            {
+              path: ROUTES.serverError,
+              element: <WebErrorPage kind="server-error" />,
+            },
+            {
+              path: ROUTES.maintenance,
+              element: <WebErrorPage kind="maintenance" />,
+            },
             { path: ROUTES.loading, element: <PageLoadingSkeleton /> },
             { path: "/:section?", element: <LandingPage /> },
             { path: "*", element: <WebErrorPage kind="not-found" /> },
@@ -40,65 +49,78 @@ export const router = createBrowserRouter(
         // Non-landing areas load on demand to keep the homepage bundle lean.
         {
           path: ROUTES.login,
-          lazy: async () => ({ Component: (await import("@/auth/pages/LoginPage")).LoginPage }),
+          lazy: async () => ({
+            Component: (await import("@/auth/pages/LoginPage")).LoginPage,
+          }),
         },
         {
           path: ROUTES.signup,
-          lazy: async () => ({ Component: (await import("@/auth/pages/SignupPage")).SignupPage }),
+          lazy: async () => ({
+            Component: (await import("@/auth/pages/SignupPage")).SignupPage,
+          }),
         },
         {
           path: ROUTES.verifyEmail,
           lazy: async () => ({
-            Component: (await import("@/auth/pages/VerifyEmailPage")).VerifyEmailPage,
+            Component: (await import("@/auth/pages/VerifyEmailPage"))
+              .VerifyEmailPage,
           }),
         },
         {
           path: ROUTES.forgotPassword,
           lazy: async () => ({
-            Component: (await import("@/auth/pages/ForgotPasswordPage")).ForgotPasswordPage,
+            Component: (await import("@/auth/pages/ForgotPasswordPage"))
+              .ForgotPasswordPage,
           }),
         },
         {
           path: ROUTES.resetPassword,
           lazy: async () => ({
-            Component: (await import("@/auth/pages/ResetPasswordPage")).ResetPasswordPage,
+            Component: (await import("@/auth/pages/ResetPasswordPage"))
+              .ResetPasswordPage,
           }),
         },
         {
           path: ROUTES.chooseWorkspace,
           lazy: async () => ({
-            Component: (await import("@/auth/pages/ChooseWorkspacePage")).ChooseWorkspacePage,
+            Component: (await import("@/auth/pages/ChooseWorkspacePage"))
+              .ChooseWorkspacePage,
           }),
         },
         {
           path: ROUTES.onboarding,
           lazy: async () => ({
-            Component: (await import("@/auth/pages/OnboardingPage")).OnboardingPage,
+            Component: (await import("@/auth/pages/OnboardingPage"))
+              .OnboardingPage,
           }),
         },
         {
           path: ROUTES.brand,
           lazy: async () => ({
-            Component: (await import("@/brand/pages/BrandDashboardPage")).BrandDashboardPage,
+            Component: (await import("@/brand/pages/BrandDashboardPage"))
+              .BrandDashboardPage,
           }),
         },
         {
           path: ROUTES.brandProjects,
           lazy: async () => ({
-            Component: (await import("@/brand/pages/BrandProjectsPage")).BrandProjectsPage,
+            Component: (await import("@/brand/pages/BrandProjectsPage"))
+              .BrandProjectsPage,
           }),
         },
         {
           path: ROUTES.brandNewProject,
           lazy: async () => ({
-            Component: (await import("@/brand/pages/BrandProjectTypePage")).BrandProjectTypePage,
+            Component: (await import("@/brand/pages/BrandProjectTypePage"))
+              .BrandProjectTypePage,
           }),
         },
         {
           path: ROUTES.brandNewProjectPartnership,
           lazy: async () => ({
-            Component: (await import("@/brand/pages/BrandProjectPartnershipPage"))
-              .BrandProjectPartnershipPage,
+            Component: (
+              await import("@/brand/pages/BrandProjectPartnershipPage")
+            ).BrandProjectPartnershipPage,
           }),
         },
         {
@@ -125,8 +147,9 @@ export const router = createBrowserRouter(
         {
           path: ROUTES.brandNewProjectDeliverables,
           lazy: async () => ({
-            Component: (await import("@/brand/pages/BrandProjectDeliverablesPage"))
-              .BrandProjectDeliverablesPage,
+            Component: (
+              await import("@/brand/pages/BrandProjectDeliverablesPage")
+            ).BrandProjectDeliverablesPage,
           }),
         },
         {
@@ -160,8 +183,9 @@ export const router = createBrowserRouter(
         {
           path: ROUTES.brandProjectPerformance,
           lazy: async () => ({
-            Component: (await import("@/brand/pages/BrandProjectPerformancePage"))
-              .BrandProjectPerformancePage,
+            Component: (
+              await import("@/brand/pages/BrandProjectPerformancePage")
+            ).BrandProjectPerformancePage,
           }),
         },
         {
@@ -179,6 +203,14 @@ export const router = createBrowserRouter(
           }),
         },
         {
+          path: ROUTES.brandCreatorDeliverables,
+          lazy: async () => ({
+            Component: (
+              await import("@/brand/pages/BrandCreatorDeliverablesEditPage")
+            ).BrandCreatorDeliverablesEditPage,
+          }),
+        },
+        {
           path: ROUTES.brandProject,
           lazy: async () => ({
             Component: (await import("@/brand/pages/BrandProjectPublishedPage"))
@@ -188,13 +220,15 @@ export const router = createBrowserRouter(
         {
           path: ROUTES.agency,
           lazy: async () => ({
-            Component: (await import("@/agency/pages/AgencyDashboardPage")).AgencyDashboardPage,
+            Component: (await import("@/agency/pages/AgencyDashboardPage"))
+              .AgencyDashboardPage,
           }),
         },
         {
           path: ROUTES.creator,
           lazy: async () => ({
-            Component: (await import("@/creator/pages/CreatorDashboardPage")).CreatorDashboardPage,
+            Component: (await import("@/creator/pages/CreatorDashboardPage"))
+              .CreatorDashboardPage,
           }),
         },
       ],
