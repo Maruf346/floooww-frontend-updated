@@ -1,6 +1,7 @@
 # Dashboard UI Guidelines
 
 - Individual creator Invite actions always navigate to the shared three-step invite route. The route is data-driven by project and creator, preserves the BrandShell gutter, and implements setup/editable deliverables, review-and-pay, then invite-sent confirmation. Setup fields use the shared Dropdown and MultiDropdown controls for deliverable type, platform, usage, products, coupon codes, shipments, and payment method; incomplete deliverables keep review disabled.
+- The individual Invite setup has both an empty and a populated long-term state. Filled rows remain editable and use the same deliverables table; a recurring cycle adds a light-blue outlined schedule block with three cycle cards, an amber escrow warning, and footer totals expressed as deliverables per cycle, cycle fee, and total creator fees.
 
 - Creator profile UIs are data-driven. The applicant drawer and full-profile route must resolve the selected creator from shared profile data rather than reuse a single creator's copy, metrics, channels, services, or rail information. Connected channels stay selectable; absent channels render disabled with `Not connected`.
 

@@ -1,50 +1,394 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "motion/react";
-import { ArrowRight, CalendarDays, Check, ChevronLeft, Copy, Link2, Plus, Tag, Trash2 } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarDays,
+  Check,
+  ChevronLeft,
+  Copy,
+  Link2,
+  Plus,
+  Tag,
+  Trash2,
+} from "lucide-react";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
 import { Dropdown, MultiDropdown } from "@/common/components/ui/Dropdown";
-import { brandCreatorProfileRoute, brandProjectRoute } from "@/common/constants/routes";
+import {
+  brandCreatorProfileRoute,
+  brandProjectRoute,
+} from "@/common/constants/routes";
 import { getCreatorProfile } from "./project-applications/creatorProfileData";
 
 type Step = "setup" | "review" | "sent";
-type Deliverable = { id: number; type: string; platform: string; deadline: string; tracking: boolean; coupons: string[]; fee: string; usage: string; products: string[]; shipments: string[]; brief: string };
-const blank = (id: number): Deliverable => ({ id, type: "", platform: "", deadline: "", tracking: false, coupons: [], fee: "", usage: "Organic", products: [], shipments: [], brief: "" });
-const types = ["Instagram Reel", "Instagram Story", "Instagram Post", "YouTube Short", "YouTube video", "Pinterest Idea Pin", "Snapchat Story"];
+type Deliverable = {
+  id: number;
+  type: string;
+  platform: string;
+  deadline: string;
+  tracking: boolean;
+  coupons: string[];
+  fee: string;
+  usage: string;
+  products: string[];
+  shipments: string[];
+  brief: string;
+};
+const blank = (id: number): Deliverable => ({
+  id,
+  type: "",
+  platform: "",
+  deadline: "",
+  tracking: false,
+  coupons: [],
+  fee: "",
+  usage: "Organic",
+  products: [],
+  shipments: [],
+  brief: "",
+});
+const types = [
+  "1 Reel · kit routine",
+  "1 Story · code reminder",
+  "1 Story · results check-in",
+  "Instagram Reel",
+  "Instagram Story",
+  "Instagram Post",
+  "YouTube Short",
+  "YouTube video",
+  "Pinterest Idea Pin",
+  "Snapchat Story",
+];
 const channels = ["Instagram", "YouTube", "Pinterest", "Snapchat"];
+const generatedLinks: Record<string, string> = {
+  "1 Reel · kit routine": "flw.to/diya-reel",
+  "1 Story · code reminder": "flw.to/diya-st1",
+  "1 Story · results check-in": "flw.to/diya-st2",
+};
+const filledCycleDeliverables: Deliverable[] = [
+  {
+    id: 1,
+    type: "1 Reel · kit routine",
+    platform: "Instagram",
+    deadline: "2026-11-10",
+    tracking: true,
+    coupons: ["SQUADDIYA"],
+    fee: "7500",
+    usage: "Organic",
+    products: ["Glow Squad kit"],
+    shipments: ["Glow Squad kit · BD7731045…"],
+    brief: "Unbox the kit in the first 3 seconds; say code SQUADDIYA at the end",
+  },
+  {
+    id: 2,
+    type: "1 Story · code reminder",
+    platform: "Instagram",
+    deadline: "2026-11-15",
+    tracking: true,
+    coupons: ["SQUADDIYA"],
+    fee: "2500",
+    usage: "Organic",
+    products: ["Glow Squad kit"],
+    shipments: [],
+    brief: "Link sticker to flw.to/diya-st1; mention 10% off",
+  },
+  {
+    id: 3,
+    type: "1 Story · results check-in",
+    platform: "Instagram",
+    deadline: "2026-11-28",
+    tracking: true,
+    coupons: ["SQUADDIYA"],
+    fee: "2500",
+    usage: "Organic",
+    products: ["Vitamin C Glow Serum"],
+    shipments: [],
+    brief: "Share your before/after; tag @minimalist",
+  },
+];
 
 function Stepper({ step }: { step: Step }) {
   const active = step === "setup" ? 1 : step === "review" ? 2 : 3;
-  return <div className="grid grid-cols-3 items-center gap-3 rounded-xl border border-line bg-white px-5 py-4">
-    {["Project and deliverables", "Review & pay", "Done"].map((label, index) => <div className="flex min-w-0 items-center gap-2" key={label}><span className={`grid size-6 shrink-0 place-items-center rounded-full text-[12px] font-medium ${index + 1 < active ? "bg-success text-white" : index + 1 === active ? "bg-primary text-white" : "bg-muted text-tertiary"}`}>{index + 1 < active ? <Check size={14} /> : index + 1}</span><span className={`truncate text-[13px] leading-5 ${index + 1 === active ? "font-medium text-ink" : "text-secondary"}`}>{label}</span></div>)}
-  </div>;
+  return (
+    <div className="grid grid-cols-3 items-center gap-3 rounded-xl border border-line bg-white px-5 py-4">
+      {["Project and deliverables", "Review & pay", "Done"].map(
+        (label, index) => (
+          <div className="flex min-w-0 items-center gap-2" key={label}>
+            <span
+              className={`grid size-6 shrink-0 place-items-center rounded-full text-[12px] font-medium ${index + 1 < active ? "bg-success text-white" : index + 1 === active ? "bg-primary text-white" : "bg-muted text-tertiary"}`}
+            >
+              {index + 1 < active ? <Check size={14} /> : index + 1}
+            </span>
+            <span
+              className={`truncate text-[13px] leading-5 ${index + 1 === active ? "font-medium text-ink" : "text-secondary"}`}
+            >
+              {label}
+            </span>
+          </div>
+        ),
+      )}
+    </div>
+  );
 }
 
-function FieldRow({ value, onChange, remove, position }: { value: Deliverable; onChange: (next: Deliverable) => void; remove: () => void; position: number }) {
-  const update = (data: Partial<Deliverable>) => onChange({ ...value, ...data });
-  return <div className="border-b border-line-subtle px-4 py-4 last:border-0">
-    <div className="grid gap-2 lg:grid-cols-[minmax(190px,1.4fr)_150px_150px_minmax(150px,1fr)_minmax(160px,1fr)_32px]">
-      <Dropdown value={value.type} options={types} onChange={(type) => update({ type, platform: type.includes("YouTube") ? "YouTube" : type.includes("Pinterest") ? "Pinterest" : type.includes("Snapchat") ? "Snapchat" : "Instagram" })} ariaLabel={`Deliverable ${position} type`} displayValue={value.type || "Choose a deliverable"} />
-      <Dropdown value={value.platform} options={channels} onChange={(platform) => update({ platform })} ariaLabel={`Deliverable ${position} platform`} displayValue={value.platform || "Platform"} />
-      <label className="flex h-10 items-center gap-2 rounded-md border border-line bg-white px-3"><CalendarDays size={15} className="text-secondary" /><input type="date" value={value.deadline} onChange={(event) => update({ deadline: event.target.value })} aria-label={`Deadline for deliverable ${position}`} className="min-w-0 flex-1 bg-transparent text-[13px] text-ink outline-none" /></label>
-      <button type="button" onClick={() => update({ tracking: !value.tracking })} className={`flex h-10 items-center gap-2 rounded-md border px-3 text-[13px] ${value.tracking ? "border-primary bg-primary-subtle text-primary" : "border-line bg-white text-secondary"}`}><Link2 size={15} />{value.tracking ? "UTM created" : "Generate UTM"}<Copy className="ml-auto" size={14} /></button>
-      <MultiDropdown values={value.coupons} options={["GLOW10", "CREATOR15", "WELCOME20"]} onChange={(coupons) => update({ coupons })} ariaLabel={`Coupon codes for ${position}`} icon={<Tag size={15} />} placeholder="Generate codes" />
-      <button type="button" aria-label={`Remove deliverable ${position}`} onClick={remove} className="grid h-10 place-items-center rounded-md text-secondary hover:bg-danger-subtle hover:text-danger"><Trash2 size={16} /></button>
+function FieldRow({
+  value,
+  onChange,
+  remove,
+  position,
+}: {
+  value: Deliverable;
+  onChange: (next: Deliverable) => void;
+  remove: () => void;
+  position: number;
+}) {
+  const update = (data: Partial<Deliverable>) =>
+    onChange({ ...value, ...data });
+  return (
+    <div className="border-b border-line-subtle px-4 py-4 last:border-0">
+      <div className="grid gap-2 lg:grid-cols-[minmax(190px,1.4fr)_150px_150px_minmax(150px,1fr)_minmax(160px,1fr)_32px]">
+        <Dropdown
+          value={value.type}
+          options={types}
+          onChange={(type) =>
+            update({
+              type,
+              platform: type.includes("YouTube")
+                ? "YouTube"
+                : type.includes("Pinterest")
+                  ? "Pinterest"
+                  : type.includes("Snapchat")
+                    ? "Snapchat"
+                    : "Instagram",
+            })
+          }
+          ariaLabel={`Deliverable ${position} type`}
+          displayValue={value.type || "Choose a deliverable"}
+        />
+        <Dropdown
+          value={value.platform}
+          options={channels}
+          onChange={(platform) => update({ platform })}
+          ariaLabel={`Deliverable ${position} platform`}
+          displayValue={value.platform || "Platform"}
+        />
+        <label className="flex h-10 items-center gap-2 rounded-md border border-line bg-white px-3">
+          <CalendarDays size={15} className="text-secondary" />
+          <input
+            type="date"
+            value={value.deadline}
+            onChange={(event) => update({ deadline: event.target.value })}
+            aria-label={`Deadline for deliverable ${position}`}
+            className="min-w-0 flex-1 bg-transparent text-[13px] text-ink outline-none"
+          />
+        </label>
+        <button
+          type="button"
+          onClick={() => update({ tracking: !value.tracking })}
+          className={`flex h-10 items-center gap-2 rounded-md border px-3 text-[13px] ${value.tracking ? "border-primary bg-primary-subtle text-primary" : "border-line bg-white text-secondary"}`}
+        >
+          <Link2 size={15} />
+          {value.tracking
+            ? generatedLinks[value.type] || "UTM created"
+            : "Generate UTM"}
+          <Copy className="ml-auto" size={14} />
+        </button>
+        <MultiDropdown
+          values={value.coupons}
+          options={["SQUADDIYA", "GLOW10", "CREATOR15", "WELCOME20"]}
+          onChange={(coupons) => update({ coupons })}
+          ariaLabel={`Coupon codes for ${position}`}
+          icon={<Tag size={15} />}
+          placeholder="Generate codes"
+        />
+        <button
+          type="button"
+          aria-label={`Remove deliverable ${position}`}
+          onClick={remove}
+          className="grid h-10 place-items-center rounded-md text-secondary hover:bg-danger-subtle hover:text-danger"
+        >
+          <Trash2 size={16} />
+        </button>
+      </div>
+      <div className="mt-2 grid gap-2 lg:grid-cols-[180px_200px_minmax(190px,1fr)_minmax(190px,1fr)]">
+        <label className="flex h-10 items-center rounded-md border border-line bg-white px-3 text-[13px] text-secondary">
+          Fee
+          <input
+            inputMode="numeric"
+            value={
+              value.fee ? Number(value.fee).toLocaleString("en-IN") : ""
+            }
+            onChange={(event) =>
+              update({ fee: event.target.value.replace(/[^0-9]/g, "") })
+            }
+            placeholder="₹0"
+            className="min-w-0 flex-1 bg-transparent pl-2 text-[13px] text-ink outline-none"
+          />
+        </label>
+        <Dropdown
+          value={value.usage}
+          options={[
+            "Organic",
+            "Paid social · 30 days",
+            "Paid social · 90 days",
+            "Perpetual",
+          ]}
+          onChange={(usage) => update({ usage })}
+          ariaLabel="Usage rights"
+          displayValue={`Usage  ${value.usage}`}
+        />
+        <MultiDropdown
+          values={value.products}
+          options={[
+            "Glow Squad kit",
+            "Vitamin C Glow Serum",
+            "Vitamin-C Serum",
+            "Glow Cleanser",
+            "SPF 50",
+          ]}
+          onChange={(products) => update({ products })}
+          ariaLabel="Products"
+          placeholder="Select products"
+        />
+        <MultiDropdown
+          values={value.shipments}
+          options={[
+            "Glow Squad kit · BD7731045…",
+            "Serum kit · dispatch 3 Nov",
+            "Creator bundle · dispatch 5 Nov",
+          ]}
+          onChange={(shipments) => update({ shipments })}
+          ariaLabel="Shipments"
+          placeholder="Select shipments"
+        />
+      </div>
+      <label className="mt-2 flex min-h-[76px] items-start rounded-md border border-line bg-white px-3 py-3 text-[13px]">
+        <b className="mr-2 font-medium text-ink">Brief:</b>
+        <textarea
+          value={value.brief}
+          onChange={(event) => update({ brief: event.target.value })}
+          placeholder="Add a brief: key messages, hook, do’s and don’ts, references (optional)"
+          className="min-h-[44px] w-full resize-none bg-transparent text-[13px] text-ink outline-none placeholder:text-tertiary"
+        />
+      </label>
     </div>
-    <div className="mt-2 grid gap-2 lg:grid-cols-[180px_200px_minmax(190px,1fr)_minmax(190px,1fr)]">
-      <label className="flex h-10 items-center rounded-md border border-line bg-white px-3 text-[13px] text-secondary">Fee<input inputMode="numeric" value={value.fee} onChange={(event) => update({ fee: event.target.value.replace(/[^0-9]/g, "") })} placeholder="₹0" className="min-w-0 flex-1 bg-transparent pl-2 text-[13px] text-ink outline-none" /></label>
-      <Dropdown value={value.usage} options={["Organic", "Paid social · 30 days", "Paid social · 90 days", "Perpetual"]} onChange={(usage) => update({ usage })} ariaLabel="Usage rights" displayValue={`Usage  ${value.usage}`} />
-      <MultiDropdown values={value.products} options={["Vitamin-C Serum", "Glow Cleanser", "SPF 50"]} onChange={(products) => update({ products })} ariaLabel="Products" placeholder="Select products" />
-      <MultiDropdown values={value.shipments} options={["Serum kit · dispatch 3 Nov", "Creator bundle · dispatch 5 Nov"]} onChange={(shipments) => update({ shipments })} ariaLabel="Shipments" placeholder="Select shipments" />
-    </div>
-    <label className="mt-2 flex min-h-[76px] items-start rounded-md border border-line bg-white px-3 py-3 text-[13px]"><b className="mr-2 font-medium text-ink">Brief:</b><textarea value={value.brief} onChange={(event) => update({ brief: event.target.value })} placeholder="Add a brief: key messages, hook, do’s and don’ts, references (optional)" className="min-h-[44px] w-full resize-none bg-transparent text-[13px] text-ink outline-none placeholder:text-tertiary" /></label>
-  </div>;
+  );
 }
 
-function Review({ creatorName, entries, repeat, payWith, onPayWith, edit, send }: { creatorName: string; entries: Deliverable[]; repeat: boolean; payWith: string; onPayWith: (value: string) => void; edit: () => void; send: () => void }) {
-  const fee = entries.reduce((total, entry) => total + Number(entry.fee || 0), 0);
-  return <section className="overflow-hidden rounded-xl border border-line bg-white"><div className="p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Review invitation</h2><p className="mt-1 text-[13px] leading-5 text-secondary">Confirm {creatorName}’s deliverables and fund the first cycle.</p><div className="mt-5 space-y-3">{entries.map((entry) => <div key={entry.id} className="rounded-lg bg-subtle p-3"><div className="flex items-center justify-between gap-3 text-[14px] font-medium text-ink"><span>{entry.type}</span><span>₹{Number(entry.fee || 0).toLocaleString("en-IN")}</span></div><p className="mt-1 text-[12px] leading-4 text-secondary">{entry.platform} · due {entry.deadline} · {entry.usage}</p></div>)}</div><div className="mt-5 grid gap-3 border-t border-line pt-5 sm:grid-cols-2"><Dropdown value={payWith} options={["Business card ending 8421", "Bank transfer", "Add payment method"]} onChange={onPayWith} ariaLabel="Pay with" displayValue={`Pay with  ${payWith}`} /><div className="rounded-lg bg-subtle px-3 py-2"><p className="text-[12px] text-secondary">Fee per cycle {repeat ? "· repeats monthly" : "· one cycle"}</p><p className="mt-1 text-[18px] font-semibold text-ink">₹{fee.toLocaleString("en-IN")}</p></div></div></div><footer className="flex items-center justify-between border-t border-line bg-subtle/60 px-5 py-4"><Button kind="secondary" onClick={edit} leadingIcon={<ChevronLeft size={16} />}>Edit deliverables</Button><Button onClick={send} trailingIcon={<ArrowRight size={16} />}>Send invite</Button></footer></section>;
+function CycleSchedule({ fee }: { fee: number }) {
+  const cycles = [
+    ["Cycle 1 · 2 Nov – 1 Dec", "10, 15, 28 Nov · paid now"],
+    ["Cycle 2 · 2 Dec – 1 Jan", "10, 15, 28 Dec"],
+    ["Cycle 3 · 2 Jan – 31 Jan", "10, 15, 28 Jan · ends with project"],
+  ];
+
+  return (
+    <div className="mt-3 rounded-lg border border-primary bg-primary-subtle/45 p-3">
+      <p className="text-[12px] text-secondary">
+        Same 3 deliverables, dates moved one cycle. You can edit or stop any
+        time, even after the creator accepts.
+      </p>
+      <div className="mt-3 grid gap-2 md:grid-cols-3">
+        {cycles.map(([title, detail]) => (
+          <div key={title} className="rounded-md border border-line bg-white px-3 py-2">
+            <p className="text-[13px] font-medium text-ink">{title}</p>
+            <p className="mt-1 text-[12px] text-secondary">{detail}</p>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 rounded-md border border-warning bg-warning-bg/45 px-3 py-2.5">
+        <p className="text-[13px] font-medium text-ink">
+          You’ll be charged at the start of every cycle
+        </p>
+        <p className="mt-1 text-[12px] leading-4 text-secondary">
+          ₹{fee.toLocaleString("en-IN")} is charged into escrow on 2 Dec and 2 Jan. Each
+          cycle’s UTM links and coupon codes are generated automatically and sent to the creator.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function Review({
+  creatorName,
+  entries,
+  repeat,
+  payWith,
+  onPayWith,
+  edit,
+  send,
+}: {
+  creatorName: string;
+  entries: Deliverable[];
+  repeat: boolean;
+  payWith: string;
+  onPayWith: (value: string) => void;
+  edit: () => void;
+  send: () => void;
+}) {
+  const fee = entries.reduce(
+    (total, entry) => total + Number(entry.fee || 0),
+    0,
+  );
+  return (
+    <section className="overflow-hidden rounded-xl border border-line bg-white">
+      <div className="p-5">
+        <h2 className="text-[16px] font-semibold leading-6 text-ink">
+          Review invitation
+        </h2>
+        <p className="mt-1 text-[13px] leading-5 text-secondary">
+          Confirm {creatorName}’s deliverables and fund the first cycle.
+        </p>
+        <div className="mt-5 space-y-3">
+          {entries.map((entry) => (
+            <div key={entry.id} className="rounded-lg bg-subtle p-3">
+              <div className="flex items-center justify-between gap-3 text-[14px] font-medium text-ink">
+                <span>{entry.type}</span>
+                <span>₹{Number(entry.fee || 0).toLocaleString("en-IN")}</span>
+              </div>
+              <p className="mt-1 text-[12px] leading-4 text-secondary">
+                {entry.platform} · due {entry.deadline} · {entry.usage}
+              </p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 grid gap-3 border-t border-line pt-5 sm:grid-cols-2">
+          <Dropdown
+            value={payWith}
+            options={[
+              "Business card ending 8421",
+              "Bank transfer",
+              "Add payment method",
+            ]}
+            onChange={onPayWith}
+            ariaLabel="Pay with"
+            displayValue={`Pay with  ${payWith}`}
+          />
+          <div className="rounded-lg bg-subtle px-3 py-2">
+            <p className="text-[12px] text-secondary">
+              Fee per cycle {repeat ? "· repeats monthly" : "· one cycle"}
+            </p>
+            <p className="mt-1 text-[18px] font-semibold text-ink">
+              ₹{fee.toLocaleString("en-IN")}
+            </p>
+          </div>
+        </div>
+      </div>
+      <footer className="flex items-center justify-between border-t border-line bg-subtle/60 px-5 py-4">
+        <Button
+          kind="secondary"
+          onClick={edit}
+          leadingIcon={<ChevronLeft size={16} />}
+        >
+          Edit deliverables
+        </Button>
+        <Button onClick={send} trailingIcon={<ArrowRight size={16} />}>
+          Send invite
+        </Button>
+      </footer>
+    </section>
+  );
 }
 
 export function BrandCreatorInvitePage() {
@@ -55,10 +399,246 @@ export function BrandCreatorInvitePage() {
   const [entries, setEntries] = useState<Deliverable[]>([blank(1)]);
   const [repeat, setRepeat] = useState(false);
   const [payWith, setPayWith] = useState("Business card ending 8421");
-  const valid = entries.some((entry) => entry.type && entry.platform && entry.deadline);
-  const fee = entries.reduce((total, entry) => total + Number(entry.fee || 0), 0);
-  const update = (id: number, next: Deliverable) => setEntries((current) => current.map((entry) => entry.id === id ? next : entry));
-  const remove = (id: number) => setEntries((current) => current.length === 1 ? [blank(1)] : current.filter((entry) => entry.id !== id));
-  const ready = entries.filter((entry) => entry.type && entry.platform && entry.deadline);
-  return <BrandShell><div className="w-full pb-10"><nav className="flex flex-wrap items-center gap-2 text-[12px] text-secondary"><Link to="/brand/projects">Projects</Link><span>/</span><Link to={brandProjectRoute(projectId)}>Vitamin-C Serum</Link><span>/</span><Link to={brandProjectRoute(projectId)}>Applications</Link><span>/</span><Link to={brandCreatorProfileRoute(projectId, creator.handle.slice(1))}>{creator.name}</Link><span>/</span><span className="text-ink">Invite</span></nav><header className="mt-2 flex items-center gap-3"><img src={`/assets/creators/${creator.avatar}.png`} alt="" className="size-9 rounded-full object-cover" /><div><h1 className="text-[28px] font-semibold leading-8 text-ink">Invite {creator.name}</h1><p className="mt-1 text-[13px] text-secondary">{creator.handle} · {creator.city} · {creator.match}% match for Vitamin-C Serum</p></div></header><div className="mt-5"><Stepper step={step} /></div><div className="mt-5">{step === "setup" ? <section className="overflow-hidden rounded-xl border border-line bg-white"><div className="p-5"><div className="flex flex-wrap justify-between gap-3 rounded-lg bg-subtle px-4 py-3.5"><div><h2 className="text-[14px] font-semibold text-ink">Vitamin-C Serum</h2><p className="mt-1 text-[12px] text-secondary">Influencer · Paid · Long-term</p><p className="mt-3 text-[12px] text-secondary">Dates</p><p className="mt-1 text-[13px] text-ink">1 Aug 2026 – 31 Jan 2027 · 3 months left</p></div><span className="h-fit rounded-full bg-success-bg px-2 py-0.5 text-[12px] font-medium text-success">• Live · month 4 of 6</span></div><div className="mt-5"><h2 className="text-[14px] font-semibold text-ink">Cycle 1 deliverables</h2><p className="mt-1 text-[12px] text-secondary">This cycle starts when {creator.name.split(" ")[0]} accepts and runs to the same date next month.</p><div className="mt-4 overflow-x-auto rounded-lg border border-line"><div className="min-w-[960px]"><div className="grid grid-cols-[minmax(190px,1.4fr)_150px_150px_minmax(150px,1fr)_minmax(160px,1fr)_32px] gap-2 bg-subtle px-4 py-3 text-[12px] text-secondary"><span>Deliverable</span><span>Platform</span><span>Deadline</span><span>Tracking link</span><span>Coupon code</span><span /></div>{entries.map((entry, index) => <FieldRow key={entry.id} value={entry} position={index + 1} onChange={(next) => update(entry.id, next)} remove={() => remove(entry.id)} />)}<button type="button" onClick={() => setEntries((current) => [...current, blank(Date.now())])} className="flex h-12 items-center gap-2 px-4 text-[13px] font-medium text-primary hover:bg-primary-subtle"><Plus size={16} />Add deliverable</button></div></div><p className="mt-3 text-[12px] text-secondary">A tracking link and coupon are made for each deliverable once you pick its platform.</p><label className="mt-5 flex cursor-pointer items-start gap-3 rounded-lg border border-line px-3 py-3"><input type="checkbox" checked={repeat} onChange={(event) => setRepeat(event.target.checked)} className="mt-0.5 size-4 accent-primary" /><span><span className="block text-[14px] font-medium text-ink">Repeat these deliverables every cycle until the project ends</span><span className="mt-1 block text-[12px] text-secondary">{repeat ? "These deliverables will repeat and be funded at the start of each cycle." : "Turn on to repeat these deliverables in every cycle until 31 Jan 2027."}</span></span></label><div className="mt-4 rounded-lg bg-subtle px-3 py-3"><p className="text-[14px] font-medium text-ink">Fee per cycle: ₹{fee.toLocaleString("en-IN")}</p><p className="mt-1 text-[12px] text-secondary">Adds up from the fee on each deliverable</p></div></div></div><footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-subtle/60 px-5 py-4"><div><p className="text-[14px] font-medium text-ink">{valid ? `${ready.length} deliverable${ready.length === 1 ? "" : "s"} ready` : "No deliverables yet"}</p><p className="mt-1 text-[12px] text-secondary">{valid ? "Deadlines can be edited later." : "Add at least one complete deliverable to continue"}</p></div><div className="flex gap-2"><Button kind="secondary" onClick={() => navigate(-1)}>Cancel</Button><Button disabled={!valid} onClick={() => setStep("review")} trailingIcon={<ArrowRight size={16} />}>Next: review &amp; pay</Button></div></footer></section> : step === "review" ? <Review creatorName={creator.name} entries={ready} repeat={repeat} payWith={payWith} onPayWith={setPayWith} edit={() => setStep("setup")} send={() => setStep("sent")} /> : <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl border border-line bg-white p-8 text-center"><div className="mx-auto grid size-14 place-items-center rounded-full bg-success-bg text-success"><Check size={28} /></div><h2 className="mt-4 text-[20px] font-semibold text-ink">Invitation sent to {creator.name}</h2><p className="mx-auto mt-2 max-w-[540px] text-[13px] leading-5 text-secondary">{creator.name.split(" ")[0]} can now review the deliverables, deadlines and payment details. You can edit these later from the project’s invited creators tab.</p><div className="mt-6 flex flex-wrap justify-center gap-2"><Button kind="secondary" onClick={() => setStep("setup")}>Edit invite</Button><Button onClick={() => navigate(brandProjectRoute(projectId))}>Back to project</Button></div></motion.section>}</div></div></BrandShell>;
+  const valid = entries.some(
+    (entry) => entry.type && entry.platform && entry.deadline,
+  );
+  const fee = entries.reduce(
+    (total, entry) => total + Number(entry.fee || 0),
+    0,
+  );
+  useEffect(() => {
+    const isPristine =
+      entries.length === 1 &&
+      !entries[0].type &&
+      !entries[0].platform &&
+      !entries[0].deadline;
+
+    if (repeat && isPristine) {
+      setEntries(filledCycleDeliverables);
+    }
+  }, [entries, repeat]);
+  const update = (id: number, next: Deliverable) =>
+    setEntries((current) =>
+      current.map((entry) => (entry.id === id ? next : entry)),
+    );
+  const remove = (id: number) =>
+    setEntries((current) =>
+      current.length === 1
+        ? [blank(1)]
+        : current.filter((entry) => entry.id !== id),
+    );
+  const ready = entries.filter(
+    (entry) => entry.type && entry.platform && entry.deadline,
+  );
+  return (
+    <BrandShell>
+      <div className="w-full pb-10">
+        <nav className="flex flex-wrap items-center gap-2 text-[12px] text-secondary">
+          <Link to="/brand/projects">Projects</Link>
+          <span>/</span>
+          <Link to={brandProjectRoute(projectId)}>Vitamin-C Serum</Link>
+          <span>/</span>
+          <Link to={brandProjectRoute(projectId)}>Applications</Link>
+          <span>/</span>
+          <Link
+            to={brandCreatorProfileRoute(projectId, creator.handle.slice(1))}
+          >
+            {creator.name}
+          </Link>
+          <span>/</span>
+          <span className="text-ink">Invite</span>
+        </nav>
+        <header className="mt-2 flex items-center gap-3">
+          <img
+            src={`/assets/creators/${creator.avatar}.png`}
+            alt=""
+            className="size-9 rounded-full object-cover"
+          />
+          <div>
+            <h1 className="text-[28px] font-semibold leading-8 text-ink">
+              Invite {creator.name}
+            </h1>
+            <p className="mt-1 text-[13px] text-secondary">
+              {creator.handle} · {creator.city} · {creator.match}% match for
+              Vitamin-C Serum
+            </p>
+          </div>
+        </header>
+        <div className="mt-5">
+          <Stepper step={step} />
+        </div>
+        <div className="mt-5">
+          {step === "setup" ? (
+            <section className="overflow-hidden rounded-xl border border-line bg-white">
+              <div className="p-5">
+                <div className="flex flex-wrap justify-between gap-3 rounded-lg bg-subtle px-4 py-3.5">
+                  <div>
+                    <h2 className="text-[14px] font-semibold text-ink">
+                      Vitamin-C Serum
+                    </h2>
+                    <p className="mt-1 text-[12px] text-secondary">
+                      Influencer · Paid · Long-term
+                    </p>
+                    <p className="mt-3 text-[12px] text-secondary">Dates</p>
+                    <p className="mt-1 text-[13px] text-ink">
+                      1 Aug 2026 – 31 Jan 2027 · 3 months left
+                    </p>
+                  </div>
+                  <span className="h-fit rounded-full bg-success-bg px-2 py-0.5 text-[12px] font-medium text-success">
+                    • Live · month 4 of 6
+                  </span>
+                </div>
+                <div className="mt-5">
+                  <h2 className="text-[14px] font-semibold text-ink">
+                    {valid ? "Cycle 1 · 2 Nov – 1 Dec 2026 · deliverables" : "Cycle 1 deliverables"}
+                  </h2>
+                  <p className="mt-1 text-[12px] text-secondary">
+                    {valid
+                      ? `A cycle starts the day ${creator.name.split(" ")[0]} accepts and runs to the same date next month, so a deadline near month-end stays in one cycle.`
+                      : `This cycle starts when ${creator.name.split(" ")[0]} accepts and runs to the same date next month.`}
+                  </p>
+                  <div className="mt-4 overflow-x-auto rounded-lg border border-line">
+                    <div className="min-w-[960px]">
+                      <div className="grid grid-cols-[minmax(190px,1.4fr)_150px_150px_minmax(150px,1fr)_minmax(160px,1fr)_32px] gap-2 bg-subtle px-4 py-3 text-[12px] text-secondary">
+                        <span>Deliverable</span>
+                        <span>Platform</span>
+                        <span>Deadline</span>
+                        <span>Tracking link</span>
+                        <span>Coupon code</span>
+                        <span />
+                      </div>
+                      {entries.map((entry, index) => (
+                        <FieldRow
+                          key={entry.id}
+                          value={entry}
+                          position={index + 1}
+                          onChange={(next) => update(entry.id, next)}
+                          remove={() => remove(entry.id)}
+                        />
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setEntries((current) => [
+                            ...current,
+                            blank(Date.now()),
+                          ])
+                        }
+                        className="flex h-12 items-center gap-2 px-4 text-[13px] font-medium text-primary hover:bg-primary-subtle"
+                      >
+                        <Plus size={16} />
+                        Add deliverable
+                      </button>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-[12px] text-secondary">
+                    A tracking link and coupon are made for each deliverable
+                    once you pick its platform.
+                  </p>
+                  <label
+                    className={`mt-5 flex cursor-pointer items-start gap-3 rounded-lg border px-3 py-3 ${repeat ? "border-primary bg-primary-subtle/45" : "border-line"}`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={repeat}
+                      onChange={(event) => setRepeat(event.target.checked)}
+                      className="mt-0.5 size-4 accent-primary"
+                    />
+                    <span>
+                      <span className="block text-[14px] font-medium text-ink">
+                        Repeat these deliverables every cycle until the project
+                        ends
+                      </span>
+                      <span className="mt-1 block text-[12px] text-secondary">
+                        {repeat
+                          ? "These deliverables will repeat and be funded at the start of each cycle."
+                          : "Turn on to repeat these deliverables in every cycle until 31 Jan 2027."}
+                      </span>
+                    </span>
+                  </label>
+                  {repeat && valid ? <CycleSchedule fee={fee} /> : null}
+                  <div className="mt-4 rounded-lg bg-subtle px-3 py-3">
+                    <p className="text-[14px] font-medium text-ink">
+                      Fee per cycle: ₹{fee.toLocaleString("en-IN")}
+                    </p>
+                    <p className="mt-1 text-[12px] text-secondary">
+                      {repeat && valid
+                        ? "Reel ₹7,500 + 2 Stories × ₹2,500 · adds up from each deliverable"
+                        : "Adds up from the fee on each deliverable"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-subtle/60 px-5 py-4">
+                <div>
+                  <p className="text-[14px] font-medium text-ink">
+                    {valid
+                      ? repeat
+                        ? `${ready.length} deliverables a cycle × 3 cycles`
+                        : `${ready.length} deliverable${ready.length === 1 ? "" : "s"} ready`
+                      : "No deliverables yet"}
+                  </p>
+                  <p className="mt-1 text-[12px] text-secondary">
+                    {valid
+                      ? repeat
+                        ? `₹${fee.toLocaleString("en-IN")} a cycle · ₹${(fee * 3).toLocaleString("en-IN")} in creator fees`
+                        : "Deadlines can be edited later."
+                      : "Add at least one complete deliverable to continue"}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button kind="secondary" onClick={() => navigate(-1)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    disabled={!valid}
+                    onClick={() => setStep("review")}
+                    trailingIcon={<ArrowRight size={16} />}
+                  >
+                    Next: review &amp; pay
+                  </Button>
+                </div>
+              </footer>
+            </section>
+          ) : step === "review" ? (
+            <Review
+              creatorName={creator.name}
+              entries={ready}
+              repeat={repeat}
+              payWith={payWith}
+              onPayWith={setPayWith}
+              edit={() => setStep("setup")}
+              send={() => setStep("sent")}
+            />
+          ) : (
+            <motion.section
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-xl border border-line bg-white p-8 text-center"
+            >
+              <div className="mx-auto grid size-14 place-items-center rounded-full bg-success-bg text-success">
+                <Check size={28} />
+              </div>
+              <h2 className="mt-4 text-[20px] font-semibold text-ink">
+                Invitation sent to {creator.name}
+              </h2>
+              <p className="mx-auto mt-2 max-w-[540px] text-[13px] leading-5 text-secondary">
+                {creator.name.split(" ")[0]} can now review the deliverables,
+                deadlines and payment details. You can edit these later from the
+                project’s invited creators tab.
+              </p>
+              <div className="mt-6 flex flex-wrap justify-center gap-2">
+                <Button kind="secondary" onClick={() => setStep("setup")}>
+                  Edit invite
+                </Button>
+                <Button onClick={() => navigate(brandProjectRoute(projectId))}>
+                  Back to project
+                </Button>
+              </div>
+            </motion.section>
+          )}
+        </div>
+      </div>
+    </BrandShell>
+  );
 }
