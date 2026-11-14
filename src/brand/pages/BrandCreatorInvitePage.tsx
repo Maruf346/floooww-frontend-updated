@@ -20,7 +20,6 @@ import { Button } from "@/common/components/ui/Button";
 import { Dropdown, MultiDropdown } from "@/common/components/ui/Dropdown";
 import {
   brandCreatorProfileRoute,
-  brandCreatorDeliverablesRoute,
   brandProjectRoute,
 } from "@/common/constants/routes";
 import { getCreatorProfile } from "./project-applications/creatorProfileData";
@@ -543,25 +542,38 @@ export function BrandCreatorInvitePage() {
           <span>/</span>
           <span className="text-ink">Invite</span>
         </nav>
-        <header className="mt-2 flex items-center gap-3">
-          <img
-            src={`/assets/creators/${creator.avatar}.png`}
-            alt=""
-            className="size-9 rounded-full object-cover"
-          />
-          <div>
+        {step === "sent" ? (
+          <header className="mt-2">
             <h1 className="text-[28px] font-semibold leading-8 text-ink">
-              Invite {creator.name}
+              Invite sent to {creator.name}
             </h1>
             <p className="mt-1 text-[13px] text-secondary">
-              {creator.handle} · {creator.city} · {creator.match}% match for
-              Vitamin-C Serum
+              {creator.handle} · {creator.city} · Instagram 1.54 L · Glow Squad
             </p>
+          </header>
+        ) : (
+          <header className="mt-2 flex items-center gap-3">
+            <img
+              src={`/assets/creators/${creator.avatar}.png`}
+              alt=""
+              className="size-9 rounded-full object-cover"
+            />
+            <div>
+              <h1 className="text-[28px] font-semibold leading-8 text-ink">
+                Invite {creator.name}
+              </h1>
+              <p className="mt-1 text-[13px] text-secondary">
+                {creator.handle} · {creator.city} · {creator.match}% match for
+                Vitamin-C Serum
+              </p>
+            </div>
+          </header>
+        )}
+        {step !== "sent" ? (
+          <div className="mt-5">
+            <Stepper step={step} />
           </div>
-        </header>
-        <div className="mt-5">
-          <Stepper step={step} />
-        </div>
+        ) : null}
         <div className="mt-5">
           {step === "setup" ? (
             <section className="overflow-hidden rounded-xl border border-line bg-white">
@@ -711,37 +723,99 @@ export function BrandCreatorInvitePage() {
             <motion.section
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-xl border border-line bg-white p-8 text-center"
+              transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
+              className="overflow-hidden rounded-xl border border-line bg-white"
             >
-              <div className="mx-auto grid size-14 place-items-center rounded-full bg-success-bg text-success">
-                <Check size={28} />
+              <div className="p-5">
+                <div className="grid size-14 place-items-center rounded-full bg-success-bg text-success">
+                  <span className="grid size-6 place-items-center rounded-full border-2 border-success">
+                    <Check size={15} strokeWidth={3} />
+                  </span>
+                </div>
+                <p className="mt-4 text-[13px] text-secondary">
+                  ₹14,750 paid for cycle 1 · held until you approve the content
+                </p>
+                <div className="mt-4 grid gap-2 md:grid-cols-3">
+                  {[
+                    [
+                      "Cycle 1 · 2 Nov – 1 Dec",
+                      "Paid · ₹14,750 held",
+                      "success",
+                    ],
+                    [
+                      "Cycle 2 · 2 Dec – 1 Jan",
+                      "Charged 2 Dec · ₹14,750",
+                      "neutral",
+                    ],
+                    [
+                      "Cycle 3 · 2 Jan – 31 Jan",
+                      "Charged 2 Jan · ₹14,750",
+                      "neutral",
+                    ],
+                  ].map(([title, detail, tone]) => (
+                    <div
+                      key={title}
+                      className="rounded-lg border border-line bg-white px-3 py-3"
+                    >
+                      <p className="text-[14px] font-medium text-ink">
+                        {title}
+                      </p>
+                      <span
+                        className={`mt-2 inline-flex rounded-full px-2 py-0.5 text-[12px] font-medium ${tone === "success" ? "bg-success-bg text-success" : "bg-neutral-bg text-neutral"}`}
+                      >
+                        • {detail}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <section className="mt-4 rounded-lg bg-subtle px-4 py-3">
+                  <h2 className="text-[14px] font-medium text-ink">
+                    What happens next
+                  </h2>
+                  <ul className="mt-3 space-y-2 text-[12px] leading-4 text-secondary">
+                    <li className="flex gap-2">
+                      <Check size={14} className="shrink-0 text-success" />
+                      {creator.name.split(" ")[0]} gets the invite, project
+                      details, brief, links and coupon in Messages.
+                    </li>
+                    <li className="flex gap-2">
+                      <Check size={14} className="shrink-0 text-success" />
+                      The creator has 48 hours to accept. If not accepted,
+                      ₹14,750 is refunded automatically.
+                    </li>
+                    <li className="flex gap-2">
+                      <Check size={14} className="shrink-0 text-success" />
+                      On 2 Dec and 2 Jan you’re charged automatically. If a
+                      payment fails, the cycle is delayed and work is paused
+                      until you pay.
+                    </li>
+                  </ul>
+                </section>
               </div>
-              <h2 className="mt-4 text-[20px] font-semibold text-ink">
-                Invitation sent to {creator.name}
-              </h2>
-              <p className="mx-auto mt-2 max-w-[540px] text-[13px] leading-5 text-secondary">
-                {creator.name.split(" ")[0]} can now review the deliverables,
-                deadlines and payment details. You can edit these later from the
-                project’s invited creators tab.
-              </p>
-              <div className="mt-6 flex flex-wrap justify-center gap-2">
-                <Button
-                  kind="secondary"
-                  onClick={() =>
-                    navigate(
-                      brandCreatorDeliverablesRoute(
-                        projectId,
-                        creator.handle.slice(1),
-                      ),
-                    )
-                  }
-                >
-                  Edit deliverables
-                </Button>
-                <Button onClick={() => navigate(brandProjectRoute(projectId))}>
-                  Back to project
-                </Button>
-              </div>
+              <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-subtle/70 px-5 py-4">
+                <div>
+                  <p className="text-[14px] font-medium text-ink">
+                    Glow Squad · 7 creators invited
+                  </p>
+                  <p className="mt-1 text-[12px] text-secondary">
+                    Budget now ₹4,87,500 for the project
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    kind="secondary"
+                    onClick={() => navigate(brandProjectRoute(projectId))}
+                  >
+                    Done
+                  </Button>
+                  <Button
+                    onClick={() => navigate(brandProjectRoute(projectId))}
+                    trailingIcon={<ArrowRight size={16} />}
+                  >
+                    View invited creators
+                  </Button>
+                </div>
+              </footer>
             </motion.section>
           )}
         </div>
