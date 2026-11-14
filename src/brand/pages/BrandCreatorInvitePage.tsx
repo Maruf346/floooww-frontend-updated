@@ -181,24 +181,35 @@ const filledCycleDeliverables: Deliverable[] = [
 
 function Stepper({ step }: { step: Step }) {
   const active = step === "setup" ? 1 : step === "review" ? 2 : 3;
+  const steps = ["Project and deliverables", "Review & pay", "Done"];
   return (
-    <div className="grid grid-cols-3 items-center gap-3 rounded-xl border border-line bg-white px-5 py-4">
-      {["Project and deliverables", "Review & pay", "Done"].map(
-        (label, index) => (
-          <div className="flex min-w-0 items-center gap-2" key={label}>
-            <span
-              className={`grid size-6 shrink-0 place-items-center rounded-full text-[12px] font-medium ${index + 1 < active ? "bg-success text-white" : index + 1 === active ? "bg-primary text-white" : "bg-muted text-tertiary"}`}
-            >
-              {index + 1 < active ? <Check size={14} /> : index + 1}
-            </span>
-            <span
-              className={`truncate text-[13px] leading-5 ${index + 1 === active ? "font-medium text-ink" : "text-secondary"}`}
-            >
-              {label}
-            </span>
+    <div className="grid w-full grid-cols-[auto_minmax(24px,1fr)_auto_minmax(24px,1fr)_auto] items-center gap-x-2 rounded-lg border border-line bg-white px-3 py-3 sm:gap-x-3 sm:px-4">
+      {steps.map((label, index) => {
+        const number = index + 1;
+        const complete = number < active;
+        const current = number === active;
+        return (
+          <div className="contents" key={label}>
+            <div className="flex min-w-0 items-center justify-center">
+              <span
+                className={`grid size-4 shrink-0 place-items-center rounded-full text-[9px] font-medium sm:size-5 sm:text-[10px] ${complete || current ? "bg-primary text-white" : "bg-muted text-tertiary"}`}
+              >
+                {complete ? <Check size={11} strokeWidth={3} /> : number}
+              </span>
+              <span
+                className={`ml-1.5 truncate whitespace-nowrap text-[10px] leading-4 sm:text-[12px] ${current ? "font-medium text-ink" : complete ? "text-secondary" : "text-tertiary"}`}
+              >
+                {label}
+              </span>
+            </div>
+            {index < steps.length - 1 ? (
+              <span
+                className={`h-0.5 min-w-6 ${number < active ? "bg-primary" : "bg-line-strong"}`}
+              />
+            ) : null}
           </div>
-        ),
-      )}
+        );
+      })}
     </div>
   );
 }
@@ -1307,8 +1318,25 @@ function CycleSchedule({ fee }: { fee: number }) {
   );
 }
 
+const reviewDateRange = (entries: Deliverable[]) => {
+  const dates = entries
+    .map((entry) => entry.deadline)
+    .filter(Boolean)
+    .sort();
+  if (!dates.length) return "Dates to be set";
+  const format = (iso: string) =>
+    new Intl.DateTimeFormat("en-GB", {
+      day: "numeric",
+      month: "short",
+    }).format(new Date(`${iso}T00:00:00`));
+  return dates[0] === dates[dates.length - 1]
+    ? format(dates[0])
+    : `${format(dates[0])} – ${format(dates[dates.length - 1])}`;
+};
+
 function Review({
   entries,
+  recurring,
   payWith,
   onPayWith,
   agreement,
@@ -1317,6 +1345,7 @@ function Review({
   send,
 }: {
   entries: Deliverable[];
+  recurring: boolean;
   payWith: string;
   onPayWith: (value: string) => void;
   agreement: boolean;
@@ -1330,6 +1359,15 @@ function Review({
   );
   const gst = Math.round(fee * 0.18);
   const chargedNow = fee + gst;
+  const deliverySummary = recurring
+    ? `Cycle 1 · 2 Nov – 1 Dec · ${entries.length} deliverable${entries.length === 1 ? "" : "s"} · creator fee`
+    : `${entries.length} deliverable${entries.length === 1 ? "" : "s"} · ${reviewDateRange(entries)} · creator fee`;
+  const agreementTitle = recurring
+    ? "I agree to be charged at the start of every cycle until 31 Jan 2027"
+    : "I agree to pay for this one-time collaboration";
+  const agreementDetail = recurring
+    ? `₹${chargedNow.toLocaleString("en-IN")} on 2 Dec and 2 Jan, held in escrow and released to the creator only after you approve that cycle’s content. If a payment fails, the cycle is delayed and work is paused until you pay. You can edit or stop repeating any time.`
+    : `₹${chargedNow.toLocaleString("en-IN")} is held in escrow and released to the creator only after you approve the agreed deliverables.`;
   const paymentMethods = [
     {
       value: "UPI AutoPay · minimalist@okhdfcbank",
@@ -1354,15 +1392,12 @@ function Review({
         <div className="overflow-hidden rounded-lg border border-line">
           <div className="space-y-4 px-3.5 py-3">
             <div className="flex flex-wrap items-center justify-between gap-2 text-[13px]">
-              <p className="text-secondary">
-                Cycle 1 · 2 Nov – 1 Dec · {entries.length} deliverables ·
-                creator fee
-              </p>
+              <p className="text-secondary">{deliverySummary}</p>
               <p className="font-medium text-ink">
                 ₹{fee.toLocaleString("en-IN")}
               </p>
             </div>
-            <div className="flex items-center justify-between gap-3 text-[13px]">
+            <div className={recurring ? "flex items-center justify-between gap-3 text-[13px]" : "hidden"}>
               <p className="text-secondary">Floooww fee</p>
               <p className="text-ink">Free</p>
             </div>
@@ -1372,7 +1407,7 @@ function Review({
             </div>
           </div>
           <div className="flex items-center justify-between gap-3 border-t border-line bg-subtle px-3.5 py-3 text-[14px] font-medium text-ink">
-            <span>Charged now · cycle 1</span>
+            <span>{recurring ? "Charged now · cycle 1" : "Charged now"}</span>
             <span>₹{chargedNow.toLocaleString("en-IN")}</span>
           </div>
         </div>
@@ -1388,14 +1423,10 @@ function Review({
           />
           <span>
             <span className="block text-[14px] font-medium text-ink">
-              I agree to be charged at the start of every cycle until 31 Jan
-              2027
+              {agreementTitle}
             </span>
             <span className="mt-1 block text-[12px] leading-4 text-secondary">
-              ₹{chargedNow.toLocaleString("en-IN")} on 2 Dec and 2 Jan, held in
-              escrow and released to the creator only after you approve that
-              cycle’s content. If a payment fails, the cycle is delayed and work
-              is paused until you pay. You can edit or stop repeating any time.
+              {agreementDetail}
             </span>
           </span>
         </label>
@@ -1446,12 +1477,14 @@ function Review({
       <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-subtle/60 px-5 py-4">
         <div>
           <p className="text-[14px] font-medium text-ink">
-            Today ₹{chargedNow.toLocaleString("en-IN")} · then ₹
-            {chargedNow.toLocaleString("en-IN")} on 2 Dec and 2 Jan
+            {recurring
+              ? `Today ₹${chargedNow.toLocaleString("en-IN")} · then ₹${chargedNow.toLocaleString("en-IN")} on 2 Dec and 2 Jan`
+              : `Today ₹${chargedNow.toLocaleString("en-IN")}`}
           </p>
           <p className="mt-1 text-[12px] text-secondary">
-            ₹{(chargedNow * 3).toLocaleString("en-IN")} over 3 cycles · GST
-            invoice each cycle
+            {recurring
+              ? `₹${(chargedNow * 3).toLocaleString("en-IN")} over 3 cycles · GST invoice each cycle`
+              : "One-time charge · GST invoice included"}
           </p>
         </div>
         <div className="flex gap-2">
@@ -1491,17 +1524,6 @@ export function BrandCreatorInvitePage() {
     (total, entry) => total + Number(entry.fee || 0),
     0,
   );
-  useEffect(() => {
-    const isPristine =
-      entries.length === 1 &&
-      !entries[0].type &&
-      !entries[0].platform &&
-      !entries[0].deadline;
-
-    if (repeat && isPristine) {
-      setEntries(filledCycleDeliverables);
-    }
-  }, [entries, repeat]);
   const update = (id: number, next: Deliverable) =>
     setEntries((current) =>
       current.map((entry) => (entry.id === id ? next : entry)),
@@ -1636,15 +1658,26 @@ export function BrandCreatorInvitePage() {
                     A tracking link and coupon are made for each deliverable
                     once you pick its platform.
                   </p>
-                  <label
+                  <div
+                    role="group"
+                    onClick={() => setRepeat((current) => !current)}
                     className={`mt-5 flex cursor-pointer items-start gap-3 rounded-lg border px-3 py-3 ${repeat ? "border-primary bg-primary-subtle/45" : "border-line"}`}
                   >
-                    <input
-                      type="checkbox"
-                      checked={repeat}
-                      onChange={(event) => setRepeat(event.target.checked)}
-                      className="mt-0.5 size-4 accent-primary"
-                    />
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={repeat}
+                      aria-label="Repeat deliverables every cycle"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setRepeat((current) => !current);
+                      }}
+                      className={`mt-0.5 flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 ${repeat ? "bg-primary" : "bg-muted"}`}
+                    >
+                      <span
+                        className={`size-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${repeat ? "translate-x-4" : "translate-x-0"}`}
+                      />
+                    </button>
                     <span>
                       <span className="block text-[14px] font-medium text-ink">
                         Repeat these deliverables every cycle until the project
@@ -1652,11 +1685,11 @@ export function BrandCreatorInvitePage() {
                       </span>
                       <span className="mt-1 block text-[12px] text-secondary">
                         {repeat
-                          ? "These deliverables will repeat and be funded at the start of each cycle."
+                          ? "These deliverables will repeat and be funded at the start of each cycle once you add them."
                           : "Turn on to repeat these deliverables in every cycle until 31 Jan 2027."}
                       </span>
                     </span>
-                  </label>
+                  </div>
                   {repeat && valid ? <CycleSchedule fee={fee} /> : null}
                   <div className="mt-4 rounded-lg bg-subtle px-3 py-3">
                     <p className="text-[14px] font-medium text-ink">
@@ -1704,6 +1737,7 @@ export function BrandCreatorInvitePage() {
           ) : step === "review" ? (
             <Review
               entries={ready}
+              recurring={repeat}
               payWith={payWith}
               onPayWith={setPayWith}
               agreement={agreement}
