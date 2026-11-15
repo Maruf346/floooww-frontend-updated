@@ -2,14 +2,19 @@ import { type ReactNode, useMemo, useState } from "react";
 import {
   CalendarDays,
   Check,
-  CheckCircle2,
+  ClipboardList,
+  Clock3,
   Ellipsis,
   ExternalLink,
+  FileCheck2,
+  FileUp,
+  Link2,
   MessageSquare,
   Paperclip,
   Pencil,
   Play,
   Send,
+  WalletCards,
   X,
 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -481,6 +486,51 @@ function DeliverableDetailPanel({
   const fee = item.type.split("\u00b7")[1]?.trim() ?? "\u20b93,000";
   const waiting = item.status === "Awaiting approval";
   const tabs = ["Content", "Comments", "History"] as const;
+  const historyEvents = [
+    [
+      "Waiting for your approval",
+      "Now",
+      `Approving releases ${fee} from escrow to the creator`,
+      Clock3,
+    ],
+    [
+      "Went live on Instagram",
+      "26 Oct, 18:30",
+      "instagram.com/reel/C9xIshita3 · tracking link connected",
+      ExternalLink,
+    ],
+    [
+      "Final file sent",
+      "26 Oct, 11:05",
+      `${creator.handle.slice(1)}_results.mp4 · 31.2 MB · v2`,
+      FileCheck2,
+    ],
+    [
+      "Changes requested by Ananya Mehta",
+      "24 Oct, 18:05",
+      "“Show the date on the before shot.”",
+      MessageSquare,
+    ],
+    [
+      "Draft sent for review",
+      "24 Oct, 17:20",
+      `${creator.handle.slice(1)}_results_v1.mp4 · v1`,
+      FileUp,
+    ],
+    [
+      "Tracking link and coupon created",
+      "8 Oct, 09:40",
+      `flw.to/${creator.handle.slice(1)}-reel-2 · ISHITA15`,
+      Link2,
+    ],
+    [`${fee} held in escrow`, "6 Oct, 10:12", "Part of ₹20,060 paid on invite", WalletCards],
+    [
+      "Deliverable set by Ananya Mehta",
+      "6 Oct, 10:12",
+      `1 ${kind} · ${item.name.toLowerCase()} · deadline ${item.deadline} · ${fee} · 30 days organic`,
+      ClipboardList,
+    ],
+  ] as const;
 
   return (
     <aside className="rounded-xl border border-line bg-white p-5">
@@ -747,16 +797,59 @@ function DeliverableDetailPanel({
           </div>
         </div>
       ) : (
-        <ol className="space-y-3 pt-4 text-[13px] leading-5 text-secondary">
-          <li className="flex gap-2">
-            <CheckCircle2 size={16} className="mt-0.5 text-success" />
-            Submitted {item.deadline}, 11:05
-          </li>
-          <li className="flex gap-2">
-            <Send size={16} className="mt-0.5 text-primary" />
-            Tracking link connected automatically
-          </li>
-        </ol>
+        <div className="space-y-4 pt-4">
+          <div>
+            <p className="text-[14px] font-medium leading-[22px] text-ink">History</p>
+            <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+              Every change to this deliverable, newest first
+            </p>
+          </div>
+
+          <ol>
+            {historyEvents.map(([title, timestamp, description, Icon], eventIndex) => (
+              <li className="flex gap-3" key={title}>
+                <div className="flex w-7 shrink-0 flex-col items-center">
+                  <span className="grid size-7 place-items-center rounded-full border border-[#e3e5ec] bg-[#f4f6fb] text-[#667085]">
+                    {eventIndex === 1 ? (
+                      <PlatformLogo platform={creator.platform} size={16} />
+                    ) : (
+                      <Icon size={14} strokeWidth={1.8} />
+                    )}
+                  </span>
+                  {eventIndex < historyEvents.length - 1 ? (
+                    <span className="h-[22px] w-0.5 bg-[#e3e5ec]" />
+                  ) : null}
+                </div>
+                <div className="min-w-0 flex-1 pb-3 pt-1">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-[14px] font-medium leading-[22px] text-ink">{title}</p>
+                    <time className="shrink-0 text-[12px] leading-4 text-tertiary">
+                      {timestamp}
+                    </time>
+                  </div>
+                  <p className="mt-0.5 text-[12px] leading-4 text-secondary">{description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              className="flex h-10 items-center justify-center gap-2 rounded-md border border-line bg-white px-3 text-[14px] font-medium text-ink"
+            >
+              <MessageSquare size={16} />
+              Request changes
+            </button>
+            <button
+              type="button"
+              className="flex h-10 items-center justify-center gap-2 rounded-md bg-ink px-3 text-[14px] font-medium text-white"
+            >
+              <Check size={16} />
+              Approve {"\u00b7"} {fee}
+            </button>
+          </div>
+        </div>
       )}
     </aside>
   );
