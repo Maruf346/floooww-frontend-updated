@@ -12,7 +12,9 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import { Button } from "@/common/components/ui/Button";
+import type { Platform } from "@/common/types";
 
 const initialFilters = [
   "Platform: Instagram",
@@ -46,14 +48,304 @@ const recentSearches = [
   "Festive GRWM Reels",
 ];
 
+type DiscoveryCreator = {
+  id: string;
+  name: string;
+  handle: string;
+  city: string;
+  avatar: string;
+  match: number;
+  platforms: [Platform, string][];
+  engagement: string;
+  views: string;
+  audience: string;
+  summary: string;
+  fee: string;
+  feeNote: string;
+  badge?: string;
+};
+
+const matchingCreators: DiscoveryCreator[] = [
+  {
+    id: "sneha",
+    name: "Sneha Patil",
+    handle: "@snehapatil",
+    city: "Pune",
+    avatar: "kavya-reddy",
+    match: 94,
+    platforms: [
+      ["Instagram", "86K"],
+      ["YouTube", "14K"],
+    ],
+    engagement: "5.9%",
+    views: "42K",
+    audience: "78%",
+    summary: "Skincare, beauty · 6 brand projects on Floooww",
+    fee: "Typical fee ₹12–15K",
+    feeNote: "Within your ₹12,500 fee · past brands Kumkum Naturals, Velvet Leaf",
+    badge: "Top creator",
+  },
+  {
+    id: "meera",
+    name: "Meera Iyer",
+    handle: "@meerabeauty",
+    city: "Chennai",
+    avatar: "meera-iyer",
+    match: 92,
+    platforms: [
+      ["Instagram", "1.12 L"],
+      ["YouTube", "32K"],
+      ["Pinterest", "12K"],
+    ],
+    engagement: "4.8%",
+    views: "62K",
+    audience: "82%",
+    summary: "Skincare, beauty · 18 brand projects · 4.8 rating",
+    fee: "Typical fee ₹18–24K",
+    feeNote: "Above your ₹12,500 fee · past ROAS 2.9× on sales projects",
+    badge: "Top creator",
+  },
+  {
+    id: "nisha",
+    name: "Nisha Verma",
+    handle: "@nishaverma",
+    city: "Delhi",
+    avatar: "tara-bose",
+    match: 91,
+    platforms: [
+      ["Instagram", "1.4 L"],
+      ["YouTube", "58K"],
+    ],
+    engagement: "4.4%",
+    views: "61K",
+    audience: "74%",
+    summary: "Beauty, lifestyle · 9 brand projects",
+    fee: "Typical fee ₹18–22K",
+    feeNote: "Above your fee · strong in Delhi NCR",
+    badge: "Top creator",
+  },
+  {
+    id: "riya",
+    name: "Riya Sen",
+    handle: "@riyasen",
+    city: "Kolkata",
+    avatar: "ishita-rao",
+    match: 88,
+    platforms: [
+      ["Instagram", "54K"],
+      ["Pinterest", "8K"],
+    ],
+    engagement: "6.8%",
+    views: "27K",
+    audience: "80%",
+    summary: "Skincare · 4 brand projects · replies in 2 h",
+    fee: "Typical fee ₹8–10K",
+    feeNote: "Below your ₹12,500 fee",
+  },
+  {
+    id: "ishita",
+    name: "Ishita Rao",
+    handle: "@ishitarao",
+    city: "Bengaluru",
+    avatar: "ishita-rao",
+    match: 86,
+    platforms: [
+      ["Instagram", "1.1 L"],
+      ["YouTube", "21K"],
+    ],
+    engagement: "5.1%",
+    views: "54K",
+    audience: "76%",
+    summary: "Skincare, festive looks · 12 brand projects",
+    fee: "Typical fee ₹12–15K",
+    feeNote: "Within your ₹12,500 fee · delivers within 5 days",
+  },
+  {
+    id: "aisha",
+    name: "Aisha Khan",
+    handle: "@aishakhan",
+    city: "Mumbai",
+    avatar: "emma-clarke",
+    match: 83,
+    platforms: [
+      ["Instagram", "96K"],
+      ["YouTube", "18K"],
+      ["Snapchat", "16K"],
+    ],
+    engagement: "4.7%",
+    views: "38K",
+    audience: "72%",
+    summary: "Beauty, fashion · 7 brand projects",
+    fee: "Typical fee ₹10–14K",
+    feeNote: "Within your fee · 81% audience in India",
+  },
+  {
+    id: "tanvi",
+    name: "Tanvi Shah",
+    handle: "@tanvishah",
+    city: "Ahmedabad",
+    avatar: "kavya-reddy",
+    match: 81,
+    platforms: [
+      ["Instagram", "78K"],
+      ["Pinterest", "22K"],
+    ],
+    engagement: "5.1%",
+    views: "21K",
+    audience: "71%",
+    summary: "Wellness · 3 brand projects",
+    fee: "Typical fee ₹8–12K",
+    feeNote: "Within your fee",
+  },
+  {
+    id: "emma",
+    name: "Emma Clarke",
+    handle: "@emmaclarke",
+    city: "London",
+    avatar: "emma-clarke",
+    match: 78,
+    platforms: [
+      ["Instagram", "2.4 L"],
+      ["YouTube", "40K"],
+      ["Snapchat", "15K"],
+    ],
+    engagement: "3.9%",
+    views: "58K",
+    audience: "58%",
+    summary: "Skincare, wellness · 18% audience in India",
+    fee: "Typical fee ₹35–45K",
+    feeNote: "Above your fee · mostly UK audience",
+  },
+];
+
+function CreatorMatchRing({ score }: { score: number }) {
+  return (
+    <div
+      aria-label={`${score}% match`}
+      className="grid size-14 shrink-0 place-items-center rounded-full"
+      style={{ background: `conic-gradient(#2563eb ${score}%, #edeff3 0)` }}
+    >
+      <span className="grid size-11 place-items-center rounded-full bg-white text-[14px] font-medium leading-[22px] text-ink">
+        {score}%
+      </span>
+    </div>
+  );
+}
+
+function DiscoveryCreatorCard({
+  creator,
+  shortlisted,
+  invited,
+  onShortlist,
+  onInvite,
+}: {
+  creator: DiscoveryCreator;
+  shortlisted: boolean;
+  invited: boolean;
+  onShortlist: () => void;
+  onInvite: () => void;
+}) {
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+      className="flex min-w-0 flex-col gap-3.5 rounded-xl border border-line bg-white p-5"
+    >
+      <div className="flex h-14 items-center gap-3">
+        <img
+          src={`/assets/creators/${creator.avatar}.png`}
+          alt=""
+          className="size-11 shrink-0 rounded-full object-cover"
+        />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[14px] font-medium leading-[22px] text-ink">{creator.name}</p>
+          <p className="truncate text-[12px] leading-4 text-secondary">
+            {creator.handle} · {creator.city}
+          </p>
+        </div>
+        <CreatorMatchRing score={creator.match} />
+      </div>
+
+      <div className="flex min-h-5 items-center gap-1.5">
+        <div className="flex min-w-0 items-center gap-2.5">
+          {creator.platforms.map(([platform, followers]) => (
+            <span
+              className="inline-flex items-center gap-1 text-[13px] leading-5 text-ink"
+              key={platform}
+            >
+              <PlatformLogo platform={platform} size={16} />
+              {followers}
+            </span>
+          ))}
+        </div>
+        <span className="min-w-0 flex-1" />
+        {creator.badge && (
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary-muted px-2 py-0.5 text-[12px] font-medium leading-4 text-primary">
+            <span className="size-1.5 rounded-full bg-primary" />
+            {creator.badge}
+          </span>
+        )}
+      </div>
+
+      <p className="text-[11px] leading-4 text-tertiary">Instagram · last 30 days</p>
+      <div className="grid grid-cols-3 gap-2">
+        {[
+          [creator.engagement, "Eng. rate"],
+          [creator.views, "Avg. views"],
+          [creator.audience, "Women 18–34"],
+        ].map(([value, label]) => (
+          <div className="min-w-0 rounded-lg bg-subtle px-2.5 py-2" key={label}>
+            <p className="truncate text-[14px] font-medium leading-[22px] text-ink">{value}</p>
+            <p className="truncate text-[12px] leading-4 text-secondary">{label}</p>
+          </div>
+        ))}
+      </div>
+      <p className="min-h-5 text-[13px] leading-5 text-secondary">{creator.summary}</p>
+      <div className="rounded-md bg-subtle px-3 py-2.5">
+        <p className="text-[14px] font-medium leading-[22px] text-ink">{creator.fee}</p>
+        <p className="mt-1 text-[12px] leading-4 text-secondary">{creator.feeNote}</p>
+      </div>
+      <div className="mt-auto space-y-2">
+        <div className="grid grid-cols-2 gap-2">
+          <Button kind="secondary" size="s" fullWidth>
+            Message
+          </Button>
+          <Button kind="secondary" size="s" fullWidth>
+            View profile
+          </Button>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <Button kind="secondary" size="s" fullWidth onClick={onShortlist}>
+            {shortlisted ? "Shortlisted" : "Shortlist"}
+          </Button>
+          <Button size="s" fullWidth onClick={onInvite} disabled={invited}>
+            {invited ? "Invited" : "Invite to project"}
+          </Button>
+        </div>
+      </div>
+    </motion.article>
+  );
+}
+
 export function BrandCreatorDiscoveryPage() {
   const [query, setQuery] = useState("Kannada skincare creators");
   const [filters, setFilters] = useState<string[]>(initialFilters);
+  const [showResults, setShowResults] = useState(false);
+  const [shortlisted, setShortlisted] = useState<string[]>([]);
+  const [invited, setInvited] = useState<string[]>([]);
 
   const clearFilters = () => {
     setFilters([]);
     setQuery("");
+    setShowResults(true);
   };
+  const visibleCreators = matchingCreators.filter((creator) => {
+    const needle = query.trim().toLowerCase();
+    return (
+      !needle || `${creator.name} ${creator.handle} ${creator.city}`.toLowerCase().includes(needle)
+    );
+  });
 
   return (
     <BrandShell>
@@ -118,7 +410,10 @@ export function BrandCreatorDiscoveryPage() {
           <section className="min-w-0">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <h2 className="text-[16px] font-semibold leading-6 text-ink">
-                0 creators match · stats from the last 30 days
+                {showResults
+                  ? `${visibleCreators.length ? "214" : "0"} creators match`
+                  : "0 creators match"}{" "}
+                · stats from the last 30 days
               </h2>
               <span className="hidden flex-1 xl:block" />
               <button
@@ -129,35 +424,56 @@ export function BrandCreatorDiscoveryPage() {
               </button>
             </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-4 flex min-h-[292px] flex-col items-center justify-center rounded-xl border border-line bg-white px-5 py-12 text-center"
-            >
+            {showResults && visibleCreators.length > 0 ? (
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                {visibleCreators.map((creator) => (
+                  <DiscoveryCreatorCard
+                    creator={creator}
+                    invited={invited.includes(creator.id)}
+                    key={creator.id}
+                    onInvite={() => setInvited((items) => [...items, creator.id])}
+                    onShortlist={() =>
+                      setShortlisted((items) =>
+                        items.includes(creator.id)
+                          ? items.filter((id) => id !== creator.id)
+                          : [...items, creator.id],
+                      )
+                    }
+                    shortlisted={shortlisted.includes(creator.id)}
+                  />
+                ))}
+              </div>
+            ) : (
               <motion.div
-                initial={{ opacity: 0, scale: 0.82 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.42, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className="grid size-[52px] place-items-center rounded-full bg-muted text-secondary"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="mt-4 flex min-h-[292px] flex-col items-center justify-center rounded-xl border border-line bg-white px-5 py-12 text-center"
               >
-                <SearchX size={24} strokeWidth={1.75} />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.82 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.42, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+                  className="grid size-[52px] place-items-center rounded-full bg-muted text-secondary"
+                >
+                  <SearchX size={24} strokeWidth={1.75} />
+                </motion.div>
+                <h3 className="mt-4 text-[16px] font-semibold leading-6 text-ink">
+                  No creators match all your filters
+                </h3>
+                <p className="mt-1 max-w-[540px] text-[14px] leading-[22px] text-secondary">
+                  Kannada skincare creators with 5 L+ followers are rare. Try one of these:
+                </p>
+                <Button
+                  kind="secondary"
+                  className="mt-4"
+                  leadingIcon={<X size={16} />}
+                  onClick={clearFilters}
+                >
+                  Clear all filters
+                </Button>
               </motion.div>
-              <h3 className="mt-4 text-[16px] font-semibold leading-6 text-ink">
-                No creators match all your filters
-              </h3>
-              <p className="mt-1 max-w-[540px] text-[14px] leading-[22px] text-secondary">
-                Kannada skincare creators with 5 L+ followers are rare. Try one of these:
-              </p>
-              <Button
-                kind="secondary"
-                className="mt-4"
-                leadingIcon={<X size={16} />}
-                onClick={clearFilters}
-              >
-                Clear all filters
-              </Button>
-            </motion.div>
+            )}
           </section>
 
           <aside className="space-y-4 xl:sticky xl:top-6">
