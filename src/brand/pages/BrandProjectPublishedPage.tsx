@@ -10,11 +10,13 @@ import {
   FileText,
   Info,
   Inbox,
+  LockKeyhole,
   Megaphone,
   MoreHorizontal,
   Pause,
   PackageCheck,
   Play,
+  Pencil,
   ReceiptText,
   RotateCcw,
   Search,
@@ -1142,6 +1144,159 @@ function ContentFilterEmpty({ onGoToInvitedCreators }: { onGoToInvitedCreators: 
   );
 }
 
+function ProjectBriefBoard({ project }: { project: ReturnType<typeof getProject> }) {
+  const rules = getProjectRules(project);
+  const projectDuration = project.duration.replace(/Â/g, "");
+  const targetByObjective = {
+    Sales: "₹6,00,000 net sales",
+    Awareness: "12 L reach",
+    Engagement: "48,000 engagements",
+    Traffic: "18,000 sessions",
+    Leads: "1,200 qualified leads",
+  } as const;
+  const trackingByObjective = {
+    Sales: "Shopify · code + UTM link per deliverable",
+    Awareness: "Connected Instagram and YouTube accounts",
+    Engagement: "Connected platform insights",
+    Traffic: "UTM links + GA4",
+    Leads: "Quiz form + UTM parameters",
+  } as const;
+  const creatorCriteria = rules.isAI
+    ? `${project.creatorCount} creators · Hindi and English delivery · 3–5 day turnaround · beauty video portfolio`
+    : rules.isUgc
+      ? `${project.creatorCount} creators · relevant portfolio required · 5 day turnaround · beauty & skincare experience`
+      : rules.isAmbassador
+        ? `${project.creatorCount} creators · 3-month commitment · consistent posting · beauty & skincare audience`
+        : `${project.creatorCount} creators · 10K – 5 L followers · eng. rate 3%+ · beauty & skincare · 70%+ audience in India`;
+  const deliverableCopy = rules.isAI
+    ? `Per creator: 3 ${rules.itemPlural} · each with a script, deadline and usage rights · Hindi and English cuts supplied`
+    : rules.isUgc
+      ? `Per creator: 3 files · product demo, swatch and routine · raw files supplied · drafts approved before delivery`
+      : rules.isAmbassador
+        ? `Per creator, every month: 1 Reel + 2 Stories · monthly content plan, deadlines and approvals`
+        : `Per creator: 1 Reel + 2 Stories${project.platform.includes("YouTube") ? " (Short on YouTube)" : ""} · each with its own deadline, fee, link and coupon · drafts approved before posting`;
+  const budgetCopy = rules.isGift
+    ? `${project.budget} product value for ${project.creatorCount} creators · kits ship from your warehouse · no creator fee`
+    : `${project.budget}${rules.isLongTerm ? " per month" : ""} for ${project.creatorCount} creators · fees ₹${rules.isUgc ? "10,000 – 15,000" : "12,000 – 30,000"} by deliverables · escrow released after approval`;
+  const briefCopy = rules.isUgc
+    ? "Show the product texture in natural light · no watermark or competitor products · include raw files and a clean product close-up"
+    : rules.isAI
+      ? "Use the approved product claims · show clear before-and-after context · no unapproved medical claims or competitor products"
+      : rules.objective === "Sales"
+        ? "Show the product in the first 3 seconds · say the code on camera · pin the link · #ad and paid-partnership label"
+        : rules.objective === "Awareness"
+          ? "Hook viewers in the first 3 seconds · show the product naturally · #ad and paid-partnership label · no competitor products in frame"
+          : rules.objective === "Traffic"
+            ? "Show the key benefit early · explain where the link leads · pin the link and use the supplied UTM"
+            : rules.objective === "Leads"
+              ? "Explain the quiz benefit clearly · prompt viewers to complete the form · use the supplied UTM link"
+              : "Show the product naturally · ask a clear question · encourage saves and shares · #ad and paid-partnership label";
+  const paymentCopy = rules.isGift
+    ? `Kits are shipped from your warehouse${rules.isLongTerm ? " at the start of every cycle" : ""} · approving content marks each deliverable complete`
+    : `UPI AutoPay · charged on invite${rules.isLongTerm ? " at the start of every cycle" : ""}, held in escrow until you approve`;
+  const rows = [
+    {
+      label: "Tracking",
+      value: `Target ${targetByObjective[rules.objective]} · ${trackingByObjective[rules.objective]}`,
+      locked: true,
+    },
+    {
+      label: "Details",
+      value: `${project.name} · ${project.projectType} · ${project.platform} · English, Hindi · ${projectDuration}${rules.isLongTerm ? " · cycles run monthly" : ""}`,
+    },
+    { label: "Creators", value: creatorCriteria },
+    { label: "Deliverables", value: deliverableCopy, locked: true },
+    { label: "Budget & fees", value: budgetCopy, locked: true },
+    { label: "Brief", value: briefCopy },
+    { label: "Payment", value: paymentCopy },
+  ];
+  const history = [
+    [
+      rules.isLongTerm ? "Updated the next delivery cycle" : "Extended applications to 12 Oct",
+      "12 Oct",
+    ],
+    [
+      rules.isFileBased
+        ? `Added ${rules.item} requirements · ${Math.max(1, Math.round(project.creatorCount / 2))} creators agreed`
+        : project.platform.includes("YouTube")
+          ? "Added YouTube Short for YouTube creators · 3 creators agreed"
+          : "Updated creator deliverable instructions · 3 creators agreed",
+      "8 Oct",
+    ],
+    ["Published project", "7 Oct"],
+  ];
+
+  return (
+    <section className="mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <motion.article
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+        className="rounded-xl border border-line bg-white p-5 sm:p-6"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-[18px] font-semibold leading-6 text-ink">Project brief</h2>
+            <p className="mt-0.5 text-[13px] leading-5 text-secondary">
+              Everything creators agreed to, in one place
+            </p>
+          </div>
+          <Button kind="secondary" size="s" leadingIcon={<Pencil size={16} />}>
+            Edit brief
+          </Button>
+        </div>
+
+        <div className="mt-4 flex gap-2.5 rounded-lg border border-line bg-[#f9fafb] px-3.5 py-3 text-[13px] leading-5">
+          <LockKeyhole className="mt-0.5 shrink-0 text-secondary" size={16} />
+          <div>
+            <p className="font-medium text-ink">3 sections are locked</p>
+            <p className="text-secondary">
+              Creators joined based on Tracking, Deliverables and Budget. You can still change them,
+              but creators have to accept first.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-2 divide-y divide-line">
+          {rows.map((row) => (
+            <div
+              className="grid gap-2 py-3.5 sm:grid-cols-[150px_minmax(0,1fr)] sm:gap-6"
+              key={row.label}
+            >
+              <div>
+                <p className="text-[13px] font-medium leading-5 text-secondary">{row.label}</p>
+                {row.locked && (
+                  <span className="mt-1 inline-flex rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium leading-4 text-[#394357]">
+                    Locked
+                  </span>
+                )}
+              </div>
+              <p className="text-[14px] leading-5 text-ink">{row.value}</p>
+            </div>
+          ))}
+        </div>
+      </motion.article>
+
+      <motion.aside
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.42, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+        className="rounded-xl border border-line bg-white p-5"
+      >
+        <h2 className="text-[14px] font-semibold leading-[22px] text-ink">Change history</h2>
+        <div className="mt-2.5 space-y-2.5">
+          {history.map(([event, date]) => (
+            <div key={`${event}-${date}`}>
+              <p className="text-[13px] leading-5 text-ink">{event}</p>
+              <p className="text-[12px] leading-4 text-secondary">{date}</p>
+            </div>
+          ))}
+        </div>
+      </motion.aside>
+    </section>
+  );
+}
+
 function ProjectPaymentsEmpty({
   project,
   onGoToApplications,
@@ -2223,6 +2378,8 @@ export function BrandProjectPublishedPage() {
               onFindCreators={() => navigate(ROUTES.brandNewProjectCreators)}
             />
           )
+        ) : tab === "Brief" ? (
+          <ProjectBriefBoard project={project} />
         ) : tab === "Content" ? (
           contentCountForProject(project.id) > 0 ? (
             <ProjectContentBoard
