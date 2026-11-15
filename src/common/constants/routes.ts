@@ -23,6 +23,7 @@ export const ROUTES = {
   onboarding: "/onboarding/:role",
   brand: "/brand",
   brandProjects: "/brand/projects",
+  brandCreatorDiscovery: "/brand/creator-discovery",
   brandNewProject: "/brand/projects/new",
   brandNewProjectPartnership: "/brand/projects/new/partnership",
   brandNewProjectDuration: "/brand/projects/new/duration",
@@ -36,34 +37,23 @@ export const ROUTES = {
   brandProject: "/brand/projects/:projectId",
   brandProjectPerformance: "/brand/projects/:projectId/performance",
   brandCreatorProfile: "/brand/projects/:projectId/applications/:creatorId",
-  brandCreatorInvite:
-    "/brand/projects/:projectId/applications/:creatorId/invite",
+  brandCreatorInvite: "/brand/projects/:projectId/applications/:creatorId/invite",
   brandInvitedCreator: "/brand/projects/:projectId/invited/:creatorId",
-  brandCreatorDeliverables:
-    "/brand/projects/:projectId/invited/:creatorId/deliverables",
+  brandCreatorDeliverables: "/brand/projects/:projectId/invited/:creatorId/deliverables",
   agency: "/agency",
   creator: "/creator",
 } as const;
 
-export const brandProjectRoute = (projectId: number | string) =>
-  `/brand/projects/${projectId}`;
+export const brandProjectRoute = (projectId: number | string) => `/brand/projects/${projectId}`;
 export const brandProjectPerformanceRoute = (projectId: number | string) =>
   `/brand/projects/${projectId}/performance`;
-export const brandCreatorProfileRoute = (
-  projectId: number | string,
-  creatorId: string,
-) => `/brand/projects/${projectId}/applications/${creatorId}`;
-export const brandCreatorInviteRoute = (
-  projectId: number | string,
-  creatorId: string,
-) => `/brand/projects/${projectId}/applications/${creatorId}/invite`;
-export const brandInvitedCreatorRoute = (
-  projectId: number | string,
-  creatorId: string,
-) => `/brand/projects/${projectId}/invited/${creatorId}`;
-export const brandCreatorDeliverablesRoute = (
-  projectId: number | string,
-  creatorId: string,
-) => `/brand/projects/${projectId}/invited/${creatorId}/deliverables`;
+export const brandCreatorProfileRoute = (projectId: number | string, creatorId: string) =>
+  `/brand/projects/${projectId}/applications/${creatorId}`;
+export const brandCreatorInviteRoute = (projectId: number | string, creatorId: string) =>
+  `/brand/projects/${projectId}/applications/${creatorId}/invite`;
+export const brandInvitedCreatorRoute = (projectId: number | string, creatorId: string) =>
+  `/brand/projects/${projectId}/invited/${creatorId}`;
+export const brandCreatorDeliverablesRoute = (projectId: number | string, creatorId: string) =>
+  `/brand/projects/${projectId}/invited/${creatorId}/deliverables`;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];

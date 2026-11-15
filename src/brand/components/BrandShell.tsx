@@ -34,6 +34,7 @@ function Sidebar({ close }: { close?: () => void }) {
   const [projectsOpen, setProjectsOpen] = useState(true);
   const isNewProject = location.pathname === ROUTES.brandNewProject;
   const isProjects = location.pathname === ROUTES.brandProjects;
+  const isCreatorDiscovery = location.pathname === ROUTES.brandCreatorDiscovery;
   const isOverview = location.pathname === ROUTES.brand;
   const closeMenu = () => close?.();
   const topLink = (active: boolean) =>
@@ -124,13 +125,17 @@ function Sidebar({ close }: { close?: () => void }) {
             </div>
           )}
         </div>
-        <button
-          type="button"
-          className="mt-0.5 flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] hover:bg-subtle"
+        <Link
+          to={ROUTES.brandCreatorDiscovery}
+          onClick={closeMenu}
+          className={
+            "mt-0.5 flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] " +
+            topLink(isCreatorDiscovery)
+          }
         >
           <Search size={18} />
           <span>Creator discovery</span>
-        </button>
+        </Link>
         <button
           type="button"
           className="flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] hover:bg-subtle"
