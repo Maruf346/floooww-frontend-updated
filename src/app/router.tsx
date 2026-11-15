@@ -109,6 +109,12 @@ export const router = createBrowserRouter(
           }),
         },
         {
+          path: ROUTES.brandContentHub,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandContentHubPage")).BrandContentHubPage,
+          }),
+        },
+        {
           path: ROUTES.brandNewProject,
           lazy: async () => ({
             Component: (await import("@/brand/pages/BrandProjectTypePage")).BrandProjectTypePage,

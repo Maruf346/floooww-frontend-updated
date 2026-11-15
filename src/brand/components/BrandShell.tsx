@@ -35,6 +35,7 @@ function Sidebar({ close }: { close?: () => void }) {
   const isNewProject = location.pathname === ROUTES.brandNewProject;
   const isProjects = location.pathname === ROUTES.brandProjects;
   const isCreatorDiscovery = location.pathname === ROUTES.brandCreatorDiscovery;
+  const isContentHub = location.pathname === ROUTES.brandContentHub;
   const isOverview = location.pathname === ROUTES.brand;
   const closeMenu = () => close?.();
   const topLink = (active: boolean) =>
@@ -136,14 +137,18 @@ function Sidebar({ close }: { close?: () => void }) {
           <Search size={18} />
           <span>Creator discovery</span>
         </Link>
-        <button
-          type="button"
-          className="flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] hover:bg-subtle"
+        <Link
+          to={ROUTES.brandContentHub}
+          onClick={closeMenu}
+          className={
+            "flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] " +
+            topLink(isContentHub)
+          }
         >
           <Image size={18} />
           <span className="flex-1">Content hub</span>
-          <Count value="7" />
-        </button>
+          <Count active={isContentHub} value="7" />
+        </Link>
         <p className="px-3 pb-1.5 pt-4 text-[12px] font-semibold leading-4 tracking-[.06em] text-tertiary">
           CONTENT &amp; DATA
         </p>
@@ -201,9 +206,11 @@ function Sidebar({ close }: { close?: () => void }) {
   );
 }
 
-function Count({ value }: { value: string }) {
+function Count({ value, active = false }: { value: string; active?: boolean }) {
   return (
-    <span className="inline-flex h-[18px] items-center rounded-full bg-muted px-1.5 text-[12px] font-medium leading-4 text-secondary">
+    <span
+      className={`inline-flex h-[18px] items-center rounded-full px-1.5 text-[12px] font-medium leading-4 ${active ? "bg-primary-muted text-primary" : "bg-muted text-secondary"}`}
+    >
       {value}
     </span>
   );
