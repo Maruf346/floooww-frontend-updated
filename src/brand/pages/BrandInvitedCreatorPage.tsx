@@ -1029,6 +1029,18 @@ function inr(value: number) {
 }
 
 function PaymentsTab({ creator }: { creator: CreatorDetail }) {
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  if (selectedIndex !== null) {
+    return (
+      <PaymentsSplitView
+        creator={creator}
+        selectedIndex={selectedIndex}
+        onClose={() => setSelectedIndex(null)}
+      />
+    );
+  }
+
   const creatorFee = Number(creator.fee.replace(/[^\d]/g, ""));
   const gst = Math.round(creatorFee * 0.18);
   const invoiceTotal = creatorFee + gst;
@@ -1141,6 +1153,7 @@ function PaymentsTab({ creator }: { creator: CreatorDetail }) {
                   <td className="px-3 py-3 text-right">
                     <button
                       type="button"
+                      onClick={() => setSelectedIndex(index)}
                       className="h-8 rounded-md border border-line bg-white px-3 text-[13px] font-medium leading-[18px] text-ink transition-colors hover:bg-subtle"
                     >
                       View
@@ -1173,6 +1186,283 @@ function PaymentsTab({ creator }: { creator: CreatorDetail }) {
         <Clock3 size={14} className="shrink-0" />
         If a deliverable isn't posted by 7 Nov, its fee is refunded to you automatically.
       </p>
+    </section>
+  );
+}
+
+function PaymentsSplitView({
+  creator,
+  selectedIndex,
+  onClose,
+}: {
+  creator: CreatorDetail;
+  selectedIndex: number;
+  onClose: () => void;
+}) {
+  const [detailTab, setDetailTab] = useState<"Details" | "Receipt" | "History">("Details");
+  const selected = creator.deliverables[selectedIndex];
+  const [type, amount] = selected.type.split("\u00b7").map((part) => part.trim());
+  const amountValue = Number(amount.replace(/[^\d]/g, ""));
+  const gst = Math.round(amountValue * 0.18);
+  const released = selected.status === "Approved \u00b7 paid";
+  const tabs = ["Details", "Receipt", "History"] as const;
+
+  return (
+    <div className="mt-4 grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_420px]">
+      <section className="rounded-xl border border-line bg-white p-5 xl:sticky xl:top-6">
+        <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="!m-0 text-[16px] font-semibold leading-6 text-ink">
+              Deliverables &amp; payments
+            </h2>
+            <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+              You paid for this invite on 6 Oct. Each fee is released when you approve it.
+            </p>
+          </div>
+          <button
+            type="button"
+            className="flex h-8 items-center gap-1.5 rounded-md border border-line bg-white px-3 text-[13px] font-medium leading-[18px] text-ink transition-colors hover:bg-subtle"
+          >
+            <Download size={16} />
+            Download invoice
+          </button>
+        </header>
+
+        <div className="overflow-x-auto rounded-xl border border-line">
+          <table className="w-full min-w-[590px] border-collapse text-left">
+            <thead className="bg-subtle text-[12px] font-semibold leading-4 text-secondary">
+              <tr>
+                <th className="w-[42px] px-4 py-2.5">#</th>
+                <th className="min-w-[240px] px-4 py-2.5">Deliverable</th>
+                <th className="w-[90px] px-3 py-2.5 text-right">Amount</th>
+                <th className="w-[132px] px-3 py-2.5">Payment status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {creator.deliverables.map((item, index) => {
+                const [, itemAmount] = item.type.split("\u00b7").map((part) => part.trim());
+                const itemReleased = item.status === "Approved \u00b7 paid";
+                return (
+                  <tr
+                    className={`border-t border-subtle ${index === selectedIndex ? "bg-[#f1f4ff]" : ""}`}
+                    key={item.name}
+                  >
+                    <td className="px-4 py-3 text-[14px] font-medium leading-[22px] text-ink">
+                      {index + 1}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={`/assets/creators/${creator.avatar}.png`}
+                          alt=""
+                          className="size-12 rounded-md object-cover"
+                        />
+                        <div className="min-w-0">
+                          <p className="truncate text-[14px] font-medium leading-[22px] text-ink">
+                            {item.name}
+                          </p>
+                          <p className="truncate text-[12px] leading-4 text-secondary">
+                            {index === 0
+                              ? "Main project"
+                              : item.type.startsWith("Story")
+                                ? "3–4 story frames"
+                                : "Before / after"}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-3 text-right text-[13px] font-medium leading-5 text-ink">
+                      {itemAmount}
+                    </td>
+                    <td className="px-3 py-3">
+                      <PaymentPill
+                        label={itemReleased ? "Released" : "In escrow"}
+                        tone={itemReleased ? "success" : "warning"}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot className="bg-subtle">
+              <tr>
+                <td
+                  colSpan={4}
+                  className="px-4 py-3 text-[14px] font-medium leading-[22px] text-ink"
+                >
+                  Total fee {creator.fee} <span className="text-secondary">·</span>{" "}
+                  {creator.released} released <span className="text-secondary">·</span>{" "}
+                  {creator.escrow} in escrow
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <p className="mt-4 flex items-center gap-2 text-[12px] leading-4 text-secondary">
+          <Clock3 size={14} className="shrink-0" />
+          If a deliverable isn't posted by 7 Nov, its fee is refunded to you automatically.
+        </p>
+      </section>
+
+      <aside className="rounded-xl border border-line bg-white p-5">
+        <header className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="!m-0 truncate text-[16px] font-semibold leading-6 text-ink">
+              Payment · {selected.name}
+            </h2>
+            <p className="mt-1 flex items-center gap-1.5 text-[12px] leading-4 text-secondary">
+              <PlatformLogo platform={creator.platform} size={16} />
+              {creator.platform} · {type} · deliverable {selectedIndex + 1} of {creator.total}
+            </p>
+            <p className="mt-1 text-[12px] leading-4 text-secondary">
+              Vitamin-C Serum · 7 Oct – 7 Nov 2026
+            </p>
+          </div>
+          <div className="flex shrink-0 flex-col items-end gap-2">
+            <button
+              type="button"
+              aria-label="Close payment details"
+              onClick={onClose}
+              className="grid size-5 place-items-center rounded text-secondary transition-colors hover:bg-subtle hover:text-ink"
+            >
+              <X size={16} />
+            </button>
+            <PaymentPill
+              label={released ? "Released" : "In escrow"}
+              tone={released ? "success" : "warning"}
+            />
+          </div>
+        </header>
+
+        <div
+          className="mt-4 flex gap-6 border-b border-line"
+          role="tablist"
+          aria-label="Payment detail tabs"
+        >
+          {tabs.map((tab) => (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={detailTab === tab}
+              onClick={() => setDetailTab(tab)}
+              className={`relative pb-3 text-[14px] leading-[22px] ${detailTab === tab ? "font-medium text-ink" : "text-secondary"}`}
+              key={tab}
+            >
+              {tab}
+              {detailTab === tab ? (
+                <i className="absolute inset-x-0 bottom-0 h-0.5 bg-ink" />
+              ) : null}
+            </button>
+          ))}
+        </div>
+
+        {detailTab === "Details" ? (
+          <div className="space-y-4 pt-4">
+            <PaymentInfoCard
+              title="Amount"
+              rows={[
+                ["Fee", amount],
+                ["GST (18%)", inr(gst)],
+                ["You paid", inr(amountValue + gst)],
+              ]}
+            />
+            <PaymentInfoCard
+              title="Escrow"
+              rows={[
+                ["Funded in escrow", "6 Oct"],
+                [`${type} posted`, selected.live ? selected.deadline : "–"],
+                ["Approved on", released ? selected.deadline : "–"],
+                [`Released to ${creator.name.split(" ")[0]}`, released ? selected.deadline : "–"],
+                ["Refunded if not posted by", "7 Nov"],
+              ]}
+            />
+          </div>
+        ) : detailTab === "Receipt" ? (
+          <div className="pt-4">
+            <PaymentInfoCard
+              title="Payment receipt"
+              rows={[
+                ["Payment method", "UPI · minimalist@okhdfcbank"],
+                ["Payment ID", `FLO-${creator.handle.slice(1).toUpperCase()}-${selectedIndex + 1}`],
+                ["Paid on", "6 Oct 2026, 10:12"],
+                ["Invoice total", inr(amountValue + gst)],
+              ]}
+            />
+          </div>
+        ) : (
+          <ol className="space-y-4 pt-4">
+            {[
+              ["Fee funded in escrow", "6 Oct, 10:12"],
+              [
+                `${type} ${selected.live ? "posted" : "scheduled"}`,
+                selected.live ? `${selected.deadline}, 18:30` : "Due 7 Nov",
+              ],
+              [
+                released ? "Payment released to creator" : "Waiting for approval",
+                released ? selected.deadline : "Now",
+              ],
+            ].map(([event, timestamp], eventIndex, events) => (
+              <li className="flex gap-3" key={event}>
+                <div className="flex w-7 shrink-0 flex-col items-center">
+                  <span className="grid size-7 place-items-center rounded-full border border-[#e3e5ec] bg-[#f4f6fb] text-[#667085]">
+                    {eventIndex === 1 ? (
+                      <PlatformLogo platform={creator.platform} size={16} />
+                    ) : (
+                      <WalletCards size={14} strokeWidth={1.8} />
+                    )}
+                  </span>
+                  {eventIndex < events.length - 1 ? (
+                    <span className="h-7 w-0.5 bg-[#e3e5ec]" />
+                  ) : null}
+                </div>
+                <div className="min-w-0 flex-1 pt-1">
+                  <p className="text-[14px] font-medium leading-[22px] text-ink">{event}</p>
+                  <p className="text-[12px] leading-4 text-secondary">{timestamp}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        )}
+
+        <div className="mt-4 flex gap-2">
+          <button
+            type="button"
+            className="flex h-10 items-center justify-center gap-2 rounded-md border border-line bg-white px-3 text-[14px] font-medium text-ink"
+          >
+            <Download size={16} />
+            Download receipt
+          </button>
+          {!released ? (
+            <button
+              type="button"
+              className="flex h-10 flex-1 items-center justify-center gap-2 rounded-md bg-ink px-3 text-[14px] font-medium text-white"
+            >
+              <Check size={16} />
+              Approve · {amount}
+            </button>
+          ) : null}
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+function PaymentInfoCard({ title, rows }: { title: string; rows: Array<[string, string]> }) {
+  return (
+    <section className="rounded-md border border-line p-3">
+      <h3 className="!m-0 text-[14px] font-medium leading-[22px] text-ink">{title}</h3>
+      <dl className="mt-2 space-y-2">
+        {rows.map(([label, value]) => (
+          <div
+            className="flex items-center justify-between gap-3 text-[13px] leading-5"
+            key={label}
+          >
+            <dt className="min-w-0 text-secondary">{label}</dt>
+            <dd className="shrink-0 text-right text-ink">{value}</dd>
+          </div>
+        ))}
+      </dl>
     </section>
   );
 }
