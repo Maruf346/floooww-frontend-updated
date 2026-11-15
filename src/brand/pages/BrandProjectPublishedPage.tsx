@@ -5,6 +5,7 @@ import {
   Check,
   Eye,
   FileText,
+  Info,
   Inbox,
   Megaphone,
   MoreHorizontal,
@@ -61,6 +62,9 @@ const tabs = [
   "Performance",
   "Brief",
 ];
+const projectIdsWithContent = new Set([1, 3, 4, 5, 10, 11]);
+const contentCountForProject = (projectId: number) =>
+  projectIdsWithContent.has(projectId) ? 4 : 0;
 type Objective = "Sales" | "Awareness" | "Engagement" | "Traffic" | "Leads";
 
 const projectObjective = (projectId: number): Objective =>
@@ -1047,6 +1051,245 @@ function InvitedCreatorsGrid({
   );
 }
 
+function ProjectContentEmpty({ onGoToInvitedCreators }: { onGoToInvitedCreators: () => void }) {
+  const [filter, setFilter] = useState("To review");
+  const states = ["To review", "Changes requested", "Approved", "Live", "All"];
+
+  return (
+    <section className="mt-5">
+      <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-[10px] bg-subtle p-1">
+        {states.map((state) => (
+          <button
+            type="button"
+            key={state}
+            onClick={() => setFilter(state)}
+            className={`flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-[13px] leading-5 transition ${filter === state ? "bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,.08)]" : "text-secondary hover:text-ink"}`}
+          >
+            <span>{state}</span>
+            <span className="text-[12px] leading-4 text-secondary">0</span>
+          </button>
+        ))}
+      </div>
+
+      <motion.section
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+        className="mt-5 flex min-h-[290px] flex-col items-center justify-center rounded-xl border border-line bg-white px-6 py-14 text-center"
+      >
+        <motion.span
+          initial={{ opacity: 0, scale: 0.78 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          className="grid size-14 place-items-center rounded-full bg-subtle text-secondary"
+        >
+          <FileText size={26} strokeWidth={1.7} />
+        </motion.span>
+        <h2 className="mt-3 text-[14px] font-semibold leading-5 text-ink">No content yet</h2>
+        <p className="mt-1 max-w-[520px] text-[13px] leading-5 text-secondary">
+          Drafts appear here when creators submit them. Review each one, approving releases that
+          deliverable&apos;s fee from escrow.
+        </p>
+        <Button
+          kind="secondary"
+          className="mt-4"
+          leadingIcon={<Users size={16} />}
+          onClick={onGoToInvitedCreators}
+        >
+          Go to Invited creators
+        </Button>
+      </motion.section>
+    </section>
+  );
+}
+
+function ContentFilterEmpty({ onGoToInvitedCreators }: { onGoToInvitedCreators: () => void }) {
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+      className="mt-5 flex min-h-[290px] flex-col items-center justify-center rounded-xl border border-line bg-white px-6 py-14 text-center"
+    >
+      <motion.span
+        initial={{ opacity: 0, scale: 0.78 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+        className="grid size-14 place-items-center rounded-full bg-subtle text-secondary"
+      >
+        <FileText size={26} strokeWidth={1.7} />
+      </motion.span>
+      <h2 className="mt-3 text-[14px] font-semibold leading-5 text-ink">No content yet</h2>
+      <p className="mt-1 max-w-[520px] text-[13px] leading-5 text-secondary">
+        Drafts appear here when creators submit them. Review each one, approving releases that
+        deliverable&apos;s fee from escrow.
+      </p>
+      <Button
+        kind="secondary"
+        className="mt-4"
+        leadingIcon={<Users size={16} />}
+        onClick={onGoToInvitedCreators}
+      >
+        Go to Invited creators
+      </Button>
+    </motion.section>
+  );
+}
+
+function ProjectContentBoard({
+  project,
+  onGoToInvitedCreators,
+}: {
+  project: ReturnType<typeof getProject>;
+  onGoToInvitedCreators: () => void;
+}) {
+  const rules = getProjectRules(project);
+  const liveLabel = rules.isFileBased ? "Delivered" : "Live";
+  const [filter, setFilter] = useState("To review");
+  const [reviewed, setReviewed] = useState<string[]>([]);
+  const [secondaryFilter, setSecondaryFilter] = useState(rules.isUgc ? "Use" : "Platform");
+  const cards = [
+    ["Meera Iyer", "meera-iyer", "Story · last-minute look", "submitted yesterday", "₹3,000"],
+    ["Ishita Rao", "ishita-rao", "Reel · results", "submitted 2 days ago", "₹3,000"],
+    ["Kavya Reddy", "kavya-reddy", "Story · code reminder", "submitted today", "₹3,750"],
+    ["Nisha Verma", "tara-bose", "Short · routine", "submitted today", "₹6,000"],
+  ] as const;
+  const contentPreviewByCreator: Record<
+    string,
+    { image: string; avatar: string; platform: Platform }
+  > = {
+    "Meera Iyer": {
+      image: "/assets/content/meera-last-minute-look.png",
+      avatar: "/assets/content/meera-iyer-avatar.png",
+      platform: "Instagram",
+    },
+    "Ishita Rao": {
+      image: "/assets/content/ishita-results.png",
+      avatar: "/assets/content/ishita-rao-avatar.png",
+      platform: "Instagram",
+    },
+    "Kavya Reddy": {
+      image: "/assets/content/kavya-code-reminder.png",
+      avatar: "/assets/content/kavya-reddy-avatar.png",
+      platform: "Instagram",
+    },
+    "Nisha Verma": {
+      image: "/assets/content/nisha-routine.png",
+      avatar: "/assets/content/nisha-verma-avatar.png",
+      platform: "YouTube",
+    },
+  };
+  const counts: Record<string, number> = {
+    "To review": cards.length - reviewed.length,
+    "Changes requested": 0,
+    Approved: reviewed.length,
+    [liveLabel]: 0,
+    All: cards.length,
+  };
+  const visible = cards.filter(([name]) => {
+    if (filter === "All") return true;
+    if (filter === "To review") return !reviewed.includes(name);
+    if (filter === "Approved") return reviewed.includes(name);
+    return false;
+  });
+
+  return (
+    <section className="mt-5">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-[10px] bg-subtle p-1">
+          {["To review", "Changes requested", "Approved", liveLabel, "All"].map((state) => (
+            <button
+              type="button"
+              key={state}
+              onClick={() => setFilter(state)}
+              className={`flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-[13px] leading-5 transition ${filter === state ? "bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,.08)]" : "text-secondary hover:text-ink"}`}
+            >
+              <span>{state}</span>
+              <span className="text-[12px] leading-4 text-secondary">{counts[state]}</span>
+            </button>
+          ))}
+        </div>
+        <span className="hidden h-px flex-1 bg-line xl:block" />
+        <Dropdown
+          compact
+          ariaLabel={rules.isUgc ? "Filter content by use" : "Filter content by platform"}
+          value={secondaryFilter}
+          onChange={setSecondaryFilter}
+          options={
+            rules.isUgc
+              ? ["Use", "Organic", "Paid ads"]
+              : ["Platform", "Instagram", "YouTube", "Pinterest", "Snapchat"]
+          }
+          className="w-[108px] [&>button]:h-9"
+        />
+      </div>
+
+      {visible.length ? (
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {visible.map(([name, avatar, title, submitted, held], index) => (
+            <motion.article
+              key={name}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
+              className="overflow-hidden rounded-xl border border-line bg-white p-3"
+            >
+              <div className="relative h-[260px] overflow-hidden rounded-[10px] bg-subtle sm:h-[300px]">
+                <img
+                  src={contentPreviewByCreator[name].image}
+                  alt=""
+                  className="size-full object-cover"
+                />
+                <span className="absolute left-2.5 top-2.5 grid size-5 place-items-center rounded bg-white/95 shadow-sm">
+                  <PlatformLogo platform={contentPreviewByCreator[name].platform} size={16} />
+                </span>
+              </div>
+              <div className="mt-2.5 flex items-center gap-2">
+                <img
+                  src={contentPreviewByCreator[name].avatar}
+                  alt=""
+                  className="size-7 rounded-full object-cover"
+                />
+                <div className="min-w-0">
+                  <p className="truncate text-[14px] font-medium leading-[22px] text-ink">{name}</p>
+                  <p className="truncate text-[12px] leading-4 text-secondary">
+                    {rules.isFileBased ? `${rules.item} · product demo` : title}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-2 flex items-center justify-between gap-2 text-[12px] leading-4">
+                <span className="text-secondary">{submitted}</span>
+                <span className="font-medium text-ink">
+                  {rules.isGift ? "Kit · no fee" : `${held} held`}
+                </span>
+              </div>
+              <button
+                type="button"
+                disabled={reviewed.includes(name)}
+                onClick={() => {
+                  if (!reviewed.includes(name)) setReviewed((current) => [...current, name]);
+                }}
+                className={`mt-2.5 h-8 w-full rounded-md text-[13px] font-medium leading-[18px] transition ${reviewed.includes(name) ? "cursor-default bg-[#e1fce3] text-[#168a4d]" : "bg-ink text-white hover:bg-[#242832]"}`}
+              >
+                {reviewed.includes(name) ? "Reviewed" : "Review"}
+              </button>
+            </motion.article>
+          ))}
+        </div>
+      ) : (
+        <ContentFilterEmpty onGoToInvitedCreators={onGoToInvitedCreators} />
+      )}
+      <p className="mt-4 flex items-center gap-2 text-[12px] leading-4 text-secondary">
+        <Info size={14} className="shrink-0" />
+        {rules.isGift
+          ? "Approving marks this deliverable complete; kits are the only payment."
+          : "Approving a draft releases its fee from escrow. Creators have 48 hours to fix requested changes."}
+        {rules.isFileBased ? " Approved files are added to your ad library." : ""}
+      </p>
+    </section>
+  );
+}
+
 export function BrandProjectPublishedPage() {
   const navigate = useNavigate();
   const { projectId } = useParams();
@@ -1409,7 +1652,7 @@ export function BrandProjectPublishedPage() {
                     ? project.apps
                     : item === "Invited creators"
                       ? invitedCreatorCount
-                      : project.deliverableCount}
+                      : contentCountForProject(project.id)}
                 </span>
               )}
             </button>
@@ -1434,6 +1677,15 @@ export function BrandProjectPublishedPage() {
               onGoToApplications={() => setTab("Applications")}
               onFindCreators={() => navigate(ROUTES.brandNewProjectCreators)}
             />
+          )
+        ) : tab === "Content" ? (
+          contentCountForProject(project.id) > 0 ? (
+            <ProjectContentBoard
+              project={project}
+              onGoToInvitedCreators={() => setTab("Invited creators")}
+            />
+          ) : (
+            <ProjectContentEmpty onGoToInvitedCreators={() => setTab("Invited creators")} />
           )
         ) : false ? (
           <section className="mt-6">

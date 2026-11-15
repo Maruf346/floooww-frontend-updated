@@ -31,6 +31,7 @@ export function getProjectRules(project: Project) {
   const isLongTerm = duration.includes("long-term");
   const objective = objectives[project.id] ?? "Awareness";
   const item = isAI ? "video" : isUgc ? "file" : "post";
+  const itemPlural = `${item}s`;
   const completedVerb = isFileBased ? "Delivered" : "Posted";
   const activeVerb = isFileBased ? "Delivering" : "Posting";
 
@@ -44,7 +45,7 @@ export function getProjectRules(project: Project) {
     isPaid: !isGift,
     isLongTerm,
     item,
-    itemPlural: `${item}s`,
+    itemPlural,
     completedVerb,
     activeVerb,
     deadlineLabel: isFileBased ? "Delivery deadline" : "Posting deadline",
