@@ -5,6 +5,7 @@ import {
   ChevronDown,
   Clock3,
   GitCompareArrows,
+  PencilLine,
   Search,
   SearchX,
   UserRoundPlus,
@@ -328,17 +329,124 @@ function DiscoveryCreatorCard({
   );
 }
 
+type DiscoveryDropdownProps = {
+  id: string;
+  label: string;
+  value: string;
+  options: readonly string[];
+  activeId: string | null;
+  onToggle: (id: string | null) => void;
+  onSelect: (value: string) => void;
+  className?: string;
+};
+
+function DiscoveryDropdown({
+  id,
+  label,
+  value,
+  options,
+  activeId,
+  onToggle,
+  onSelect,
+  className,
+}: DiscoveryDropdownProps) {
+  const isOpen = activeId === id;
+
+  return (
+    <div className={`relative ${isOpen ? "z-[70]" : "z-40"} ${className ?? "w-full"}`}>
+      <button
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        className={`flex h-10 w-full items-center gap-2 rounded-md border bg-white px-3 text-left text-[13px] leading-5 text-ink transition ${isOpen ? "border-primary ring-1 ring-primary" : "border-line hover:bg-subtle"}`}
+        onClick={() => onToggle(isOpen ? null : id)}
+        type="button"
+      >
+        <span className="min-w-0 flex-1 truncate">{label}</span>
+        <ChevronDown
+          aria-hidden="true"
+          className={`shrink-0 text-secondary transition-transform ${isOpen ? "rotate-180" : ""}`}
+          size={16}
+        />
+      </button>
+
+      {isOpen && (
+        <div
+          className="absolute left-0 top-[calc(100%+8px)] z-[60] min-w-full overflow-hidden rounded-md border border-line bg-white p-1 shadow-[0_12px_28px_rgba(15,23,42,0.14)]"
+          role="listbox"
+        >
+          {options.map((option) => {
+            const selected = option === value;
+            return (
+              <button
+                aria-selected={selected}
+                className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-[14px] leading-5 transition ${selected ? "bg-primary-subtle text-ink" : "text-ink hover:bg-subtle"}`}
+                key={option}
+                onClick={() => {
+                  onSelect(option);
+                  onToggle(null);
+                }}
+                role="option"
+                type="button"
+              >
+                <span className="min-w-0 flex-1 whitespace-nowrap">{option}</span>
+                {selected && (
+                  <Check aria-hidden="true" className="shrink-0 text-primary" size={16} />
+                )}
+              </button>
+            );
+          })}
+          <div className="mt-1 border-t border-line pt-1">
+            <button
+              className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-[14px] leading-5 text-primary transition hover:bg-subtle"
+              onClick={() => onToggle(null)}
+              type="button"
+            >
+              <PencilLine aria-hidden="true" size={15} />
+              Other: type your own
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function BrandCreatorDiscoveryPage() {
   const [query, setQuery] = useState("Kannada skincare creators");
   const [filters, setFilters] = useState<string[]>(initialFilters);
   const [showResults, setShowResults] = useState(false);
   const [shortlisted, setShortlisted] = useState<string[]>([]);
   const [invited, setInvited] = useState<string[]>([]);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [projectMatch, setProjectMatch] = useState("Vitamin-C Serum · Live");
+  const [platform, setPlatform] = useState("Instagram");
+  const [niche, setNiche] = useState("Skincare");
+  const [fee, setFee] = useState("Up to ₹20K");
+  const [sort, setSort] = useState("Match %");
+
+  const updateFilter = (prefix: string, nextValue: string | null) => {
+    setFilters((items) => [
+      ...items.filter((item) => !item.startsWith(prefix)),
+      ...(nextValue ? [`${prefix}${nextValue}`] : []),
+    ]);
+  };
+
+  const removeFilter = (filter: string) => {
+    setFilters((items) => items.filter((item) => item !== filter));
+    if (filter.startsWith("Platform:")) setPlatform("Any platform");
+    if (filter.startsWith("Niche:")) setNiche("Beauty");
+    if (filter.startsWith("Fee:")) setFee("Any fee");
+  };
 
   const clearFilters = () => {
     setFilters([]);
     setQuery("");
     setShowResults(true);
+    setProjectMatch("No project · browse only");
+    setPlatform("Any platform");
+    setNiche("Beauty");
+    setFee("Any fee");
+    setSort("Match %");
   };
   const visibleCreators = matchingCreators.filter((creator) => {
     const needle = query.trim().toLowerCase();
@@ -380,30 +488,106 @@ export function BrandCreatorDiscoveryPage() {
               placeholder="Search creators"
             />
           </label>
-          <button
-            type="button"
-            className="flex h-10 items-center gap-2 rounded-md border border-line bg-white px-3 text-left text-[13px] leading-5 text-ink transition hover:bg-subtle"
-          >
-            <span className="min-w-0 flex-1 truncate">Match for: Vitamin-C Serum</span>
-            <ChevronDown size={16} className="shrink-0 text-secondary" />
-          </button>
+          <DiscoveryDropdown
+            activeId={activeDropdown}
+            id="project"
+            label={`Match for: ${projectMatch.replace(/ · (Live|Upcoming)$/, "")}`}
+            onSelect={setProjectMatch}
+            onToggle={setActiveDropdown}
+            options={[
+              "Vitamin-C Serum · Live",
+              "Glow Squad · Live",
+              "Skin Quiz Leads · Upcoming",
+              "No project · browse only",
+            ]}
+            value={projectMatch}
+          />
         </section>
 
         <div className="mt-3 flex flex-wrap gap-2">
-          {filters.map((filter) => {
-            const isSecondary = filter === "Language: Kannada" || filter === "Past results";
-            return (
-              <button
-                type="button"
-                key={filter}
-                onClick={() => setFilters((items) => items.filter((item) => item !== filter))}
-                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] leading-5 transition ${isSecondary ? "border-line bg-white text-ink hover:bg-subtle" : "border-primary bg-primary-subtle text-primary hover:bg-[#e7edff]"}`}
-              >
-                {filter}
-                <X size={14} strokeWidth={2} />
-              </button>
-            );
-          })}
+          <DiscoveryDropdown
+            activeId={activeDropdown}
+            className="w-full sm:w-[220px]"
+            id="platform"
+            label={`Platform: ${platform}`}
+            onSelect={(value) => {
+              setPlatform(value);
+              updateFilter("Platform: ", value === "Any platform" ? null : value);
+            }}
+            onToggle={setActiveDropdown}
+            options={["Any platform", "Instagram", "YouTube", "Pinterest", "Snapchat"]}
+            value={platform}
+          />
+          <DiscoveryDropdown
+            activeId={activeDropdown}
+            className="w-full sm:w-[236px]"
+            id="niche"
+            label={`Niche: ${niche === "Skincare" ? "Beauty, Skincare" : niche}`}
+            onSelect={(value) => {
+              setNiche(value);
+              updateFilter(
+                "Niche: ",
+                value === "Beauty" ? null : value === "Skincare" ? "Beauty, Skincare" : value,
+              );
+            }}
+            onToggle={setActiveDropdown}
+            options={["Beauty", "Skincare", "Lifestyle", "Wellness", "Fashion", "Men’s grooming"]}
+            value={niche}
+          />
+          <DiscoveryDropdown
+            activeId={activeDropdown}
+            className="w-full sm:w-[196px]"
+            id="fee"
+            label={`Fee: ${fee === "Up to ₹20K" ? "up to ₹20K" : fee}`}
+            onSelect={(value) => {
+              setFee(value);
+              updateFilter(
+                "Fee: ",
+                value === "Any fee" ? null : value === "Up to ₹20K" ? "up to ₹20K" : value,
+              );
+            }}
+            onToggle={setActiveDropdown}
+            options={["Any fee", "Up to ₹10K", "Up to ₹20K", "₹20K – ₹50K", "₹50K +"]}
+            value={fee}
+          />
+          <DiscoveryDropdown
+            activeId={activeDropdown}
+            className="w-full sm:w-[190px]"
+            id="sort"
+            label={`Sort: ${sort}`}
+            onSelect={setSort}
+            onToggle={setActiveDropdown}
+            options={[
+              "Match %",
+              "Followers",
+              "Engagement rate",
+              "Typical fee: low to high",
+              "Recently active",
+            ]}
+            value={sort}
+          />
+
+          {filters
+            .filter(
+              (filter) =>
+                !filter.startsWith("Platform:") &&
+                !filter.startsWith("Niche:") &&
+                !filter.startsWith("Fee:"),
+            )
+            .map((filter) => {
+              const isSecondary = filter === "Language: Kannada" || filter === "Past results";
+              return (
+                <button
+                  type="button"
+                  key={filter}
+                  onClick={() => removeFilter(filter)}
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] leading-5 transition ${isSecondary ? "border-line bg-white text-ink hover:bg-subtle" : "border-primary bg-primary-subtle text-primary hover:bg-[#e7edff]"}`}
+                >
+                  {filter}
+                  <X size={14} strokeWidth={2} />
+                </button>
+              );
+            })}
         </div>
 
         <div className="mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
@@ -416,12 +600,7 @@ export function BrandCreatorDiscoveryPage() {
                 · stats from the last 30 days
               </h2>
               <span className="hidden flex-1 xl:block" />
-              <button
-                type="button"
-                className="text-[14px] font-medium leading-[22px] text-secondary transition hover:text-ink"
-              >
-                Sort: Match %
-              </button>
+              <p className="text-[14px] font-medium leading-[22px] text-secondary">Sort: {sort}</p>
             </div>
 
             {showResults && visibleCreators.length > 0 ? (
