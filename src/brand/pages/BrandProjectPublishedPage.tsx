@@ -3,6 +3,8 @@ import {
   Archive,
   CalendarDays,
   Check,
+  CircleCheck,
+  CircleDollarSign,
   Eye,
   FileText,
   Info,
@@ -1136,6 +1138,89 @@ function ContentFilterEmpty({ onGoToInvitedCreators }: { onGoToInvitedCreators: 
   );
 }
 
+function ProjectPaymentsEmpty({
+  project,
+  onGoToApplications,
+}: {
+  project: ReturnType<typeof getProject>;
+  onGoToApplications: () => void;
+}) {
+  const rules = getProjectRules(project);
+  const tiles = rules.isGift
+    ? [
+        { label: "Kit value", detail: "no kits committed", icon: WalletCards, tone: "bg-ink" },
+        { label: "Shipped", detail: "-", icon: CircleDollarSign, tone: "bg-[#f29b07]" },
+        { label: "Delivered", detail: "-", icon: CircleCheck, tone: "bg-[#149d46]" },
+      ]
+    : [
+        { label: "Committed", detail: "no invites yet", icon: WalletCards, tone: "bg-ink" },
+        { label: "In escrow", detail: "-", icon: CircleDollarSign, tone: "bg-[#f29b07]" },
+        { label: "Released", detail: "-", icon: CircleCheck, tone: "bg-[#149d46]" },
+      ];
+
+  return (
+    <section className="mt-5 space-y-5">
+      <motion.section
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        className="rounded-xl border border-line bg-white p-5"
+      >
+        <div className="grid gap-3 sm:grid-cols-3">
+          {tiles.map(({ label, detail, icon: Icon, tone }, index) => (
+            <motion.article
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.08 + index * 0.07, ease: [0.22, 1, 0.36, 1] }}
+              className="rounded-xl border border-line-subtle bg-white p-4"
+              key={label}
+            >
+              <span className={`grid size-9 place-items-center rounded-lg ${tone} text-white`}>
+                <Icon size={18} strokeWidth={1.9} />
+              </span>
+              <p className="mt-3.5 text-[12px] leading-4 text-secondary">{label}</p>
+              <p className="mt-1 text-[22px] font-semibold leading-7 tracking-[-0.33px] text-ink">
+                ₹0
+              </p>
+              <p className="mt-2.5 text-[12px] font-medium leading-4 text-tertiary">{detail}</p>
+            </motion.article>
+          ))}
+        </div>
+      </motion.section>
+
+      <motion.section
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+        className="flex min-h-[294px] flex-col items-center justify-center rounded-xl border border-line bg-white px-6 py-14 text-center"
+      >
+        <motion.span
+          initial={{ opacity: 0, scale: 0.78 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+          className="grid size-14 place-items-center rounded-full bg-subtle text-secondary"
+        >
+          <WalletCards size={26} strokeWidth={1.7} />
+        </motion.span>
+        <h2 className="mt-3 text-[14px] font-semibold leading-5 text-ink">No payments yet</h2>
+        <p className="mt-1 max-w-[560px] text-[13px] leading-5 text-secondary">
+          {rules.isGift
+            ? "When you invite a creator and set their deliverables, their kits are recorded here. Approving their content marks the exchange complete."
+            : "When you invite a creator and set their deliverables, the fee is charged into escrow. It’s released when you approve their content and refunded automatically if they don’t deliver."}
+        </p>
+        <button
+          type="button"
+          onClick={onGoToApplications}
+          className="mt-4 flex h-10 items-center justify-center gap-2 rounded-md bg-ink px-4 text-[14px] font-medium leading-5 text-white transition hover:bg-[#242832]"
+        >
+          <Users size={16} />
+          Go to Applications
+        </button>
+      </motion.section>
+    </section>
+  );
+}
+
 function ProjectContentBoard({
   project,
   onGoToInvitedCreators,
@@ -1687,6 +1772,11 @@ export function BrandProjectPublishedPage() {
           ) : (
             <ProjectContentEmpty onGoToInvitedCreators={() => setTab("Invited creators")} />
           )
+        ) : tab === "Payments" && project.id === 5 ? (
+          <ProjectPaymentsEmpty
+            project={project}
+            onGoToApplications={() => setTab("Applications")}
+          />
         ) : false ? (
           <section className="mt-6">
             <div className="flex flex-wrap items-center gap-2">
