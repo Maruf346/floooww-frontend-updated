@@ -1,4 +1,5 @@
 import { type ReactNode, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   ChartNoAxesCombined,
   Check,
@@ -9,6 +10,7 @@ import {
   ExternalLink,
   FileCheck2,
   FileUp,
+  Flag,
   Link2,
   MessageSquare,
   Paperclip,
@@ -16,11 +18,12 @@ import {
   Play,
   Send,
   Star,
+  TriangleAlert,
   WalletCards,
   X,
 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { CreatorPerformanceTab } from "@/brand/components/CreatorPerformanceTab";
@@ -1751,6 +1754,163 @@ function ProjectDetails({
   );
 }
 
+function ReportDeliverableModal({
+  open,
+  creator,
+  projectName,
+  onClose,
+}: {
+  open: boolean;
+  creator: CreatorDetail;
+  projectName: string;
+  onClose: () => void;
+}) {
+  const [action, setAction] = useState("report");
+  const [note, setNote] = useState("We sent the product and haven't heard back.");
+  const firstName = creator.name.split(" ")[0];
+  const facts = [
+    ["Product", "Vitamin C Glow Serum × 1 · ₹899 value"],
+    ["Delivered", "14 Oct · creator confirmed 15 Oct"],
+    ["Post was due", "22 Oct · 6 days late"],
+    ["Reminders sent", "18 Oct, 21 Oct, 23 Oct"],
+    [`${firstName}'s on-time score`, "88% → would drop to 81%"],
+  ];
+  if (!open) return null;
+
+  return createPortal(
+    <AnimatePresence>
+      <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+        <motion.button
+          type="button"
+          aria-label="Close report dialog"
+          onClick={onClose}
+          className="absolute inset-0 cursor-default bg-ink/40 backdrop-blur-[2px]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        />
+        <motion.section
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="report-deliverable-title"
+          initial={{ opacity: 0, scale: 0.96, y: 12 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.96, y: 12 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="relative z-10 w-full max-w-[520px] rounded-2xl bg-white p-6 shadow-[0_16px_40px_rgba(0,0,0,0.18)]"
+        >
+          <header className="flex items-start justify-between gap-3">
+            <div>
+              <h2
+                id="report-deliverable-title"
+                className="text-[20px] font-semibold leading-6 text-ink"
+              >
+                Deliverable not posted
+              </h2>
+              <p className="mt-1 text-[13px] leading-5 text-secondary">
+                {creator.name} · {projectName} · Reel
+              </p>
+            </div>
+            <button
+              type="button"
+              aria-label="Close dialog"
+              onClick={onClose}
+              className="grid size-8 place-items-center rounded-md text-secondary hover:bg-subtle hover:text-ink"
+            >
+              <X size={18} />
+            </button>
+          </header>
+
+          <dl className="mt-4 overflow-hidden rounded-[10px] border border-line text-[13px]">
+            {facts.map(([label, value], index) => (
+              <div
+                key={label}
+                className={`flex items-start justify-between gap-4 px-3 py-2.5 ${index ? "border-t border-line" : ""}`}
+              >
+                <dt className="text-secondary">{label}</dt>
+                <dd className="text-right font-medium text-ink">{value}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <fieldset className="mt-4">
+            <legend className="text-[13px] font-medium text-[#394357]">
+              What would you like to do?
+            </legend>
+            <div className="mt-3 space-y-2.5">
+              {[
+                ["extend", "Give 3 more days"],
+                ["return", `Ask ${firstName} to return the product`],
+                ["report", "Close this deliverable and report it"],
+              ].map(([value, label]) => (
+                <label
+                  key={value}
+                  className="flex cursor-pointer items-center gap-2 text-[13px] text-ink"
+                >
+                  <input
+                    className="sr-only peer"
+                    type="radio"
+                    name="report-action"
+                    value={value}
+                    checked={action === value}
+                    onChange={() => setAction(value)}
+                  />
+                  <span className="grid size-[18px] place-items-center rounded-full border-2 border-line peer-checked:border-primary">
+                    <span
+                      className={`size-2 rounded-full bg-primary ${action === value ? "block" : "hidden"}`}
+                    />
+                  </span>
+                  {label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <label className="mt-4 block text-[12px] font-medium leading-4 text-ink">
+            Note to {firstName} (optional)
+            <input
+              value={note}
+              onChange={(event) => setNote(event.target.value)}
+              className="mt-1.5 h-10 w-full rounded-md border border-line bg-white px-3 text-[13px] font-normal text-ink outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
+            />
+          </label>
+
+          <aside className="mt-4 flex gap-2.5 rounded-md bg-warning-bg px-3.5 py-3">
+            <TriangleAlert size={18} className="mt-0.5 shrink-0 text-warning" />
+            <div>
+              <h3 className="text-[14px] font-medium leading-[22px] text-ink">
+                {firstName} gets 48 hours to reply
+              </h3>
+              <p className="text-[13px] leading-5 text-ink">
+                If there’s no reply, the report stands: the on-time score drops and gift projects
+                pause for 60 days. Floooww reviews repeat cases.
+              </p>
+            </div>
+          </aside>
+
+          <footer className="mt-6 flex justify-end gap-2.5">
+            <button
+              type="button"
+              onClick={onClose}
+              className="h-10 rounded-md border border-line bg-white px-4 text-[14px] font-medium text-ink hover:bg-subtle"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="h-10 rounded-md bg-danger px-4 text-[14px] font-medium text-white hover:bg-danger/90"
+            >
+              Report not posted
+            </button>
+          </footer>
+        </motion.section>
+      </div>
+    </AnimatePresence>,
+    document.body,
+  );
+}
+
 export function BrandInvitedCreatorPage() {
   const navigate = useNavigate();
   const { projectId = "1", creatorId = "ishita" } = useParams();
@@ -1762,6 +1922,8 @@ export function BrandInvitedCreatorPage() {
   const [tab, setTab] = useState("Overview");
   const [performancePlatform, setPerformancePlatform] = useState("All platforms");
   const [approved, setApproved] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const tabs = ["Overview", "Deliverables", "Payments", "Review", "Performance"];
   const alternateMessage = {
     Deliverables: "Every deliverable and its current status is shown in the overview table.",
@@ -1849,13 +2011,32 @@ export function BrandInvitedCreatorPage() {
               <Pencil size={16} />
               Edit deliverables
             </button>
-            <button
-              type="button"
-              aria-label="More actions"
-              className="grid size-10 place-items-center rounded-md border border-line bg-white text-secondary"
-            >
-              <Ellipsis size={18} />
-            </button>
+            <div className="relative">
+              <button
+                type="button"
+                aria-label="More actions"
+                aria-expanded={moreOpen}
+                onClick={() => setMoreOpen((current) => !current)}
+                className="grid size-10 place-items-center rounded-md border border-line bg-white text-secondary transition hover:bg-subtle hover:text-ink"
+              >
+                <Ellipsis size={18} />
+              </button>
+              {moreOpen && (
+                <div className="absolute right-0 top-[calc(100%+6px)] z-30 min-w-[176px] rounded-lg border border-line bg-white p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMoreOpen(false);
+                      setReportOpen(true);
+                    }}
+                    className="flex h-9 w-full items-center gap-2 rounded-md px-2.5 text-left text-[13px] font-medium text-danger transition hover:bg-danger-subtle"
+                  >
+                    <Flag size={16} />
+                    Report deliverable
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </header>
         <div className="mt-4 flex gap-6 overflow-x-auto border-b border-line" role="tablist">
@@ -1937,6 +2118,12 @@ export function BrandInvitedCreatorPage() {
           </>
         )}
       </div>
+      <ReportDeliverableModal
+        open={reportOpen}
+        creator={creator}
+        projectName={project.name}
+        onClose={() => setReportOpen(false)}
+      />
     </BrandShell>
   );
 }
