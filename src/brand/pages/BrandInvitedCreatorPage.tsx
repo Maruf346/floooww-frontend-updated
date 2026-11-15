@@ -4,6 +4,7 @@ import {
   Check,
   ClipboardList,
   Clock3,
+  Download,
   Ellipsis,
   ExternalLink,
   FileCheck2,
@@ -33,6 +34,7 @@ type CreatorDetail = {
   avatar: string;
   status: CreatorStatus;
   platform: Platform;
+  channels: string[];
   completed: number;
   total: number;
   fee: string;
@@ -56,6 +58,7 @@ const creatorDetails: Record<string, CreatorDetail> = {
     avatar: "ishita-rao",
     status: "Posting",
     platform: "Instagram",
+    channels: ["Instagram 1.1 L", "YouTube 18K", "Skincare"],
     completed: 3,
     total: 4,
     fee: "₹17,000",
@@ -100,6 +103,7 @@ const creatorDetails: Record<string, CreatorDetail> = {
     avatar: "meera-iyer",
     status: "Awaiting approval",
     platform: "Instagram",
+    channels: ["Instagram 1.4 L", "YouTube 32K", "Skincare"],
     completed: 2,
     total: 3,
     fee: "₹30,000",
@@ -137,6 +141,7 @@ const creatorDetails: Record<string, CreatorDetail> = {
     avatar: "emma-clarke",
     status: "Posting",
     platform: "Instagram",
+    channels: ["Instagram 96K", "YouTube 40K", "Skincare"],
     completed: 3,
     total: 4,
     fee: "₹15,000",
@@ -169,6 +174,44 @@ const creatorDetails: Record<string, CreatorDetail> = {
         name: "Final Story",
         type: "Story · ₹2,500",
         deadline: "30 Oct",
+        status: "Not started",
+        live: false,
+      },
+    ],
+  },
+  simran: {
+    name: "Simran Kaur",
+    handle: "@simrankaur",
+    city: "Chandigarh",
+    avatar: "tara-bose",
+    status: "Awaiting approval",
+    platform: "Instagram",
+    channels: ["Instagram 91K", "YouTube 15K", "Skincare"],
+    completed: 1,
+    total: 3,
+    fee: "\u20b915,000",
+    released: "\u20b910,000",
+    escrow: "\u20b95,000",
+    sales: "\u20b921,600",
+    deliverables: [
+      {
+        name: "Glow routine",
+        type: "Reel \u00b7 \u20b97,500",
+        deadline: "18 Oct",
+        status: "Approved \u00b7 paid",
+        live: true,
+      },
+      {
+        name: "Results check-in",
+        type: "Reel \u00b7 \u20b95,000",
+        deadline: "28 Oct",
+        status: "Awaiting approval",
+        live: true,
+      },
+      {
+        name: "Last-day reminder",
+        type: "Story \u00b7 \u20b92,500",
+        deadline: "3 Nov",
         status: "Not started",
         live: false,
       },
@@ -958,6 +1001,182 @@ function DeliverablesListTab({ creator }: { creator: CreatorDetail }) {
   );
 }
 
+function PaymentPill({
+  label,
+  tone,
+}: {
+  label: string;
+  tone: "success" | "warning" | "info" | "neutral";
+}) {
+  const styles = {
+    success: "bg-[#e1fce3] text-[#16a34a]",
+    warning: "bg-[#feefce] text-[#f59e0b]",
+    info: "bg-[#f1f4ff] text-[#3b5bff]",
+    neutral: "bg-[#f4f6fb] text-[#4a4a55]",
+  };
+  return (
+    <span
+      className={`inline-flex whitespace-nowrap items-center gap-1.5 rounded-full px-2 py-0.5 text-[12px] font-medium leading-4 ${styles[tone]}`}
+    >
+      <span className="size-1.5 rounded-full bg-current" />
+      {label}
+    </span>
+  );
+}
+
+function inr(value: number) {
+  return `\u20b9${value.toLocaleString("en-IN")}`;
+}
+
+function PaymentsTab({ creator }: { creator: CreatorDetail }) {
+  const creatorFee = Number(creator.fee.replace(/[^\d]/g, ""));
+  const gst = Math.round(creatorFee * 0.18);
+  const invoiceTotal = creatorFee + gst;
+  const approvedDates = ["19 Oct", "21 Oct", "-"];
+
+  return (
+    <section className="mt-4 rounded-xl border border-line bg-white p-5">
+      <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="!m-0 text-[16px] font-semibold leading-6 text-ink">
+            Deliverables &amp; payments
+          </h2>
+          <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+            You paid {inr(invoiceTotal)} on 6 Oct. Each fee is held in escrow and released when you
+            approve that deliverable.
+          </p>
+        </div>
+        <button
+          type="button"
+          className="flex h-8 items-center gap-1.5 rounded-md border border-line bg-white px-3 text-[13px] font-medium leading-[18px] text-ink transition-colors hover:bg-subtle"
+        >
+          <Download size={16} />
+          Download invoice
+        </button>
+      </header>
+
+      <div className="overflow-x-auto rounded-xl border border-line">
+        <table className="w-full min-w-[1060px] border-collapse text-left">
+          <thead className="bg-subtle text-[12px] font-semibold leading-4 text-secondary">
+            <tr>
+              <th className="w-[42px] px-4 py-2.5">#</th>
+              <th className="min-w-[230px] px-4 py-2.5">Deliverable</th>
+              <th className="w-[74px] px-3 py-2.5">Type</th>
+              <th className="w-[126px] px-3 py-2.5">Platform</th>
+              <th className="w-[94px] px-3 py-2.5 text-right">Amount</th>
+              <th className="w-[158px] px-3 py-2.5">Content status</th>
+              <th className="w-[132px] px-3 py-2.5">Payment status</th>
+              <th className="w-[104px] px-3 py-2.5">Approved on</th>
+              <th className="w-[82px] px-3 py-2.5 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {creator.deliverables.map((item, index) => {
+              const [type, amount] = item.type.split("\u00b7").map((part) => part.trim());
+              const isReleased = item.status === "Approved \u00b7 paid";
+              const content = isReleased
+                ? "Live \u00b7 approved"
+                : item.status === "Awaiting approval"
+                  ? "Awaiting approval"
+                  : "Not started";
+              return (
+                <tr className="border-t border-subtle" key={item.name}>
+                  <td className="px-4 py-3 text-[14px] font-medium leading-[22px] text-ink">
+                    {index + 1}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={`/assets/creators/${creator.avatar}.png`}
+                        alt=""
+                        className="size-12 rounded-md object-cover"
+                      />
+                      <div className="min-w-0">
+                        <p className="truncate text-[14px] font-medium leading-[22px] text-ink">
+                          {item.name}
+                        </p>
+                        <p className="truncate text-[12px] leading-4 text-secondary">
+                          {index === 0
+                            ? "Main project"
+                            : type === "Story"
+                              ? "3–4 story frames"
+                              : "Before / after"}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-3 text-[13px] leading-5 text-ink">
+                    {type}
+                  </td>
+                  <td className="px-3 py-3">
+                    <span className="flex items-center gap-1.5 whitespace-nowrap text-[13px] leading-5 text-ink">
+                      <PlatformLogo platform={creator.platform} size={16} />
+                      {creator.platform}
+                    </span>
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-3 text-right text-[13px] font-medium leading-5 text-ink">
+                    {amount}
+                  </td>
+                  <td className="px-3 py-3">
+                    <PaymentPill
+                      label={content}
+                      tone={
+                        isReleased
+                          ? "success"
+                          : item.status === "Awaiting approval"
+                            ? "info"
+                            : "neutral"
+                      }
+                    />
+                  </td>
+                  <td className="px-3 py-3">
+                    <PaymentPill
+                      label={isReleased ? "Released" : "In escrow"}
+                      tone={isReleased ? "success" : "warning"}
+                    />
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-3 text-[13px] leading-5 text-ink">
+                    {isReleased ? (approvedDates[index] ?? "-") : "-"}
+                  </td>
+                  <td className="px-3 py-3 text-right">
+                    <button
+                      type="button"
+                      className="h-8 rounded-md border border-line bg-white px-3 text-[13px] font-medium leading-[18px] text-ink transition-colors hover:bg-subtle"
+                    >
+                      View
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot className="bg-subtle">
+            <tr>
+              <td colSpan={9} className="px-4 py-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-[14px] font-medium leading-[22px] text-ink">
+                    Total fee {creator.fee} <span className="text-secondary">·</span>{" "}
+                    {creator.released} released <span className="text-secondary">·</span>{" "}
+                    {creator.escrow} in escrow
+                  </p>
+                  <p className="text-[12px] leading-4 text-secondary">
+                    + {inr(gst)} GST (18%) = {inr(invoiceTotal)} · no Floooww fee paid by UPI
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <p className="mt-4 flex items-center gap-2 text-[12px] leading-4 text-secondary">
+        <Clock3 size={14} className="shrink-0" />
+        If a deliverable isn't posted by 7 Nov, its fee is refunded to you automatically.
+      </p>
+    </section>
+  );
+}
+
 function NextActions({ onApprove }: { onApprove: () => void }) {
   const tasks = [
     [
@@ -1130,7 +1349,7 @@ export function BrandInvitedCreatorPage() {
             </div>
             <div className="mt-2 flex flex-wrap items-center gap-1.5">
               <StatusPill status={creator.status} />
-              {["Instagram 1.1 L", "YouTube 18K", "Skincare"].map((label) => (
+              {creator.channels.map((label) => (
                 <span
                   className="rounded-full bg-muted px-2 py-0.5 text-[12px] font-medium leading-4 text-secondary"
                   key={label}
@@ -1208,6 +1427,8 @@ export function BrandInvitedCreatorPage() {
         </div>
         {tab === "Deliverables" ? (
           <DeliverablesListTab creator={creator} />
+        ) : tab === "Payments" ? (
+          <PaymentsTab creator={creator} />
         ) : tab !== "Overview" ? (
           <section className="mt-4 rounded-xl border border-line bg-white p-5">
             <h2 className="!m-0 text-[15px] font-bold leading-tight text-ink">{tab}</h2>
