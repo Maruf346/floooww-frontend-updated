@@ -203,6 +203,13 @@ export const router = createBrowserRouter(
           }),
         },
         {
+          path: ROUTES.brandInvitedCreator,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandInvitedCreatorPage"))
+              .BrandInvitedCreatorPage,
+          }),
+        },
+        {
           path: ROUTES.brandCreatorDeliverables,
           lazy: async () => ({
             Component: (

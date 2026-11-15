@@ -32,7 +32,7 @@ import { ShareProjectModal } from "@/brand/components/ShareProjectModal";
 import { ProjectApplicationsView } from "@/brand/pages/project-applications/ProjectApplicationsPanel";
 import {
   brandCreatorDeliverablesRoute,
-  brandCreatorProfileRoute,
+  brandInvitedCreatorRoute,
   brandProjectPerformanceRoute,
   ROUTES,
 } from "@/common/constants/routes";
@@ -626,7 +626,7 @@ function InvitedCreatorsGrid({ projectId, creatorCount }: { projectId: number; c
             key={creator.id}
             creator={creator}
             index={index}
-            onViewProfile={(creatorId) => navigate(brandCreatorProfileRoute(projectId, creatorId))}
+            onViewProfile={(creatorId) => navigate(brandInvitedCreatorRoute(projectId, creatorId))}
             onEditDeliverables={(creatorId) => navigate(brandCreatorDeliverablesRoute(projectId, creatorId))}
           />
         ))}

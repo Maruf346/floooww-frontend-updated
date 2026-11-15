@@ -1,0 +1,804 @@
+import { type ReactNode, useMemo, useState } from "react";
+import { CalendarDays, Check, Ellipsis, MessageSquare, Pencil } from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { motion } from "motion/react";
+import { BrandShell } from "@/brand/components/BrandShell";
+import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
+import { brandCreatorDeliverablesRoute, brandProjectRoute } from "@/common/constants/routes";
+import { getProject } from "@/brand/data/projects";
+import type { Platform } from "@/common/types";
+
+type CreatorStatus = "Posting" | "Awaiting approval" | "Overdue" | "Not started";
+type CreatorDetail = {
+  name: string;
+  handle: string;
+  city: string;
+  avatar: string;
+  status: CreatorStatus;
+  platform: Platform;
+  completed: number;
+  total: number;
+  fee: string;
+  released: string;
+  escrow: string;
+  sales: string;
+  deliverables: Array<{
+    name: string;
+    type: string;
+    deadline: string;
+    status: "Approved · paid" | "Awaiting approval" | "Not started";
+    live: boolean;
+  }>;
+};
+
+const creatorDetails: Record<string, CreatorDetail> = {
+  ishita: {
+    name: "Ishita Rao",
+    handle: "@ishitarao",
+    city: "Bengaluru, Karnataka",
+    avatar: "ishita-rao",
+    status: "Posting",
+    platform: "Instagram",
+    completed: 3,
+    total: 4,
+    fee: "₹17,000",
+    released: "₹12,750",
+    escrow: "₹4,250",
+    sales: "₹68,400",
+    deliverables: [
+      {
+        name: "Festive GRWM",
+        type: "Reel · ₹7,500",
+        deadline: "18 Oct",
+        status: "Approved · paid",
+        live: true,
+      },
+      {
+        name: "Launch day",
+        type: "Story · ₹2,450",
+        deadline: "20 Oct",
+        status: "Approved · paid",
+        live: true,
+      },
+      {
+        name: "Results after 7 days",
+        type: "Reel · ₹3,000",
+        deadline: "26 Oct",
+        status: "Awaiting approval",
+        live: true,
+      },
+      {
+        name: "Last-day reminder",
+        type: "Story · ₹1,250",
+        deadline: "30 Oct",
+        status: "Not started",
+        live: false,
+      },
+    ],
+  },
+  meera: {
+    name: "Meera Iyer",
+    handle: "@meerabeauty",
+    city: "Mumbai",
+    avatar: "meera-iyer",
+    status: "Awaiting approval",
+    platform: "Instagram",
+    completed: 2,
+    total: 3,
+    fee: "₹30,000",
+    released: "₹27,000",
+    escrow: "₹3,000",
+    sales: "₹1,42,800",
+    deliverables: [
+      {
+        name: "Morning routine",
+        type: "Reel · ₹15,000",
+        deadline: "15 Oct",
+        status: "Approved · paid",
+        live: true,
+      },
+      {
+        name: "Ingredient callout",
+        type: "Carousel · ₹7,500",
+        deadline: "22 Oct",
+        status: "Approved · paid",
+        live: true,
+      },
+      {
+        name: "Final review",
+        type: "Story · ₹7,500",
+        deadline: "29 Oct",
+        status: "Awaiting approval",
+        live: false,
+      },
+    ],
+  },
+  emma: {
+    name: "Emma Clarke",
+    handle: "@emmaclarke",
+    city: "Mumbai",
+    avatar: "emma-clarke",
+    status: "Posting",
+    platform: "Instagram",
+    completed: 3,
+    total: 4,
+    fee: "₹15,000",
+    released: "₹11,250",
+    escrow: "₹3,750",
+    sales: "₹54,000",
+    deliverables: [
+      {
+        name: "Brightening routine",
+        type: "Reel · ₹7,500",
+        deadline: "16 Oct",
+        status: "Approved · paid",
+        live: true,
+      },
+      {
+        name: "Launch Story",
+        type: "Story · ₹2,500",
+        deadline: "20 Oct",
+        status: "Approved · paid",
+        live: true,
+      },
+      {
+        name: "Results check-in",
+        type: "Reel · ₹2,500",
+        deadline: "26 Oct",
+        status: "Approved · paid",
+        live: true,
+      },
+      {
+        name: "Final Story",
+        type: "Story · ₹2,500",
+        deadline: "30 Oct",
+        status: "Not started",
+        live: false,
+      },
+    ],
+  },
+};
+
+function fallbackCreator(id: string): CreatorDetail {
+  const label = id.replace(/[-_]/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+  return {
+    ...creatorDetails.ishita,
+    name: label,
+    handle: `@${id.replace(/[^a-z]/gi, "")}`,
+    avatar: "kavya-reddy",
+  };
+}
+
+function StatusPill({
+  status,
+}: {
+  status: CreatorStatus | "Approved · paid" | "Awaiting approval" | "Not started" | "Overdue";
+}) {
+  const tone =
+    status === "Posting" || status === "Approved · paid"
+      ? "bg-success-bg text-success"
+      : status === "Awaiting approval"
+        ? "bg-[#fff3da] text-[#bf7600]"
+        : status === "Overdue"
+          ? "bg-danger-subtle text-danger"
+          : "bg-muted text-secondary";
+  return (
+    <span
+      className={`inline-flex whitespace-nowrap items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium leading-4 ${tone}`}
+    >
+      <span className="size-1.5 rounded-full bg-current" />
+      {status}
+    </span>
+  );
+}
+
+function Panel({
+  title,
+  subtitle,
+  action,
+  children,
+  className = "",
+}: {
+  title: string;
+  subtitle?: string;
+  action?: ReactNode;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section className={`rounded-xl border border-line bg-white p-5 ${className}`}>
+      <header className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h2 className="!m-0 text-[15px] font-bold leading-tight tracking-[-.01em] text-ink">
+            {title}
+          </h2>
+          {subtitle ? (
+            <p className="mt-1 text-[12px] leading-4 text-secondary">{subtitle}</p>
+          ) : null}
+        </div>
+        {action}
+      </header>
+      {children}
+    </section>
+  );
+}
+
+function Timeline({ creator, projectName }: { creator: CreatorDetail; projectName: string }) {
+  const items = [
+    ["Invited", "5 Oct", "₹17,000 funded to escrow", true],
+    ["Accepted", "6 Oct", "Within 1 day", true],
+    ["Product delivered", "11 Oct", "Delivery · sent 9 Oct", true],
+    ["First deliverable", "18 Oct", "Festive GRWM · Reel", true],
+    ["Story live", "20 Oct", "Launch day · Story", true],
+    ["Reel submitted", "26 Oct", "Results after 7 days", true],
+    ["Next deadline", "30 Oct", "Last-day reminder · Story", false],
+    ["Project ends", "7 Nov", "Usage rights until 7 Dec", false],
+  ];
+  return (
+    <Panel
+      title="Collaboration timeline"
+      subtitle={`Showing 5 Oct – 7 Nov · today 28 Oct · ${projectName}`}
+      action={<StatusPill status="Posting" />}
+    >
+      <ol className="grid gap-4 sm:grid-cols-4 xl:grid-cols-8">
+        {items.map(([label, date, note, complete], index) => (
+          <li className="relative min-w-0 xl:pr-3" key={String(label)}>
+            <span
+              className={`relative z-[1] mb-2 grid size-7 place-items-center rounded-full text-[11px] ${complete ? "bg-success text-white" : index === 6 ? "border-2 border-ink bg-white text-ink" : "bg-muted text-tertiary"}`}
+            >
+              {complete ? <Check size={14} strokeWidth={2.8} /> : index + 1}
+            </span>
+            {index < items.length - 1 ? (
+              <i
+                className={`absolute left-7 top-[13px] hidden h-[2px] w-[calc(100%-18px)] xl:block ${complete ? "bg-ink" : "bg-line"}`}
+              />
+            ) : null}
+            <b className="block text-[12px] leading-4 text-ink">{label}</b>
+            <p className="mt-1 min-h-8 text-[11px] leading-4 text-secondary">{note}</p>
+            <time className="mt-1 block text-[11px] font-medium text-ink">{date}</time>
+          </li>
+        ))}
+      </ol>
+    </Panel>
+  );
+}
+
+function DeliverableProgress({ creator }: { creator: CreatorDetail }) {
+  const ratio = creator.completed / creator.total;
+  return (
+    <Panel
+      title="Deliverable progress"
+      subtitle={`${creator.total} deliverables from ${creator.name}`}
+    >
+      <div className="flex flex-wrap items-center gap-5">
+        <motion.div
+          className="relative grid size-[112px] shrink-0 place-items-center rounded-full"
+          style={{
+            background: `conic-gradient(#149d46 0 ${ratio * 360}deg, #f3ad1b ${ratio * 360}deg ${Math.min(360, ratio * 360 + 68)}deg, #e8edf3 ${Math.min(360, ratio * 360 + 68)}deg 360deg)`,
+          }}
+          initial={{ scale: 0.72, opacity: 0 }}
+          whileInView={{ scale: 1, opacity: 1 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="grid size-[78px] place-items-center rounded-full bg-white text-center">
+            <b className="text-[17px] leading-5 text-ink">
+              {creator.completed} of {creator.total}
+            </b>
+            <span className="text-[11px] text-secondary">delivered</span>
+          </div>
+        </motion.div>
+        <div className="min-w-[220px] flex-1 space-y-2.5">
+          {[
+            ["Approved · paid", "50%", "#149d46"],
+            ["Awaiting approval", "25%", "#1b1f27"],
+            ["Not started", "25%", "#8a9cff"],
+            ["Behind or disputed", "0%", "#f2a414"],
+          ].map(([label, value, color]) => (
+            <div className="grid grid-cols-[minmax(0,1fr)_28px] gap-3 text-[12px]" key={label}>
+              <span className="flex items-center gap-2 text-secondary">
+                <i className="size-2 rounded-full" style={{ background: color }} />
+                {label}
+              </span>
+              <b className="text-right text-ink">{value}</b>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Panel>
+  );
+}
+
+function Pipeline({ onView }: { onView: () => void }) {
+  const states = [
+    ["Awaiting approval", "1", "#f2a414"],
+    ["Changes requested", "0", "#e24545"],
+    ["Approved · not live yet", "0", "#1b1f27"],
+    ["Live", "3", "#149d46"],
+  ];
+  return (
+    <Panel
+      title="Content pipeline"
+      subtitle="3 of 4 deliverables submitted · from submitted to live"
+      action={
+        <button
+          type="button"
+          onClick={onView}
+          className="border-0 bg-transparent p-0 text-[12px] font-medium text-primary"
+        >
+          View Content
+        </button>
+      }
+    >
+      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+        {states.map(([label, value, color], index) => (
+          <div key={label} className="rounded-lg border border-line bg-[#fbfcfd] px-3 py-2.5">
+            <span className="flex items-center gap-1.5 text-[11px] leading-4 text-secondary">
+              <i className="size-1.5 rounded-full" style={{ background: color }} />
+              {label}
+            </span>
+            <motion.p
+              initial={{ opacity: 0, y: 4 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.55, delay: index * 0.08 }}
+              className="mt-1 text-[16px] font-semibold leading-5 text-ink"
+            >
+              {value}
+            </motion.p>
+          </div>
+        ))}
+      </div>
+    </Panel>
+  );
+}
+
+function Deliverables({ creator }: { creator: CreatorDetail }) {
+  return (
+    <Panel
+      title="Deliverables"
+      subtitle={`${creator.total} deliverables · deadline, product, code and link set at invite · fee ${creator.fee}`}
+      action={
+        <button
+          type="button"
+          className="border-0 bg-transparent p-0 text-[12px] font-medium text-primary"
+        >
+          View all
+        </button>
+      }
+    >
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[700px] text-left">
+          <thead className="bg-subtle text-[10px] font-semibold uppercase tracking-[.02em] text-secondary">
+            <tr>
+              <th className="w-9 px-2 py-2">#</th>
+              <th className="px-2 py-2">Deliverable</th>
+              <th className="px-2 py-2">Deadline</th>
+              <th className="px-2 py-2">Product · code</th>
+              <th className="px-2 py-2">Status</th>
+              <th className="px-2 py-2">Post</th>
+              <th className="w-8 px-2 py-2" />
+            </tr>
+          </thead>
+          <tbody>
+            {creator.deliverables.map((item, index) => (
+              <tr className="border-b border-line last:border-0" key={item.name}>
+                <td className="px-2 py-2.5 text-[12px] text-secondary">{index + 1}</td>
+                <td className="px-2 py-2.5">
+                  <span className="flex items-center gap-2">
+                    <img
+                      src={`/assets/brand-assets/${(index % 4) + 1}.png`}
+                      onError={(event) => {
+                        event.currentTarget.src = `/assets/creators/${creator.avatar}.png`;
+                      }}
+                      alt=""
+                      className="size-7 rounded object-cover"
+                    />
+                    <span>
+                      <b className="block text-[12px] leading-4 text-ink">{item.name}</b>
+                      <small className="text-[10px] leading-4 text-secondary">{item.type}</small>
+                    </span>
+                  </span>
+                </td>
+                <td className="px-2 py-2.5 text-[11px] text-ink">{item.deadline}</td>
+                <td className="px-2 py-2.5">
+                  <b className="block text-[11px] font-medium text-ink">Vitamin C Glow Serum</b>
+                  <small className="text-[10px] text-secondary">ISHITA15 · 1 link</small>
+                </td>
+                <td className="px-2 py-2.5">
+                  <StatusPill status={item.status} />
+                </td>
+                <td className="px-2 py-2.5 text-[11px] text-ink">
+                  <span className="flex items-center gap-1.5">
+                    <i
+                      className={`size-2 rounded-full ${item.live ? "bg-success" : "border border-secondary"}`}
+                    />
+                    {item.live ? "Live" : "Not live yet"}
+                  </span>
+                  <small className="text-[10px] text-secondary">
+                    {item.live ? item.deadline : "—"}
+                  </small>
+                </td>
+                <td className="px-2 py-2.5">
+                  <button
+                    type="button"
+                    aria-label={`More actions for ${item.name}`}
+                    className="text-secondary"
+                  >
+                    <Ellipsis size={16} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Panel>
+  );
+}
+
+function DeliverablesListTab({ creator }: { creator: CreatorDetail }) {
+  return (
+    <section className="mt-4 rounded-xl border border-line bg-white p-5">
+      <header className="mb-4">
+        <h2 className="!m-0 text-[16px] font-semibold leading-6 text-ink">Deliverables</h2>
+        <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+          Track each deliverable from brief to live post
+        </p>
+      </header>
+
+      <div className="overflow-x-auto rounded-xl border border-line">
+        <table className="w-full min-w-[780px] border-collapse text-left">
+          <thead className="bg-subtle text-[12px] font-semibold leading-4 text-secondary">
+            <tr>
+              <th className="w-[46px] px-4 py-2.5">#</th>
+              <th className="px-4 py-2.5">Deliverable</th>
+              <th className="w-[128px] whitespace-nowrap px-4 py-2.5">Status</th>
+              <th className="w-[116px] whitespace-nowrap px-4 py-2.5">Live post</th>
+              <th className="w-[116px] px-4 py-2.5">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {creator.deliverables.map((item, index) => (
+              <tr className="border-t border-subtle" key={item.name}>
+                <td className="px-4 py-3 text-[14px] font-medium leading-[22px] text-ink">
+                  {index + 1}
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={`/assets/creators/${creator.avatar}.png`}
+                      alt=""
+                      className="size-12 rounded-md object-cover"
+                    />
+                    <div>
+                      <p className="text-[14px] font-medium leading-[22px] text-ink">{item.name}</p>
+                      <span className="mt-0.5 flex items-center gap-1.5 text-[12px] leading-4 text-secondary">
+                        <PlatformLogo platform={creator.platform} size={16} />
+                        {item.type.split("\u00b7")[0].trim()} {"\u00b7"} due {item.deadline}
+                      </span>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-4 py-3">
+                  <StatusPill status={item.status} />
+                </td>
+                <td className="px-4 py-3">
+                  {item.live ? (
+                    <span className="flex whitespace-nowrap items-center gap-1.5 text-[13px] leading-5 text-ink">
+                      <PlatformLogo platform={creator.platform} size={16} />
+                      {item.deadline}
+                    </span>
+                  ) : (
+                    <span className="flex whitespace-nowrap items-center gap-1.5 text-[13px] leading-5 text-secondary">
+                      <span className="size-3.5 rounded-full border border-secondary" />
+                      Not live yet
+                    </span>
+                  )}
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      className="h-8 rounded-md border border-line bg-white px-3 text-[13px] font-medium leading-[18px] text-ink hover:bg-subtle"
+                    >
+                      View
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`More actions for ${item.name}`}
+                      className="grid size-8 place-items-center rounded-md border border-line bg-white text-secondary hover:bg-subtle"
+                    >
+                      <Ellipsis size={14} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+function NextActions({ onApprove }: { onApprove: () => void }) {
+  const tasks = [
+    [
+      "Approve 1 Reel",
+      "Results after 7 days · waiting up to 52 h · releases ₹3,000 from escrow",
+      "Overdue",
+      "danger",
+    ],
+    ["Nudge Ishita", "Last-day reminder · Story is due 30 Oct and not started", "Today", "amber"],
+    ["Review 1 change request", "Ishita re-submitted a Story", "In 2 d", "amber"],
+  ] as const;
+  return (
+    <Panel title="Next actions" subtitle="3 things need you · sorted by urgency">
+      <div className="divide-y divide-line">
+        {tasks.map(([title, description, due, tone], index) => (
+          <button
+            type="button"
+            onClick={index === 0 ? onApprove : undefined}
+            className="flex w-full items-center justify-between gap-3 py-3 text-left first:pt-0 last:pb-0"
+            key={title}
+          >
+            <span>
+              <b className="block text-[12px] leading-4 text-ink">{title}</b>
+              <small className="mt-1 block text-[10px] leading-4 text-secondary">
+                {description}
+              </small>
+            </span>
+            <span
+              className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${tone === "danger" ? "bg-danger-subtle text-danger" : "bg-[#fff3da] text-[#b56d00]"}`}
+            >
+              {due}
+            </span>
+          </button>
+        ))}
+      </div>
+    </Panel>
+  );
+}
+
+function Budget({ creator }: { creator: CreatorDetail }) {
+  const rows = [
+    ["Paid to creator", creator.released, "75%", "#171a20"],
+    ["Held in escrow", creator.escrow, "25%", "#7b6cf6"],
+    ["Not funded", "₹0", "0%", "#dbe1e8"],
+  ];
+  return (
+    <Panel title="Budget" subtitle={`One-time collab · ${creator.name} · ${creator.fee} fee`}>
+      <div className="flex items-center gap-4">
+        <motion.div
+          className="relative grid size-[116px] shrink-0 place-items-center rounded-full"
+          style={{ background: "conic-gradient(#7b6cf6 0 90deg, #171a20 90deg 360deg)" }}
+          initial={{ scale: 0.7, opacity: 0 }}
+          whileInView={{ scale: 1, opacity: 1 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="grid size-[80px] place-items-center rounded-full bg-white text-center">
+            <b className="text-[14px] text-ink">{creator.fee}</b>
+            <span className="text-[10px] text-secondary">fee</span>
+          </div>
+        </motion.div>
+        <div className="min-w-0 flex-1 space-y-3">
+          {rows.map(([label, amount, share, color]) => (
+            <div key={label}>
+              <div className="flex items-center justify-between gap-2 text-[11px]">
+                <span className="flex items-center gap-1.5 text-secondary">
+                  <i className="size-2 rounded-full" style={{ background: color }} />
+                  {label}
+                </span>
+                <b className="text-ink">{amount}</b>
+              </div>
+              <p className="mt-0.5 text-right text-[10px] text-secondary">{share}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="mt-4 flex justify-between border-t border-line pt-3 text-[12px]">
+        <span className="text-secondary">Total fee</span>
+        <b className="text-ink">{creator.fee}</b>
+      </div>
+    </Panel>
+  );
+}
+
+function ProjectDetails({
+  project,
+  creator,
+}: {
+  project: ReturnType<typeof getProject>;
+  creator: CreatorDetail;
+}) {
+  const rows = [
+    ["Type", "Influencer marketing"],
+    ["Partnership", "Paid"],
+    ["Duration", "One-time · 7 Oct – 7 Nov 2026"],
+    ["Platforms", creator.platform],
+    ["Tracking", "Shopify · code ISHITA15"],
+    ["Deliverables", "2 Reels, 2 Stories"],
+    ["Usage rights", "Until 7 Dec 2026"],
+  ];
+  return (
+    <Panel title="Project details">
+      <dl className="space-y-2.5">
+        {rows.map(([label, value]) => (
+          <div
+            className="grid grid-cols-[86px_minmax(0,1fr)] gap-3 text-[11px] leading-4"
+            key={label}
+          >
+            <dt className="text-secondary">{label}</dt>
+            <dd className="text-right font-medium text-ink">{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </Panel>
+  );
+}
+
+export function BrandInvitedCreatorPage() {
+  const navigate = useNavigate();
+  const { projectId = "1", creatorId = "ishita" } = useParams();
+  const project = getProject(Number(projectId));
+  const creator = useMemo(
+    () => creatorDetails[creatorId] ?? fallbackCreator(creatorId),
+    [creatorId],
+  );
+  const [tab, setTab] = useState("Overview");
+  const [approved, setApproved] = useState(false);
+  const tabs = ["Overview", "Deliverables", "Payments", "Review", "Performance"];
+  const alternateMessage = {
+    Deliverables: "Every deliverable and its current status is shown in the overview table.",
+    Payments: `${creator.released} is released; ${creator.escrow} remains held in escrow.`,
+    Review: approved
+      ? "The Reel is approved and release has been queued."
+      : "One submitted Reel is waiting for your approval.",
+    Performance: "Performance becomes available as each approved deliverable goes live.",
+  } as const;
+
+  return (
+    <BrandShell>
+      <div className="w-full pb-10">
+        <nav
+          className="flex flex-wrap items-center gap-2 text-[12px] leading-4 text-secondary"
+          aria-label="Breadcrumb"
+        >
+          <Link to="/brand/projects" className="hover:text-primary">
+            Projects
+          </Link>
+          <span>/</span>
+          <Link to={brandProjectRoute(project.id)} className="hover:text-primary">
+            {project.name}
+          </Link>
+          <span>/</span>
+          <Link to={brandProjectRoute(project.id)} className="hover:text-primary">
+            Invited creators
+          </Link>
+          <span>/</span>
+          <span className="text-ink">{creator.name}</span>
+        </nav>
+        <header className="mt-3 flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <img
+                src={`/assets/creators/${creator.avatar}.png`}
+                alt=""
+                className="size-8 rounded-full object-cover"
+              />
+              <h1 className="!m-0 text-[28px] font-bold leading-8 tracking-[-.02em] text-ink">
+                {creator.name}
+              </h1>
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              <StatusPill status={creator.status} />
+              {["Instagram 1.1 L", "YouTube 18K", "Skincare"].map((label) => (
+                <span
+                  className="rounded-full bg-muted px-2 py-0.5 text-[12px] font-medium leading-4 text-secondary"
+                  key={label}
+                >
+                  <span className="mr-1 text-[10px]">{"\u2022"}</span>
+                  {label}
+                </span>
+              ))}
+            </div>
+            <p className="mt-1 text-[13px] leading-5 text-secondary">
+              {creator.handle} {"\u00b7"} Skincare creator {"\u00b7"} {creator.city} {"\u00b7"}{" "}
+              {project.name} {"\u00b7"} 7 Oct {"\u2013"} 7 Nov 2026
+            </p>
+            <p className="hidden">
+              <StatusPill status={creator.status} />
+              <span className="ml-2">Instagram 1.1 L · YouTube 18K · Skincare</span>
+              <span className="ml-2">
+                {creator.handle} · {creator.city} · {project.name} · 7 Oct – 7 Nov 2026
+              </span>
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              className="flex h-10 items-center gap-2 rounded-md border border-line bg-white px-3 text-[12px] font-medium text-ink"
+            >
+              <CalendarDays size={16} />7 Oct {"\u2013"} 28 Oct 2026
+            </button>
+            <button
+              type="button"
+              className="flex h-10 items-center gap-2 rounded-md border border-line bg-white px-3 text-[13px] font-medium text-ink"
+              onClick={() => {
+                window.location.href = `mailto:?subject=${encodeURIComponent(`${project.name} collaboration — ${creator.name}`)}`;
+              }}
+            >
+              <MessageSquare size={16} />
+              Message
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate(brandCreatorDeliverablesRoute(project.id, creatorId))}
+              className="flex h-10 items-center gap-2 rounded-md bg-ink px-3 text-[13px] font-medium text-white"
+            >
+              <Pencil size={16} />
+              Edit deliverables
+            </button>
+            <button
+              type="button"
+              aria-label="More actions"
+              className="grid size-10 place-items-center rounded-md border border-line bg-white text-secondary"
+            >
+              <Ellipsis size={18} />
+            </button>
+          </div>
+        </header>
+        <div className="mt-4 flex gap-6 overflow-x-auto border-b border-line" role="tablist">
+          {tabs.map((item) => (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === item}
+              onClick={() => setTab(item)}
+              className={`relative shrink-0 border-0 bg-transparent pb-3 text-[14px] leading-[22px] ${tab === item ? "font-medium text-ink" : "text-secondary hover:text-primary"}`}
+              key={item}
+            >
+              {item}
+              {item === "Deliverables" ? (
+                <span className="ml-1.5 rounded-full bg-muted px-1.5 py-0.5 text-[12px] leading-4 text-secondary">
+                  {creator.total}
+                </span>
+              ) : null}
+              {tab === item ? <i className="absolute inset-x-0 bottom-0 h-0.5 bg-ink" /> : null}
+            </button>
+          ))}
+        </div>
+        {tab === "Deliverables" ? (
+          <DeliverablesListTab creator={creator} />
+        ) : tab !== "Overview" ? (
+          <section className="mt-4 rounded-xl border border-line bg-white p-5">
+            <h2 className="!m-0 text-[15px] font-bold leading-tight text-ink">{tab}</h2>
+            <p className="mt-2 text-[12px] text-secondary">
+              {alternateMessage[tab as keyof typeof alternateMessage]}
+            </p>
+          </section>
+        ) : (
+          <>
+            <div className="mt-4">
+              <Timeline creator={creator} projectName={project.name} />
+            </div>
+            <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.8fr)_minmax(290px,.9fr)]">
+              <main className="space-y-4">
+                <DeliverableProgress creator={creator} />
+                <Pipeline onView={() => setTab("Deliverables")} />
+                <Deliverables creator={creator} />
+              </main>
+              <aside className="space-y-4">
+                <NextActions onApprove={() => setApproved(true)} />
+                <Budget creator={creator} />
+                <ProjectDetails project={project} creator={creator} />
+              </aside>
+            </div>
+          </>
+        )}
+      </div>
+    </BrandShell>
+  );
+}

@@ -38,6 +38,7 @@ export const ROUTES = {
   brandCreatorProfile: "/brand/projects/:projectId/applications/:creatorId",
   brandCreatorInvite:
     "/brand/projects/:projectId/applications/:creatorId/invite",
+  brandInvitedCreator: "/brand/projects/:projectId/invited/:creatorId",
   brandCreatorDeliverables:
     "/brand/projects/:projectId/invited/:creatorId/deliverables",
   agency: "/agency",
@@ -56,6 +57,10 @@ export const brandCreatorInviteRoute = (
   projectId: number | string,
   creatorId: string,
 ) => `/brand/projects/${projectId}/applications/${creatorId}/invite`;
+export const brandInvitedCreatorRoute = (
+  projectId: number | string,
+  creatorId: string,
+) => `/brand/projects/${projectId}/invited/${creatorId}`;
 export const brandCreatorDeliverablesRoute = (
   projectId: number | string,
   creatorId: string,
