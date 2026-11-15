@@ -1,5 +1,16 @@
 import { type ReactNode, useMemo, useState } from "react";
-import { CalendarDays, Check, Ellipsis, MessageSquare, Pencil } from "lucide-react";
+import {
+  CalendarDays,
+  Check,
+  CheckCircle2,
+  Ellipsis,
+  ExternalLink,
+  MessageSquare,
+  Pencil,
+  Play,
+  Send,
+  X,
+} from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "motion/react";
 import { BrandShell } from "@/brand/components/BrandShell";
@@ -437,88 +448,317 @@ function Deliverables({ creator }: { creator: CreatorDetail }) {
   );
 }
 
-function DeliverablesListTab({ creator }: { creator: CreatorDetail }) {
+function DeliverableDetailPanel({
+  creator,
+  item,
+  index,
+  onClose,
+}: {
+  creator: CreatorDetail;
+  item: CreatorDetail["deliverables"][number];
+  index: number;
+  onClose: () => void;
+}) {
+  const [detailTab, setDetailTab] = useState<"Content" | "Comments" | "History">("Content");
+  const kind = item.type.split("\u00b7")[0].trim();
+  const fee = item.type.split("\u00b7")[1]?.trim() ?? "\u20b93,000";
+  const waiting = item.status === "Awaiting approval";
+  const tabs = ["Content", "Comments", "History"] as const;
+
   return (
-    <section className="mt-4 rounded-xl border border-line bg-white p-5">
-      <header className="mb-4">
-        <h2 className="!m-0 text-[16px] font-semibold leading-6 text-ink">Deliverables</h2>
-        <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-          Track each deliverable from brief to live post
-        </p>
+    <aside className="rounded-xl border border-line bg-white p-5">
+      <header className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="!m-0 text-[16px] font-semibold leading-6 text-ink">
+            {kind} {"\u00b7"} {item.name.toLowerCase()}
+          </h2>
+          <p className="mt-1 flex items-center gap-1.5 text-[12px] leading-4 text-secondary">
+            <PlatformLogo platform={creator.platform} size={16} />
+            {creator.platform} {"\u00b7"} {kind} {"\u00b7"} deliverable {index + 1} of{" "}
+            {creator.total}
+          </p>
+          <p className="mt-1 text-[12px] leading-4 text-secondary">
+            Vitamin-C Serum {"\u00b7"} 7 Oct {"\u2013"} 7 Nov 2026
+          </p>
+        </div>
+        <div className="flex shrink-0 flex-col items-end gap-2">
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close deliverable detail"
+            className="text-secondary hover:text-ink"
+          >
+            <X size={16} />
+          </button>
+          <StatusPill status={item.status} />
+        </div>
       </header>
 
-      <div className="overflow-x-auto rounded-xl border border-line">
-        <table className="w-full min-w-[780px] border-collapse text-left">
-          <thead className="bg-subtle text-[12px] font-semibold leading-4 text-secondary">
-            <tr>
-              <th className="w-[46px] px-4 py-2.5">#</th>
-              <th className="px-4 py-2.5">Deliverable</th>
-              <th className="w-[128px] whitespace-nowrap px-4 py-2.5">Status</th>
-              <th className="w-[116px] whitespace-nowrap px-4 py-2.5">Live post</th>
-              <th className="w-[116px] px-4 py-2.5">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {creator.deliverables.map((item, index) => (
-              <tr className="border-t border-subtle" key={item.name}>
-                <td className="px-4 py-3 text-[14px] font-medium leading-[22px] text-ink">
-                  {index + 1}
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={`/assets/creators/${creator.avatar}.png`}
-                      alt=""
-                      className="size-12 rounded-md object-cover"
-                    />
-                    <div>
-                      <p className="text-[14px] font-medium leading-[22px] text-ink">{item.name}</p>
-                      <span className="mt-0.5 flex items-center gap-1.5 text-[12px] leading-4 text-secondary">
-                        <PlatformLogo platform={creator.platform} size={16} />
-                        {item.type.split("\u00b7")[0].trim()} {"\u00b7"} due {item.deadline}
-                      </span>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <StatusPill status={item.status} />
-                </td>
-                <td className="px-4 py-3">
-                  {item.live ? (
-                    <span className="flex whitespace-nowrap items-center gap-1.5 text-[13px] leading-5 text-ink">
-                      <PlatformLogo platform={creator.platform} size={16} />
-                      {item.deadline}
-                    </span>
-                  ) : (
-                    <span className="flex whitespace-nowrap items-center gap-1.5 text-[13px] leading-5 text-secondary">
-                      <span className="size-3.5 rounded-full border border-secondary" />
-                      Not live yet
-                    </span>
-                  )}
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      className="h-8 rounded-md border border-line bg-white px-3 text-[13px] font-medium leading-[18px] text-ink hover:bg-subtle"
-                    >
-                      View
-                    </button>
-                    <button
-                      type="button"
-                      aria-label={`More actions for ${item.name}`}
-                      className="grid size-8 place-items-center rounded-md border border-line bg-white text-secondary hover:bg-subtle"
-                    >
-                      <Ellipsis size={14} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div
+        className="mt-4 flex gap-6 border-b border-line"
+        role="tablist"
+        aria-label="Deliverable detail"
+      >
+        {tabs.map((tab) => (
+          <button
+            type="button"
+            role="tab"
+            aria-selected={detailTab === tab}
+            onClick={() => setDetailTab(tab)}
+            key={tab}
+            className={`relative pb-3 text-[14px] leading-[22px] ${detailTab === tab ? "font-medium text-ink" : "text-secondary"}`}
+          >
+            {tab}
+            {tab === "Comments" ? (
+              <span className="ml-1.5 rounded-full bg-muted px-1.5 py-0.5 text-[12px] leading-4 text-secondary">
+                2
+              </span>
+            ) : null}
+            {detailTab === tab ? (
+              <span className="absolute inset-x-0 bottom-0 h-0.5 bg-ink" />
+            ) : null}
+          </button>
+        ))}
       </div>
-    </section>
+
+      {detailTab === "Content" ? (
+        <div className="space-y-4 pt-4">
+          <div>
+            <p className="text-[14px] font-medium leading-[22px] text-ink">
+              {item.live ? "Live post" : "Submitted content"}{" "}
+              {waiting ? "· waiting for your approval" : ""}
+            </p>
+            <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+              Posted by {creator.name.split(" ")[0]} on {item.deadline}. Approving releases {fee}.
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            <div className="relative h-[266px] w-[150px] shrink-0 overflow-hidden rounded-[10px] bg-subtle">
+              <img
+                src={`/assets/creators/${creator.avatar}.png`}
+                alt={`${item.name} submission`}
+                className="size-full object-cover"
+              />
+              <span className="absolute inset-0 bg-black/20" />
+              <span className="absolute left-1/2 top-1/2 grid size-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-ink">
+                <Play size={16} fill="currentColor" />
+              </span>
+              <span className="absolute bottom-2 right-2 rounded bg-black/60 px-1.5 py-0.5 text-[12px] leading-4 text-white">
+                0:41
+              </span>
+            </div>
+            <section className="min-w-0 flex-1 rounded-md border border-line p-3">
+              <h3 className="!m-0 text-[14px] font-medium leading-[22px] text-ink">File details</h3>
+              <dl className="mt-2 space-y-2">
+                {[
+                  ["File", `${creator.handle.slice(1)}_results.mp4`],
+                  ["Size", "31.2 MB"],
+                  ["Format", "MP4 · 9:16"],
+                  ["Resolution", "1080 × 1920"],
+                  ["Sent", `${item.deadline}, 11:05`],
+                ].map(([label, value]) => (
+                  <div key={label}>
+                    <dt className="text-[12px] leading-4 text-tertiary">{label}</dt>
+                    <dd className="text-[13px] leading-5 text-ink">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          </div>
+
+          <section className="rounded-md bg-subtle p-3">
+            <p className="text-[12px] leading-4 text-tertiary">Post caption</p>
+            <p className="mt-1 text-[13px] leading-5 text-ink">
+              7 days with the Minimalist Vitamin-C Serum, before vs after. Use ISHITA15 for 15% off.
+              #minimalistVitaminC #ad
+            </p>
+          </section>
+
+          <section className="rounded-md border border-line p-3">
+            <h3 className="!m-0 text-[14px] font-medium leading-[22px] text-ink">Live post</h3>
+            <dl className="mt-2 space-y-2 text-[13px] leading-5">
+              <div className="flex justify-between gap-3">
+                <dt className="text-secondary">Post link</dt>
+                <dd className="truncate text-primary">instagram.com/reel/C9xIshita3</dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-secondary">Went live</dt>
+                <dd className="text-ink">{item.deadline}, 18:30</dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-secondary">Tracking link</dt>
+                <dd>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-success-bg px-2 py-0.5 text-[12px] font-medium leading-4 text-success">
+                    <span className="size-1.5 rounded-full bg-current" />
+                    Connected
+                  </span>
+                </dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-secondary">Coupon</dt>
+                <dd className="text-ink">ISHITA15 · 47 orders</dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-secondary">Last synced</dt>
+                <dd className="text-ink">28 Oct, 16:20 · 18 min ago</dd>
+              </div>
+            </dl>
+          </section>
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              className="flex h-10 items-center gap-2 rounded-md border border-line bg-white px-4 text-[14px] font-medium text-ink"
+            >
+              <MessageSquare size={16} />
+              Request changes
+            </button>
+            <button
+              type="button"
+              className="flex h-10 items-center gap-2 rounded-md bg-ink px-4 text-[14px] font-medium text-white"
+            >
+              <Check size={16} />
+              Approve {"\u00b7"} {fee}
+            </button>
+          </div>
+          <button
+            type="button"
+            className="flex h-10 w-full items-center justify-center gap-2 rounded-md border border-line bg-white px-4 text-[14px] font-medium text-ink"
+          >
+            <ExternalLink size={16} />
+            View post performance
+          </button>
+        </div>
+      ) : detailTab === "Comments" ? (
+        <div className="space-y-3 pt-4 text-[13px] leading-5">
+          <div className="rounded-md bg-subtle p-3">
+            <b className="text-ink">Brand review</b>
+            <p className="mt-1 text-secondary">
+              Please make the CTA more visible in the final three seconds.
+            </p>
+          </div>
+          <div className="rounded-md bg-subtle p-3">
+            <b className="text-ink">{creator.name}</b>
+            <p className="mt-1 text-secondary">Updated and re-submitted for approval.</p>
+          </div>
+        </div>
+      ) : (
+        <ol className="space-y-3 pt-4 text-[13px] leading-5 text-secondary">
+          <li className="flex gap-2">
+            <CheckCircle2 size={16} className="mt-0.5 text-success" />
+            Submitted {item.deadline}, 11:05
+          </li>
+          <li className="flex gap-2">
+            <Send size={16} className="mt-0.5 text-primary" />
+            Tracking link connected automatically
+          </li>
+        </ol>
+      )}
+    </aside>
+  );
+}
+
+function DeliverablesListTab({ creator }: { creator: CreatorDetail }) {
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  return (
+    <div
+      className={`mt-4 grid items-start gap-5 ${selectedIndex !== null ? "xl:grid-cols-[minmax(0,1fr)_420px]" : ""}`}
+    >
+      <section
+        className={`rounded-xl border border-line bg-white p-5 ${selectedIndex !== null ? "xl:sticky xl:top-6" : ""}`}
+      >
+        <header className="mb-4">
+          <h2 className="!m-0 text-[16px] font-semibold leading-6 text-ink">Deliverables</h2>
+          <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+            Track each deliverable from brief to live post
+          </p>
+        </header>
+
+        <div className="overflow-x-auto rounded-xl border border-line">
+          <table className="w-full min-w-[780px] border-collapse text-left">
+            <thead className="bg-subtle text-[12px] font-semibold leading-4 text-secondary">
+              <tr>
+                <th className="w-[46px] px-4 py-2.5">#</th>
+                <th className="px-4 py-2.5">Deliverable</th>
+                <th className="w-[128px] whitespace-nowrap px-4 py-2.5">Status</th>
+                <th className="w-[116px] whitespace-nowrap px-4 py-2.5">Live post</th>
+                <th className="w-[116px] px-4 py-2.5">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {creator.deliverables.map((item, index) => (
+                <tr className="border-t border-subtle" key={item.name}>
+                  <td className="px-4 py-3 text-[14px] font-medium leading-[22px] text-ink">
+                    {index + 1}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={`/assets/creators/${creator.avatar}.png`}
+                        alt=""
+                        className="size-12 rounded-md object-cover"
+                      />
+                      <div>
+                        <p className="text-[14px] font-medium leading-[22px] text-ink">
+                          {item.name}
+                        </p>
+                        <span className="mt-0.5 flex items-center gap-1.5 text-[12px] leading-4 text-secondary">
+                          <PlatformLogo platform={creator.platform} size={16} />
+                          {item.type.split("\u00b7")[0].trim()} {"\u00b7"} due {item.deadline}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <StatusPill status={item.status} />
+                  </td>
+                  <td className="px-4 py-3">
+                    {item.live ? (
+                      <span className="flex whitespace-nowrap items-center gap-1.5 text-[13px] leading-5 text-ink">
+                        <PlatformLogo platform={creator.platform} size={16} />
+                        {item.deadline}
+                      </span>
+                    ) : (
+                      <span className="flex whitespace-nowrap items-center gap-1.5 text-[13px] leading-5 text-secondary">
+                        <span className="size-3.5 rounded-full border border-secondary" />
+                        Not live yet
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedIndex(index)}
+                        className="h-8 rounded-md border border-line bg-white px-3 text-[13px] font-medium leading-[18px] text-ink hover:bg-subtle"
+                      >
+                        View
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`More actions for ${item.name}`}
+                        className="grid size-8 place-items-center rounded-md border border-line bg-white text-secondary hover:bg-subtle"
+                      >
+                        <Ellipsis size={14} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+      {selectedIndex !== null ? (
+        <DeliverableDetailPanel
+          creator={creator}
+          item={creator.deliverables[selectedIndex]}
+          index={selectedIndex}
+          onClose={() => setSelectedIndex(null)}
+        />
+      ) : null}
+    </div>
   );
 }
 
