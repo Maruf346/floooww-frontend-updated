@@ -1,7 +1,9 @@
 import { type ReactNode, useMemo, useState } from "react";
 import {
   CalendarDays,
+  ChartNoAxesCombined,
   Check,
+  ChevronDown,
   ClipboardList,
   Clock3,
   Download,
@@ -1571,6 +1573,63 @@ function ReviewTab({ creator }: { creator: CreatorDetail }) {
   );
 }
 
+function PerformanceEmptyTab({ onViewDeliverables }: { onViewDeliverables: () => void }) {
+  const scorecards = [
+    "Net sales",
+    "Orders",
+    "Link clicks",
+    "Engagement rate",
+    "Views",
+    "Earned media value",
+  ];
+
+  return (
+    <div className="mt-4 space-y-4">
+      <section className="overflow-hidden rounded-xl border border-line bg-white">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          {scorecards.map((label, index) => (
+            <div
+              className={`relative min-h-[118px] p-[18px] ${index === 0 ? "bg-[#f1f4ff]" : "bg-white"}`}
+              key={label}
+            >
+              <p
+                className={`text-[13px] leading-5 ${index === 0 ? "text-primary" : "text-secondary"}`}
+              >
+                {label}
+              </p>
+              <p
+                className={`mt-1.5 font-semibold text-ink ${index === 5 ? "text-[22px] leading-8" : "text-[16px] leading-6"}`}
+              >
+                –
+              </p>
+              <p className="mt-1.5 text-[12px] leading-4 text-[#a2a7b3]">Waiting for first post</p>
+              {index === 0 ? (
+                <span className="absolute inset-x-[18px] bottom-[18px] h-[3px] bg-ink" />
+              ) : null}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="flex min-h-[226px] flex-col items-center justify-center gap-4 rounded-xl border border-[#edeff3] bg-white px-10 py-12 text-center">
+        <span className="grid size-14 place-items-center rounded-[28px] bg-[#eff4ff] text-primary">
+          <ChartNoAxesCombined size={24} strokeWidth={1.8} />
+        </span>
+        <h2 className="!m-0 text-[20px] font-semibold leading-7 text-[#070b13]">
+          No performance data yet
+        </h2>
+        <button
+          type="button"
+          onClick={onViewDeliverables}
+          className="rounded-md bg-[#3b5bff] px-4 py-2.5 text-[14px] font-semibold leading-5 text-white transition-colors hover:bg-[#2949e9]"
+        >
+          View deliverables
+        </button>
+      </section>
+    </div>
+  );
+}
+
 function NextActions({ onApprove }: { onApprove: () => void }) {
   const tasks = [
     [
@@ -1697,6 +1756,7 @@ export function BrandInvitedCreatorPage() {
     [creatorId],
   );
   const [tab, setTab] = useState("Overview");
+  const [performancePlatform, setPerformancePlatform] = useState("All platforms");
   const [approved, setApproved] = useState(false);
   const tabs = ["Overview", "Deliverables", "Payments", "Review", "Performance"];
   const alternateMessage = {
@@ -1818,6 +1878,33 @@ export function BrandInvitedCreatorPage() {
               {tab === item ? <i className="absolute inset-x-0 bottom-0 h-0.5 bg-ink" /> : null}
             </button>
           ))}
+          {tab === "Performance" ? (
+            <div className="ml-auto flex shrink-0 items-center gap-2 pb-1">
+              <span className="text-[12px] font-medium text-[#8491a3]">View by platform</span>
+              <label className="relative">
+                <select
+                  value={performancePlatform}
+                  onChange={(event) => setPerformancePlatform(event.target.value)}
+                  className="h-8 appearance-none rounded-md border border-[#d4d7df] bg-white py-1.5 pl-3 pr-8 text-[13px] font-medium text-[#394357] outline-none focus:border-primary"
+                >
+                  <option>All platforms</option>
+                  <option>Instagram</option>
+                  <option>YouTube</option>
+                </select>
+                <ChevronDown
+                  size={14}
+                  className="pointer-events-none absolute right-2.5 top-2 text-[#8491a3]"
+                />
+              </label>
+              <button
+                type="button"
+                aria-label="Download performance report"
+                className="grid size-8 place-items-center rounded-md border border-line bg-white text-secondary transition-colors hover:bg-subtle hover:text-ink"
+              >
+                <Download size={16} />
+              </button>
+            </div>
+          ) : null}
         </div>
         {tab === "Deliverables" ? (
           <DeliverablesListTab creator={creator} />
@@ -1825,6 +1912,8 @@ export function BrandInvitedCreatorPage() {
           <PaymentsTab creator={creator} />
         ) : tab === "Review" ? (
           <ReviewTab creator={creator} />
+        ) : tab === "Performance" ? (
+          <PerformanceEmptyTab onViewDeliverables={() => setTab("Deliverables")} />
         ) : tab !== "Overview" ? (
           <section className="mt-4 rounded-xl border border-line bg-white p-5">
             <h2 className="!m-0 text-[15px] font-bold leading-tight text-ink">{tab}</h2>
