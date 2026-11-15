@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   CalendarDays,
   Check,
+  CheckCircle2,
   ChevronDown,
   Copy,
   Info,
@@ -20,7 +21,11 @@ import {
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
 import { Dropdown } from "@/common/components/ui/Dropdown";
-import { brandCreatorProfileRoute, brandProjectRoute } from "@/common/constants/routes";
+import {
+  brandCreatorProfileRoute,
+  brandInvitedCreatorRoute,
+  brandProjectRoute,
+} from "@/common/constants/routes";
 import { getProject } from "@/brand/data/projects";
 import { getCreatorProfile } from "./project-applications/creatorProfileData";
 
@@ -651,6 +656,132 @@ function OneTimeRowEditor({
   );
 }
 
+function ChangesSentConfirmation({
+  creator,
+  projectId,
+  projectName,
+  oneTime,
+  chargedNow,
+  creatorFee,
+}: {
+  creator: { name: string; handle: string; avatar: string };
+  projectId: string;
+  projectName: string;
+  oneTime: boolean;
+  chargedNow: number;
+  creatorFee: number;
+}) {
+  const navigate = useNavigate();
+  const firstName = creator.name.split(" ")[0];
+  const money = (amount: number) => `₹${amount.toLocaleString("en-IN")}`;
+  const addedType = oneTime ? "Reel" : "Short";
+  const addedDetail = oneTime ? "Launch day look" : "gifting";
+  const adjustedType = oneTime ? "Story · last-day reminder" : "Story · code reminder";
+  const deadline = oneTime ? "4 Nov" : "20 Dec";
+
+  return (
+    <BrandShell>
+      <div className="w-full pb-10">
+        <nav className="flex flex-wrap items-center gap-2 text-[12px] leading-4 text-secondary">
+          <Link to="/brand/projects">Projects</Link>
+          <span>/</span>
+          <Link to={brandProjectRoute(projectId)}>{projectName}</Link>
+          <span>/</span>
+          <Link to={brandProjectRoute(projectId)}>Invited creators</Link>
+          <span>/</span>
+          <span>{creator.name}</span>
+          <span>/</span>
+          <span className="text-ink">Edit deliverables</span>
+        </nav>
+        <header className="mt-2">
+          <h1 className="!m-0 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">
+            Changes sent to {creator.name}
+          </h1>
+          <p className="mt-1 text-[13px] leading-5 text-secondary">
+            {creator.handle} · Bengaluru · Instagram 1.1 L · {projectName}
+          </p>
+        </header>
+
+        <motion.main
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-5 overflow-hidden rounded-xl border border-line bg-white"
+        >
+          <div className="space-y-4 px-6 pb-5 pt-8">
+            <div className="grid size-14 place-items-center rounded-full bg-success-bg text-success">
+              <CheckCircle2 size={28} />
+            </div>
+            <p className="text-[13px] leading-5 text-secondary">
+              {money(chargedNow)} paid · held until you approve the new {addedType}
+            </p>
+
+            <section className="grid gap-2 sm:grid-cols-2">
+              <article className="rounded-lg border border-line px-3 py-2.5">
+                <h2 className="text-[14px] font-medium leading-[22px] text-ink">{adjustedType}</h2>
+                <span className="mt-1 inline-flex rounded-full bg-primary-subtle px-2 py-0.5 text-[12px] font-medium text-primary">
+                  • date change · waiting for OK
+                </span>
+              </article>
+              <article className="rounded-lg border border-line px-3 py-2.5">
+                <h2 className="text-[14px] font-medium leading-[22px] text-ink">
+                  {addedType} · {addedDetail}
+                </h2>
+                <span className="mt-1 inline-flex rounded-full bg-warning-bg px-2 py-0.5 text-[12px] font-medium text-warning">
+                  • {deadline} · {money(chargedNow)} held
+                </span>
+              </article>
+            </section>
+
+            <section className="rounded-lg bg-subtle px-3.5 py-3">
+              <h2 className="text-[14px] font-medium leading-[22px] text-ink">What happens next</h2>
+              <ul className="mt-2 space-y-2 text-[12px] leading-4 text-secondary">
+                <li className="flex gap-2">
+                  <Check size={14} className="mt-0.5 shrink-0 text-success" />
+                  {firstName} gets both changes, the brief, tracking link and coupon in Messages.
+                </li>
+                <li className="flex gap-2">
+                  <Check size={14} className="mt-0.5 shrink-0 text-success" />
+                  The creator has 48 hours to accept. If not accepted, {money(chargedNow)} is
+                  refunded automatically.
+                </li>
+                <li className="flex gap-2">
+                  <Check size={14} className="mt-0.5 shrink-0 text-success" />
+                  Nothing changes until accepted; the revised date and new {addedType} remain
+                  pending.
+                </li>
+              </ul>
+            </section>
+          </div>
+          <footer className="flex flex-wrap items-center justify-between gap-4 border-t border-line bg-subtle px-6 py-4">
+            <div>
+              <p className="text-[14px] font-medium leading-[22px] text-ink">
+                {projectName} · creator changes awaiting approval
+              </p>
+              <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+                Creator fee becomes {money(creatorFee)} once accepted
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button kind="secondary" onClick={() => navigate(brandProjectRoute(projectId))}>
+                Done
+              </Button>
+              <Button
+                onClick={() =>
+                  navigate(brandInvitedCreatorRoute(projectId, creator.handle.slice(1)))
+                }
+                leadingIcon={<ArrowLeft size={16} />}
+              >
+                Back to creator page
+              </Button>
+            </div>
+          </footer>
+        </motion.main>
+      </div>
+    </BrandShell>
+  );
+}
+
 function OneTimeReviewPay({
   creator,
   addedFee,
@@ -675,6 +806,18 @@ function OneTimeReviewPay({
   const nextFee = previousFee + addedFee;
   const firstName = creator.name.split(" ")[0];
   const money = (amount: number) => `₹${amount.toLocaleString("en-IN")}`;
+  if (paymentSent) {
+    return (
+      <ChangesSentConfirmation
+        creator={creator}
+        projectId={projectId}
+        projectName={projectName}
+        oneTime={oneTime}
+        chargedNow={chargedNow}
+        creatorFee={nextFee}
+      />
+    );
+  }
 
   return (
     <BrandShell>
@@ -848,13 +991,11 @@ function OneTimeReviewPay({
                 Back
               </Button>
               <Button
-                disabled={!consented || paymentSent}
+                disabled={!consented}
                 onClick={() => setPaymentSent(true)}
-                leadingIcon={paymentSent ? <Check size={16} /> : <Send size={16} />}
+                leadingIcon={<Send size={16} />}
               >
-                {paymentSent
-                  ? "Changes sent to " + firstName
-                  : `Pay ${money(chargedNow)} & send to ${firstName}`}
+                {`Pay ${money(chargedNow)} & send to ${firstName}`}
               </Button>
             </div>
           </footer>
