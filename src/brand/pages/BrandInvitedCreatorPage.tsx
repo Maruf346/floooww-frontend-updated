@@ -3,7 +3,6 @@ import {
   CalendarDays,
   ChartNoAxesCombined,
   Check,
-  ChevronDown,
   ClipboardList,
   Clock3,
   Download,
@@ -24,6 +23,8 @@ import {
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "motion/react";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { CreatorPerformanceTab } from "@/brand/components/CreatorPerformanceTab";
+import { Dropdown } from "@/common/components/ui/Dropdown";
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import { brandCreatorDeliverablesRoute, brandProjectRoute } from "@/common/constants/routes";
 import { getProject } from "@/brand/data/projects";
@@ -44,6 +45,7 @@ type CreatorDetail = {
   released: string;
   escrow: string;
   sales: string;
+  hasPerformance?: boolean;
   deliverables: Array<{
     name: string;
     type: string;
@@ -59,6 +61,7 @@ const creatorDetails: Record<string, CreatorDetail> = {
     handle: "@ishitarao",
     city: "Bengaluru, Karnataka",
     avatar: "ishita-rao",
+    hasPerformance: true,
     status: "Posting",
     platform: "Instagram",
     channels: ["Instagram 1.1 L", "YouTube 18K", "Skincare"],
@@ -187,6 +190,7 @@ const creatorDetails: Record<string, CreatorDetail> = {
     handle: "@simrankaur",
     city: "Chandigarh",
     avatar: "tara-bose",
+    hasPerformance: true,
     status: "Awaiting approval",
     platform: "Instagram",
     channels: ["Instagram 91K", "YouTube 15K", "Skincare"],
@@ -1881,21 +1885,14 @@ export function BrandInvitedCreatorPage() {
           {tab === "Performance" ? (
             <div className="ml-auto flex shrink-0 items-center gap-2 pb-1">
               <span className="text-[12px] font-medium text-[#8491a3]">View by platform</span>
-              <label className="relative">
-                <select
-                  value={performancePlatform}
-                  onChange={(event) => setPerformancePlatform(event.target.value)}
-                  className="h-8 appearance-none rounded-md border border-[#d4d7df] bg-white py-1.5 pl-3 pr-8 text-[13px] font-medium text-[#394357] outline-none focus:border-primary"
-                >
-                  <option>All platforms</option>
-                  <option>Instagram</option>
-                  <option>YouTube</option>
-                </select>
-                <ChevronDown
-                  size={14}
-                  className="pointer-events-none absolute right-2.5 top-2 text-[#8491a3]"
-                />
-              </label>
+              <Dropdown
+                compact
+                ariaLabel="View performance by platform"
+                className="w-[142px]"
+                value={performancePlatform}
+                onChange={setPerformancePlatform}
+                options={["All platforms", "Instagram", "YouTube", "Pinterest", "Snapchat"]}
+              />
               <button
                 type="button"
                 aria-label="Download performance report"
@@ -1913,7 +1910,11 @@ export function BrandInvitedCreatorPage() {
         ) : tab === "Review" ? (
           <ReviewTab creator={creator} />
         ) : tab === "Performance" ? (
-          <PerformanceEmptyTab onViewDeliverables={() => setTab("Deliverables")} />
+          creator.hasPerformance ? (
+            <CreatorPerformanceTab creatorName={creator.name} platform={creator.platform} />
+          ) : (
+            <PerformanceEmptyTab onViewDeliverables={() => setTab("Deliverables")} />
+          )
         ) : tab !== "Overview" ? (
           <section className="mt-4 rounded-xl border border-line bg-white p-5">
             <h2 className="!m-0 text-[15px] font-bold leading-tight text-ink">{tab}</h2>
