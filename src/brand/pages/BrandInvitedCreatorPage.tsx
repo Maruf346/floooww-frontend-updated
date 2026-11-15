@@ -6,6 +6,7 @@ import {
   Ellipsis,
   ExternalLink,
   MessageSquare,
+  Paperclip,
   Pencil,
   Play,
   Send,
@@ -460,6 +461,22 @@ function DeliverableDetailPanel({
   onClose: () => void;
 }) {
   const [detailTab, setDetailTab] = useState<"Content" | "Comments" | "History">("Content");
+  const [comment, setComment] = useState("");
+  const [thread, setThread] = useState([
+    {
+      author: "Ananya Mehta",
+      meta: "Minimalist · 26 Oct, 19:02",
+      body: "Love the before/after. Can you pin a comment with ISHITA15 so people find the code?",
+      tone: "brand",
+    },
+    {
+      author: "Ishita Rao",
+      meta: "Creator · 26 Oct, 19:40",
+      body: "Pinned it. I also added the link sticker to tonight's Story.",
+      tone: "creator",
+      attachment: "pinned-comment.png · 240 KB",
+    },
+  ]);
   const kind = item.type.split("\u00b7")[0].trim();
   const fee = item.type.split("\u00b7")[1]?.trim() ?? "\u20b93,000";
   const waiting = item.status === "Awaiting approval";
@@ -631,16 +648,102 @@ function DeliverableDetailPanel({
           </button>
         </div>
       ) : detailTab === "Comments" ? (
-        <div className="space-y-3 pt-4 text-[13px] leading-5">
-          <div className="rounded-md bg-subtle p-3">
-            <b className="text-ink">Brand review</b>
-            <p className="mt-1 text-secondary">
-              Please make the CTA more visible in the final three seconds.
+        <div className="space-y-4 pt-4">
+          <div>
+            <p className="text-[14px] font-medium leading-[22px] text-ink">
+              Comments on this deliverable
+            </p>
+            <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+              Visible to the creator {"\u00b7"} also shown in Messages
             </p>
           </div>
-          <div className="rounded-md bg-subtle p-3">
-            <b className="text-ink">{creator.name}</b>
-            <p className="mt-1 text-secondary">Updated and re-submitted for approval.</p>
+
+          <div className="space-y-3">
+            {thread.map((entry, entryIndex) => (
+              <div className="flex items-start gap-2.5" key={`${entry.author}-${entryIndex}`}>
+                {entry.tone === "brand" ? (
+                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary-muted text-[11px] font-medium text-primary">
+                    AM
+                  </span>
+                ) : (
+                  <img
+                    src={`/assets/creators/${creator.avatar}.png`}
+                    alt=""
+                    className="size-8 shrink-0 rounded-full object-cover"
+                  />
+                )}
+                <div
+                  className={`min-w-0 flex-1 rounded-md p-3 ${entry.tone === "brand" ? "bg-primary-subtle" : "bg-subtle"}`}
+                >
+                  <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                    <b className="text-[14px] font-medium leading-[22px] text-ink">
+                      {entry.author}
+                    </b>
+                    <span className="text-[12px] leading-4 text-tertiary">{entry.meta}</span>
+                  </div>
+                  <p className="mt-1 text-[13px] leading-5 text-ink">{entry.body}</p>
+                  {"attachment" in entry ? (
+                    <span className="mt-2 inline-flex items-center gap-1.5 rounded-md border border-line bg-white px-2 py-1.5 text-[12px] leading-4 text-secondary">
+                      <Paperclip size={14} />
+                      {entry.attachment}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-md border border-line p-3">
+            <textarea
+              value={comment}
+              onChange={(event) => setComment(event.target.value)}
+              placeholder="Write a comment… mention a time in the video, e.g. 0:12"
+              className="min-h-16 w-full resize-y border-0 bg-transparent p-0 text-[13px] leading-5 text-ink placeholder:text-tertiary focus:outline-none"
+            />
+            <div className="mt-2 flex items-center gap-2">
+              <button
+                type="button"
+                aria-label="Attach a file"
+                className="text-secondary hover:text-ink"
+              >
+                <Paperclip size={16} />
+              </button>
+              <span className="flex-1" />
+              <button
+                type="button"
+                disabled={!comment.trim()}
+                onClick={() => {
+                  const body = comment.trim();
+                  if (!body) return;
+                  setThread((entries) => [
+                    ...entries,
+                    { author: "Ananya Mehta", meta: "Minimalist · now", body, tone: "brand" },
+                  ]);
+                  setComment("");
+                }}
+                className="flex h-8 items-center gap-1.5 rounded-md bg-ink px-3 text-[13px] font-medium leading-[18px] text-white disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <Send size={14} />
+                Send
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              className="flex h-10 items-center justify-center gap-2 rounded-md border border-line bg-white px-3 text-[14px] font-medium text-ink"
+            >
+              <MessageSquare size={16} />
+              Request changes
+            </button>
+            <button
+              type="button"
+              className="flex h-10 items-center justify-center gap-2 rounded-md bg-ink px-3 text-[14px] font-medium text-white"
+            >
+              <Check size={16} />
+              Approve {"\u00b7"} {fee}
+            </button>
           </div>
         </div>
       ) : (
