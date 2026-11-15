@@ -5,6 +5,7 @@ import {
   Check,
   CircleCheck,
   CircleDollarSign,
+  Download,
   Eye,
   FileText,
   Info,
@@ -12,11 +13,14 @@ import {
   Megaphone,
   MoreHorizontal,
   Pause,
+  PackageCheck,
   Play,
+  ReceiptText,
   RotateCcw,
   Search,
   Share2,
   Trash2,
+  Truck,
   Users,
   Video,
   WalletCards,
@@ -1221,6 +1225,462 @@ function ProjectPaymentsEmpty({
   );
 }
 
+function ProjectPaymentsBoard({ project }: { project: ReturnType<typeof getProject> }) {
+  const rules = getProjectRules(project);
+  const [filter, setFilter] = useState("All");
+  const payments = [
+    [
+      "Meera Iyer",
+      "meera-iyer",
+      "@meerabeauty",
+      "2 of 3",
+      "Instagram",
+      30000,
+      27000,
+      "Changes asked · 28 Oct",
+      "In escrow",
+    ],
+    [
+      "Ishita Rao",
+      "ishita-rao",
+      "@ishitarao",
+      "2 of 4",
+      "Instagram",
+      17000,
+      12750,
+      "₹4,250 released · 21 Oct",
+      "In escrow",
+    ],
+    [
+      "Emma Clarke",
+      "emma-clarke",
+      "@emmaclarke",
+      "3 of 4",
+      "Instagram",
+      15000,
+      11250,
+      "₹3,750 released · 24 Oct",
+      "In escrow",
+    ],
+    [
+      "Kavya Reddy",
+      "kavya-reddy",
+      "@kavyareddy",
+      "3 of 4",
+      "Instagram",
+      15000,
+      11250,
+      "₹3,750 released · 24 Oct",
+      "In escrow",
+    ],
+    [
+      "Riya Sen",
+      "meera-iyer",
+      "@riyasens",
+      "3 of 4",
+      "Instagram",
+      12000,
+      9000,
+      "₹3,000 released · 25 Oct",
+      "In escrow",
+    ],
+    [
+      "Sneha Patil",
+      "kavya-reddy",
+      "@snehapatil",
+      "2 of 4",
+      "Instagram",
+      12000,
+      6000,
+      "Story due · 30 Oct",
+      "In escrow",
+    ],
+    [
+      "Nisha Verma",
+      "tara-bose",
+      "@nishaverma",
+      "2 of 4",
+      "YouTube",
+      12000,
+      9000,
+      "₹3,000 released · 24 Oct",
+      "In escrow",
+    ],
+    [
+      "Tara Bose",
+      "tara-bose",
+      "@tarabose",
+      "2 of 4",
+      "Instagram",
+      15000,
+      7500,
+      "Dispute open · 26 Oct",
+      "Disputed",
+    ],
+    [
+      "Pooja Menon",
+      "emma-clarke",
+      "@poojamenon",
+      "0 of 4",
+      "Instagram",
+      12500,
+      1500,
+      "₹11,000 held · 2 Nov",
+      "In escrow",
+    ],
+    [
+      "Lara Mehta",
+      "meera-iyer",
+      "@laramehta",
+      "4 of 4",
+      "Instagram",
+      10000,
+      9500,
+      "₹500 held · 20 Oct",
+      "In escrow",
+    ],
+    [
+      "Aditi Joshi",
+      "ishita-rao",
+      "@diya.glows",
+      "4 of 4",
+      "YouTube",
+      8000,
+      7500,
+      "₹500 held · 20 Oct",
+      "In escrow",
+    ],
+    [
+      "Zoya Ahmed",
+      "emma-clarke",
+      "@zoyaahmed",
+      "4 of 4",
+      "Instagram",
+      9000,
+      8500,
+      "₹500 held · 19 Oct",
+      "In escrow",
+    ],
+    [
+      "Diya Kapoor",
+      "kavya-reddy",
+      "@diyaglows",
+      "3 of 4",
+      "Instagram",
+      7500,
+      6250,
+      "₹1,250 held · 28 Oct",
+      "In escrow",
+    ],
+    [
+      "Simran Kaur",
+      "tara-bose",
+      "@simrankaur",
+      "3 of 4",
+      "Instagram",
+      7500,
+      5000,
+      "₹2,500 held · 29 Oct",
+      "In escrow",
+    ],
+    [
+      "Kritika Sharma",
+      "meera-iyer",
+      "@kritikaskincare",
+      "3 of 4",
+      "YouTube",
+      8500,
+      4500,
+      "₹4,000 held · 30 Oct",
+      "In escrow",
+    ],
+    [
+      "Mehak Sethi",
+      "ishita-rao",
+      "@mehaksethi",
+      "2 of 4",
+      "Instagram",
+      9000,
+      6300,
+      "₹2,700 held · 30 Oct",
+      "In escrow",
+    ],
+  ] as const;
+  const formatMoney = (value: number) => `₹${new Intl.NumberFormat("en-IN").format(value)}`;
+  const committed = payments.reduce((total, [, , , , , fee]) => total + fee, 0);
+  const released = payments.reduce((total, [, , , , , , value]) => total + value, 0);
+  const escrow = committed - released;
+  const statusFor = (payment: (typeof payments)[number]) => {
+    if (!rules.isGift) return payment[8];
+    return payment[6] === payment[5] ? "Delivered" : "In transit";
+  };
+  const states = rules.isGift
+    ? ["All", "Delivered", "In transit"]
+    : ["All", "In escrow", "Fully paid", "Disputed", "Refunded"];
+  const countFor = (state: string) =>
+    state === "All"
+      ? payments.length
+      : payments.filter((payment) => statusFor(payment) === state).length;
+  const visible = payments.filter((payment) => filter === "All" || statusFor(payment) === filter);
+  const tiles = rules.isGift
+    ? [
+        {
+          label: "Product value",
+          value: formatMoney(committed),
+          detail: "all creator kits",
+          icon: PackageCheck,
+          tone: "bg-ink",
+        },
+        {
+          label: "Kits delivered",
+          value: `${payments.filter((payment) => statusFor(payment) === "Delivered").length}`,
+          detail: "creator shipments",
+          icon: Truck,
+          tone: "bg-[#f29b07]",
+        },
+        {
+          label: "Paid to creators",
+          value: "₹0",
+          detail: "gift exchange",
+          icon: CircleDollarSign,
+          tone: "bg-[#149d46]",
+        },
+        {
+          label: "Fee on product value",
+          value: "₹0",
+          detail: "no platform fee",
+          icon: ReceiptText,
+          tone: "bg-primary",
+        },
+      ]
+    : [
+        {
+          label: rules.isLongTerm ? "Charged to date" : "Committed",
+          value: formatMoney(committed),
+          detail: rules.isLongTerm ? "3 cycles so far" : "16 creators invited",
+          icon: WalletCards,
+          tone: "bg-ink",
+        },
+        {
+          label: "In escrow",
+          value: formatMoney(escrow),
+          detail: "awaiting approval",
+          icon: CircleDollarSign,
+          tone: "bg-[#f29b07]",
+        },
+        {
+          label: "Released",
+          value: formatMoney(released),
+          detail: "paid to creators",
+          icon: CircleCheck,
+          tone: "bg-[#149d46]",
+        },
+        {
+          label: "GST",
+          value: "₹11,800",
+          detail: "invoiced so far",
+          icon: ReceiptText,
+          tone: "bg-primary",
+        },
+      ];
+
+  return (
+    <section className="mt-5 space-y-5">
+      <motion.section
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        className="rounded-xl border border-line bg-white p-5"
+      >
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {tiles.map(({ label, value, detail, icon: Icon, tone }, index) => (
+            <motion.article
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
+              className="rounded-xl border border-line-subtle bg-white p-4"
+              key={label}
+            >
+              <span className={`grid size-9 place-items-center rounded-lg ${tone} text-white`}>
+                <Icon size={18} strokeWidth={1.9} />
+              </span>
+              <p className="mt-3.5 text-[12px] leading-4 text-secondary">{label}</p>
+              <p className="mt-1 text-[22px] font-semibold leading-7 tracking-[-0.33px] text-ink">
+                {value}
+              </p>
+              <p className="mt-2.5 text-[12px] font-medium leading-4 text-tertiary">{detail}</p>
+            </motion.article>
+          ))}
+        </div>
+      </motion.section>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-[10px] bg-subtle p-1">
+          {states.map((state) => (
+            <button
+              type="button"
+              key={state}
+              onClick={() => setFilter(state)}
+              className={`flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-[13px] leading-5 transition ${filter === state ? "bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,.08)]" : "text-secondary hover:text-ink"}`}
+            >
+              <span>{state}</span>
+              <span className="text-[12px] leading-4 text-secondary">{countFor(state)}</span>
+            </button>
+          ))}
+        </div>
+        <span className="hidden h-px flex-1 bg-line xl:block" />
+        <button
+          type="button"
+          className="flex h-8 items-center gap-1.5 rounded-md border border-line bg-white px-3 text-[13px] font-medium leading-[18px] text-ink transition hover:bg-subtle"
+        >
+          <Download size={16} />
+          Download statement
+        </button>
+      </div>
+
+      <motion.section
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+        className="overflow-hidden rounded-xl border border-line bg-white p-5"
+      >
+        <div className="overflow-x-auto rounded-xl border border-line">
+          <table className="w-full min-w-[1050px] border-collapse text-left">
+            <thead className="bg-subtle text-[12px] font-semibold leading-4 text-secondary">
+              <tr>
+                <th className="w-10 px-4 py-2.5">#</th>
+                <th className="min-w-[230px] px-3 py-2.5">Creator</th>
+                <th className="w-20 px-3 py-2.5">Approved</th>
+                <th className="w-[116px] px-3 py-2.5">Platform</th>
+                <th className="w-[100px] px-3 py-2.5 text-right">
+                  {rules.isGift ? "Kit value" : rules.isLongTerm ? "Fee to date" : "Fee"}
+                </th>
+                <th className="w-[120px] px-3 py-2.5">{rules.isGift ? "Shipped" : "Released"}</th>
+                <th className="w-[154px] px-3 py-2.5">
+                  {rules.isGift ? "Delivered" : "In escrow"}
+                </th>
+                <th className="w-[145px] px-3 py-2.5">Last activity</th>
+                <th className="w-[72px] px-3 py-2.5 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {visible.map(
+                (
+                  [name, avatar, handle, approved, platform, fee, releasedAmount, activity, status],
+                  index,
+                ) => {
+                  const inEscrow = fee - releasedAmount;
+                  const rowStatus = statusFor([
+                    name,
+                    avatar,
+                    handle,
+                    approved,
+                    platform,
+                    fee,
+                    releasedAmount,
+                    activity,
+                    status,
+                  ]);
+                  const hasEscrow = !rules.isGift && inEscrow > 0;
+                  return (
+                    <tr
+                      className="border-t border-line-subtle text-[13px] leading-5 text-ink"
+                      key={name}
+                    >
+                      <td className="px-4 py-3 text-[14px] font-medium">{index + 1}</td>
+                      <td className="px-3 py-3">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={`/assets/creators/${avatar}.png`}
+                            alt=""
+                            className="size-10 rounded-full object-cover"
+                          />
+                          <div className="min-w-0">
+                            <p className="truncate text-[14px] font-medium leading-[22px]">
+                              {name}
+                            </p>
+                            <p className="truncate text-[12px] leading-4 text-secondary">
+                              {approved.replace("of", "deliverables ·")} · {handle}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-3 py-3 whitespace-nowrap">{approved}</td>
+                      <td className="px-3 py-3">
+                        <span className="flex items-center gap-1.5">
+                          <PlatformLogo platform={platform as Platform} size={16} />
+                          {platform}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3 text-right font-medium whitespace-nowrap">
+                        {formatMoney(fee)}
+                      </td>
+                      <td className="px-3 py-3">
+                        <span className="inline-flex rounded-full bg-success-bg px-2 py-0.5 text-[12px] font-medium leading-4 text-success">
+                          {rules.isGift
+                            ? releasedAmount === fee
+                              ? "Delivered"
+                              : "Shipped"
+                            : formatMoney(releasedAmount)}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3">
+                        <span
+                          className={`inline-flex rounded-full px-2 py-0.5 text-[12px] font-medium leading-4 ${hasEscrow ? "bg-warning-bg text-warning" : rowStatus === "Disputed" ? "bg-danger-bg text-danger" : "bg-muted text-secondary"}`}
+                        >
+                          {rules.isGift
+                            ? rowStatus
+                            : hasEscrow
+                              ? `In escrow · ${formatMoney(inEscrow)}`
+                              : rowStatus}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3 text-[12px] leading-4 text-secondary">{activity}</td>
+                      <td className="px-3 py-3 text-right">
+                        <button
+                          type="button"
+                          className="h-8 rounded-md border border-line bg-white px-3 text-[13px] font-medium leading-[18px] transition hover:bg-subtle"
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                },
+              )}
+            </tbody>
+            <tfoot className="bg-subtle">
+              <tr>
+                <td colSpan={9} className="px-4 py-3.5">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-[14px] font-medium leading-[22px] text-ink">
+                      {rules.isGift
+                        ? `Total product value ${formatMoney(committed)} · ${payments.filter((payment) => statusFor(payment) === "Delivered").length} kits delivered`
+                        : `Total fees ${formatMoney(committed)} · ${formatMoney(released)} released · ${formatMoney(escrow)} in escrow`}
+                    </p>
+                    <p className="text-[12px] leading-4 text-secondary">
+                      {rules.isGift
+                        ? "Kits ship from your warehouse · no creator fees"
+                        : "+ ₹11,800 GST invoiced so far · no platform fee · paid by UPI"}
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </motion.section>
+
+      <p className="flex items-center gap-2 text-[12px] leading-4 text-secondary">
+        <Info size={14} className="shrink-0" />
+        {rules.isGift
+          ? "Kits ship from your warehouse. Approving creator content marks the exchange complete."
+          : `Every rupee sits in escrow until you approve. If a creator doesn’t deliver, it’s refunded to you automatically.${rules.isLongTerm ? " Each cycle is charged at its start." : ""}`}
+      </p>
+    </section>
+  );
+}
+
 function ProjectContentBoard({
   project,
   onGoToInvitedCreators,
@@ -1772,11 +2232,15 @@ export function BrandProjectPublishedPage() {
           ) : (
             <ProjectContentEmpty onGoToInvitedCreators={() => setTab("Invited creators")} />
           )
-        ) : tab === "Payments" && project.id === 5 ? (
-          <ProjectPaymentsEmpty
-            project={project}
-            onGoToApplications={() => setTab("Applications")}
-          />
+        ) : tab === "Payments" ? (
+          project.id === 5 ? (
+            <ProjectPaymentsEmpty
+              project={project}
+              onGoToApplications={() => setTab("Applications")}
+            />
+          ) : (
+            <ProjectPaymentsBoard project={project} />
+          )
         ) : false ? (
           <section className="mt-6">
             <div className="flex flex-wrap items-center gap-2">
