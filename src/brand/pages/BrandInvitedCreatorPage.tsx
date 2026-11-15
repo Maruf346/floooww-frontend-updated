@@ -1,6 +1,5 @@
 import { type ReactNode, useMemo, useState } from "react";
 import {
-  CalendarDays,
   ChartNoAxesCombined,
   Check,
   ClipboardList,
@@ -23,6 +22,7 @@ import {
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "motion/react";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { CreatorPerformanceTab } from "@/brand/components/CreatorPerformanceTab";
 import { Dropdown } from "@/common/components/ui/Dropdown";
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
@@ -1830,12 +1830,7 @@ export function BrandInvitedCreatorPage() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              className="flex h-10 items-center gap-2 rounded-md border border-line bg-white px-3 text-[12px] font-medium text-ink"
-            >
-              <CalendarDays size={16} />7 Oct {"\u2013"} 28 Oct 2026
-            </button>
+            <DateRangePicker value="7 Oct - 28 Oct 2026" showCompare={false} />
             <button
               type="button"
               className="flex h-10 items-center gap-2 rounded-md border border-line bg-white px-3 text-[13px] font-medium text-ink"

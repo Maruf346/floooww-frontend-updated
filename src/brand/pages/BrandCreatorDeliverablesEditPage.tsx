@@ -4,7 +4,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "motion/react";
 import {
   ArrowLeft,
-  CalendarDays,
   Check,
   CheckCircle2,
   ChevronDown,
@@ -20,6 +19,7 @@ import {
 } from "lucide-react";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
+import { DeadlinePicker } from "@/common/components/ui/DeadlinePicker";
 import { Dropdown } from "@/common/components/ui/Dropdown";
 import {
   brandCreatorProfileRoute,
@@ -237,16 +237,11 @@ function DeliverableRow({
           onChange={(platform) => onChange({ platform })}
           ariaLabel="Platform"
         />
-        <InputShell>
-          <CalendarDays size={15} className="mr-2 shrink-0 text-secondary" />
-          <input
-            aria-label="Deadline"
-            type="date"
-            value={item.deadline}
-            onChange={(event) => onChange({ deadline: event.target.value })}
-            className="min-w-0 flex-1 bg-transparent text-[13px] outline-none"
-          />
-        </InputShell>
+        <DeadlinePicker
+          value={item.deadline}
+          onChange={(deadline) => onChange({ deadline })}
+          pickerId={`deliverable-deadline-${item.id}`}
+        />
         <button
           type="button"
           className="flex h-10 min-w-0 items-center gap-2 rounded-md border border-line bg-white px-3 text-left text-[13px] text-primary"
@@ -553,16 +548,14 @@ function OneTimeRowEditor({
           ariaLabel="Platform"
           className={fieldClass}
         />
-        <OneTimeControl className={fieldClass}>
-          <CalendarDays size={15} className="mr-2 shrink-0 text-secondary" />
-          <input
-            aria-label="Deadline"
-            type="date"
-            value={row.deadline}
-            onChange={(event) => onChange({ deadline: event.target.value })}
-            className="min-w-0 flex-1 bg-transparent text-[13px] outline-none"
-          />
-        </OneTimeControl>
+        <DeadlinePicker
+          value={row.deadline}
+          onChange={(deadline) => onChange({ deadline })}
+          pickerId={`one-time-deadline-${row.id}`}
+          minDate="2026-10-07"
+          maxDate="2026-11-07"
+          className={fieldClass}
+        />
         <button
           type="button"
           className={`flex h-10 min-w-0 items-center gap-2 rounded-md border border-line px-3 text-left text-[13px] text-primary ${fieldClass}`}
