@@ -15,6 +15,7 @@ import {
   Pencil,
   Play,
   Send,
+  Star,
   WalletCards,
   X,
 } from "lucide-react";
@@ -1467,6 +1468,109 @@ function PaymentInfoCard({ title, rows }: { title: string; rows: Array<[string, 
   );
 }
 
+function ReviewTab({ creator }: { creator: CreatorDetail }) {
+  const criteria = [
+    "Content quality",
+    "Professionalism",
+    "On-time posting",
+    "Engagement",
+    "Communication",
+    "Creativity",
+    "Brand fit",
+    "Overall experience",
+  ];
+  const [ratings, setRatings] = useState<Record<string, number>>({});
+  const [review, setReview] = useState("");
+  const [saved, setSaved] = useState(false);
+  const canSave = criteria.every((criterion) => ratings[criterion]) && review.trim().length > 0;
+
+  return (
+    <section className="mt-4 w-full max-w-[760px] rounded-xl border border-line bg-white p-5">
+      <header>
+        <h2 className="!m-0 text-[16px] font-semibold leading-6 text-ink">Leave a review</h2>
+        <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+          Helps other brands choose creators. {creator.name.split(" ")[0]} sees it after the project
+          ends on 7 Nov.
+        </p>
+      </header>
+
+      <div className="mt-4 grid gap-x-8 gap-y-3.5 sm:grid-cols-2">
+        {criteria.map((criterion) => {
+          const rating = ratings[criterion] ?? 0;
+          return (
+            <div className="flex items-center gap-2" key={criterion}>
+              <p className="min-w-0 flex-1 text-[14px] leading-[22px] text-ink">{criterion}</p>
+              <div className="flex gap-2" aria-label={`${criterion} rating`}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    type="button"
+                    onClick={() => setRatings((current) => ({ ...current, [criterion]: star }))}
+                    aria-label={`Rate ${criterion} ${star} out of 5`}
+                    aria-pressed={rating === star}
+                    className="grid size-5 place-items-center rounded-sm text-[#a3a3ac] transition-colors hover:text-[#f59e0b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    key={star}
+                  >
+                    <Star
+                      size={20}
+                      strokeWidth={1.8}
+                      fill={star <= rating ? "#f59e0b" : "none"}
+                      className={star <= rating ? "text-[#f59e0b]" : ""}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <label
+        className="mt-4 block text-[14px] font-medium leading-[22px] text-ink"
+        htmlFor="creator-review"
+      >
+        Written review
+      </label>
+      <textarea
+        id="creator-review"
+        value={review}
+        onChange={(event) => {
+          setReview(event.target.value);
+          setSaved(false);
+        }}
+        placeholder={`Share what it was like working with ${creator.name.split(" ")[0]}…`}
+        className="mt-2 h-[110px] w-full resize-none rounded-md border border-line bg-white p-3 text-[14px] leading-[22px] text-ink outline-none placeholder:text-tertiary focus:border-primary"
+      />
+
+      <footer className="mt-4 flex flex-wrap items-center gap-2.5">
+        <p className="min-w-[220px] flex-1 text-[12px] leading-4 text-secondary">
+          {saved
+            ? "Review saved. Thank you for sharing your experience."
+            : "Rate all eight and write a few lines to save."}
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            setRatings({});
+            setReview("");
+            setSaved(false);
+          }}
+          className="h-10 rounded-md border border-line bg-white px-4 text-[14px] font-medium text-ink transition-colors hover:bg-subtle"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          disabled={!canSave}
+          onClick={() => setSaved(true)}
+          className="h-10 rounded-md bg-ink px-4 text-[14px] font-medium text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-45"
+        >
+          Save review
+        </button>
+      </footer>
+    </section>
+  );
+}
+
 function NextActions({ onApprove }: { onApprove: () => void }) {
   const tasks = [
     [
@@ -1719,6 +1823,8 @@ export function BrandInvitedCreatorPage() {
           <DeliverablesListTab creator={creator} />
         ) : tab === "Payments" ? (
           <PaymentsTab creator={creator} />
+        ) : tab === "Review" ? (
+          <ReviewTab creator={creator} />
         ) : tab !== "Overview" ? (
           <section className="mt-4 rounded-xl border border-line bg-white p-5">
             <h2 className="!m-0 text-[15px] font-bold leading-tight text-ink">{tab}</h2>
