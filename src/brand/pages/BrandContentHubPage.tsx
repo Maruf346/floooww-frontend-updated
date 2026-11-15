@@ -1,5 +1,14 @@
 import { useMemo, useState } from "react";
-import { Check, ChevronDown, FolderOpen, Grid2X2, ImageIcon, List, Plus } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  FolderOpen,
+  Grid2X2,
+  ImageIcon,
+  List,
+  PencilLine,
+  Plus,
+} from "lucide-react";
 import { motion } from "motion/react";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
@@ -220,10 +229,19 @@ function join(...classes: (string | false | undefined)[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+type FilterOption = {
+  value: string;
+  label: string;
+};
+
+const optionList = (options: string[]): FilterOption[] =>
+  options.map((option) => ({ label: option, value: option }));
+
 function Filter({
   label,
   value,
   options,
+  other,
   open,
   onOpen,
   onClose,
@@ -231,14 +249,18 @@ function Filter({
 }: {
   label: string;
   value: string;
-  options: string[];
+  options: FilterOption[];
+  other?: boolean;
   open: boolean;
   onOpen: () => void;
   onClose: () => void;
   onChange: (value: string) => void;
 }) {
+  const selectedOption = options.find((option) => option.value === value);
+  const buttonValue = value === "All" ? "All" : (selectedOption?.label ?? value);
+
   return (
-    <div className={join("relative", open && "z-50")}>
+    <div className={join("relative", open ? "z-[70]" : "z-10")}>
       <button
         aria-expanded={open}
         aria-haspopup="listbox"
@@ -249,7 +271,7 @@ function Filter({
         onClick={open ? onClose : onOpen}
         type="button"
       >
-        {value === "All" ? label : label + ": " + value}
+        {label + ": " + buttonValue}
         <ChevronDown
           className={open ? "rotate-180 transition-transform" : "transition-transform"}
           size={14}
@@ -261,7 +283,7 @@ function Filter({
           role="listbox"
         >
           {options.map((option) => {
-            const selected = option === value;
+            const selected = option.value === value;
             return (
               <button
                 aria-selected={selected}
@@ -269,19 +291,31 @@ function Filter({
                   "flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-[13px] leading-5",
                   selected ? "bg-primary-subtle text-primary" : "text-ink hover:bg-subtle",
                 )}
-                key={option}
+                key={option.value}
                 onClick={() => {
-                  onChange(option);
+                  onChange(option.value);
                   onClose();
                 }}
                 role="option"
                 type="button"
               >
                 <Check className={selected ? "text-primary" : "opacity-0"} size={16} />
-                {option}
+                {option.label}
               </button>
             );
           })}
+          {other && (
+            <div className="mt-1 border-t border-line pt-1">
+              <button
+                className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-[13px] leading-5 text-primary hover:bg-subtle"
+                onClick={onClose}
+                type="button"
+              >
+                <PencilLine size={15} strokeWidth={1.8} />
+                Other: type your own
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -370,10 +404,31 @@ export function BrandContentHubPage() {
         (creator === "All" || item.creator === creator) &&
         (platform === "All" || item.platform === platform) &&
         (format === "All" || item.format === format) &&
-        (rights === "All" || item.rights.startsWith(rights))
+        (rights === "All" ||
+          (rights === "Organic" && item.rights.startsWith("Organic")) ||
+          (rights === "Paid ads" && item.rights.startsWith("Paid ads")) ||
+          (rights === "Ends in 30 days" && item.warning) ||
+          (rights === "Expired" && item.rights.includes("Expired")))
       );
     });
-    return sort === "Oldest" ? [...items].reverse() : items;
+
+    const rankBySort: Record<string, string[]> = {
+      "Most views": ["festive", "month-routine", "lip", "hydration", "launch", "routine"],
+      "Most orders": ["festive", "month-routine", "launch", "lip", "hydration"],
+      "Highest ER": ["festive", "lip", "month-routine", "hydration", "spf"],
+      "Rights ending soonest": ["lip", "launch", "spf", "results", "routine", "hydration"],
+    };
+    const ranks = rankBySort[sort];
+    return ranks
+      ? [...items].sort((left, right) => {
+          const leftRank = ranks.indexOf(left.id);
+          const rightRank = ranks.indexOf(right.id);
+          return (
+            (leftRank === -1 ? Number.MAX_SAFE_INTEGER : leftRank) -
+            (rightRank === -1 ? Number.MAX_SAFE_INTEGER : rightRank)
+          );
+        })
+      : items;
   }, [activeTab, creator, format, platform, project, rights, sort]);
 
   const toggleSelected = (id: string) => {
@@ -438,7 +493,17 @@ export function BrandContentHubPage() {
           <Filter
             label="Project"
             value={project}
-            options={["All", "Vitamin-C Serum", "Glow Squad", "Lip Tint Drop", "Skin Quiz Leads"]}
+            options={[
+              { label: "All projects", value: "All" },
+              ...optionList([
+                "Vitamin-C Serum",
+                "Glow Squad",
+                "Monsoon Sunscreen",
+                "Lip Tint Drop",
+                "Hydration Bundle",
+                "Skin Quiz Leads",
+              ]),
+            ]}
             open={openFilter === "project"}
             onOpen={() => setOpenFilter("project")}
             onClose={() => setOpenFilter(null)}
@@ -447,7 +512,14 @@ export function BrandContentHubPage() {
           <Filter
             label="Creator"
             value={creator}
-            options={["All", "Meera Iyer", "Ishita Rao", "Nisha Verma", "Riya Sen", "Sneha Patil"]}
+            options={optionList([
+              "All",
+              "Meera Iyer",
+              "Ishita Rao",
+              "Nisha Verma",
+              "Riya Sen",
+              "Sneha Patil",
+            ])}
             open={openFilter === "creator"}
             onOpen={() => setOpenFilter("creator")}
             onClose={() => setOpenFilter(null)}
@@ -456,7 +528,7 @@ export function BrandContentHubPage() {
           <Filter
             label="Platform"
             value={platform}
-            options={["All", "Instagram", "YouTube", "Pinterest", "Snapchat"]}
+            options={optionList(["All", "Instagram", "YouTube", "Pinterest", "Snapchat"])}
             open={openFilter === "platform"}
             onOpen={() => setOpenFilter("platform")}
             onClose={() => setOpenFilter(null)}
@@ -465,7 +537,15 @@ export function BrandContentHubPage() {
           <Filter
             label="Format"
             value={format}
-            options={["All", "Reel", "Story", "Carousel", "Short", "File", "Video"]}
+            options={[
+              { label: "All formats", value: "All" },
+              { label: "Reels", value: "Reel" },
+              { label: "Stories", value: "Story" },
+              { label: "Shorts", value: "Short" },
+              { label: "Carousels", value: "Carousel" },
+              { label: "UGC files", value: "File" },
+            ]}
+            other
             open={openFilter === "format"}
             onOpen={() => setOpenFilter("format")}
             onClose={() => setOpenFilter(null)}
@@ -474,7 +554,14 @@ export function BrandContentHubPage() {
           <Filter
             label="Usage rights"
             value={rights}
-            options={["All", "Organic", "Paid ads"]}
+            options={[
+              { label: "All", value: "All" },
+              { label: "Organic only", value: "Organic" },
+              { label: "Paid ads allowed", value: "Paid ads" },
+              { label: "Ends in 30 days", value: "Ends in 30 days" },
+              { label: "Expired", value: "Expired" },
+            ]}
+            other
             open={openFilter === "rights"}
             onOpen={() => setOpenFilter("rights")}
             onClose={() => setOpenFilter(null)}
@@ -484,7 +571,13 @@ export function BrandContentHubPage() {
           <Filter
             label="Sort"
             value={sort}
-            options={["Newest", "Oldest"]}
+            options={optionList([
+              "Newest",
+              "Most views",
+              "Most orders",
+              "Highest ER",
+              "Rights ending soonest",
+            ])}
             open={openFilter === "sort"}
             onOpen={() => setOpenFilter("sort")}
             onClose={() => setOpenFilter(null)}
