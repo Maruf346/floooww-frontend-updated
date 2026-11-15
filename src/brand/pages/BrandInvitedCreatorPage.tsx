@@ -30,7 +30,8 @@ import { CreatorPerformanceTab } from "@/brand/components/CreatorPerformanceTab"
 import { Dropdown } from "@/common/components/ui/Dropdown";
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import { brandCreatorDeliverablesRoute, brandProjectRoute } from "@/common/constants/routes";
-import { getProject } from "@/brand/data/projects";
+import { getProject, type Project } from "@/brand/data/projects";
+import { getProjectRules } from "@/brand/data/projectRules";
 import type { Platform } from "@/common/types";
 
 type CreatorStatus = "Posting" | "Awaiting approval" | "Overdue" | "Not started";
@@ -293,7 +294,9 @@ function Panel({
   );
 }
 
-function Timeline({ creator, projectName }: { creator: CreatorDetail; projectName: string }) {
+function Timeline({ creator, project }: { creator: CreatorDetail; project: Project }) {
+  const rules = getProjectRules(project);
+  const projectName = project.name;
   const items = [
     ["Invited", "5 Oct", "₹17,000 funded to escrow", true],
     ["Accepted", "6 Oct", "Within 1 day", true],
@@ -304,14 +307,50 @@ function Timeline({ creator, projectName }: { creator: CreatorDetail; projectNam
     ["Next deadline", "30 Oct", "Last-day reminder · Story", false],
     ["Project ends", "7 Nov", "Usage rights until 7 Dec", false],
   ];
+  const timelineItems = rules.isLongTerm
+    ? [
+        [
+          "Invited",
+          "5 Oct",
+          rules.isGift ? "Kit value reserved" : `${creator.fee} funded to escrow`,
+          true,
+        ],
+        ["Accepted", "6 Oct", "Within 1 day", true],
+        ["Month 3 of 6", "Oct", `This month's ${rules.progressNoun}`, true],
+        ["Next month starts", "2 Nov", "Next brief and cycle begin", false],
+        ["Project ends", "31 Jan", "Final cycle and usage rights end", false],
+      ]
+    : [
+        [
+          "Invited",
+          "5 Oct",
+          rules.isGift ? "Product kit reserved" : `${creator.fee} funded to escrow`,
+          true,
+        ],
+        ["Accepted", "6 Oct", "Within 1 day", true],
+        [
+          rules.isGift ? "Kit delivered" : "Brief sent",
+          "11 Oct",
+          rules.isGift ? "Delivery confirmed" : "Creator brief shared",
+          true,
+        ],
+        [
+          rules.firstItemLabel,
+          "18 Oct",
+          creator.deliverables[0]?.name ?? "First deliverable",
+          true,
+        ],
+        [rules.deadlineLabel, "30 Oct", `Last ${rules.item} due`, false],
+        ["Project ends", "7 Nov", "Usage rights until 7 Dec", false],
+      ];
   return (
     <Panel
       title="Collaboration timeline"
       subtitle={`Showing 5 Oct – 7 Nov · today 28 Oct · ${projectName}`}
-      action={<StatusPill status="Posting" />}
+      action={<StatusPill status={rules.activeVerb as CreatorStatus} />}
     >
       <ol className="grid gap-4 sm:grid-cols-4 xl:grid-cols-8">
-        {items.map(([label, date, note, complete], index) => (
+        {timelineItems.map(([label, date, note, complete], index) => (
           <li className="relative min-w-0 xl:pr-3" key={String(label)}>
             <span
               className={`relative z-[1] mb-2 grid size-7 place-items-center rounded-full text-[11px] ${complete ? "bg-success text-white" : index === 6 ? "border-2 border-ink bg-white text-ink" : "bg-muted text-tertiary"}`}
@@ -333,12 +372,13 @@ function Timeline({ creator, projectName }: { creator: CreatorDetail; projectNam
   );
 }
 
-function DeliverableProgress({ creator }: { creator: CreatorDetail }) {
+function DeliverableProgress({ creator, project }: { creator: CreatorDetail; project: Project }) {
+  const rules = getProjectRules(project);
   const ratio = creator.completed / creator.total;
   return (
     <Panel
       title="Deliverable progress"
-      subtitle={`${creator.total} deliverables from ${creator.name}`}
+      subtitle={`${rules.isAmbassador ? "Month 3: " : ""}${creator.completed} / ${creator.total} ${rules.progressNoun} from ${creator.name}`}
     >
       <div className="flex flex-wrap items-center gap-5">
         <motion.div
@@ -355,7 +395,7 @@ function DeliverableProgress({ creator }: { creator: CreatorDetail }) {
             <b className="text-[17px] leading-5 text-ink">
               {creator.completed} of {creator.total}
             </b>
-            <span className="text-[11px] text-secondary">delivered</span>
+            <span className="text-[11px] text-secondary">{rules.completedVerb.toLowerCase()}</span>
           </div>
         </motion.div>
         <div className="min-w-[220px] flex-1 space-y-2.5">
@@ -908,7 +948,8 @@ function DeliverableDetailPanel({
   );
 }
 
-function DeliverablesListTab({ creator }: { creator: CreatorDetail }) {
+function DeliverablesListTab({ creator, project }: { creator: CreatorDetail; project: Project }) {
+  const rules = getProjectRules(project);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   return (
     <div
@@ -920,7 +961,7 @@ function DeliverablesListTab({ creator }: { creator: CreatorDetail }) {
         <header className="mb-4">
           <h2 className="!m-0 text-[16px] font-semibold leading-6 text-ink">Deliverables</h2>
           <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-            Track each deliverable from brief to live post
+            {`Track each ${rules.item} from brief to ${rules.isFileBased ? "delivery" : "live post"}`}
           </p>
         </header>
 
@@ -931,7 +972,7 @@ function DeliverablesListTab({ creator }: { creator: CreatorDetail }) {
                 <th className="w-[46px] px-4 py-2.5">#</th>
                 <th className="px-4 py-2.5">Deliverable</th>
                 <th className="w-[128px] whitespace-nowrap px-4 py-2.5">Status</th>
-                <th className="w-[116px] whitespace-nowrap px-4 py-2.5">Live post</th>
+                <th className="w-[116px] whitespace-nowrap px-4 py-2.5">{rules.liveColumnLabel}</th>
                 <th className="w-[116px] px-4 py-2.5">Actions</th>
               </tr>
             </thead>
@@ -971,7 +1012,7 @@ function DeliverablesListTab({ creator }: { creator: CreatorDetail }) {
                     ) : (
                       <span className="flex whitespace-nowrap items-center gap-1.5 text-[13px] leading-5 text-secondary">
                         <span className="size-3.5 rounded-full border border-secondary" />
-                        Not live yet
+                        {rules.isFileBased ? "Not delivered yet" : "Not live yet"}
                       </span>
                     )}
                   </td>
@@ -1038,7 +1079,8 @@ function inr(value: number) {
   return `\u20b9${value.toLocaleString("en-IN")}`;
 }
 
-function PaymentsTab({ creator }: { creator: CreatorDetail }) {
+function PaymentsTab({ creator, project }: { creator: CreatorDetail; project: Project }) {
+  const rules = getProjectRules(project);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   if (selectedIndex !== null) {
@@ -1085,10 +1127,16 @@ function PaymentsTab({ creator }: { creator: CreatorDetail }) {
               <th className="min-w-[230px] px-4 py-2.5">Deliverable</th>
               <th className="w-[74px] px-3 py-2.5">Type</th>
               <th className="w-[126px] px-3 py-2.5">Platform</th>
-              <th className="w-[94px] px-3 py-2.5 text-right">Amount</th>
+              <th className="w-[94px] px-3 py-2.5 text-right">
+                {rules.isGift ? "Kit value" : "Amount"}
+              </th>
               <th className="w-[158px] px-3 py-2.5">Content status</th>
-              <th className="w-[132px] px-3 py-2.5">Payment status</th>
-              <th className="w-[104px] px-3 py-2.5">Approved on</th>
+              <th className="w-[132px] px-3 py-2.5">
+                {rules.isGift ? "Shipment" : "Payment status"}
+              </th>
+              <th className="w-[104px] px-3 py-2.5">
+                {rules.isGift ? "Delivered on" : "Approved on"}
+              </th>
               <th className="w-[82px] px-3 py-2.5 text-right">Action</th>
             </tr>
           </thead>
@@ -1153,7 +1201,15 @@ function PaymentsTab({ creator }: { creator: CreatorDetail }) {
                   </td>
                   <td className="px-3 py-3">
                     <PaymentPill
-                      label={isReleased ? "Released" : "In escrow"}
+                      label={
+                        rules.isGift
+                          ? isReleased
+                            ? "Delivered"
+                            : "In transit"
+                          : isReleased
+                            ? "Released"
+                            : "In escrow"
+                      }
                       tone={isReleased ? "success" : "warning"}
                     />
                   </td>
@@ -1477,12 +1533,13 @@ function PaymentInfoCard({ title, rows }: { title: string; rows: Array<[string, 
   );
 }
 
-function ReviewTab({ creator }: { creator: CreatorDetail }) {
+function ReviewTab({ creator, project }: { creator: CreatorDetail; project: Project }) {
+  const rules = getProjectRules(project);
   const criteria = [
     "Content quality",
     "Professionalism",
     "On-time posting",
-    "Engagement",
+    rules.isFileBased ? "File quality" : "Engagement",
     "Communication",
     "Creativity",
     "Brand fit",
@@ -1499,7 +1556,7 @@ function ReviewTab({ creator }: { creator: CreatorDetail }) {
         <h2 className="!m-0 text-[16px] font-semibold leading-6 text-ink">Leave a review</h2>
         <p className="mt-0.5 text-[12px] leading-4 text-secondary">
           Helps other brands choose creators. {creator.name.split(" ")[0]} sees it after the project
-          ends on 7 Nov.
+          {rules.isLongTerm ? " reaches the end of the current cycle." : " ends on 7 Nov."}
         </p>
       </header>
 
@@ -1676,10 +1733,11 @@ function NextActions({ onApprove }: { onApprove: () => void }) {
   );
 }
 
-function Budget({ creator }: { creator: CreatorDetail }) {
+function Budget({ creator, project }: { creator: CreatorDetail; project: Project }) {
+  const rules = getProjectRules(project);
   const rows = [
-    ["Paid to creator", creator.released, "75%", "#171a20"],
-    ["Held in escrow", creator.escrow, "25%", "#7b6cf6"],
+    [rules.isGift ? "Shipped" : "Paid to creator", creator.released, "75%", "#171a20"],
+    [rules.isGift ? "Ships next" : "Held in escrow", creator.escrow, "25%", "#7b6cf6"],
     ["Not funded", "₹0", "0%", "#dbe1e8"],
   ];
   return (
@@ -1729,8 +1787,8 @@ function ProjectDetails({
   creator: CreatorDetail;
 }) {
   const rows = [
-    ["Type", "Influencer marketing"],
-    ["Partnership", "Paid"],
+    ["Type", project.projectType],
+    ["Partnership", project.partnership],
     ["Duration", "One-time · 7 Oct – 7 Nov 2026"],
     ["Platforms", creator.platform],
     ["Tracking", "Shopify · code ISHITA15"],
@@ -2080,11 +2138,11 @@ export function BrandInvitedCreatorPage() {
           ) : null}
         </div>
         {tab === "Deliverables" ? (
-          <DeliverablesListTab creator={creator} />
+          <DeliverablesListTab creator={creator} project={project} />
         ) : tab === "Payments" ? (
-          <PaymentsTab creator={creator} />
+          <PaymentsTab creator={creator} project={project} />
         ) : tab === "Review" ? (
-          <ReviewTab creator={creator} />
+          <ReviewTab creator={creator} project={project} />
         ) : tab === "Performance" ? (
           creator.hasPerformance ? (
             <CreatorPerformanceTab creatorName={creator.name} platform={creator.platform} />
@@ -2101,17 +2159,17 @@ export function BrandInvitedCreatorPage() {
         ) : (
           <>
             <div className="mt-4">
-              <Timeline creator={creator} projectName={project.name} />
+              <Timeline creator={creator} project={project} />
             </div>
             <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.8fr)_minmax(290px,.9fr)]">
               <main className="space-y-4">
-                <DeliverableProgress creator={creator} />
+                <DeliverableProgress creator={creator} project={project} />
                 <Pipeline onView={() => setTab("Deliverables")} />
                 <Deliverables creator={creator} />
               </main>
               <aside className="space-y-4">
                 <NextActions onApprove={() => setApproved(true)} />
-                <Budget creator={creator} />
+                <Budget creator={creator} project={project} />
                 <ProjectDetails project={project} creator={creator} />
               </aside>
             </div>

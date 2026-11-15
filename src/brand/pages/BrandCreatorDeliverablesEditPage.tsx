@@ -27,6 +27,7 @@ import {
   brandProjectRoute,
 } from "@/common/constants/routes";
 import { getProject } from "@/brand/data/projects";
+import { getProjectRules } from "@/brand/data/projectRules";
 import { getCreatorProfile } from "./project-applications/creatorProfileData";
 
 type Status = "Approved · locked" | "Posted · locked" | "Not started" | "Upcoming" | "Added · new";
@@ -1001,9 +1002,11 @@ function OneTimeReviewPay({
 function OneTimeDeliverablesEditor({
   projectId,
   creator,
+  project,
 }: {
   projectId: string;
   creator: { name: string; handle: string; avatar: string };
+  project: ReturnType<typeof getProject>;
 }) {
   const navigate = useNavigate();
   const [rows, setRows] = useState(oneTimeRows);
@@ -1027,7 +1030,7 @@ function OneTimeDeliverablesEditor({
         <nav className="flex flex-wrap items-center gap-2 text-[12px] leading-4 text-secondary">
           <Link to="/brand/projects">Projects</Link>
           <span>/</span>
-          <Link to={brandProjectRoute(projectId)}>Vitamin-C Serum</Link>
+          <Link to={brandProjectRoute(projectId)}>{project.name}</Link>
           <span>/</span>
           <Link to={brandProjectRoute(projectId)}>Invited creators</Link>
           <span>/</span>
@@ -1209,6 +1212,7 @@ export function BrandCreatorDeliverablesEditPage() {
   const navigate = useNavigate();
   const creator = useMemo(() => getCreatorProfile(creatorId), [creatorId]);
   const project = getProject(Number(projectId));
+  const rules = getProjectRules(project);
   const [cycleOne, setCycleOne] = useState(firstCycle);
   const [cycleTwo, setCycleTwo] = useState(secondCycle);
   const [editingId, setEditingId] = useState<string | null>("cycle-2-reminder");
@@ -1228,15 +1232,15 @@ export function BrandCreatorDeliverablesEditPage() {
     setEditingId(null);
     setNotice("Deliverable saved. Send changes when you are ready.");
   };
-  if (project?.id === 1) {
-    return <OneTimeDeliverablesEditor projectId={projectId} creator={creator} />;
+  if (!rules.isLongTerm) {
+    return <OneTimeDeliverablesEditor projectId={projectId} creator={creator} project={project} />;
   }
   if (reviewingChanges) {
     return (
       <OneTimeReviewPay
         creator={creator}
         projectId={projectId}
-        projectName="Glow Squad"
+        projectName={project.name}
         oneTime={false}
         addedFee={2500}
         onBack={() => setReviewingChanges(false)}
@@ -1249,7 +1253,7 @@ export function BrandCreatorDeliverablesEditPage() {
         <nav className="flex flex-wrap items-center gap-2 text-[12px] text-secondary">
           <Link to="/brand/projects">Projects</Link>
           <span>/</span>
-          <Link to={brandProjectRoute(projectId)}>Glow Squad</Link>
+          <Link to={brandProjectRoute(projectId)}>{project.name}</Link>
           <span>/</span>
           <Link to={brandProjectRoute(projectId)}>Invited creators</Link>
           <span>/</span>
@@ -1277,7 +1281,7 @@ export function BrandCreatorDeliverablesEditPage() {
           <div className="p-5">
             <div className="flex flex-wrap justify-between gap-3 rounded-lg bg-subtle px-4 py-3.5">
               <div>
-                <h2 className="text-[14px] font-semibold text-ink">Glow Squad</h2>
+                <h2 className="text-[14px] font-semibold text-ink">{project.name}</h2>
                 <p className="mt-1 text-[12px] text-secondary">Influencer · Paid · Long-term</p>
                 <p className="mt-3 text-[12px] text-secondary">Dates</p>
                 <p className="mt-1 text-[13px] text-ink">

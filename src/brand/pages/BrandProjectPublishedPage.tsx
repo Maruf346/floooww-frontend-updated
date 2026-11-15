@@ -40,6 +40,7 @@ import type { Platform } from "@/common/types";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "motion/react";
 import { getProject } from "@/brand/data/projects";
+import { getProjectRules } from "@/brand/data/projectRules";
 
 type Lifecycle = "Draft" | "Upcoming" | "Live" | "Paused" | "Completed" | "Archived" | "Deleted";
 type Confirm = ProjectConfirmAction | null;
@@ -63,22 +64,24 @@ const tabs = [
 type Objective = "Sales" | "Awareness" | "Engagement" | "Traffic" | "Leads";
 
 const projectObjective = (projectId: number): Objective =>
-  ({
-    1: "Sales",
-    2: "Engagement",
-    3: "Awareness",
-    4: "Awareness",
-    5: "Engagement",
-    6: "Leads",
-    7: "Awareness",
-    8: "Engagement",
-    9: "Sales",
-    10: "Awareness",
-    11: "Traffic",
-    12: "Awareness",
-    13: "Engagement",
-    14: "Awareness",
-  } as Record<number, Objective>)[projectId] ?? "Awareness";
+  (
+    {
+      1: "Sales",
+      2: "Engagement",
+      3: "Awareness",
+      4: "Awareness",
+      5: "Engagement",
+      6: "Leads",
+      7: "Awareness",
+      8: "Engagement",
+      9: "Sales",
+      10: "Awareness",
+      11: "Traffic",
+      12: "Awareness",
+      13: "Engagement",
+      14: "Awareness",
+    } as Record<number, Objective>
+  )[projectId] ?? "Awareness";
 
 const objectiveMetrics: Record<Objective, [string, string, string, string, string]> = {
   Sales: ["Net sales", "Orders", "CVR", "ROAS", "CPO"],
@@ -345,22 +348,335 @@ type InvitedCreatorCard = {
 };
 
 const invitedCreatorCards: InvitedCreatorCard[] = [
-  { id: "meera", name: "Meera Iyer", handle: "@meerabeauty", city: "Mumbai", avatar: "meera-iyer", progress: "2/3", progressValue: 67, status: "Awaiting approval", platforms: [["Instagram", "1.4 L"], ["YouTube", "32K"], ["Snapchat", "12K"]], primaryPlatform: "Instagram", deliverables: "2 / 3", escrow: "₹3,000", sales: "₹1,42,800", next: "Next: leave a review · 4 of 4 delivered · last Story approved 26 Oct", fee: "₹30,000", released: "₹27,000 released" },
-  { id: "ishita", name: "Ishita Rao", handle: "@ishitarao", city: "Bengaluru", avatar: "ishita-rao", progress: "3/4", progressValue: 75, status: "Posting", platforms: [["Instagram", "1.1 L"], ["YouTube", "21K"]], primaryPlatform: "Instagram", deliverables: "3 / 4", escrow: "₹4,250", sales: "₹68,400", next: "Next: Story · last-day reminder · due 30 Oct", fee: "₹17,000", released: "₹12,750 released" },
-  { id: "emma", name: "Emma Clarke", handle: "@emmaclarke", city: "Mumbai", avatar: "emma-clarke", progress: "3/4", progressValue: 75, status: "Posting", platforms: [["Instagram", "96K"], ["YouTube", "40K"], ["Snapchat", "15K"]], primaryPlatform: "Instagram", deliverables: "3 / 4", escrow: "₹3,750", sales: "₹54,000", next: "Next: Story · results check-in · due 30 Oct", fee: "₹15,000", released: "₹11,250 released" },
-  { id: "kavya", name: "Kavya Reddy", handle: "@kavyareddy", city: "Hyderabad", avatar: "kavya-reddy", progress: "3/4", progressValue: 75, status: "Posting", platforms: [["Instagram", "88K"], ["Snapchat", "11K"]], primaryPlatform: "Instagram", deliverables: "3 / 4", escrow: "₹3,750", sales: "₹49,600", next: "Next: Story · code reminder · due 30 Oct", fee: "₹15,000", released: "₹11,250 released" },
-  { id: "riya", name: "Riya Sen", handle: "@riyasen", city: "Kolkata", avatar: "ishita-rao", progress: "3/4", progressValue: 75, status: "Posting", platforms: [["Instagram", "72K"], ["Pinterest", "8K"]], primaryPlatform: "Instagram", deliverables: "3 / 4", escrow: "₹3,000", sales: "₹22,000", next: "Next: Story · last-day reminder · due 30 Oct", fee: "₹12,000", released: "₹9,000 released" },
-  { id: "sneha", name: "Sneha Patil", handle: "@snehapatil", city: "Pune", avatar: "meera-iyer", progress: "2/4", progressValue: 50, status: "Posting", platforms: [["Instagram", "64K"], ["YouTube", "14K"]], primaryPlatform: "Instagram", deliverables: "2 / 4", escrow: "₹6,000", sales: "₹32,000", next: "Next: Reel · results · due 1 Nov", fee: "₹12,000", released: "₹6,000 released" },
-  { id: "nisha", name: "Nisha Verma", handle: "@niashverma", city: "Delhi", avatar: "kavya-reddy", progress: "2/4", progressValue: 50, status: "Posting", platforms: [["YouTube", "58K"], ["Instagram", "1.4 L"]], primaryPlatform: "YouTube", deliverables: "2 / 4", escrow: "₹6,000", sales: "₹26,000", next: "Next: Short · routine · due 1 Nov", fee: "₹12,000", released: "₹6,000 released" },
-  { id: "tara", name: "Tara Bose", handle: "@tarabose", city: "Kolkata", avatar: "tara-bose", progress: "2/4", progressValue: 50, status: "Overdue", platforms: [["Instagram", "81K"], ["YouTube", "19K"]], primaryPlatform: "Instagram", deliverables: "2 / 4", escrow: "₹7,500", sales: "₹18,000", next: "Story 2 was due 26 Oct · 2 days late · dispute open", fee: "₹15,000", released: "₹7,500 released" },
-  { id: "pooja", name: "Pooja Menon", handle: "@poojamenon", city: "Kochi", avatar: "emma-clarke", progress: "0/4", progressValue: 0, status: "Not started", platforms: [["Instagram", "49K"], ["Pinterest", "6K"]], primaryPlatform: "Instagram", deliverables: "0 / 4", escrow: "₹12,500", sales: "–", next: "Next: Reel · festive GRWM · due 2 Nov", fee: "₹12,500", released: "₹0 released" },
-  { id: "aanya", name: "Aanya Shah", handle: "@aanyashah", city: "Mumbai", avatar: "meera-iyer", progress: "1/4", progressValue: 25, status: "Not started", platforms: [["Instagram", "110K"]], primaryPlatform: "Instagram", deliverables: "1 / 4", escrow: "₹8,000", sales: "₹12,400", next: "Next: Carousel · due 3 Nov", fee: "₹16,000", released: "₹8,000 released" },
-  { id: "zoya", name: "Zoya Ahmed", handle: "@zoyaahmed", city: "Hyderabad", avatar: "ishita-rao", progress: "0/3", progressValue: 0, status: "Not started", platforms: [["Instagram", "76K"]], primaryPlatform: "Instagram", deliverables: "0 / 3", escrow: "₹9,000", sales: "–", next: "Next: Reel · due 4 Nov", fee: "₹18,000", released: "₹0 released" },
-  { id: "simran", name: "Simran Kaur", handle: "@simrankaur", city: "Chandigarh", avatar: "emma-clarke", progress: "1/3", progressValue: 33, status: "Awaiting approval", platforms: [["Instagram", "91K"], ["YouTube", "15K"]], primaryPlatform: "Instagram", deliverables: "1 / 3", escrow: "₹5,000", sales: "₹21,600", next: "Next: approve Reel · submitted 28 Oct", fee: "₹15,000", released: "₹10,000 released" },
-  { id: "lina", name: "Lina George", handle: "@linageorge", city: "Kochi", avatar: "kavya-reddy", progress: "3/4", progressValue: 75, status: "Posting", platforms: [["YouTube", "42K"], ["Instagram", "67K"]], primaryPlatform: "YouTube", deliverables: "3 / 4", escrow: "₹4,000", sales: "₹37,200", next: "Next: Short · due 5 Nov", fee: "₹16,000", released: "₹12,000 released" },
-  { id: "rhea", name: "Rhea Kapoor", handle: "@rheakapoor", city: "Delhi", avatar: "tara-bose", progress: "2/3", progressValue: 67, status: "Posting", platforms: [["Instagram", "58K"], ["Pinterest", "9K"]], primaryPlatform: "Instagram", deliverables: "2 / 3", escrow: "₹3,500", sales: "₹16,900", next: "Next: Idea Pin · due 5 Nov", fee: "₹10,500", released: "₹7,000 released" },
-  { id: "mira", name: "Mira Das", handle: "@miradas", city: "Bengaluru", avatar: "meera-iyer", progress: "1/4", progressValue: 25, status: "Not started", platforms: [["Instagram", "63K"]], primaryPlatform: "Instagram", deliverables: "1 / 4", escrow: "₹7,000", sales: "₹8,600", next: "Next: Story · due 6 Nov", fee: "₹14,000", released: "₹7,000 released" },
-  { id: "anika", name: "Anika Roy", handle: "@anikaroy", city: "Pune", avatar: "ishita-rao", progress: "2/4", progressValue: 50, status: "Posting", platforms: [["Instagram", "82K"], ["YouTube", "12K"]], primaryPlatform: "Instagram", deliverables: "2 / 4", escrow: "₹4,800", sales: "₹28,500", next: "Next: Reel · due 6 Nov", fee: "₹16,000", released: "₹11,200 released" },
+  {
+    id: "meera",
+    name: "Meera Iyer",
+    handle: "@meerabeauty",
+    city: "Mumbai",
+    avatar: "meera-iyer",
+    progress: "2/3",
+    progressValue: 67,
+    status: "Awaiting approval",
+    platforms: [
+      ["Instagram", "1.4 L"],
+      ["YouTube", "32K"],
+      ["Snapchat", "12K"],
+    ],
+    primaryPlatform: "Instagram",
+    deliverables: "2 / 3",
+    escrow: "₹3,000",
+    sales: "₹1,42,800",
+    next: "Next: leave a review · 4 of 4 delivered · last Story approved 26 Oct",
+    fee: "₹30,000",
+    released: "₹27,000 released",
+  },
+  {
+    id: "ishita",
+    name: "Ishita Rao",
+    handle: "@ishitarao",
+    city: "Bengaluru",
+    avatar: "ishita-rao",
+    progress: "3/4",
+    progressValue: 75,
+    status: "Posting",
+    platforms: [
+      ["Instagram", "1.1 L"],
+      ["YouTube", "21K"],
+    ],
+    primaryPlatform: "Instagram",
+    deliverables: "3 / 4",
+    escrow: "₹4,250",
+    sales: "₹68,400",
+    next: "Next: Story · last-day reminder · due 30 Oct",
+    fee: "₹17,000",
+    released: "₹12,750 released",
+  },
+  {
+    id: "emma",
+    name: "Emma Clarke",
+    handle: "@emmaclarke",
+    city: "Mumbai",
+    avatar: "emma-clarke",
+    progress: "3/4",
+    progressValue: 75,
+    status: "Posting",
+    platforms: [
+      ["Instagram", "96K"],
+      ["YouTube", "40K"],
+      ["Snapchat", "15K"],
+    ],
+    primaryPlatform: "Instagram",
+    deliverables: "3 / 4",
+    escrow: "₹3,750",
+    sales: "₹54,000",
+    next: "Next: Story · results check-in · due 30 Oct",
+    fee: "₹15,000",
+    released: "₹11,250 released",
+  },
+  {
+    id: "kavya",
+    name: "Kavya Reddy",
+    handle: "@kavyareddy",
+    city: "Hyderabad",
+    avatar: "kavya-reddy",
+    progress: "3/4",
+    progressValue: 75,
+    status: "Posting",
+    platforms: [
+      ["Instagram", "88K"],
+      ["Snapchat", "11K"],
+    ],
+    primaryPlatform: "Instagram",
+    deliverables: "3 / 4",
+    escrow: "₹3,750",
+    sales: "₹49,600",
+    next: "Next: Story · code reminder · due 30 Oct",
+    fee: "₹15,000",
+    released: "₹11,250 released",
+  },
+  {
+    id: "riya",
+    name: "Riya Sen",
+    handle: "@riyasen",
+    city: "Kolkata",
+    avatar: "ishita-rao",
+    progress: "3/4",
+    progressValue: 75,
+    status: "Posting",
+    platforms: [
+      ["Instagram", "72K"],
+      ["Pinterest", "8K"],
+    ],
+    primaryPlatform: "Instagram",
+    deliverables: "3 / 4",
+    escrow: "₹3,000",
+    sales: "₹22,000",
+    next: "Next: Story · last-day reminder · due 30 Oct",
+    fee: "₹12,000",
+    released: "₹9,000 released",
+  },
+  {
+    id: "sneha",
+    name: "Sneha Patil",
+    handle: "@snehapatil",
+    city: "Pune",
+    avatar: "meera-iyer",
+    progress: "2/4",
+    progressValue: 50,
+    status: "Posting",
+    platforms: [
+      ["Instagram", "64K"],
+      ["YouTube", "14K"],
+    ],
+    primaryPlatform: "Instagram",
+    deliverables: "2 / 4",
+    escrow: "₹6,000",
+    sales: "₹32,000",
+    next: "Next: Reel · results · due 1 Nov",
+    fee: "₹12,000",
+    released: "₹6,000 released",
+  },
+  {
+    id: "nisha",
+    name: "Nisha Verma",
+    handle: "@niashverma",
+    city: "Delhi",
+    avatar: "kavya-reddy",
+    progress: "2/4",
+    progressValue: 50,
+    status: "Posting",
+    platforms: [
+      ["YouTube", "58K"],
+      ["Instagram", "1.4 L"],
+    ],
+    primaryPlatform: "YouTube",
+    deliverables: "2 / 4",
+    escrow: "₹6,000",
+    sales: "₹26,000",
+    next: "Next: Short · routine · due 1 Nov",
+    fee: "₹12,000",
+    released: "₹6,000 released",
+  },
+  {
+    id: "tara",
+    name: "Tara Bose",
+    handle: "@tarabose",
+    city: "Kolkata",
+    avatar: "tara-bose",
+    progress: "2/4",
+    progressValue: 50,
+    status: "Overdue",
+    platforms: [
+      ["Instagram", "81K"],
+      ["YouTube", "19K"],
+    ],
+    primaryPlatform: "Instagram",
+    deliverables: "2 / 4",
+    escrow: "₹7,500",
+    sales: "₹18,000",
+    next: "Story 2 was due 26 Oct · 2 days late · dispute open",
+    fee: "₹15,000",
+    released: "₹7,500 released",
+  },
+  {
+    id: "pooja",
+    name: "Pooja Menon",
+    handle: "@poojamenon",
+    city: "Kochi",
+    avatar: "emma-clarke",
+    progress: "0/4",
+    progressValue: 0,
+    status: "Not started",
+    platforms: [
+      ["Instagram", "49K"],
+      ["Pinterest", "6K"],
+    ],
+    primaryPlatform: "Instagram",
+    deliverables: "0 / 4",
+    escrow: "₹12,500",
+    sales: "–",
+    next: "Next: Reel · festive GRWM · due 2 Nov",
+    fee: "₹12,500",
+    released: "₹0 released",
+  },
+  {
+    id: "aanya",
+    name: "Aanya Shah",
+    handle: "@aanyashah",
+    city: "Mumbai",
+    avatar: "meera-iyer",
+    progress: "1/4",
+    progressValue: 25,
+    status: "Not started",
+    platforms: [["Instagram", "110K"]],
+    primaryPlatform: "Instagram",
+    deliverables: "1 / 4",
+    escrow: "₹8,000",
+    sales: "₹12,400",
+    next: "Next: Carousel · due 3 Nov",
+    fee: "₹16,000",
+    released: "₹8,000 released",
+  },
+  {
+    id: "zoya",
+    name: "Zoya Ahmed",
+    handle: "@zoyaahmed",
+    city: "Hyderabad",
+    avatar: "ishita-rao",
+    progress: "0/3",
+    progressValue: 0,
+    status: "Not started",
+    platforms: [["Instagram", "76K"]],
+    primaryPlatform: "Instagram",
+    deliverables: "0 / 3",
+    escrow: "₹9,000",
+    sales: "–",
+    next: "Next: Reel · due 4 Nov",
+    fee: "₹18,000",
+    released: "₹0 released",
+  },
+  {
+    id: "simran",
+    name: "Simran Kaur",
+    handle: "@simrankaur",
+    city: "Chandigarh",
+    avatar: "emma-clarke",
+    progress: "1/3",
+    progressValue: 33,
+    status: "Awaiting approval",
+    platforms: [
+      ["Instagram", "91K"],
+      ["YouTube", "15K"],
+    ],
+    primaryPlatform: "Instagram",
+    deliverables: "1 / 3",
+    escrow: "₹5,000",
+    sales: "₹21,600",
+    next: "Next: approve Reel · submitted 28 Oct",
+    fee: "₹15,000",
+    released: "₹10,000 released",
+  },
+  {
+    id: "lina",
+    name: "Lina George",
+    handle: "@linageorge",
+    city: "Kochi",
+    avatar: "kavya-reddy",
+    progress: "3/4",
+    progressValue: 75,
+    status: "Posting",
+    platforms: [
+      ["YouTube", "42K"],
+      ["Instagram", "67K"],
+    ],
+    primaryPlatform: "YouTube",
+    deliverables: "3 / 4",
+    escrow: "₹4,000",
+    sales: "₹37,200",
+    next: "Next: Short · due 5 Nov",
+    fee: "₹16,000",
+    released: "₹12,000 released",
+  },
+  {
+    id: "rhea",
+    name: "Rhea Kapoor",
+    handle: "@rheakapoor",
+    city: "Delhi",
+    avatar: "tara-bose",
+    progress: "2/3",
+    progressValue: 67,
+    status: "Posting",
+    platforms: [
+      ["Instagram", "58K"],
+      ["Pinterest", "9K"],
+    ],
+    primaryPlatform: "Instagram",
+    deliverables: "2 / 3",
+    escrow: "₹3,500",
+    sales: "₹16,900",
+    next: "Next: Idea Pin · due 5 Nov",
+    fee: "₹10,500",
+    released: "₹7,000 released",
+  },
+  {
+    id: "mira",
+    name: "Mira Das",
+    handle: "@miradas",
+    city: "Bengaluru",
+    avatar: "meera-iyer",
+    progress: "1/4",
+    progressValue: 25,
+    status: "Not started",
+    platforms: [["Instagram", "63K"]],
+    primaryPlatform: "Instagram",
+    deliverables: "1 / 4",
+    escrow: "₹7,000",
+    sales: "₹8,600",
+    next: "Next: Story · due 6 Nov",
+    fee: "₹14,000",
+    released: "₹7,000 released",
+  },
+  {
+    id: "anika",
+    name: "Anika Roy",
+    handle: "@anikaroy",
+    city: "Pune",
+    avatar: "ishita-rao",
+    progress: "2/4",
+    progressValue: 50,
+    status: "Posting",
+    platforms: [
+      ["Instagram", "82K"],
+      ["YouTube", "12K"],
+    ],
+    primaryPlatform: "Instagram",
+    deliverables: "2 / 4",
+    escrow: "₹4,800",
+    sales: "₹28,500",
+    next: "Next: Reel · due 6 Nov",
+    fee: "₹16,000",
+    released: "₹11,200 released",
+  },
 ];
 
 function Badge({ status }: { status: Lifecycle }) {
@@ -449,8 +765,8 @@ function InvitedCreatorsEmptyState({
           No creators invited yet
         </h2>
         <p className="mt-1 max-w-[600px] text-[13px] leading-5 text-secondary">
-          Invite shortlisted creators from Applications. You’re charged when you
-          invite and set deliverables, and the fee is held until you approve their content.
+          Invite shortlisted creators from Applications. You’re charged when you invite and set
+          deliverables, and the fee is held until you approve their content.
         </p>
         <div className="mt-4 flex flex-wrap justify-center gap-2">
           <Button kind="secondary" onClick={onGoToApplications}>
@@ -468,21 +784,31 @@ function InvitedCreatorsEmptyState({
 function InvitedCreatorCard({
   creator,
   index,
+  project,
   onViewProfile,
   onEditDeliverables,
 }: {
   creator: InvitedCreatorCard;
   index: number;
+  project: ReturnType<typeof getProject>;
   onViewProfile: (creatorId: string) => void;
   onEditDeliverables: (creatorId: string) => void;
 }) {
+  const rules = getProjectRules(project);
   const tone = {
     Posting: "bg-success-bg text-success",
     "Awaiting approval": "bg-[#fff3da] text-[#c77900]",
     Overdue: "bg-danger-subtle text-danger",
     "Not started": "bg-muted text-secondary",
   }[creator.status];
-  const ringColor = creator.status === "Awaiting approval" ? "#149d46" : creator.status === "Overdue" ? "#e52e2e" : creator.status === "Not started" ? "#e7eaf0" : "#2563eb";
+  const ringColor =
+    creator.status === "Awaiting approval"
+      ? "#149d46"
+      : creator.status === "Overdue"
+        ? "#e52e2e"
+        : creator.status === "Not started"
+          ? "#e7eaf0"
+          : "#2563eb";
   const ringValue = creator.progressValue * 3.6;
   const isOverdue = creator.status === "Overdue";
 
@@ -502,26 +828,37 @@ function InvitedCreatorCard({
         />
         <div className="min-w-0 flex-1 pt-0.5">
           <h2 className="truncate text-[14px] font-medium leading-5 text-ink">{creator.name}</h2>
-          <p className="truncate text-[12px] leading-4 text-secondary">{creator.handle} · {creator.city}</p>
+          <p className="truncate text-[12px] leading-4 text-secondary">
+            {creator.handle} · {creator.city}
+          </p>
         </div>
         <div
           className="grid size-[56px] shrink-0 place-items-center rounded-full p-[4px]"
-          style={{ background: `conic-gradient(${ringColor} ${ringValue}deg, #e9edf3 ${ringValue}deg)` }}
+          style={{
+            background: `conic-gradient(${ringColor} ${ringValue}deg, #e9edf3 ${ringValue}deg)`,
+          }}
           aria-label={`${creator.progress} deliverables complete`}
         >
-          <span className="grid size-full place-items-center rounded-full bg-white text-[14px] font-medium text-ink">{creator.progress}</span>
+          <span className="grid size-full place-items-center rounded-full bg-white text-[14px] font-medium text-ink">
+            {creator.progress}
+          </span>
         </div>
       </div>
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           {creator.platforms.map(([platform, value]) => (
-            <span className="flex items-center gap-1 text-[12px] leading-4 text-ink" key={`${platform}-${value}`}>
+            <span
+              className="flex items-center gap-1 text-[12px] leading-4 text-ink"
+              key={`${platform}-${value}`}
+            >
               <PlatformLogo platform={platform} size={16} />
               {value}
             </span>
           ))}
         </div>
-        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] leading-4 ${tone}`}>
+        <span
+          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] leading-4 ${tone}`}
+        >
           <span className="size-1.5 rounded-full bg-current" />
           {creator.status}
         </span>
@@ -531,9 +868,9 @@ function InvitedCreatorCard({
       </p>
       <div className="mt-3 grid grid-cols-3 gap-2">
         {[
-          [creator.deliverables, "Deliverables"],
-          [creator.escrow, "In escrow"],
-          [creator.sales, "Net sales"],
+          [creator.deliverables, rules.isAmbassador ? "This month" : "Deliverables"],
+          [creator.escrow, rules.isGift ? "Kit value" : "In escrow"],
+          [creator.sales, rules.resultLabel],
         ].map(([value, label]) => (
           <div key={label} className="min-w-0 rounded-lg bg-subtle px-2.5 py-2">
             <p className="truncate text-[14px] font-medium leading-5 text-ink">{value}</p>
@@ -541,17 +878,23 @@ function InvitedCreatorCard({
           </div>
         ))}
       </div>
-      <p className={`mt-4 min-h-10 text-[12px] leading-5 ${isOverdue ? "text-danger" : "text-secondary"}`}>
+      <p
+        className={`mt-4 min-h-10 text-[12px] leading-5 ${isOverdue ? "text-danger" : "text-secondary"}`}
+      >
         {creator.next}
       </p>
       <div className="mt-3 flex items-center justify-between rounded-lg bg-subtle px-3 py-2.5">
-        <span className="text-[14px] font-medium text-ink">₹ Fee {creator.fee.replace("₹", "")}</span>
+        <span className="text-[14px] font-medium text-ink">
+          ₹ Fee {creator.fee.replace("₹", "")}
+        </span>
         <span className="text-[12px] text-secondary">{creator.released}</span>
       </div>
       <div className="mt-3 grid grid-cols-2 gap-2">
         <button
           type="button"
-          onClick={() => { window.location.href = `mailto:?subject=${encodeURIComponent(`Vitamin-C Serum collaboration — ${creator.name}`)}`; }}
+          onClick={() => {
+            window.location.href = `mailto:?subject=${encodeURIComponent(`Vitamin-C Serum collaboration — ${creator.name}`)}`;
+          }}
           className="h-8 rounded-md border border-line bg-white text-[13px] font-medium text-ink transition hover:bg-subtle"
         >
           Message
@@ -575,8 +918,15 @@ function InvitedCreatorCard({
   );
 }
 
-function InvitedCreatorsGrid({ projectId, creatorCount }: { projectId: number; creatorCount: number }) {
+function InvitedCreatorsGrid({
+  projectId,
+  creatorCount,
+}: {
+  projectId: number;
+  creatorCount: number;
+}) {
   const navigate = useNavigate();
+  const project = getProject(projectId);
   const [status, setStatus] = useState("All");
   const [platform, setPlatform] = useState("Platform");
   const [deadline, setDeadline] = useState("Deadline");
@@ -584,18 +934,32 @@ function InvitedCreatorsGrid({ projectId, creatorCount }: { projectId: number; c
   const [showAll, setShowAll] = useState(false);
   const creators = Array.from({ length: creatorCount }, (_, index) => {
     const creator = invitedCreatorCards[index % invitedCreatorCards.length];
-    return index < invitedCreatorCards.length ? creator : { ...creator, id: `${creator.id}-${index + 1}` };
+    return index < invitedCreatorCards.length
+      ? creator
+      : { ...creator, id: `${creator.id}-${index + 1}` };
   });
   const counts: Record<string, number> = creators.reduce<Record<string, number>>(
-    (totals, creator) => ({ ...totals, All: totals.All + 1, [creator.status]: totals[creator.status] + 1 }),
+    (totals, creator) => ({
+      ...totals,
+      All: totals.All + 1,
+      [creator.status]: totals[creator.status] + 1,
+    }),
     { All: 0, Posting: 0, "Awaiting approval": 0, Overdue: 0, "Not started": 0 },
   );
   const segments = ["All", "Posting", "Awaiting approval", "Overdue", "Not started"];
   const filtered = creators
     .filter((creator) => status === "All" || creator.status === status)
-    .filter((creator) => platform === "Platform" || creator.platforms.some(([item]) => item === platform))
+    .filter(
+      (creator) => platform === "Platform" || creator.platforms.some(([item]) => item === platform),
+    )
     .filter((creator) => deadline === "Deadline" || creator.next.includes("due"))
-    .sort((a, b) => sort === "Sort: Creator" ? a.name.localeCompare(b.name) : sort === "Sort: Status" ? a.status.localeCompare(b.status) : a.next.localeCompare(b.next));
+    .sort((a, b) =>
+      sort === "Sort: Creator"
+        ? a.name.localeCompare(b.name)
+        : sort === "Sort: Status"
+          ? a.status.localeCompare(b.status)
+          : a.next.localeCompare(b.next),
+    );
   const visible = showAll ? filtered : filtered.slice(0, 9);
 
   return (
@@ -606,18 +970,43 @@ function InvitedCreatorsGrid({ projectId, creatorCount }: { projectId: number; c
             <button
               type="button"
               key={item}
-              onClick={() => { setStatus(item); setShowAll(false); }}
+              onClick={() => {
+                setStatus(item);
+                setShowAll(false);
+              }}
               className={`flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-[13px] leading-5 transition ${status === item ? "bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,.08)]" : "text-secondary hover:text-ink"}`}
             >
-              <span>{item}</span><span className="text-[12px] leading-4 text-secondary">{counts[item]}</span>
+              <span>{item}</span>
+              <span className="text-[12px] leading-4 text-secondary">{counts[item]}</span>
             </button>
           ))}
         </div>
         <span className="hidden h-px min-w-4 flex-1 bg-line xl:block" />
         <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2">
-          <Dropdown compact ariaLabel="Filter invited creators by platform" value={platform} onChange={setPlatform} options={["Platform", "Instagram", "YouTube", "Pinterest", "Snapchat"]} className="w-[98px] [&>button]:h-[38px]" />
-          <Dropdown compact ariaLabel="Filter invited creators by deadline" value={deadline} onChange={setDeadline} options={["Deadline", "This week", "Next 7 days", "This month"]} className="w-[105px] [&>button]:h-[38px]" />
-          <Dropdown compact ariaLabel="Sort invited creators" value={sort} onChange={setSort} options={["Sort: Next deadline", "Sort: Status", "Sort: Creator"]} className="w-[164px] [&>button]:h-[38px] [&>button]:border-0 [&>button]:bg-transparent [&>button]:px-2" />
+          <Dropdown
+            compact
+            ariaLabel="Filter invited creators by platform"
+            value={platform}
+            onChange={setPlatform}
+            options={["Platform", "Instagram", "YouTube", "Pinterest", "Snapchat"]}
+            className="w-[98px] [&>button]:h-[38px]"
+          />
+          <Dropdown
+            compact
+            ariaLabel="Filter invited creators by deadline"
+            value={deadline}
+            onChange={setDeadline}
+            options={["Deadline", "This week", "Next 7 days", "This month"]}
+            className="w-[105px] [&>button]:h-[38px]"
+          />
+          <Dropdown
+            compact
+            ariaLabel="Sort invited creators"
+            value={sort}
+            onChange={setSort}
+            options={["Sort: Next deadline", "Sort: Status", "Sort: Creator"]}
+            className="w-[164px] [&>button]:h-[38px] [&>button]:border-0 [&>button]:bg-transparent [&>button]:px-2"
+          />
         </div>
       </div>
       <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -626,15 +1015,32 @@ function InvitedCreatorsGrid({ projectId, creatorCount }: { projectId: number; c
             key={creator.id}
             creator={creator}
             index={index}
+            project={project}
             onViewProfile={(creatorId) => navigate(brandInvitedCreatorRoute(projectId, creatorId))}
-            onEditDeliverables={(creatorId) => navigate(brandCreatorDeliverablesRoute(projectId, creatorId))}
+            onEditDeliverables={(creatorId) =>
+              navigate(brandCreatorDeliverablesRoute(projectId, creatorId))
+            }
           />
         ))}
       </div>
-      {!visible.length ? <div className="mt-5 rounded-xl border border-line bg-white px-6 py-12 text-center text-[13px] text-secondary">No invited creators match these filters.</div> : null}
+      {!visible.length ? (
+        <div className="mt-5 rounded-xl border border-line bg-white px-6 py-12 text-center text-[13px] text-secondary">
+          No invited creators match these filters.
+        </div>
+      ) : null}
       <div className="mt-5 flex flex-wrap items-center gap-1 text-[12px] leading-5 text-secondary">
-        <span>Showing {visible.length} of {filtered.length} ·</span>
-        {!showAll && filtered.length > visible.length ? <button type="button" onClick={() => setShowAll(true)} className="font-medium text-primary hover:underline">show {filtered.length - visible.length} more</button> : null}
+        <span>
+          Showing {visible.length} of {filtered.length} ·
+        </span>
+        {!showAll && filtered.length > visible.length ? (
+          <button
+            type="button"
+            onClick={() => setShowAll(true)}
+            className="font-medium text-primary hover:underline"
+          >
+            show {filtered.length - visible.length} more
+          </button>
+        ) : null}
         <span>· fees held in escrow until you approve</span>
       </div>
     </section>
@@ -663,32 +1069,49 @@ export function BrandProjectPublishedPage() {
   const [shareOpen, setShareOpen] = useState(false);
   const [confirm, setConfirm] = useState<Confirm>(null);
   const locked = status === "Archived" || status === "Deleted";
-  const objective = projectObjective(project.id);
-  const longTerm = project.partnership.toLowerCase().includes("long-term");
-  const giftExchange = project.partnership.toLowerCase().includes("gift");
-  const fileDelivery = /ugc|ai video/i.test(project.projectType);
-  const contentUnit = fileDelivery ? (project.projectType.toLowerCase().includes("ai") ? "videos" : "files") : "posts";
-  const deliveryVerb = fileDelivery ? "Delivered" : "Posted";
-  const deliveryAction = fileDelivery ? "Delivering" : "Posting";
-  const deadlineLabel = fileDelivery ? "Delivery deadline" : "Posting deadline";
+  const rules = getProjectRules(project);
+  const objective = rules.objective;
+  const longTerm = rules.isLongTerm;
+  const giftExchange = rules.isGift;
+  const fileDelivery = rules.isFileBased;
+  const contentUnit = rules.itemPlural;
+  const deliveryVerb = rules.completedVerb;
+  const deliveryAction = rules.activeVerb;
+  const deadlineLabel = rules.deadlineLabel;
   const milestoneItems = longTerm
     ? [
         ["Launched", "Project is live", "7 Oct"],
-        [giftExchange ? "Kits delivered" : "Creators accepted", giftExchange ? "Products are on their way" : "Creator team confirmed", "9 Oct"],
+        [
+          giftExchange ? "Kits delivered" : "Creators accepted",
+          giftExchange ? "Products are on their way" : "Creator team confirmed",
+          "9 Oct",
+        ],
         ["Month 2 of 6", "Current delivery cycle", "Oct"],
         ["Next month starts", "Brief is sent for the next cycle", "1 Nov"],
         ["Project ends", "Final cycle and usage rights end", "28 Feb"],
       ]
     : [
         ["Launched", "Project is live", "7 Oct"],
-        [giftExchange ? "Kits delivered" : "Creators accepted", giftExchange ? "Products are on their way" : "Creator team confirmed", "9 Oct"],
-        [fileDelivery ? "First files delivered" : "First post live", `First ${contentUnit.slice(0, -1)} is expected`, "15 Oct"],
+        [
+          giftExchange ? "Kits delivered" : "Creators accepted",
+          giftExchange ? "Products are on their way" : "Creator team confirmed",
+          "9 Oct",
+        ],
+        [rules.firstItemLabel, `First ${rules.item} is expected`, "15 Oct"],
         [deadlineLabel, `Final ${contentUnit} due from creators`, "3 Nov"],
         ["Project ends", "Usage rights end 7 Dec", "7 Nov"],
       ];
   const keyDates = longTerm
-    ? [["This month's due date", "3 Nov"], ["Next cycle charge", "1 Nov"], ["Project ends", "28 Feb 2027"]]
-    : [[deadlineLabel, "3 Nov 2026"], ["Usage rights end", "7 Dec 2026"], ["Payments", giftExchange ? "Products sent" : "On track"]];
+    ? [
+        ["This month's due date", "3 Nov"],
+        ["Next cycle charge", "1 Nov"],
+        ["Project ends", "28 Feb 2027"],
+      ]
+    : [
+        [deadlineLabel, "3 Nov 2026"],
+        ["Usage rights end", "7 Dec 2026"],
+        ["Payments", giftExchange ? "Products sent" : "On track"],
+      ];
   const resultMetrics = objectiveMetrics[objective];
   const resultValues: Record<Objective, string[]> = {
     Sales: ["₹5.42L", "1,315", "4.8%", "2.7×", "₹412"],
@@ -698,11 +1121,16 @@ export function BrandProjectPublishedPage() {
     Leads: ["1,284", "3,041", "42%", "714", "₹156"],
   };
   const quickAction = locked
-    ? status === "Paused" ? "Resume project" : "Restore project"
-    : status === "Completed" ? "Leave reviews" : `Review ${Math.max(1, Math.round(project.deliverableCount / Math.max(project.creatorCount, 1)))} ${contentUnit}`;
-  const creatorDeliverable = longTerm && /ambassador/i.test(project.projectType)
-    ? "Month 3: 0 / 3"
-    : `0 / ${fileDelivery ? 2 : 4} ${contentUnit}`;
+    ? status === "Paused"
+      ? "Resume project"
+      : "Restore project"
+    : status === "Completed"
+      ? "Leave reviews"
+      : `Review ${Math.max(1, Math.round(project.deliverableCount / Math.max(project.creatorCount, 1)))} ${contentUnit}`;
+  const creatorDeliverable =
+    longTerm && /ambassador/i.test(project.projectType)
+      ? "Month 3: 0 / 3"
+      : `0 / ${fileDelivery ? 2 : 4} ${contentUnit}`;
   useEffect(() => setStatus(project.detailStatus), [project.id, project.detailStatus]);
   // Replace this sample with the accepted/invited creator records from the project API.
   // An empty API response continues to render the existing empty state.
@@ -977,17 +1405,36 @@ export function BrandProjectPublishedPage() {
               {item}
               {["Applications", "Invited creators", "Content"].includes(item) && (
                 <span className="ml-1.5 rounded-full bg-muted px-[7px] py-px text-[12px] leading-4">
-                  {item === "Applications" ? project.apps : item === "Invited creators" ? invitedCreatorCount : project.deliverableCount}
+                  {item === "Applications"
+                    ? project.apps
+                    : item === "Invited creators"
+                      ? invitedCreatorCount
+                      : project.deliverableCount}
                 </span>
               )}
             </button>
           ))}
         </nav>
-        {tab === "Applications" ? <ProjectApplicationsView projectName={project.name} applicationCount={project.apps} hasApplications={project.apps > 0} objective={objective} projectType={project.projectType} partnership={project.partnership} duration={project.duration} onOpenShare={() => setShareOpen(true)} /> : tab === "Invited creators" ? (
-          invitedCreatorCount > 0 ? <InvitedCreatorsGrid projectId={project.id} creatorCount={invitedCreatorCount} /> : <InvitedCreatorsEmptyState
-            onGoToApplications={() => setTab("Applications")}
-            onFindCreators={() => navigate(ROUTES.brandNewProjectCreators)}
+        {tab === "Applications" ? (
+          <ProjectApplicationsView
+            projectName={project.name}
+            applicationCount={project.apps}
+            hasApplications={project.apps > 0}
+            objective={objective}
+            projectType={project.projectType}
+            partnership={project.partnership}
+            duration={project.duration}
+            onOpenShare={() => setShareOpen(true)}
           />
+        ) : tab === "Invited creators" ? (
+          invitedCreatorCount > 0 ? (
+            <InvitedCreatorsGrid projectId={project.id} creatorCount={invitedCreatorCount} />
+          ) : (
+            <InvitedCreatorsEmptyState
+              onGoToApplications={() => setTab("Applications")}
+              onFindCreators={() => navigate(ROUTES.brandNewProjectCreators)}
+            />
+          )
         ) : false ? (
           <section className="mt-6">
             <div className="flex flex-wrap items-center gap-2">
@@ -999,19 +1446,64 @@ export function BrandProjectPublishedPage() {
                     onClick={() => setApplicationStatus(item)}
                     className={`flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-[13px] leading-5 transition ${applicationStatus === item ? "bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,.08)]" : "text-secondary hover:text-ink"}`}
                   >
-                    <span>{item}</span><span className="text-[12px] leading-4 text-secondary">0</span>
+                    <span>{item}</span>
+                    <span className="text-[12px] leading-4 text-secondary">0</span>
                   </button>
                 ))}
               </div>
               <div className="hidden flex-1 xl:block" />
               <div className="flex min-w-0 flex-1 flex-wrap justify-end gap-2 xl:flex-none">
-                <Dropdown compact ariaLabel="Filter by platform" value={applicationPlatform} onChange={setApplicationPlatform} options={["Platform", "Instagram", "TikTok", "YouTube"]} className="w-[110px] [&>button]:h-9" />
-                <Dropdown compact ariaLabel="Filter by followers" value={applicationFollowers} onChange={setApplicationFollowers} options={["Followers", "Under 10K", "10K–50K", "50K–100K", "100K+"]} className="w-[112px] [&>button]:h-9" />
-                <Dropdown compact ariaLabel="Filter by engagement rate" value={applicationEngagement} onChange={setApplicationEngagement} options={["Eng. rate", "2%+", "4%+", "6%+"]} className="w-[112px] [&>button]:h-9" />
-                <Dropdown compact ariaLabel="Filter by fee" value={applicationFee} onChange={setApplicationFee} options={["Fee", "Under ₹10K", "₹10K–₹25K", "₹25K+"]} className="w-[84px] [&>button]:h-9" />
-                <Dropdown compact ariaLabel="Filter by city" value={applicationCity} onChange={setApplicationCity} options={["City", "Bengaluru", "Mumbai", "Delhi NCR", "Chennai"]} className="w-[94px] [&>button]:h-9" />
+                <Dropdown
+                  compact
+                  ariaLabel="Filter by platform"
+                  value={applicationPlatform}
+                  onChange={setApplicationPlatform}
+                  options={["Platform", "Instagram", "TikTok", "YouTube"]}
+                  className="w-[110px] [&>button]:h-9"
+                />
+                <Dropdown
+                  compact
+                  ariaLabel="Filter by followers"
+                  value={applicationFollowers}
+                  onChange={setApplicationFollowers}
+                  options={["Followers", "Under 10K", "10K–50K", "50K–100K", "100K+"]}
+                  className="w-[112px] [&>button]:h-9"
+                />
+                <Dropdown
+                  compact
+                  ariaLabel="Filter by engagement rate"
+                  value={applicationEngagement}
+                  onChange={setApplicationEngagement}
+                  options={["Eng. rate", "2%+", "4%+", "6%+"]}
+                  className="w-[112px] [&>button]:h-9"
+                />
+                <Dropdown
+                  compact
+                  ariaLabel="Filter by fee"
+                  value={applicationFee}
+                  onChange={setApplicationFee}
+                  options={["Fee", "Under ₹10K", "₹10K–₹25K", "₹25K+"]}
+                  className="w-[84px] [&>button]:h-9"
+                />
+                <Dropdown
+                  compact
+                  ariaLabel="Filter by city"
+                  value={applicationCity}
+                  onChange={setApplicationCity}
+                  options={["City", "Bengaluru", "Mumbai", "Delhi NCR", "Chennai"]}
+                  className="w-[94px] [&>button]:h-9"
+                />
               </div>
-              <button type="button" aria-label="Change application sort" className="ml-auto flex h-9 items-center gap-1.5 px-2 text-[13px] text-secondary transition hover:text-ink" onClick={() => setApplicationSort((value) => value === "Match" ? "Recent" : "Match")}>Sort: {applicationSort} <ChevronDown size={14} strokeWidth={2} /></button>
+              <button
+                type="button"
+                aria-label="Change application sort"
+                className="ml-auto flex h-9 items-center gap-1.5 px-2 text-[13px] text-secondary transition hover:text-ink"
+                onClick={() =>
+                  setApplicationSort((value) => (value === "Match" ? "Recent" : "Match"))
+                }
+              >
+                Sort: {applicationSort} <ChevronDown size={14} strokeWidth={2} />
+              </button>
             </div>
             <motion.section
               initial={{ opacity: 0, y: 12 }}
@@ -1019,11 +1511,30 @@ export function BrandProjectPublishedPage() {
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               className="mt-4 flex min-h-[294px] flex-col items-center justify-center rounded-xl border border-line bg-white px-6 py-12 text-center"
             >
-              <motion.div initial={{ opacity: 0, scale: 0.76 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.65, delay: 0.12, ease: [0.22, 1, 0.36, 1] }} className="grid size-14 place-items-center rounded-[28px] bg-subtle text-secondary"><Users size={26} strokeWidth={1.7} /></motion.div>
-              <h2 className="mt-3 text-[14px] font-semibold leading-5 text-ink">No applications yet</h2>
-              <p className="mt-1 max-w-[520px] text-[13px] leading-5 text-secondary">{project.name} is live. Creators who match it can apply from the marketplace; you’ll see them here with their match score and fee. Share the project link or invite creators yourself.</p>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.76 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.65, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+                className="grid size-14 place-items-center rounded-[28px] bg-subtle text-secondary"
+              >
+                <Users size={26} strokeWidth={1.7} />
+              </motion.div>
+              <h2 className="mt-3 text-[14px] font-semibold leading-5 text-ink">
+                No applications yet
+              </h2>
+              <p className="mt-1 max-w-[520px] text-[13px] leading-5 text-secondary">
+                {project.name} is live. Creators who match it can apply from the marketplace; you’ll
+                see them here with their match score and fee. Share the project link or invite
+                creators yourself.
+              </p>
               <div className="mt-4 flex flex-wrap justify-center gap-2">
-                <Button kind="secondary" leadingIcon={<Share2 size={16} />} onClick={() => setShareOpen(true)}>Copy project link</Button>
+                <Button
+                  kind="secondary"
+                  leadingIcon={<Share2 size={16} />}
+                  onClick={() => setShareOpen(true)}
+                >
+                  Copy project link
+                </Button>
                 <Button leadingIcon={<Search size={16} />}>Find creators</Button>
               </div>
             </motion.section>
@@ -1082,7 +1593,9 @@ export function BrandProjectPublishedPage() {
             <section className="mt-6 rounded-xl border border-line bg-white p-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h2 className="text-[16px] font-semibold leading-6 text-ink">Project milestones</h2>
+                  <h2 className="text-[16px] font-semibold leading-6 text-ink">
+                    Project milestones
+                  </h2>
                   <p className="text-[12px] leading-4 text-secondary">
                     Milestones update automatically as your project moves forward.
                   </p>
@@ -1247,21 +1760,36 @@ export function BrandProjectPublishedPage() {
                     <h2 className="text-[16px] font-semibold text-ink">Key dates</h2>
                     <div className="mt-4 divide-y divide-line-subtle">
                       {keyDates.map(([label, value]) => (
-                        <div className="flex items-center justify-between gap-3 py-2.5 text-[13px]" key={label}>
+                        <div
+                          className="flex items-center justify-between gap-3 py-2.5 text-[13px]"
+                          key={label}
+                        >
                           <span className="text-secondary">{label}</span>
-                          <span className={label === "Payments" ? "rounded-full bg-success-bg px-2 py-0.5 text-[12px] font-medium text-success" : "font-medium text-ink"}>{value}</span>
+                          <span
+                            className={
+                              label === "Payments"
+                                ? "rounded-full bg-success-bg px-2 py-0.5 text-[12px] font-medium text-success"
+                                : "font-medium text-ink"
+                            }
+                          >
+                            {value}
+                          </span>
                         </div>
                       ))}
                     </div>
                   </section>
                   <section className="rounded-xl border border-line bg-white p-5">
                     <h2 className="text-[16px] font-semibold text-ink">Results so far</h2>
-                    <p className="mt-0.5 text-[12px] text-secondary">{objective} performance to date</p>
+                    <p className="mt-0.5 text-[12px] text-secondary">
+                      {objective} performance to date
+                    </p>
                     <div className="mt-4 grid grid-cols-2 gap-3">
                       {resultMetrics.slice(0, 4).map((metric, index) => (
                         <div className="rounded-lg bg-subtle px-3 py-2.5" key={metric}>
                           <p className="text-[12px] text-secondary">{metric}</p>
-                          <p className="mt-1 text-[16px] font-semibold text-ink">{resultValues[objective][index]}</p>
+                          <p className="mt-1 text-[16px] font-semibold text-ink">
+                            {resultValues[objective][index]}
+                          </p>
                         </div>
                       ))}
                     </div>
@@ -1276,21 +1804,49 @@ export function BrandProjectPublishedPage() {
                     <h2 className="text-[16px] font-semibold text-ink">Budget</h2>
                     <div className="mt-4 space-y-3 text-[13px]">
                       {(giftExchange
-                        ? [["Shipped", "₹24,000"], ["Ships next", "₹16,000"], ["Still to ship", "₹12,000"]]
-                        : [["Paid to creators", "₹1,02,000"], ["Held in escrow", "₹58,000"], ["Not committed", "₹40,000"]]
+                        ? [
+                            ["Shipped", "₹24,000"],
+                            ["Ships next", "₹16,000"],
+                            ["Still to ship", "₹12,000"],
+                          ]
+                        : [
+                            ["Paid to creators", "₹1,02,000"],
+                            ["Held in escrow", "₹58,000"],
+                            ["Not committed", "₹40,000"],
+                          ]
                       ).map(([label, value]) => (
                         <div className="flex items-center justify-between" key={label}>
                           <span className="text-secondary">{label}</span>
                           <span className="font-medium text-ink">{value}</span>
                         </div>
                       ))}
-                      {longTerm && <p className="border-t border-line pt-3 text-[12px] text-secondary">{project.budget} · current cycle of 6</p>}
+                      {longTerm && (
+                        <p className="border-t border-line pt-3 text-[12px] text-secondary">
+                          {project.budget} · current cycle of 6
+                        </p>
+                      )}
                     </div>
                   </section>
                   <section className="rounded-xl border border-line bg-white p-5">
                     <h2 className="text-[16px] font-semibold text-ink">Project details</h2>
                     <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-3 text-[13px]">
-                      {[["Objective", objective], ["Type", project.projectType], ["Partnership", project.partnership], ["Duration", longTerm ? "Long-term" : "One-time"], ["Platforms", project.platform], ["Tracking", objective === "Sales" ? "Shopify connected" : objective === "Traffic" ? "UTM + GA4" : objective === "Leads" ? "Quiz form + UTM" : "Connected accounts"]].map(([label, value]) => (
+                      {[
+                        ["Objective", objective],
+                        ["Type", project.projectType],
+                        ["Partnership", project.partnership],
+                        ["Duration", longTerm ? "Long-term" : "One-time"],
+                        ["Platforms", project.platform],
+                        [
+                          "Tracking",
+                          objective === "Sales"
+                            ? "Shopify connected"
+                            : objective === "Traffic"
+                              ? "UTM + GA4"
+                              : objective === "Leads"
+                                ? "Quiz form + UTM"
+                                : "Connected accounts",
+                        ],
+                      ].map(([label, value]) => (
                         <div key={label}>
                           <p className="text-[12px] text-tertiary">{label}</p>
                           <p className="mt-0.5 truncate font-medium text-ink">{value}</p>
@@ -1421,7 +1977,11 @@ export function BrandProjectPublishedPage() {
                       "text-[#db231f] bg-[#fde4e3]",
                     ],
                     [
-                      objective === "Sales" ? "Connect Shopify" : objective === "Traffic" ? "Confirm UTM tracking" : "Check creator progress",
+                      objective === "Sales"
+                        ? "Connect Shopify"
+                        : objective === "Traffic"
+                          ? "Confirm UTM tracking"
+                          : "Check creator progress",
                       "Needed for codes and tracking links",
                       "Before 7 Oct",
                       "text-[#db231f] bg-[#fde4e3]",
