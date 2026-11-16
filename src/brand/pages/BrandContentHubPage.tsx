@@ -324,27 +324,27 @@ function Filter({
 
 function StatusBadge({ status }: { status: ContentStatus }) {
   const styles: Record<ContentStatus, string> = {
-    Live: "bg-status-success-bg text-status-success-fg",
-    "To review": "bg-status-warning-bg text-status-warning-fg",
-    "Changes requested": "bg-status-danger-bg text-status-danger-fg",
-    Approved: "bg-status-info-bg text-status-info-fg",
-    "Ad-ready": "bg-primary-muted text-primary",
+    Live: "bg-[#def8e5] text-[#159447]",
+    "To review": "bg-[#fff3d8] text-[#c87500]",
+    "Changes requested": "bg-[#ffe9e8] text-[#dc2626]",
+    Approved: "bg-[#edf0ff] text-[#435cf6]",
+    "Ad-ready": "bg-[#f1f3f6] text-[#596579]",
   };
   const dot: Record<ContentStatus, string> = {
-    Live: "bg-status-success-fg",
-    "To review": "bg-status-warning-fg",
-    "Changes requested": "bg-status-danger-fg",
-    Approved: "bg-status-info-fg",
-    "Ad-ready": "bg-primary",
+    Live: "bg-[#22b05d]",
+    "To review": "bg-[#f59e0b]",
+    "Changes requested": "bg-[#ef4444]",
+    Approved: "bg-[#4d63f6]",
+    "Ad-ready": "bg-[#536176]",
   };
   return (
     <span
       className={join(
-        "inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[12px] font-medium leading-4",
+        "inline-flex items-center gap-1 rounded-full px-1.5 py-px text-[10px] font-medium leading-[14px] shadow-[0_1px_1px_rgba(15,23,42,0.03)]",
         styles[status],
       )}
     >
-      <span className={join("size-1.5 rounded-full", dot[status])} />
+      <span className={join("size-1 rounded-full", dot[status])} />
       {status}
     </span>
   );
