@@ -1,100 +1,425 @@
-import { ChevronDown, Download, FilePenLine, Info, PencilLine, Plus, Share2 } from "lucide-react";
+import { useMemo, useState } from "react";
+import {
+  Check,
+  ChevronDown,
+  Download,
+  FilePenLine,
+  Info,
+  PencilLine,
+  Plus,
+  Search,
+  Share2,
+} from "lucide-react";
 import { motion } from "motion/react";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
 
-type FilterGroup = {
-  title: string;
-  fields: [string, string][];
+type FilterGroup = { title: string; fields: [string, string][] };
+type ProjectFilter = {
+  label: string;
+  placeholder: string;
+  options: readonly string[];
+  searchable?: boolean;
+  searchPlaceholder?: string;
 };
 
-const filterGroups: FilterGroup[] = [
+const dateOptions = [
+  "Project dates",
+  "Today",
+  "Yesterday",
+  "Last 7 days",
+  "Last 28 days",
+  "Last 90 days",
+  "This month",
+  "Last month",
+  "This year",
+  "Custom...",
+];
+const comparisonOptions = [
+  "Previous period",
+  "Same period last year",
+  "Project average",
+  "No comparison",
+];
+
+const projectFilterFields: ProjectFilter[] = [
   {
-    title: "PROJECT",
-    fields: [
-      ["Projects", "All projects"],
-      ["Project type", "Influencer · UGC"],
-      ["Partnership", "Paid · Gift exchange"],
-      ["Duration", "One-time · Long-term"],
-      ["Project status", "Live · Paused · Upcoming · Completed"],
-      ["Cycle (long-term)", "All cycles"],
-      ["Target type", "Net sales · Orders · Views"],
-      ["Content language", "All languages"],
+    label: "Projects",
+    placeholder: "Search projects",
+    searchable: true,
+    options: [
+      "All projects",
+      "Vitamin-C Serum - Live",
+      "Glow Squad - Live - month 3 of 6",
+      "Monsoon Sunscreen - Live",
+      "Lip Tint Drop - Live",
+      "Hydration Bundle - Live",
+      "Skin Quiz Leads - Upcoming",
+    ],
+  },
+  { label: "Project type", placeholder: "Select...", options: ["Influencer marketing", "UGC"] },
+  { label: "Partnership", placeholder: "Select...", options: ["Paid", "Gift exchange"] },
+  { label: "Duration", placeholder: "Select...", options: ["One-time", "Long-term"] },
+  {
+    label: "Project status",
+    placeholder: "Select...",
+    options: ["Live", "Paused", "Upcoming", "Completed", "Draft", "Archived"],
+  },
+  {
+    label: "Cycle (long-term)",
+    placeholder: "Select...",
+    options: ["Cycle 1", "Cycle 2", "Cycle 3", "Current cycle"],
+  },
+  { label: "Target type", placeholder: "Select...", options: ["Net sales", "Orders", "Views"] },
+  {
+    label: "Content language",
+    placeholder: "Select...",
+    options: ["English", "Hindi", "Tamil", "Telugu", "Kannada", "Marathi", "Bengali"],
+  },
+];
+
+const creatorFilterFields: ProjectFilter[] = [
+  {
+    label: "Creators",
+    placeholder: "Search invited creators",
+    searchable: true,
+    searchPlaceholder: "Search invited creators",
+    options: [
+      "All creators",
+      "Meera Iyer · @meerabeauty",
+      "Ishita Rao · @ishitarao",
+      "Emma Clarke · @emmaclarke",
+      "Kavya Reddy · @kavyareddy",
+      "Tara Bose · @tarabose",
+      "Diya Kapoor · @diyaglows",
     ],
   },
   {
-    title: "CREATORS",
-    fields: [
-      ["Creators", "All creators"],
-      ["Deliverable progress", "Completed · In progress · Behind"],
-      ["Invite status", "Invited · Accepted · Declined · Applied"],
-      ["Delivery status", "On time · Overdue · Delivered"],
-      ["Shipment status", "Sent · In transit · Delivered"],
-      ["Courier", "Any courier"],
-      ["UGC turnaround", "Within 2 · 3 · 5 · 7 · 10 days"],
-      ["Fulfilment method", "Own · Shiprocket · Pickup · Gift card"],
-      ["Ship from", "Any address"],
+    label: "Deliverable progress",
+    placeholder: "Select...",
+    options: ["Completed", "In progress", "Behind", "Not started"],
+  },
+  {
+    label: "Invite status",
+    placeholder: "Select...",
+    options: ["Invited", "Accepted", "Declined", "Applied", "Shortlisted"],
+  },
+  {
+    label: "Followers",
+    placeholder: "Select...",
+    options: ["10K - 50K", "50K - 1 L", "1 L - 5 L", "5 L +"],
+  },
+  {
+    label: "Niche",
+    placeholder: "Select...",
+    options: ["Beauty", "Skincare", "Fashion", "Lifestyle", "Wellness", "Men's grooming"],
+  },
+  {
+    label: "Creator city",
+    placeholder: "Select...",
+    options: [
+      "Mumbai",
+      "Delhi NCR",
+      "Bengaluru",
+      "Pune",
+      "Chennai",
+      "Hyderabad",
+      "Kolkata",
+      "Kochi",
     ],
   },
   {
-    title: "PLATFORM",
-    fields: [
-      ["Platform", "All platforms"],
-      ["Format", "All formats"],
-      ["Usage rights", "All usage rights"],
+    label: "Language",
+    placeholder: "Select...",
+    options: ["English", "Hindi", "Tamil", "Telugu", "Kannada", "Marathi", "Bengali"],
+  },
+  {
+    label: "Rate vs budget",
+    placeholder: "Select...",
+    options: ["At your budget", "Above budget", "Below budget"],
+  },
+  {
+    label: "Creator relationship",
+    placeholder: "Select...",
+    options: ["New", "Returning"],
+  },
+];
+
+const platformFilter: ProjectFilter = {
+  label: "Platform",
+  placeholder: "Select...",
+  options: ["Instagram", "YouTube", "Pinterest", "Snapchat"],
+};
+
+const contentFilterFields: ProjectFilter[] = [
+  {
+    label: "Content type",
+    placeholder: "Select...",
+    options: [
+      "Reel",
+      "Story",
+      "Story with link",
+      "Short",
+      "Video",
+      "Carousel",
+      "Photo post",
+      "Idea Pin",
+      "Snap Story",
+      "UGC file",
     ],
   },
   {
-    title: "CONTENT",
-    fields: [
-      ["Content status", "All statuses"],
-      ["Approval status", "Approved · To review"],
-      ["Content type", "Posts · Files · Videos"],
+    label: "Content status",
+    placeholder: "Select...",
+    options: [
+      "Awaiting approval",
+      "Changes requested",
+      "Approved - not live",
+      "Live",
+      "Overdue - not live",
     ],
   },
   {
-    title: "CONVERSIONS",
-    fields: [
-      ["Attribution", "Coupon · Tracking link"],
-      ["Order status", "All orders"],
-      ["Discount code", "All codes"],
+    label: "Deliverable",
+    placeholder: "Search deliverables",
+    searchable: true,
+    searchPlaceholder: "Search deliverables",
+    options: [
+      "Reel 1 - festive GRWM",
+      "Reel 2 - beach-day reapply",
+      "Short - SPF myths",
+      "Story - last reminder",
     ],
   },
   {
-    title: "AUDIENCE",
-    fields: [
-      ["Audience country", "All countries"],
-      ["Audience age", "All ages"],
-      ["Audience gender", "All genders"],
+    label: "Product in deliverable",
+    placeholder: "Search products",
+    searchable: true,
+    searchPlaceholder: "Search products",
+    options: [
+      "Vitamin C Glow Serum",
+      "Sunscreen gel SPF 50",
+      "Glow Squad kit",
+      "Festive gift set",
+      "Winter Lip Care Kit",
     ],
   },
   {
-    title: "PERFORMANCE THRESHOLDS",
-    fields: [
-      ["Reach", "Any reach"],
-      ["Engagement rate", "Any engagement rate"],
-      ["Views", "Any views"],
+    label: "Reel length",
+    placeholder: "Select...",
+    options: ["15-30 s", "30-45 s", "45-90 s"],
+  },
+  {
+    label: "UGC content type",
+    placeholder: "Select...",
+    options: [
+      "Unboxing",
+      "Product demo",
+      "Before and after",
+      "Testimonial",
+      "How-to",
+      "Lifestyle photo set",
+      "Short ad cut",
+      "Routine walkthrough",
     ],
   },
   {
-    title: "PAYMENTS",
-    fields: [
-      ["Payment status", "Released · In escrow"],
-      ["Fee range", "Any fee"],
-      ["GST", "All invoices"],
+    label: "UGC delivered as",
+    placeholder: "Select...",
+    options: ["Video file", "Photo files", "Video and photos"],
+  },
+  {
+    label: "Usage rights",
+    placeholder: "Select...",
+    options: ["Organic", "Paid ads", "Perpetual"],
+  },
+  {
+    label: "Rights ending",
+    placeholder: "Select...",
+    options: ["Active", "Ends in 30 days", "Expired"],
+  },
+  {
+    label: "Approval",
+    placeholder: "Select...",
+    options: ["Approved first time", "Changes requested"],
+  },
+  {
+    label: "Change-request reason",
+    placeholder: "Select...",
+    options: [
+      "Paid-partnership label missing",
+      "Code not said or shown",
+      "Wrong product or shade",
+      "Too short or too long",
+      "Off-brief message",
+      "Audio or lighting issue",
     ],
   },
   {
-    title: "DELIVERY",
-    fields: [
-      ["Deadline", "Any deadline"],
-      ["Late status", "On time · Overdue"],
-      ["Delivery month", "All months"],
+    label: "Posting time",
+    placeholder: "Select...",
+    options: ["Weekday - Mon-Fri", "Weekend", "Morning", "Afternoon", "Evening", "Night"],
+  },
+];
+
+const conversionFilterFields: ProjectFilter[] = [
+  {
+    label: "Attribution source",
+    placeholder: "Search codes and links",
+    searchable: true,
+    searchPlaceholder: "Search codes and links",
+    options: [
+      "ISHITA15 - coupon",
+      "ISHITA7DAY - coupon",
+      "flw.to/diya-reel - link",
+      "utm_content=reel_grwm - link",
+    ],
+  },
+  {
+    label: "Attribution type",
+    placeholder: "Select...",
+    options: ["Coupon code", "UTM link"],
+  },
+  {
+    label: "Customer status",
+    placeholder: "Select...",
+    options: ["New", "Returning"],
+  },
+  {
+    label: "Order status",
+    placeholder: "Select...",
+    options: ["Fulfilled", "Returned", "Cancelled"],
+  },
+  {
+    label: "Products ordered",
+    placeholder: "Search store products",
+    searchable: true,
+    searchPlaceholder: "Search store products",
+    options: ["Vitamin C Glow Serum", "Sunscreen gel SPF 50", "Glow Squad kit", "Festive gift set"],
+  },
+];
+
+const audienceFilterFields: ProjectFilter[] = [
+  {
+    label: "Audience reach",
+    placeholder: "Select...",
+    options: ["Followers", "New audience (non-followers)"],
+  },
+  {
+    label: "Age",
+    placeholder: "Select...",
+    options: ["13-17", "18-24", "25-34", "35-44", "45+"],
+  },
+  {
+    label: "Gender",
+    placeholder: "Select...",
+    options: ["Women", "Men"],
+  },
+  {
+    label: "Country",
+    placeholder: "Select...",
+    options: ["India", "UAE", "United States", "United Kingdom", "Singapore"],
+  },
+  {
+    label: "City",
+    placeholder: "Select...",
+    options: ["Bengaluru", "Mumbai", "Delhi NCR", "Chennai", "Hyderabad", "Pune"],
+  },
+];
+
+type ThresholdFilterConfig = {
+  label: string;
+  value: string;
+  mode: "Above" | "Below" | "Between";
+  lowerIsBetter?: boolean;
+};
+
+const performanceThresholds: ThresholdFilterConfig[] = [
+  { label: "ROAS", value: "3x", mode: "Above" },
+  { label: "Net sales", value: "₹50,000", mode: "Above" },
+  { label: "Orders", value: "100", mode: "Above" },
+  { label: "Link clicks", value: "1,000", mode: "Above" },
+  { label: "Add to cart", value: "200", mode: "Above" },
+  { label: "Checkouts", value: "100", mode: "Above" },
+  { label: "Conversion rate", value: "10%", mode: "Above" },
+  { label: "Returning customers", value: "20%", mode: "Above" },
+  { label: "Views", value: "1 L", mode: "Above" },
+  { label: "Engagement rate", value: "4%", mode: "Above" },
+  { label: "Cost per order (CPA)", value: "₹150", mode: "Below", lowerIsBetter: true },
+  { label: "Cost per new customer (CAC)", value: "₹300", mode: "Below", lowerIsBetter: true },
+  { label: "Cost per link click (CPC)", value: "₹15", mode: "Below", lowerIsBetter: true },
+  { label: "Cost per 1,000 views (CPM)", value: "₹100", mode: "Below", lowerIsBetter: true },
+  { label: "Cost per engagement (CPE)", value: "₹2", mode: "Below", lowerIsBetter: true },
+];
+
+const paymentFilterFields: ProjectFilter[] = [
+  {
+    label: "Payment status",
+    placeholder: "Select...",
+    options: ["Paid", "Held in escrow", "Not funded", "Refunded"],
+  },
+  {
+    label: "Dispute",
+    placeholder: "Select...",
+    options: ["Open", "Under review", "Resolved", "No dispute"],
+  },
+  {
+    label: "Dispute reason",
+    placeholder: "Select...",
+    options: ["Late delivery", "Doesn't match brief", "Posted then deleted", "Other"],
+  },
+  {
+    label: "Payment method",
+    placeholder: "Select...",
+    options: ["UPI AutoPay", "Card"],
+  },
+  {
+    label: "Invoice",
+    placeholder: "Select...",
+    options: ["With GST invoice", "Without"],
+  },
+];
+
+const deliveryFilterFields: ProjectFilter[] = [
+  {
+    label: "Delivery status",
+    placeholder: "Select...",
+    options: ["On time", "Overdue", "Delivered", "Not started"],
+  },
+  {
+    label: "Shipment status",
+    placeholder: "Select...",
+    options: ["Sent", "In transit", "Out for delivery", "Delivered"],
+  },
+  {
+    label: "Courier",
+    placeholder: "Select...",
+    options: ["Delhivery", "Blue Dart", "DTDC", "Shiprocket", "Ecom", "XpressBees", "India Post"],
+  },
+  {
+    label: "UGC turnaround",
+    placeholder: "Select...",
+    options: ["Within 2 days", "Within 3 days", "Within 5 days", "Within 7 days", "Within 10 days"],
+  },
+  {
+    label: "Fulfilment method",
+    placeholder: "Select...",
+    options: ["₹0 Shopify order", "Own shipping", "Shiprocket", "Store pickup", "Gift card"],
+  },
+  {
+    label: "Ship from",
+    placeholder: "Select...",
+    options: [
+      "Minimalist warehouse - Bhiwandi",
+      "Minimalist store - Bandra",
+      "Office - Andheri East",
     ],
   },
 ];
 
-function FilterField({ label, value }: { label: string; value: string }) {
+const filterGroups: FilterGroup[] = [];
+
+function StaticFilter({ label, value }: { label: string; value: string }) {
   return (
     <label className="block">
       <span className="mb-1 block text-[11px] font-medium leading-4 text-[#394357]">{label}</span>
@@ -109,7 +434,268 @@ function FilterField({ label, value }: { label: string; value: string }) {
   );
 }
 
+function ThresholdFilter({
+  label,
+  value: initialValue,
+  mode: initialMode,
+  lowerIsBetter,
+}: ThresholdFilterConfig) {
+  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<ThresholdFilterConfig["mode"]>(initialMode);
+  const [value, setValue] = useState(initialValue);
+  return (
+    <div className={"relative " + (open ? "z-[80]" : "z-10")}>
+      <span className="mb-1 block text-[11px] font-medium leading-4 text-[#394357]">{label}</span>
+      <button
+        aria-expanded={open}
+        className={
+          "flex h-9 w-full items-center gap-1.5 rounded-md border bg-white px-2.5 text-left text-[12px] leading-4 text-ink " +
+          (open ? "border-primary ring-1 ring-primary" : "border-line hover:bg-subtle")
+        }
+        onClick={() => setOpen((shown) => !shown)}
+        type="button"
+      >
+        <span className="min-w-0 flex-1 truncate">{mode + " " + value}</span>
+        <ChevronDown
+          className={"shrink-0 text-tertiary transition-transform " + (open ? "rotate-180" : "")}
+          size={13}
+        />
+      </button>
+      {open && (
+        <div className="absolute left-0 top-[calc(100%+4px)] z-[90] w-full min-w-[184px] rounded-md border border-line bg-white p-2 shadow-[0_12px_28px_rgba(15,23,42,0.14)]">
+          <div className="flex gap-1 rounded-full bg-subtle p-0.5">
+            {(["Above", "Below", "Between"] as const).map((option) => (
+              <button
+                className={
+                  "flex-1 rounded-full px-1.5 py-1 text-[9px] leading-3 " +
+                  (option === mode
+                    ? "bg-ink font-medium text-white"
+                    : "text-secondary hover:bg-white")
+                }
+                key={option}
+                onClick={() => setMode(option)}
+                type="button"
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+          <div className="mt-2 flex gap-1.5">
+            <input
+              className="h-8 min-w-0 flex-1 rounded border border-line bg-white px-2 text-[11px] text-ink outline-none placeholder:text-tertiary focus:border-primary"
+              onChange={(event) => setValue(event.target.value)}
+              value={value}
+            />
+            {mode === "Between" && (
+              <input
+                aria-label={label + " upper value"}
+                className="h-8 min-w-0 flex-1 rounded border border-line bg-white px-2 text-[11px] text-ink outline-none placeholder:text-tertiary focus:border-primary"
+                placeholder="To"
+              />
+            )}
+          </div>
+          <p className="mt-1.5 text-[9px] leading-3 text-tertiary">
+            {lowerIsBetter ? "For costs, lower is better" : "Compared with the project average"}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RadioFilter({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: string[];
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={"relative " + (open ? "z-[80]" : "z-10")}>
+      <span className="mb-1 block text-[11px] font-medium leading-4 text-[#394357]">{label}</span>
+      <button
+        aria-expanded={open}
+        className={
+          "flex h-9 w-full items-center gap-1.5 rounded-md border bg-white px-2.5 text-left text-[12px] leading-4 text-ink " +
+          (open ? "border-primary ring-1 ring-primary" : "border-line hover:bg-subtle")
+        }
+        onClick={() => setOpen((shown) => !shown)}
+        type="button"
+      >
+        <span className="min-w-0 flex-1 truncate">{value}</span>
+        <ChevronDown
+          className={"shrink-0 text-tertiary transition-transform " + (open ? "rotate-180" : "")}
+          size={13}
+        />
+      </button>
+      {open && (
+        <div className="absolute left-0 top-[calc(100%+4px)] z-[90] w-full min-w-[154px] rounded-md border border-line bg-white p-1 shadow-[0_12px_28px_rgba(15,23,42,0.14)]">
+          {options.map((option) => (
+            <button
+              className={
+                "flex w-full items-center gap-2 rounded px-1.5 py-1 text-left text-[10px] leading-4 " +
+                (option === value ? "bg-primary-subtle text-ink" : "text-ink hover:bg-subtle")
+              }
+              key={option}
+              onClick={() => {
+                onChange(option);
+                setOpen(false);
+              }}
+              type="button"
+            >
+              <span
+                className={
+                  "grid size-3 shrink-0 place-items-center rounded-full border " +
+                  (option === value ? "border-primary bg-primary" : "border-line bg-white")
+                }
+              >
+                {option === value && <span className="size-1 rounded-full bg-white" />}
+              </span>
+              {option}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProjectMultiSelect({
+  label,
+  placeholder,
+  options,
+  searchable = false,
+  searchPlaceholder,
+}: ProjectFilter) {
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [search, setSearch] = useState("");
+  const filtered = useMemo(
+    () => options.filter((option) => option.toLowerCase().includes(search.toLowerCase())),
+    [options, search],
+  );
+  const shown =
+    selected.length === 0
+      ? placeholder
+      : selected.length === 1
+        ? selected[0]
+        : selected.length + " selected";
+  const toggle = (option: string) =>
+    setDraft((items) =>
+      items.includes(option) ? items.filter((item) => item !== option) : [...items, option],
+    );
+  return (
+    <div className={"relative " + (open ? "z-[70]" : "z-10")}>
+      <span className="mb-1 block text-[11px] font-medium leading-4 text-[#394357]">{label}</span>
+      <button
+        aria-expanded={open}
+        className={
+          "flex h-9 w-full items-center gap-1.5 rounded-md border bg-white px-2.5 text-left text-[12px] leading-4 " +
+          (open
+            ? "border-primary ring-1 ring-primary text-ink"
+            : "border-line text-tertiary hover:bg-subtle")
+        }
+        onClick={() => {
+          setDraft(selected);
+          setOpen((shown) => !shown);
+        }}
+        type="button"
+      >
+        <span className="min-w-0 flex-1 truncate">{shown}</span>
+        <ChevronDown
+          className={
+            "shrink-0 transition-transform " + (open ? "rotate-180 text-primary" : "text-tertiary")
+          }
+          size={13}
+        />
+      </button>
+      {open && (
+        <div className="absolute left-0 top-[calc(100%+4px)] z-[90] w-full min-w-[154px] overflow-hidden rounded-md border border-line bg-white shadow-[0_12px_28px_rgba(15,23,42,0.14)]">
+          {searchable && (
+            <div className="p-1.5 pb-1">
+              <label className="flex h-7 items-center gap-1.5 rounded border border-line bg-white px-2 text-tertiary">
+                <Search size={11} />
+                <input
+                  autoFocus
+                  className="min-w-0 flex-1 bg-transparent text-[10px] outline-none placeholder:text-tertiary"
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder={searchPlaceholder ?? "Search projects"}
+                  value={search}
+                />
+              </label>
+            </div>
+          )}
+          <div className="max-h-[214px] overflow-y-auto px-1.5 pb-1">
+            {filtered.map((option) => {
+              const checked = draft.includes(option);
+              return (
+                <button
+                  className="flex w-full items-center gap-1.5 rounded px-1.5 py-1 text-left text-[10px] leading-4 text-ink hover:bg-subtle"
+                  key={option}
+                  onClick={() => toggle(option)}
+                  type="button"
+                >
+                  <span
+                    className={
+                      "grid size-3 shrink-0 place-items-center rounded-sm border " +
+                      (checked ? "border-primary bg-primary text-white" : "border-line bg-white")
+                    }
+                  >
+                    {checked && <Check size={10} strokeWidth={3} />}
+                  </span>
+                  <span className="min-w-0 truncate">{option}</span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex items-center gap-1 border-t border-line px-1.5 py-1.5 text-[9px]">
+            <button
+              className="text-tertiary hover:text-ink"
+              onClick={() => setDraft([...options])}
+              type="button"
+            >
+              Select all
+            </button>
+            <span className="flex-1" />
+            <button
+              className="text-tertiary hover:text-ink"
+              onClick={() => setDraft([])}
+              type="button"
+            >
+              Clear
+            </button>
+            <button
+              className="rounded bg-ink px-2 py-1 font-medium text-white"
+              onClick={() => {
+                setSelected(draft);
+                setOpen(false);
+                setSearch("");
+              }}
+              type="button"
+            >
+              Apply
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function BrandCustomReportBuilderPage() {
+  const [dateRange, setDateRange] = useState("Last 28 days");
+  const [comparison, setComparison] = useState("Previous period");
+  const [audienceMatch, setAudienceMatch] = useState("Any");
+  const [rating, setRating] = useState("Any");
+  const [adUsage, setAdUsage] = useState("All content");
+  const [funnelStage, setFunnelStage] = useState("Ordered");
+  const [refunded, setRefunded] = useState("Any");
   return (
     <BrandShell compactSidebar hideChat>
       <div className="mx-auto w-full max-w-[1680px] pb-10">
@@ -119,9 +705,7 @@ export function BrandCustomReportBuilderPage() {
           initial={{ opacity: 0, y: 8 }}
           transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p className="text-[12px] leading-4 text-tertiary">
-            Custom reports&nbsp; / &nbsp;New report
-          </p>
+          <p className="text-[12px] leading-4 text-tertiary">Custom reports / New report</p>
           <div className="flex flex-wrap items-center gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
@@ -165,12 +749,163 @@ export function BrandCustomReportBuilderPage() {
             <p className="mt-2 text-[11px] leading-4 text-tertiary">
               Set once: every block follows these.
             </p>
-            <div className="mt-3 space-y-3">
-              <FilterField label="Date range" value="7 Oct – 7 Nov 2026" />
-              <FilterField label="Compare with" value="Previous period" />
-            </div>
+            <section className="mt-3">
+              <h3 className="mb-3 pt-1 text-[10px] font-semibold leading-4 tracking-[0.04em] text-tertiary">
+                DATES
+              </h3>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                <RadioFilter
+                  label="Date range"
+                  onChange={setDateRange}
+                  options={dateOptions}
+                  value={dateRange}
+                />
+                <RadioFilter
+                  label="Compare with"
+                  onChange={setComparison}
+                  options={comparisonOptions}
+                  value={comparison}
+                />
+              </div>
+            </section>
             <div className="my-3 h-px bg-muted" />
             <div className="space-y-4">
+              <section>
+                <h3 className="mb-3 pt-1 text-[10px] font-semibold leading-4 tracking-[0.04em] text-tertiary">
+                  PROJECT
+                </h3>
+                <div className="space-y-3">
+                  {projectFilterFields.map((field) => (
+                    <ProjectMultiSelect key={field.label} {...field} />
+                  ))}
+                </div>
+              </section>
+              <section>
+                <h3 className="mb-3 pt-1 text-[10px] font-semibold leading-4 tracking-[0.04em] text-tertiary">
+                  CREATORS
+                </h3>
+                <div className="space-y-3">
+                  {creatorFilterFields.slice(0, 7).map((field) => (
+                    <ProjectMultiSelect key={field.label} {...field} />
+                  ))}
+                  <RadioFilter
+                    label="Audience match"
+                    onChange={setAudienceMatch}
+                    options={["Any", "70%+", "80%+", "90%+"]}
+                    value={audienceMatch}
+                  />
+                  <RadioFilter
+                    label="Rating"
+                    onChange={setRating}
+                    options={["Any", "4+", "4.5+"]}
+                    value={rating}
+                  />
+                  {creatorFilterFields.slice(7).map((field) => (
+                    <ProjectMultiSelect key={field.label} {...field} />
+                  ))}
+                </div>
+              </section>
+              <section>
+                <h3 className="mb-3 pt-1 text-[10px] font-semibold leading-4 tracking-[0.04em] text-tertiary">
+                  PLATFORM
+                </h3>
+                <ProjectMultiSelect {...platformFilter} />
+                <p className="mt-1.5 text-[10px] leading-4 text-[#b7791f]">
+                  Earnings always shown separately
+                </p>
+              </section>
+              <section>
+                <h3 className="mb-3 pt-1 text-[10px] font-semibold leading-4 tracking-[0.04em] text-tertiary">
+                  CONTENT
+                </h3>
+                <div className="space-y-3">
+                  {contentFilterFields.slice(0, 8).map((field) => (
+                    <ProjectMultiSelect key={field.label} {...field} />
+                  ))}
+                  <RadioFilter
+                    label="Ad usage"
+                    onChange={setAdUsage}
+                    options={["All content", "Ad-ready only"]}
+                    value={adUsage}
+                  />
+                  {contentFilterFields.slice(8).map((field) => (
+                    <ProjectMultiSelect key={field.label} {...field} />
+                  ))}
+                </div>
+              </section>
+              <section>
+                <h3 className="mb-3 pt-1 text-[10px] font-semibold leading-4 tracking-[0.04em] text-tertiary">
+                  CONVERSIONS
+                </h3>
+                <div className="space-y-3">
+                  {conversionFilterFields.slice(0, 2).map((field) => (
+                    <ProjectMultiSelect key={field.label} {...field} />
+                  ))}
+                  <RadioFilter
+                    label="Funnel stage"
+                    onChange={setFunnelStage}
+                    options={[
+                      "Clicked",
+                      "Visited store",
+                      "Viewed product",
+                      "Added to cart",
+                      "Started checkout",
+                      "Ordered",
+                    ]}
+                    value={funnelStage}
+                  />
+                  {conversionFilterFields.slice(2).map((field) => (
+                    <ProjectMultiSelect key={field.label} {...field} />
+                  ))}
+                </div>
+              </section>
+              <section>
+                <h3 className="mb-3 pt-1 text-[10px] font-semibold leading-4 tracking-[0.04em] text-tertiary">
+                  AUDIENCE
+                </h3>
+                <div className="space-y-3">
+                  {audienceFilterFields.map((field) => (
+                    <ProjectMultiSelect key={field.label} {...field} />
+                  ))}
+                </div>
+              </section>
+              <section>
+                <h3 className="mb-3 pt-1 text-[10px] font-semibold leading-4 tracking-[0.04em] text-tertiary">
+                  PERFORMANCE THRESHOLDS
+                </h3>
+                <div className="space-y-3">
+                  {performanceThresholds.map((threshold) => (
+                    <ThresholdFilter key={threshold.label} {...threshold} />
+                  ))}
+                </div>
+              </section>
+              <section>
+                <h3 className="mb-3 pt-1 text-[10px] font-semibold leading-4 tracking-[0.04em] text-tertiary">
+                  PAYMENTS
+                </h3>
+                <div className="space-y-3">
+                  <ProjectMultiSelect {...paymentFilterFields[0]} />
+                  <RadioFilter
+                    label="Refunded"
+                    onChange={setRefunded}
+                    options={["Any", "Refunded only", "Not refunded"]}
+                    value={refunded}
+                  />
+                  {paymentFilterFields.slice(1).map((field) => (
+                    <ProjectMultiSelect key={field.label} {...field} />
+                  ))}
+                </div>
+              </section>
+              <section>
+                <h3 className="mb-3 pt-1 text-[10px] font-semibold leading-4 tracking-[0.04em] text-tertiary">
+                  DELIVERY
+                </h3>
+                <div className="space-y-3">
+                  {deliveryFilterFields.map((field) => (
+                    <ProjectMultiSelect key={field.label} {...field} />
+                  ))}
+                </div>
+              </section>
               {filterGroups.map((group) => (
                 <section key={group.title}>
                   <h3 className="mb-3 pt-1 text-[10px] font-semibold leading-4 tracking-[0.04em] text-tertiary">
@@ -178,14 +913,14 @@ export function BrandCustomReportBuilderPage() {
                   </h3>
                   <div className="space-y-3">
                     {group.fields.map(([label, value]) => (
-                      <FilterField key={label} label={label} value={value} />
+                      <StaticFilter key={label} label={label} value={value} />
                     ))}
                   </div>
                 </section>
               ))}
             </div>
             <p className="mt-4 text-[10px] leading-4 text-tertiary">
-              71 filters · all from what you set up in Floooww
+              71 filters - all from what you set up in Floooww
             </p>
           </aside>
           <section className="flex min-h-[620px] min-w-0 flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-line bg-white px-6 text-center">
