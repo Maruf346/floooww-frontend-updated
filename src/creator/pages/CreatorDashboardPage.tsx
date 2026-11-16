@@ -1,12 +1,6 @@
-import { Camera } from "lucide-react";
-import { DashboardPlaceholder } from "@/common/components/layout/DashboardPlaceholder";
+import { CreatorOverviewContent } from "@/creator/components/CreatorOverviewContent";
+import { CreatorShell } from "@/creator/components/CreatorShell";
 
 export function CreatorDashboardPage() {
-  return (
-    <DashboardPlaceholder
-      icon={Camera}
-      title="Creator dashboard"
-      description="Invites, deliverables and payouts. This workspace is coming next."
-    />
-  );
+  return <CreatorShell><CreatorOverviewContent /></CreatorShell>;
 }
