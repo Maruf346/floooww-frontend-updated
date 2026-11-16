@@ -245,23 +245,33 @@ function TeamSettings() {
   const [members, setMembers] = useState(initialMembers);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [manageMember, setManageMember] = useState<TeamMember | null>(null);
-  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteIdentity, setInviteIdentity] = useState("Meera Nair · meera@minimalist.in");
   const [inviteRole, setInviteRole] = useState("Member");
+  const [inviteProjects, setInviteProjects] = useState("Vitamin-C Serum, Glow Squad (2 of 11)");
+  const [inviteAccess, setInviteAccess] = useState("Approve content");
+
+  const closeInvite = () => {
+    setInviteIdentity("Meera Nair · meera@minimalist.in");
+    setInviteRole("Member");
+    setInviteProjects("Vitamin-C Serum, Glow Squad (2 of 11)");
+    setInviteAccess("Approve content");
+    setInviteOpen(false);
+  };
 
   const sendInvite = () => {
-    const email = inviteEmail.trim();
+    const email = inviteIdentity.match(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/)?.[0] ?? "";
     if (!email) return;
-    const name = email
-      .split("@")[0]
-      .replace(/[._-]/g, " ")
-      .replace(/\b\w/g, (letter) => letter.toUpperCase());
+    const name =
+      inviteIdentity.replace(email, "").replace(/[·•]/g, "").trim() ||
+      email
+        .split("@")[0]
+        .replace(/[._-]/g, " ")
+        .replace(/\b\w/g, (letter) => letter.toUpperCase());
     setMembers((current) => [
       ...current,
       { name, email, role: inviteRole, lastActive: "Invitation sent", avatar: "" },
     ]);
-    setInviteEmail("");
-    setInviteRole("Member");
-    setInviteOpen(false);
+    closeInvite();
   };
   const updateRole = (role: string) => {
     if (!manageMember) return;
@@ -372,59 +382,18 @@ function TeamSettings() {
         </div>
       </section>
       {inviteOpen && (
-        <TeamDialog
-          title="Invite member"
-          subtitle="They will receive an email invitation."
-          close={() => setInviteOpen(false)}
-        >
-          <label className="grid gap-1.5 text-[12px] font-medium leading-4 text-ink">
-            Work email
-            <input
-              autoFocus
-              value={inviteEmail}
-              onChange={(event) => setInviteEmail(event.target.value)}
-              placeholder="name@company.com"
-              className="h-10 rounded-lg border border-line px-3 text-[13px] font-normal outline-none placeholder:text-tertiary focus:border-primary focus:ring-1 focus:ring-primary"
-            />
-          </label>
-          <label className="mt-3 grid gap-1.5 text-[12px] font-medium leading-4 text-ink">
-            Role
-            <span className="relative">
-              <select
-                value={inviteRole}
-                onChange={(event) => setInviteRole(event.target.value)}
-                className="h-10 w-full appearance-none rounded-lg border border-line bg-white px-3 pr-9 text-[13px] font-normal outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-              >
-                <option>Admin</option>
-                <option>Finance</option>
-                <option>Member</option>
-                <option>Viewer</option>
-              </select>
-              <ChevronDown
-                size={16}
-                className="pointer-events-none absolute right-3 top-3 text-secondary"
-              />
-            </span>
-          </label>
-          <div className="mt-5 flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={() => setInviteOpen(false)}
-              className="h-10 rounded-lg border border-line px-4 text-[14px] font-medium text-ink hover:bg-subtle"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={sendInvite}
-              disabled={!inviteEmail.trim()}
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#0d0d10] px-4 text-[14px] font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <Mail size={16} />
-              Send invite
-            </button>
-          </div>
-        </TeamDialog>
+        <InviteTeamMemberDialog
+          identity={inviteIdentity}
+          role={inviteRole}
+          projects={inviteProjects}
+          access={inviteAccess}
+          close={closeInvite}
+          send={sendInvite}
+          setIdentity={setInviteIdentity}
+          setRole={setInviteRole}
+          setProjects={setInviteProjects}
+          setAccess={setInviteAccess}
+        />
       )}
       {manageMember && (
         <TeamDialog
@@ -492,6 +461,178 @@ function TeamDialog({
         </div>
         <div className="mt-5">{children}</div>
       </div>
+    </div>
+  );
+}
+
+function InviteSelect({
+  label,
+  value,
+  hint,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  hint: string;
+  options: string[];
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="grid gap-1.5">
+      <span className="text-[12px] font-medium leading-4 text-ink">{label}</span>
+      <span className="relative">
+        <select
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="h-10 w-full appearance-none rounded-lg border border-line bg-white px-3 pr-9 text-[13px] leading-5 text-ink outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
+        >
+          {options.map((option) => (
+            <option key={option}>{option}</option>
+          ))}
+        </select>
+        <ChevronDown
+          size={16}
+          className="pointer-events-none absolute right-3 top-3 text-secondary"
+        />
+      </span>
+      <span className="text-[12px] leading-4 text-tertiary">{hint}</span>
+    </label>
+  );
+}
+
+function InviteTeamMemberDialog({
+  identity,
+  role,
+  projects,
+  access,
+  close,
+  send,
+  setIdentity,
+  setRole,
+  setProjects,
+  setAccess,
+}: {
+  identity: string;
+  role: string;
+  projects: string;
+  access: string;
+  close: () => void;
+  send: () => void;
+  setIdentity: (value: string) => void;
+  setRole: (value: string) => void;
+  setProjects: (value: string) => void;
+  setAccess: (value: string) => void;
+}) {
+  const inviteeName = identity.split(/[·•]/)[0]?.trim() || "This team member";
+  return (
+    <div
+      className="fixed inset-0 z-50 grid place-items-center bg-black/30 p-4"
+      role="presentation"
+      onMouseDown={close}
+    >
+      <motion.div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="invite-team-title"
+        onMouseDown={(event) => event.stopPropagation()}
+        initial={{ opacity: 0, y: 8, scale: 0.985 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="w-full max-w-[520px] rounded-2xl border border-[#e5e7eb] bg-white p-6 shadow-[0_12px_32px_rgba(0,0,0,.12)]"
+      >
+        <div>
+          <h2 id="invite-team-title" className="text-[18px] font-semibold leading-6 text-[#070b13]">
+            Invite a team member
+          </h2>
+          <p className="mt-1 text-[13px] leading-5 text-[#8491a3]">
+            Give access per project · you can change it any time in Team &amp; roles
+          </p>
+        </div>
+
+        <div className="mt-4 space-y-4">
+          <label className="grid gap-1.5">
+            <span className="text-[12px] font-medium leading-4 text-ink">Name and work email</span>
+            <input
+              autoFocus
+              value={identity}
+              onChange={(event) => setIdentity(event.target.value)}
+              className="h-10 rounded-lg border border-line px-3 text-[13px] leading-5 text-ink outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
+            />
+            <span className="text-[12px] leading-4 text-tertiary">
+              They get an email with a link · expires in 7 days
+            </span>
+          </label>
+          <InviteSelect
+            label="Role"
+            value={role}
+            onChange={setRole}
+            options={["Owner", "Admin", "Finance", "Member", "Viewer", "Agency (external)"]}
+            hint="Owner · Admin · Finance · Member · Viewer · Agency (external)"
+          />
+          <InviteSelect
+            label="Projects"
+            value={projects}
+            onChange={setProjects}
+            options={[
+              "Vitamin-C Serum, Glow Squad (2 of 11)",
+              "All projects (11 of 11)",
+              "Vitamin-C Serum (1 of 11)",
+              "Glow Squad (1 of 11)",
+            ]}
+            hint="All projects of the chosen client(s), or specific ones · new projects are not added automatically"
+          />
+          <InviteSelect
+            label="Access level"
+            value={access}
+            onChange={setAccess}
+            options={[
+              "View only",
+              "Edit (brief, deliverables, creators)",
+              "Approve content",
+              "Approve & pay",
+              "Full",
+            ]}
+            hint="View only · Edit (brief, deliverables, creators) · Approve content · Approve & pay (fund escrow, release payments) · Full"
+          />
+
+          <div className="rounded-[10px] bg-[#f3f5f7] px-3.5 py-3 text-[12px] leading-4 text-[#394357]">
+            <p className="font-semibold">What {inviteeName} will be able to do</p>
+            <div className="mt-1.5 grid gap-1">
+              <p>✓ See and edit {projects.replace(/ \(.*$/, "")}</p>
+              <p>
+                ✓{" "}
+                {access === "View only"
+                  ? "View project activity and content"
+                  : "Approve or request changes on content"}
+              </p>
+              <p>✓ Message creators</p>
+              <p className="text-[#8491a3]">
+                ✕ Fund escrow, release payments, see invoices, or see other projects
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 flex items-center justify-end gap-3">
+          <button
+            type="button"
+            onClick={close}
+            className="h-8 rounded-lg px-3 text-[13px] font-medium leading-[18px] text-ink hover:bg-subtle"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={send}
+            disabled={!identity.match(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/)}
+            className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#0d0d10] px-4 text-[14px] font-medium leading-5 text-white transition hover:bg-[#27272a] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <Mail size={16} />
+            Send invite
+          </button>
+        </div>
+      </motion.div>
     </div>
   );
 }
