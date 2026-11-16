@@ -1,5 +1,15 @@
 import { useState, type ReactNode } from "react";
-import { Check, ChevronDown, Mail, Plug, Upload, UserPlus, X } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  Download,
+  Mail,
+  Pencil,
+  Plug,
+  Upload,
+  UserPlus,
+  X,
+} from "lucide-react";
 import { motion } from "motion/react";
 import { BrandShell } from "@/brand/components/BrandShell";
 
@@ -838,6 +848,313 @@ function IntegrationsSettings() {
   );
 }
 
+type Invoice = { date: string; invoice: string; project: string; cycle?: string; amount: string };
+const invoices: Invoice[] = [
+  { date: "26 Oct", invoice: "FLW-2610-0412", project: "Monsoon Sunscreen", amount: "₹2,950" },
+  { date: "6 Oct", invoice: "FLW-0610-0388", project: "Vitamin-C Serum", amount: "₹11,800" },
+  {
+    date: "2 Oct",
+    invoice: "FLW-0210-0371",
+    project: "Glow Squad",
+    cycle: "month 3",
+    amount: "₹4,425",
+  },
+  {
+    date: "12 Sep",
+    invoice: "FLW-1209-0322",
+    project: "Monsoon Sunscreen",
+    cycle: "–",
+    amount: "₹6,638",
+  },
+];
+
+function BillingSettings() {
+  const [methods, setMethods] = useState([
+    {
+      name: "UPI AutoPay · minimalist@okhdfcbank",
+      detail: "Mandate up to ₹16,000 a cycle · for repeating projects",
+      default: true,
+    },
+    { name: "Visa •••• 4242", detail: "Expires 08/28 · Ananya Mehta", default: false },
+  ]);
+  const [billing, setBilling] = useState({
+    legalName: "Minimalist Pvt Ltd",
+    gstin: "27AABCG1234M1Z5",
+    address: "4th floor, Kamala Mills, Lower Parel, Mumbai 400013",
+    supply: "Maharashtra",
+    invoicesTo: "finance@minimalist.in",
+  });
+  const [editor, setEditor] = useState<"method" | "billing" | null>(null);
+  const [notice, setNotice] = useState("");
+  const downloadPdf = async (list: Invoice[]) => {
+    try {
+      const { jsPDF } = await import("jspdf");
+      const pdf = new jsPDF({ unit: "pt", format: "a4" });
+      list.forEach((entry, index) => {
+        if (index) pdf.addPage();
+        pdf.setFontSize(22);
+        pdf.text("Floooww GST invoice", 54, 70);
+        pdf.setFontSize(12);
+        pdf.text(`Invoice: ${entry.invoice}`, 54, 112);
+        pdf.text(`Date: ${entry.date} 2026`, 54, 134);
+        pdf.text(`Project: ${entry.project}`, 54, 156);
+        pdf.text(`Amount paid: ${entry.amount}`, 54, 178);
+        pdf.text(`Billed to: ${billing.legalName}`, 54, 220);
+        pdf.text(`GSTIN: ${billing.gstin}`, 54, 242);
+      });
+      pdf.save(list.length === 1 ? `${list[0].invoice}.pdf` : "Floooww-invoices.pdf");
+      setNotice(
+        list.length === 1 ? `Downloaded ${list[0].invoice}.` : "Downloaded all GST invoices.",
+      );
+    } catch {
+      setNotice("Couldn’t create the invoice PDF. Please try again.");
+    }
+  };
+  const addMethod = () => {
+    setMethods((current) => [
+      ...current,
+      { name: "Mastercard •••• 9001", detail: "Expires 11/29 · Ananya Mehta", default: false },
+    ]);
+    setEditor(null);
+    setNotice("Payment method added.");
+  };
+  const saveBilling = () => {
+    setEditor(null);
+    setNotice("Billing details saved.");
+  };
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.28, ease: "easeOut" }}
+      className="space-y-6"
+    >
+      {notice && (
+        <p
+          role="status"
+          className="rounded-lg bg-[#e1fce3] px-3 py-2 text-[12px] font-medium leading-4 text-[#16a34a]"
+        >
+          {notice}
+        </p>
+      )}
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <section className="rounded-xl border border-[#e5e7eb] bg-white p-5">
+          <div className="flex items-start gap-2">
+            <div className="flex-1">
+              <h2 className="text-[16px] font-semibold leading-6 text-ink">Payment methods</h2>
+              <p className="text-[12px] leading-4 text-tertiary">Used for escrow and GST</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setEditor("method")}
+              className="h-8 rounded-lg border border-line px-3 text-[13px] font-medium leading-[18px] text-ink hover:bg-subtle"
+            >
+              Add method
+            </button>
+          </div>
+          <div className="mt-3">
+            {methods.map((method) => (
+              <div
+                key={method.name}
+                className="flex items-center gap-3 border-t border-subtle py-3"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-[14px] font-medium leading-5 text-ink">{method.name}</p>
+                    {method.default && (
+                      <span className="rounded-full bg-primary-subtle px-2 py-0.5 text-[12px] font-medium leading-4 text-primary">
+                        Default
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[12px] leading-4 text-tertiary">{method.detail}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setNotice(`${method.name} is ready to edit.`)}
+                  className="text-[13px] font-medium leading-[18px] text-primary"
+                >
+                  Edit
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+        <section className="rounded-xl border border-[#e5e7eb] bg-white p-5">
+          <div className="flex items-start gap-2">
+            <div className="flex-1">
+              <h2 className="text-[16px] font-semibold leading-6 text-ink">Billing details</h2>
+              <p className="text-[12px] leading-4 text-tertiary">Printed on every GST invoice</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setEditor("billing")}
+              className="h-8 rounded-lg border border-line px-3 text-[13px] font-medium leading-[18px] text-ink hover:bg-subtle"
+            >
+              Edit
+            </button>
+          </div>
+          <div className="mt-3">
+            {[
+              ["Legal name", billing.legalName],
+              ["GSTIN", billing.gstin],
+              ["Address", billing.address],
+              ["Place of supply", billing.supply],
+              ["Invoices to", billing.invoicesTo],
+            ].map(([label, value]) => (
+              <div
+                key={label}
+                className="flex gap-3 border-t border-subtle py-2.5 text-[13px] leading-5"
+              >
+                <span className="w-[110px] shrink-0 text-tertiary">{label}</span>
+                <span className="font-medium text-ink">{value}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+      <section className="rounded-xl border border-[#e5e7eb] bg-white p-5">
+        <div className="flex flex-wrap items-start gap-3">
+          <div className="flex-1">
+            <h2 className="text-[16px] font-semibold leading-6 text-ink">Invoices</h2>
+            <p className="text-[12px] leading-4 text-tertiary">
+              One GST invoice per payment · Floooww charges brands nothing
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => downloadPdf(invoices)}
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-line px-3 text-[13px] font-medium leading-[18px] text-ink hover:bg-subtle"
+          >
+            <Download size={14} />
+            Download all
+          </button>
+        </div>
+        <div className="mt-3 overflow-x-auto rounded-[10px] border border-[#e5e7eb]">
+          <div className="min-w-[720px]">
+            <div className="grid grid-cols-[90px_150px_minmax(160px,1fr)_110px_110px_80px] gap-3 bg-[#f3f5f7] px-3.5 py-2.5 text-[12px] font-medium leading-4 text-tertiary">
+              <span>DATE</span>
+              <span>INVOICE</span>
+              <span>PROJECT</span>
+              <span>AMOUNT</span>
+              <span>STATUS</span>
+              <span />
+            </div>
+            {invoices.map((entry) => (
+              <div
+                key={entry.invoice}
+                className="grid grid-cols-[90px_150px_minmax(160px,1fr)_110px_110px_80px] items-center gap-3 border-t border-subtle px-3.5 py-3 text-[13px] leading-5 text-ink"
+              >
+                <span className="font-medium">{entry.date}</span>
+                <span>{entry.invoice}</span>
+                <span>
+                  <span className="block">{entry.project}</span>
+                  {entry.cycle && (
+                    <span className="block text-[12px] leading-4 text-tertiary">{entry.cycle}</span>
+                  )}
+                </span>
+                <span>{entry.amount}</span>
+                <span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e1fce3] px-2 py-0.5 text-[12px] font-medium leading-4 text-[#149d46]">
+                    <span className="size-1.5 rounded-full bg-current" />
+                    Paid
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => downloadPdf([entry])}
+                  className="text-left text-[13px] font-medium leading-[18px] text-primary"
+                >
+                  Download
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      {editor === "method" && (
+        <TeamDialog
+          title="Add payment method"
+          subtitle="Used for escrow and GST payments."
+          close={() => setEditor(null)}
+        >
+          <div className="rounded-lg border border-line bg-subtle px-3 py-2 text-[13px] leading-5 text-secondary">
+            A new Mastercard ending in 9001 will be added to this workspace.
+          </div>
+          <div className="mt-5 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setEditor(null)}
+              className="h-10 rounded-lg border border-line px-4 text-[14px] font-medium text-ink hover:bg-subtle"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={addMethod}
+              className="h-10 rounded-lg bg-[#0d0d10] px-4 text-[14px] font-medium text-white"
+            >
+              Add method
+            </button>
+          </div>
+        </TeamDialog>
+      )}
+      {editor === "billing" && (
+        <TeamDialog
+          title="Edit billing details"
+          subtitle="These details appear on every GST invoice."
+          close={() => setEditor(null)}
+        >
+          <div className="grid gap-3">
+            <Field
+              label="Legal name"
+              value={billing.legalName}
+              onChange={(legalName) => setBilling((value) => ({ ...value, legalName }))}
+            />
+            <Field
+              label="GSTIN"
+              value={billing.gstin}
+              onChange={(gstin) => setBilling((value) => ({ ...value, gstin }))}
+            />
+            <Field
+              label="Address"
+              value={billing.address}
+              onChange={(address) => setBilling((value) => ({ ...value, address }))}
+            />
+            <Field
+              label="Place of supply"
+              value={billing.supply}
+              onChange={(supply) => setBilling((value) => ({ ...value, supply }))}
+            />
+            <Field
+              label="Invoices to"
+              value={billing.invoicesTo}
+              onChange={(invoicesTo) => setBilling((value) => ({ ...value, invoicesTo }))}
+            />
+          </div>
+          <div className="mt-5 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setEditor(null)}
+              className="h-10 rounded-lg border border-line px-4 text-[14px] font-medium text-ink hover:bg-subtle"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={saveBilling}
+              className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-[#0d0d10] px-4 text-[14px] font-medium text-white"
+            >
+              <Pencil size={14} />
+              Save details
+            </button>
+          </div>
+        </TeamDialog>
+      )}
+    </motion.div>
+  );
+}
+
 export function BrandSettingsPage() {
   const [activeTab, setActiveTab] = useState<(typeof settingsTabs)[number][0]>("Account");
   return (
@@ -872,6 +1189,8 @@ export function BrandSettingsPage() {
               <TeamSettings />
             ) : activeTab === "Integrations" ? (
               <IntegrationsSettings />
+            ) : activeTab === "Billing & tax" ? (
+              <BillingSettings />
             ) : (
               <section className="rounded-xl border border-line bg-white p-5">
                 <h2 className="text-[16px] font-semibold leading-6 text-ink">{activeTab}</h2>
