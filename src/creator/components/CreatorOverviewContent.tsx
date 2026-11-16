@@ -2,9 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
   BriefcaseBusiness,
-  CalendarDays,
   CheckCircle2,
-  ChevronDown,
   CircleDollarSign,
   FileCheck2,
   Image as ImageIcon,
@@ -21,6 +19,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { CountUp } from "@/common/components/motion/CountUp";
 import { RevealGroup, RevealItem } from "@/common/components/motion/Reveal";
 import { DURATION, EASE_OUT, scaleIn } from "@/common/constants/motion";
+import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 
 const rupee = "\u20b9";
 const dot = " \u00b7 ";
@@ -95,7 +94,7 @@ function CardHeader({ title, subtitle, action }: { title: string; subtitle: stri
 
 export function CreatorOverviewContent() {
   return <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-4 pb-10">
-    <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="text-[26px] font-bold leading-[34px] tracking-[-.13px] text-ink">Welcome, Ishita</h1><p className="mt-1 text-[13px] leading-5 text-secondary">@ishitarao{dot}5 projects{dot}1-28 Oct 2026 compared with 3-30 Sep</p></div><div className="flex flex-wrap gap-2.5"><button type="button" className="inline-flex h-10 items-center gap-2 rounded-md border border-line bg-white px-3 text-[12px] font-medium text-ink"><CalendarDays size={16} />1-28 Oct 2026<ChevronDown size={14} className="text-tertiary" /></button><button type="button" className="inline-flex h-10 items-center gap-2 rounded-md bg-ink px-4 text-[14px] font-medium text-white"><BriefcaseBusiness size={16} />Project discovery</button></div></section>
+    <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="text-[26px] font-bold leading-[34px] tracking-[-.13px] text-ink">Welcome, Ishita</h1><p className="mt-1 text-[13px] leading-5 text-secondary">@ishitarao{dot}5 projects{dot}1-28 Oct 2026 compared with 3-30 Sep</p></div><div className="flex flex-wrap gap-2.5"><DateRangePicker value="1 Oct - 28 Oct 2026" /><button type="button" className="inline-flex h-10 items-center gap-2 rounded-md bg-ink px-4 text-[14px] font-medium text-white"><BriefcaseBusiness size={16} />Project discovery</button></div></section>
 
     <RevealGroup className="rounded-xl border border-line bg-white p-5" stagger={0.06}><div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">{tiles.map((tile, index) => <RevealItem key={tile.label} variants={scaleIn}><MetricTile tile={tile} index={index} /></RevealItem>)}</div></RevealGroup>
 
