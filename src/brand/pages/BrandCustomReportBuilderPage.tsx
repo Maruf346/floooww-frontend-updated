@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   Check,
   ChevronDown,
@@ -703,8 +703,8 @@ function ProjectMultiSelect({
 }
 
 export function BrandCustomReportBuilderPage() {
-  const [dateRange, setDateRange] = useState("Last 28 days");
-  const [comparison, setComparison] = useState("Previous period");
+  const [dateRange, setDateRange] = useState("");
+  const [comparison, setComparison] = useState("");
   const [audienceMatch, setAudienceMatch] = useState("Any");
   const [rating, setRating] = useState("Any");
   const [adUsage, setAdUsage] = useState("All content");
@@ -716,6 +716,9 @@ export function BrandCustomReportBuilderPage() {
   const [isRenaming, setIsRenaming] = useState(false);
   const [hasReport, setHasReport] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState<Record<string, string[]>>({});
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [exportError, setExportError] = useState("");
+  const reportExportRef = useRef<HTMLDivElement>(null);
 
   const updateAppliedFilter = (label: string, values: string[]) => {
     setAppliedFilters((current) => ({ ...current, [label]: values }));
@@ -743,6 +746,145 @@ export function BrandCustomReportBuilderPage() {
   const saveReportTitle = () => {
     setReportTitle(titleDraft.trim() || "Untitled report");
     setIsRenaming(false);
+  };
+
+  const downloadPdf = async () => {
+    const report = reportExportRef.current;
+    if (!report || isDownloading) return;
+
+    setIsDownloading(true);
+    setExportError("");
+    try {
+      const [{ toCanvas }, { jsPDF }] = await Promise.all([
+        import("html-to-image"),
+        import("jspdf"),
+      ]);
+      const motionNodes = Array.from(report.querySelectorAll<HTMLElement>("[style]")).filter(
+        (node) => node.style.opacity || node.style.transform,
+      );
+      const originalStyles = motionNodes.map((node) => [node, node.getAttribute("style")] as const);
+      const pdfTitle = report.querySelector<HTMLElement>("[data-pdf-title]");
+      const pdfExcluded = Array.from(report.querySelectorAll<HTMLElement>("[data-pdf-exclude]"));
+      const exportStyles = [
+        ...(pdfTitle ? [[pdfTitle, pdfTitle.getAttribute("style")] as const] : []),
+        ...pdfExcluded.map((node) => [node, node.getAttribute("style")] as const),
+      ];
+      let canvas: HTMLCanvasElement;
+
+      try {
+        if (pdfTitle) pdfTitle.style.display = "block";
+        pdfExcluded.forEach((node) => {
+          node.style.display = "none";
+        });
+        motionNodes.forEach((node) => {
+          node.style.opacity = "1";
+          node.style.transform = "none";
+          node.style.transition = "none";
+        });
+        await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
+        canvas = await toCanvas(report, {
+          backgroundColor: "#f8fafc",
+          cacheBust: true,
+          height: report.scrollHeight,
+          pixelRatio: 2,
+          width: report.scrollWidth,
+        });
+      } finally {
+        originalStyles.forEach(([node, style]) => {
+          if (style === null) node.removeAttribute("style");
+          else node.setAttribute("style", style);
+        });
+        exportStyles.forEach(([node, style]) => {
+          if (style === null) node.removeAttribute("style");
+          else node.setAttribute("style", style);
+        });
+      }
+      const pdf = new jsPDF({ compress: true, format: "a4", orientation: "landscape", unit: "mm" });
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      const contentWidth = pageWidth - margin * 2;
+      const contentHeight = pageHeight - margin * 2;
+      const pixelsPerMillimetre = canvas.width / contentWidth;
+      const sourcePageHeight = Math.max(1, Math.floor(contentHeight * pixelsPerMillimetre));
+      const reportBounds = report.getBoundingClientRect();
+      const documentScale = canvas.width / report.scrollWidth;
+      const blocksRoot = report.querySelector<HTMLElement>("[data-pdf-report-blocks]");
+      const blockBounds = blocksRoot
+        ? Array.from(blocksRoot.children).map((block) => {
+            const bounds = block.getBoundingClientRect();
+            return {
+              top: Math.round((bounds.top - reportBounds.top) * documentScale),
+              bottom: Math.round((bounds.bottom - reportBounds.top) * documentScale),
+            };
+          })
+        : [];
+      const pages: Array<{ start: number; height: number }> = [];
+      let sourceY = 0;
+
+      while (sourceY < canvas.height) {
+        const maximumEnd = Math.min(sourceY + sourcePageHeight, canvas.height);
+        const splitBlock = blockBounds.find(
+          (block) => block.top > sourceY && block.top < maximumEnd && block.bottom > maximumEnd,
+        );
+        const safeEnd =
+          splitBlock && splitBlock.top - sourceY > sourcePageHeight * 0.32
+            ? splitBlock.top
+            : maximumEnd;
+        pages.push({ start: sourceY, height: safeEnd - sourceY });
+        sourceY = safeEnd;
+      }
+
+      for (const [page, { start, height }] of pages.entries()) {
+        const slice = document.createElement("canvas");
+        slice.width = canvas.width;
+        slice.height = height;
+        const context = slice.getContext("2d");
+        if (!context) throw new Error("Unable to prepare the report page.");
+        context.fillStyle = "#f8fafc";
+        context.fillRect(0, 0, slice.width, slice.height);
+        context.drawImage(canvas, 0, start, canvas.width, height, 0, 0, canvas.width, height);
+
+        if (page) pdf.addPage();
+        pdf.addImage(
+          slice.toDataURL("image/png"),
+          "PNG",
+          margin,
+          margin,
+          contentWidth,
+          height / pixelsPerMillimetre,
+        );
+        pdf.setFontSize(8);
+        pdf.setTextColor(132, 145, 163);
+        pdf.text(
+          `${reportTitle}  ·  ${page + 1} / ${pages.length}`,
+          pageWidth - margin,
+          pageHeight - 4,
+          {
+            align: "right",
+          },
+        );
+      }
+
+      const safeFileName =
+        reportTitle
+          .trim()
+          .replace(/[^a-z0-9]+/gi, "-")
+          .replace(/^-|-$/g, "") || "custom-report";
+      const pdfUrl = URL.createObjectURL(pdf.output("blob"));
+      const link = document.createElement("a");
+      link.href = pdfUrl;
+      link.download = `${safeFileName}.pdf`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(pdfUrl), 1_000);
+    } catch (error) {
+      console.error("Unable to export custom report PDF", error);
+      setExportError("Couldn’t create the PDF. Please try again.");
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const activeFilterEntries = Object.entries(appliedFilters).filter(
@@ -815,8 +957,16 @@ export function BrandCustomReportBuilderPage() {
             <Button kind="secondary" size="s" leadingIcon={<Share2 size={15} />}>
               Share
             </Button>
-            <Button kind="secondary" size="s" leadingIcon={<Download size={15} />}>
-              Download
+            <Button
+              aria-label="Download report as PDF"
+              disabled={!hasReport || isDownloading}
+              kind="secondary"
+              leadingIcon={<Download size={15} />}
+              onClick={downloadPdf}
+              size="s"
+              title={hasReport ? "Download report as PDF" : "Add a block to enable PDF export"}
+            >
+              {isDownloading ? "Preparing PDF…" : "Download"}
             </Button>
             <Button
               className="bg-ink hover:bg-ink/90"
@@ -827,6 +977,11 @@ export function BrandCustomReportBuilderPage() {
               Add block
             </Button>
           </div>
+          {exportError && (
+            <p aria-live="polite" className="text-[12px] leading-4 text-danger">
+              {exportError}
+            </p>
+          )}
         </motion.header>
         <motion.div
           animate={{ opacity: 1, y: 0 }}
@@ -1087,45 +1242,53 @@ export function BrandCustomReportBuilderPage() {
               71 filters - all from what you set up in Floooww
             </p>
           </aside>
-          {hasReport ? (
-            <motion.section
-              animate={{ opacity: 1, y: 0 }}
-              className="min-w-0 flex-1"
-              initial={{ opacity: 0, y: 12 }}
-              key={scopeLabel + focusMetric}
-              transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <PerformanceReportBlocks
-                focusMetric={focusMetric}
-                scopeLabel={scopeLabel}
-                selectedCreators={selectedCreators}
-              />
-              <button
-                className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-primary/40 bg-white text-[13px] font-medium text-primary transition hover:bg-primary-subtle"
-                onClick={() => setHasReport(true)}
-                type="button"
+          <div className="min-w-0 flex-1" ref={reportExportRef}>
+            <div aria-hidden="true" className="hidden pb-6 pt-1 text-center" data-pdf-title>
+              <h1 className="text-[28px] font-bold leading-[34px] tracking-[-0.02em] text-ink">
+                {reportTitle}
+              </h1>
+            </div>
+            {hasReport ? (
+              <motion.section
+                animate={{ opacity: 1, y: 0 }}
+                className="min-w-0 flex-1"
+                initial={{ opacity: 0, y: 12 }}
+                key={scopeLabel + focusMetric}
+                transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
               >
-                <Plus size={16} />
-                Add block
-              </button>
-            </motion.section>
-          ) : (
-            <section className="flex min-h-[620px] min-w-0 flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-line bg-white px-6 text-center">
-              <div className="grid size-12 place-items-center rounded-full bg-subtle text-secondary">
-                <FilePenLine size={22} strokeWidth={1.7} />
-              </div>
-              <h2 className="mt-3 text-[16px] font-medium leading-6 text-ink">
-                Your report will appear here
-              </h2>
-              <p className="mt-1 text-[13px] leading-5 text-secondary">
-                Choose filters on the left, then add a block.
-              </p>
-              <p className="mt-4 flex items-center gap-1.5 text-[12px] leading-4 text-tertiary">
-                <Info size={14} />
-                Every block shares these filters.
-              </p>
-            </section>
-          )}
+                <PerformanceReportBlocks
+                  focusMetric={focusMetric}
+                  scopeLabel={scopeLabel}
+                  selectedCreators={selectedCreators}
+                />
+                <button
+                  className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-primary/40 bg-white text-[13px] font-medium text-primary transition hover:bg-primary-subtle"
+                  data-pdf-exclude
+                  onClick={() => setHasReport(true)}
+                  type="button"
+                >
+                  <Plus size={16} />
+                  Add block
+                </button>
+              </motion.section>
+            ) : (
+              <section className="flex min-h-[620px] min-w-0 flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-line bg-white px-6 text-center">
+                <div className="grid size-12 place-items-center rounded-full bg-subtle text-secondary">
+                  <FilePenLine size={22} strokeWidth={1.7} />
+                </div>
+                <h2 className="mt-3 text-[16px] font-medium leading-6 text-ink">
+                  Your report will appear here
+                </h2>
+                <p className="mt-1 text-[13px] leading-5 text-secondary">
+                  Choose filters on the left, then add a block.
+                </p>
+                <p className="mt-4 flex items-center gap-1.5 text-[12px] leading-4 text-tertiary">
+                  <Info size={14} />
+                  Every block shares these filters.
+                </p>
+              </section>
+            )}
+          </div>
         </motion.div>
       </div>
     </BrandShell>

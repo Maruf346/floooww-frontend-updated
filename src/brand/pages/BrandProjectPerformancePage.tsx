@@ -1454,7 +1454,7 @@ export function PerformanceReportBlocks({
     scorecards.findIndex(([label]) => label === focusMetric),
   );
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-pdf-report-blocks>
       {scopeLabel && (
         <div className="flex flex-wrap items-center gap-2 rounded-lg border border-primary/20 bg-primary-subtle px-3 py-2 text-[12px] leading-4 text-primary">
           <span className="size-1.5 rounded-full bg-primary" />
