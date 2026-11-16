@@ -25,6 +25,7 @@ export const ROUTES = {
   brandProjects: "/brand/projects",
   brandCreatorDiscovery: "/brand/creator-discovery",
   brandContentHub: "/brand/content-hub",
+  brandPayments: "/brand/payments",
   brandCustomReports: "/brand/reports",
   brandCustomReportNew: "/brand/reports/new",
   brandNewProject: "/brand/projects/new",

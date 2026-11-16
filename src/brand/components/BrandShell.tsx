@@ -36,6 +36,7 @@ function Sidebar({ close }: { close?: () => void }) {
   const isProjects = location.pathname === ROUTES.brandProjects;
   const isCreatorDiscovery = location.pathname === ROUTES.brandCreatorDiscovery;
   const isContentHub = location.pathname === ROUTES.brandContentHub;
+  const isPayments = location.pathname === ROUTES.brandPayments;
   const isCustomReports = location.pathname === ROUTES.brandCustomReports;
   const isOverview = location.pathname === ROUTES.brand;
   const closeMenu = () => close?.();
@@ -167,14 +168,18 @@ function Sidebar({ close }: { close?: () => void }) {
         <p className="px-3 pb-1.5 pt-4 text-[12px] font-semibold leading-4 tracking-[.06em] text-tertiary">
           ACCOUNT
         </p>
-        <button
-          type="button"
-          className="flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] hover:bg-subtle"
+        <Link
+          to={ROUTES.brandPayments}
+          onClick={closeMenu}
+          className={
+            "flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] " +
+            topLink(isPayments)
+          }
         >
           <Wallet size={18} />
           <span className="flex-1">Payments</span>
-          <Count value="2" />
-        </button>
+          <Count active={isPayments} value="2" />
+        </Link>
         <button
           type="button"
           className="flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] hover:bg-subtle"
@@ -212,13 +217,14 @@ function Sidebar({ close }: { close?: () => void }) {
 }
 
 function CollapsedSidebar() {
+  const location = useLocation();
   const iconLinks = [
     [ROUTES.brand, "Overview", Home],
     [ROUTES.brandProjects, "Projects", ClipboardList],
     [ROUTES.brandCreatorDiscovery, "Creator discovery", Search],
     [ROUTES.brandContentHub, "Content hub", Image],
     [ROUTES.brandCustomReports, "Custom reports", FileBarChart],
-    ["#payments", "Payments", Wallet],
+    [ROUTES.brandPayments, "Payments", Wallet],
     ["#messages", "Messages", MessageSquare],
     ["#settings", "Settings", Settings],
   ] as const;
@@ -234,7 +240,7 @@ function CollapsedSidebar() {
       </Link>
       <nav className="mt-5 flex w-full flex-col items-center gap-2">
         {iconLinks.map(([to, label, Icon]) => {
-          const active = to === ROUTES.brandCustomReports;
+          const active = location.pathname === to;
           const classes =
             "grid size-10 place-items-center rounded-[10px] transition " +
             (active

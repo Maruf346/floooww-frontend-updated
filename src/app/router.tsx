@@ -115,6 +115,12 @@ export const router = createBrowserRouter(
           }),
         },
         {
+          path: ROUTES.brandPayments,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandPaymentsPage")).BrandPaymentsPage,
+          }),
+        },
+        {
           path: ROUTES.brandCustomReports,
           lazy: async () => ({
             Component: (await import("@/brand/pages/BrandCustomReportsPage"))
