@@ -38,6 +38,7 @@ function Sidebar({ close }: { close?: () => void }) {
   const isContentHub = location.pathname === ROUTES.brandContentHub;
   const isPayments = location.pathname === ROUTES.brandPayments;
   const isMessages = location.pathname === ROUTES.brandMessages;
+  const isSettings = location.pathname === ROUTES.brandSettings;
   const isCustomReports = location.pathname === ROUTES.brandCustomReports;
   const isOverview = location.pathname === ROUTES.brand;
   const closeMenu = () => close?.();
@@ -193,13 +194,17 @@ function Sidebar({ close }: { close?: () => void }) {
           <span className="flex-1">Messages</span>
           <Count active={isMessages} value="4" />
         </Link>
-        <button
-          type="button"
-          className="flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] hover:bg-subtle"
+        <Link
+          to={ROUTES.brandSettings}
+          onClick={closeMenu}
+          className={
+            "flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] " +
+            topLink(isSettings)
+          }
         >
           <Settings size={18} />
           Settings
-        </button>
+        </Link>
       </nav>
       <div className="mt-auto border-t border-line pt-2">
         <button
@@ -231,7 +236,7 @@ function CollapsedSidebar() {
     [ROUTES.brandCustomReports, "Custom reports", FileBarChart],
     [ROUTES.brandPayments, "Payments", Wallet],
     [ROUTES.brandMessages, "Messages", MessageSquare],
-    ["#settings", "Settings", Settings],
+    [ROUTES.brandSettings, "Settings", Settings],
   ] as const;
 
   return (

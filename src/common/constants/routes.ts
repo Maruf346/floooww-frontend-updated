@@ -28,6 +28,7 @@ export const ROUTES = {
   brandPayments: "/brand/payments",
   brandPaymentDispute: "/brand/payments/disputes/:disputeId",
   brandMessages: "/brand/messages",
+  brandSettings: "/brand/settings",
   brandCustomReports: "/brand/reports",
   brandCustomReportNew: "/brand/reports/new",
   brandNewProject: "/brand/projects/new",
