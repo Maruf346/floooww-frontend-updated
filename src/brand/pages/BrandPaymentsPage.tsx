@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import {
   ArrowDownToLine,
-  CalendarDays,
   CheckCircle2,
   ChevronDown,
   CircleAlert,
@@ -19,6 +18,7 @@ import {
 import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { brandPaymentDisputeRoute } from "@/common/constants/routes";
 
 type TransactionState = "Released" | "Held" | "Fee" | "Refunded";
@@ -722,7 +722,6 @@ function TabPanel({ tab }: { tab: Exclude<PaymentTab, "Overview"> }) {
 export function BrandPaymentsPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<PaymentTab>("Overview");
-  const [range, setRange] = useState("1 Oct – 28 Oct 2026");
   const [raiseDispute, setRaiseDispute] = useState(false);
 
   const downloadStatement = () => {
@@ -770,23 +769,7 @@ export function BrandPaymentsPage() {
             </button>
           ) : (
             <div className="flex flex-wrap items-center gap-2.5">
-              <label className="relative flex h-10 items-center gap-2 rounded-lg border border-line bg-white px-3 text-[12px] font-medium text-ink">
-                <CalendarDays size={16} className="text-secondary" />
-                <select
-                  aria-label="Payment period"
-                  value={range}
-                  onChange={(event) => setRange(event.target.value)}
-                  className="appearance-none bg-transparent pr-5 outline-none"
-                >
-                  <option>1 Oct – 28 Oct 2026</option>
-                  <option>1 Sep – 30 Sep 2026</option>
-                  <option>Last 90 days</option>
-                </select>
-                <ChevronDown
-                  size={14}
-                  className="pointer-events-none absolute right-3 text-secondary"
-                />
-              </label>
+              <DateRangePicker value="1 Oct - 28 Oct 2026" />
               <button
                 type="button"
                 onClick={downloadStatement}
