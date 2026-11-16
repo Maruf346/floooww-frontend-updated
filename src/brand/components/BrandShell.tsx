@@ -211,6 +211,68 @@ function Sidebar({ close }: { close?: () => void }) {
   );
 }
 
+function CollapsedSidebar() {
+  const iconLinks = [
+    [ROUTES.brand, "Overview", Home],
+    [ROUTES.brandProjects, "Projects", ClipboardList],
+    [ROUTES.brandCreatorDiscovery, "Creator discovery", Search],
+    [ROUTES.brandContentHub, "Content hub", Image],
+    [ROUTES.brandCustomReports, "Custom reports", FileBarChart],
+    ["#payments", "Payments", Wallet],
+    ["#messages", "Messages", MessageSquare],
+    ["#settings", "Settings", Settings],
+  ] as const;
+
+  return (
+    <aside className="flex h-full w-16 flex-col items-center border-r border-line bg-white py-5">
+      <Link
+        aria-label="Floooww home"
+        className="flex h-11 items-center justify-center [&>img:last-child]:hidden"
+        to={ROUTES.brand}
+      >
+        <Logo />
+      </Link>
+      <nav className="mt-5 flex w-full flex-col items-center gap-2">
+        {iconLinks.map(([to, label, Icon]) => {
+          const active = to === ROUTES.brandCustomReports;
+          const classes =
+            "grid size-10 place-items-center rounded-[10px] transition " +
+            (active
+              ? "bg-primary-subtle text-primary"
+              : "text-secondary hover:bg-subtle hover:text-ink");
+          return to.startsWith("#") ? (
+            <button aria-label={label} className={classes} key={label} title={label} type="button">
+              <Icon size={18} />
+            </button>
+          ) : (
+            <Link aria-label={label} className={classes} key={label} title={label} to={to}>
+              <Icon size={18} />
+            </Link>
+          );
+        })}
+      </nav>
+      <div className="mt-auto flex w-full flex-col items-center gap-2 border-t border-line pt-2">
+        <button
+          aria-label="Help centre"
+          className="grid size-10 place-items-center rounded-[10px] text-secondary hover:bg-subtle hover:text-ink"
+          title="Help centre"
+          type="button"
+        >
+          <CircleHelp size={18} />
+        </button>
+        <button
+          aria-label="Logout"
+          className="grid size-10 place-items-center rounded-[10px] text-secondary hover:bg-subtle hover:text-ink"
+          title="Logout"
+          type="button"
+        >
+          <LogOut size={18} />
+        </button>
+      </div>
+    </aside>
+  );
+}
+
 function Count({ value, active = false }: { value: string; active?: boolean }) {
   return (
     <span
@@ -254,13 +316,21 @@ function Topbar({ open }: { open: () => void }) {
   );
 }
 
-export function BrandShell({ children }: { children: ReactNode }) {
+export function BrandShell({
+  children,
+  compactSidebar = false,
+  hideChat = false,
+}: {
+  children: ReactNode;
+  compactSidebar?: boolean;
+  hideChat?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   return (
     <div className="min-h-dvh bg-page">
       <div className="flex min-h-dvh">
         <div className="sticky top-0 hidden h-dvh shrink-0 self-start lg:block">
-          <Sidebar />
+          {compactSidebar ? <CollapsedSidebar /> : <Sidebar />}
         </div>
         {open && (
           <div className="fixed inset-0 z-50 bg-ink/30 lg:hidden">
@@ -271,16 +341,24 @@ export function BrandShell({ children }: { children: ReactNode }) {
         )}
         <div className="min-w-0 flex-1">
           <Topbar open={() => setOpen(true)} />
-          <main className="min-h-[calc(100dvh-64px)] p-5 sm:p-8">{children}</main>
+          <main
+            className={
+              "min-h-[calc(100dvh-64px)] p-5 " + (compactSidebar ? "sm:px-8 sm:py-5" : "sm:p-8")
+            }
+          >
+            {children}
+          </main>
         </div>
       </div>
-      <button
-        type="button"
-        className="fixed bottom-6 right-6 z-20 rounded-full bg-primary p-4 text-white shadow-[0_16px_40px_-8px_rgba(8,10,20,.14)]"
-        aria-label="Open Floooww Assistant"
-      >
-        <MessageSquare size={24} />
-      </button>
+      {!hideChat && (
+        <button
+          type="button"
+          className="fixed bottom-6 right-6 z-20 rounded-full bg-primary p-4 text-white shadow-[0_16px_40px_-8px_rgba(8,10,20,.14)]"
+          aria-label="Open Floooww Assistant"
+        >
+          <MessageSquare size={24} />
+        </button>
+      )}
     </div>
   );
 }
