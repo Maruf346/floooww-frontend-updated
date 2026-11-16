@@ -15,7 +15,7 @@ import {
   Wallet,
   X,
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Logo } from "@/common/components/brand/Logo";
 import { ROUTES } from "@/common/constants/routes";
 
@@ -29,7 +29,7 @@ const projectFilters: [string, string?][] = [
   ["Deleted"],
 ];
 
-function Sidebar({ close }: { close?: () => void }) {
+function Sidebar({ close, onLogout }: { close?: () => void; onLogout: () => void }) {
   const location = useLocation();
   const [projectsOpen, setProjectsOpen] = useState(true);
   const isNewProject = location.pathname === ROUTES.brandNewProject;
@@ -220,6 +220,10 @@ function Sidebar({ close }: { close?: () => void }) {
         </Link>
         <button
           type="button"
+          onClick={() => {
+            closeMenu();
+            onLogout();
+          }}
           className="flex h-9 w-full items-center gap-2.5 px-3 text-[14px] hover:bg-subtle"
         >
           <LogOut size={18} />
@@ -230,7 +234,7 @@ function Sidebar({ close }: { close?: () => void }) {
   );
 }
 
-function CollapsedSidebar() {
+function CollapsedSidebar({ onLogout }: { onLogout: () => void }) {
   const location = useLocation();
   const iconLinks = [
     [ROUTES.brand, "Overview", Home],
@@ -283,6 +287,7 @@ function CollapsedSidebar() {
         </Link>
         <button
           aria-label="Logout"
+          onClick={onLogout}
           className="grid size-10 place-items-center rounded-[10px] text-secondary hover:bg-subtle hover:text-ink"
           title="Logout"
           type="button"
@@ -291,6 +296,48 @@ function CollapsedSidebar() {
         </button>
       </div>
     </aside>
+  );
+}
+
+function LogoutConfirmDialog({ close, confirm }: { close: () => void; confirm: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-[70] grid place-items-center bg-[#070b13]/40 p-4"
+      role="presentation"
+      onMouseDown={close}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="logout-dialog-title"
+        onMouseDown={(event) => event.stopPropagation()}
+        className="w-full max-w-[420px] rounded-2xl bg-white p-7 shadow-[0_12px_32px_rgba(0,0,0,.12)]"
+      >
+        <h2 id="logout-dialog-title" className="text-[16px] font-semibold leading-6 text-ink">
+          Log out of Floooww?
+        </h2>
+        <p className="mt-3 text-[13px] leading-5 text-secondary">
+          You’ll need to log in again to see Minimalist. Drafts are saved.
+        </p>
+        <div className="mt-3.5 flex items-center justify-end gap-2.5">
+          <button
+            type="button"
+            onClick={close}
+            className="h-10 rounded-lg border border-line px-4 text-[14px] font-medium leading-5 text-ink hover:bg-subtle"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={confirm}
+            className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#dc2626] px-4 text-[14px] font-medium leading-5 text-white transition hover:bg-[#b91c1c]"
+          >
+            <LogOut size={16} />
+            Log out
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -347,16 +394,26 @@ export function BrandShell({
   hideChat?: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
+  const navigate = useNavigate();
+  const logOut = () => {
+    setLogoutOpen(false);
+    navigate(ROUTES.login);
+  };
   return (
     <div className="min-h-dvh bg-page">
       <div className="flex min-h-dvh">
         <div className="sticky top-0 hidden h-dvh shrink-0 self-start lg:block">
-          {compactSidebar ? <CollapsedSidebar /> : <Sidebar />}
+          {compactSidebar ? (
+            <CollapsedSidebar onLogout={() => setLogoutOpen(true)} />
+          ) : (
+            <Sidebar onLogout={() => setLogoutOpen(true)} />
+          )}
         </div>
         {open && (
           <div className="fixed inset-0 z-50 bg-ink/30 lg:hidden">
             <div className="h-full w-[260px] bg-white">
-              <Sidebar close={() => setOpen(false)} />
+              <Sidebar close={() => setOpen(false)} onLogout={() => setLogoutOpen(true)} />
             </div>
           </div>
         )}
@@ -380,6 +437,7 @@ export function BrandShell({
           <MessageSquare size={24} />
         </button>
       )}
+      {logoutOpen && <LogoutConfirmDialog close={() => setLogoutOpen(false)} confirm={logOut} />}
     </div>
   );
 }
