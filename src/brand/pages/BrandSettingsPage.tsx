@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { Check, ChevronDown, Mail, Upload, UserPlus, X } from "lucide-react";
+import { Check, ChevronDown, Mail, Plug, Upload, UserPlus, X } from "lucide-react";
 import { motion } from "motion/react";
 import { BrandShell } from "@/brand/components/BrandShell";
 
@@ -486,6 +486,358 @@ function TeamDialog({
   );
 }
 
+type IntegrationState = "connected" | "action-needed" | "not-connected";
+type Integration = {
+  id: string;
+  name: string;
+  description: string;
+  state: IntegrationState;
+  mark:
+    | "shopify"
+    | "woocommerce"
+    | "razorpay"
+    | "instagram"
+    | "youtube"
+    | "pinterest"
+    | "snapchat"
+    | "openai"
+    | "claude"
+    | "gemini"
+    | "slack"
+    | "zapier"
+    | "custom";
+};
+
+const integrationGroups: { title: string; description: string; items: Integration[] }[] = [
+  {
+    title: "Store",
+    description: "Orders and sales from creator codes and links",
+    items: [
+      {
+        id: "shopify",
+        name: "Shopify",
+        description:
+          "Net sales and orders from creator codes and links. Last sync 26 Oct, token expired.",
+        state: "action-needed",
+        mark: "shopify",
+      },
+      {
+        id: "woocommerce",
+        name: "WooCommerce",
+        description: "Orders from WordPress stores.",
+        state: "not-connected",
+        mark: "woocommerce",
+      },
+    ],
+  },
+  {
+    title: "Social channels",
+    description: "Check posts, tags and collab posts on your brand accounts",
+    items: [
+      {
+        id: "instagram",
+        name: "Instagram (brand account)",
+        description: "Tag checks and collab posts.",
+        state: "connected",
+        mark: "instagram",
+      },
+      {
+        id: "youtube",
+        name: "YouTube",
+        description: "Read creators’ video stats.",
+        state: "connected",
+        mark: "youtube",
+      },
+      {
+        id: "pinterest",
+        name: "Pinterest",
+        description: "Track pins creators make for your projects.",
+        state: "not-connected",
+        mark: "pinterest",
+      },
+      {
+        id: "snapchat",
+        name: "Snapchat",
+        description: "Read story views from creator Snaps.",
+        state: "not-connected",
+        mark: "snapchat",
+      },
+    ],
+  },
+  {
+    title: "Payments",
+    description: "How money moves into escrow",
+    items: [
+      {
+        id: "razorpay",
+        name: "Razorpay",
+        description: "Card and net-banking payments into escrow.",
+        state: "connected",
+        mark: "razorpay",
+      },
+    ],
+  },
+  {
+    title: "AI assistants",
+    description:
+      "Bring your own model key. Used for brief drafting, creator matching notes and report summaries; your data is never used for training.",
+    items: [
+      {
+        id: "openai",
+        name: "OpenAI",
+        description: "Use your OpenAI key (GPT) for brief drafting and report summaries.",
+        state: "not-connected",
+        mark: "openai",
+      },
+      {
+        id: "claude",
+        name: "Claude",
+        description: "Use your Anthropic key for long briefs and contract review.",
+        state: "not-connected",
+        mark: "claude",
+      },
+      {
+        id: "gemini",
+        name: "Gemini",
+        description: "Use your Google AI key; pairs with GA4 and Google Ads data.",
+        state: "not-connected",
+        mark: "gemini",
+      },
+    ],
+  },
+  {
+    title: "Other platforms",
+    description: "Send Floooww updates to the tools your team uses",
+    items: [
+      {
+        id: "slack",
+        name: "Slack",
+        description: "Approvals, late posts and payments in a channel.",
+        state: "not-connected",
+        mark: "slack",
+      },
+      {
+        id: "zapier",
+        name: "Zapier",
+        description: "Send project events to 6,000+ apps.",
+        state: "not-connected",
+        mark: "zapier",
+      },
+    ],
+  },
+];
+
+function IntegrationMark({ mark }: { mark: Integration["mark"] }) {
+  const assets = {
+    shopify: "https://www.figma.com/api/mcp/asset/4e42e8af-c274-4231-b185-0a5f03ab22fb.svg",
+    razorpay: "https://www.figma.com/api/mcp/asset/3f705b5a-391c-4643-92a7-dc19ce98b676.svg",
+    instagram: "https://www.figma.com/api/mcp/asset/b1f4a237-77a1-427b-afd5-efe546d22885.svg",
+    youtube: "https://www.figma.com/api/mcp/asset/372bc02f-5252-4d28-9a6f-8e6b956e5022.svg",
+    snapchat: "https://www.figma.com/api/mcp/asset/7b3f7b9b-9214-44b6-9a3c-19866abb9356.svg",
+    pinterest: "https://www.figma.com/api/mcp/asset/003a1496-758d-4dfa-9692-5933916da7ca.svg",
+  } as const;
+  if (mark in assets)
+    return <img src={assets[mark as keyof typeof assets]} alt="" className="size-6" />;
+  const marks = {
+    woocommerce: ["W", "bg-[#7f54b3]"],
+    openai: ["◎", "bg-[#070b13]"],
+    claude: ["A", "bg-[#c96442]"],
+    gemini: ["G", "bg-[#1a73e8]"],
+    slack: ["#", "bg-[#4a154b]"],
+    zapier: ["Z", "bg-[#ff4f00]"],
+    custom: ["↗", "bg-primary"],
+  } as const;
+  const [label, color] = marks[mark as keyof typeof marks];
+  return (
+    <span
+      className={`grid size-6 place-items-center rounded-lg ${color} text-[11px] font-bold text-white`}
+    >
+      {label}
+    </span>
+  );
+}
+
+function IntegrationBadge({ state }: { state: IntegrationState }) {
+  const tones =
+    state === "connected"
+      ? "bg-[#e1fce3] text-[#16a34a]"
+      : state === "action-needed"
+        ? "bg-[#fde4e3] text-[#dc2626]"
+        : "bg-subtle text-[#4a4a55]";
+  const labels =
+    state === "connected"
+      ? "Connected"
+      : state === "action-needed"
+        ? "Action needed"
+        : "Not connected";
+  return (
+    <span
+      className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2 py-0.5 text-[12px] font-medium leading-4 ${tones}`}
+    >
+      <span className="size-1.5 rounded-full bg-current" />
+      {labels}
+    </span>
+  );
+}
+
+function IntegrationCard({
+  item,
+  onAction,
+}: {
+  item: Integration;
+  onAction: (item: Integration) => void;
+}) {
+  const action =
+    item.state === "connected"
+      ? "Manage"
+      : item.state === "action-needed"
+        ? "Reconnect"
+        : "Connect";
+  return (
+    <article className="flex min-h-[178px] flex-col gap-3 rounded-xl border border-line bg-white p-5">
+      <div className="flex items-center gap-2.5">
+        <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-subtle">
+          <IntegrationMark mark={item.mark} />
+        </div>
+        <h3 className="min-w-0 flex-1 text-[14px] font-semibold leading-5 text-ink">{item.name}</h3>
+        <IntegrationBadge state={item.state} />
+      </div>
+      <p className="text-[13px] leading-5 text-secondary">{item.description}</p>
+      <button
+        type="button"
+        onClick={() => onAction(item)}
+        className={`mt-auto h-8 w-fit rounded-lg px-3 text-[13px] font-medium leading-[18px] transition ${item.state === "action-needed" ? "bg-[#0d0d10] text-white hover:bg-[#27272a]" : "border border-line bg-white text-ink hover:bg-subtle"}`}
+      >
+        {action}
+      </button>
+    </article>
+  );
+}
+
+function IntegrationsSettings() {
+  const [states, setStates] = useState<Record<string, IntegrationState>>({});
+  const [notice, setNotice] = useState("");
+  const [addOpen, setAddOpen] = useState(false);
+  const [toolName, setToolName] = useState("");
+  const [customTools, setCustomTools] = useState<Integration[]>([]);
+  const withState = (item: Integration) => ({ ...item, state: states[item.id] ?? item.state });
+  const action = (item: Integration) => {
+    if (item.state !== "connected") {
+      setStates((current) => ({ ...current, [item.id]: "connected" }));
+      setNotice(`${item.name} connected successfully.`);
+    } else setNotice(`${item.name} settings are up to date.`);
+  };
+  const addTool = () => {
+    const name = toolName.trim();
+    if (!name) return;
+    setCustomTools((current) => [
+      ...current,
+      {
+        id: `custom-${name.toLowerCase().replace(/\s+/g, "-")}`,
+        name,
+        description: "Custom integration connected with your workspace.",
+        state: "connected",
+        mark: "custom",
+      },
+    ]);
+    setToolName("");
+    setAddOpen(false);
+    setNotice(`${name} added to your integrations.`);
+  };
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.28, ease: "easeOut" }}
+      className="space-y-7"
+    >
+      {notice && (
+        <p
+          className="rounded-lg bg-[#e1fce3] px-3 py-2 text-[12px] font-medium leading-4 text-[#16a34a]"
+          role="status"
+        >
+          {notice}
+        </p>
+      )}
+      {integrationGroups.map((group) => (
+        <section key={group.title}>
+          <div className="mb-3">
+            <h2 className="text-[16px] font-semibold leading-6 text-ink">{group.title}</h2>
+            <p className="text-[12px] leading-4 text-tertiary">{group.description}</p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {group.items.map((item) => (
+              <IntegrationCard key={item.id} item={withState(item)} onAction={action} />
+            ))}
+          </div>
+        </section>
+      ))}
+      {/* <section>
+        <div className="mb-3">
+          <h2 className="text-[16px] font-semibold leading-6 text-ink">Your integrations</h2>
+          <p className="text-[12px] leading-4 text-tertiary">
+            Tools you connected yourself with a webhook or API key
+          </p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {customTools.map((item) => (
+            <IntegrationCard key={item.id} item={item} onAction={action} />
+          ))}
+          <article className="flex min-h-[139px] flex-col gap-2 rounded-xl border border-dashed border-[#d4d7df] bg-[#fafafa] p-5">
+            <h3 className="text-[14px] font-semibold leading-5 text-ink">Add any tool</h3>
+            <p className="text-[13px] leading-5 text-tertiary">
+              Search 100+ apps, or connect your own tool with a webhook or API key.
+            </p>
+            <button
+              type="button"
+              onClick={() => setAddOpen(true)}
+              className="mt-auto inline-flex h-8 w-fit items-center gap-1.5 rounded-lg bg-[#0d0d10] px-3 text-[13px] font-medium leading-[18px] text-white hover:bg-[#27272a]"
+            >
+              <Plug size={14} />
+              Add integration
+            </button>
+          </article>
+        </div>
+      </section> */}
+      {addOpen && (
+        <TeamDialog
+          title="Add integration"
+          subtitle="Connect a tool with a webhook or API key."
+          close={() => setAddOpen(false)}
+        >
+          <label className="grid gap-1.5 text-[12px] font-medium leading-4 text-ink">
+            Integration name
+            <input
+              autoFocus
+              value={toolName}
+              onChange={(event) => setToolName(event.target.value)}
+              placeholder="e.g. Google Analytics"
+              className="h-10 rounded-lg border border-line px-3 text-[13px] font-normal outline-none placeholder:text-tertiary focus:border-primary focus:ring-1 focus:ring-primary"
+            />
+          </label>
+          <div className="mt-5 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setAddOpen(false)}
+              className="h-10 rounded-lg border border-line px-4 text-[14px] font-medium text-ink hover:bg-subtle"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={addTool}
+              disabled={!toolName.trim()}
+              className="h-10 rounded-lg bg-[#0d0d10] px-4 text-[14px] font-medium text-white disabled:opacity-40"
+            >
+              Add integration
+            </button>
+          </div>
+        </TeamDialog>
+      )}
+    </motion.div>
+  );
+}
+
 export function BrandSettingsPage() {
   const [activeTab, setActiveTab] = useState<(typeof settingsTabs)[number][0]>("Account");
   return (
@@ -518,6 +870,8 @@ export function BrandSettingsPage() {
               <AccountSettings />
             ) : activeTab === "Team & roles" ? (
               <TeamSettings />
+            ) : activeTab === "Integrations" ? (
+              <IntegrationsSettings />
             ) : (
               <section className="rounded-xl border border-line bg-white p-5">
                 <h2 className="text-[16px] font-semibold leading-6 text-ink">{activeTab}</h2>
