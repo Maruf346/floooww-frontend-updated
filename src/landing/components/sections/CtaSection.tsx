@@ -10,8 +10,8 @@ export function CtaSection() {
   return (
     <section
       aria-labelledby="cta-title"
-      className="relative isolate overflow-hidden bg-ink py-16 text-center sm:py-[72px]"
-      style={{ backgroundImage: "linear-gradient(166.904deg, #27272a 14.286%, #0d0d10 85.714%)" }}
+      className="relative isolate overflow-hidden bg-[#2563eb] py-16 text-center sm:py-[72px]"
+      style={{ backgroundImage: "linear-gradient(166.904deg, #7399f2 14.286%, #2563eb 85.714%)" }}
     >
       <motion.img
         aria-hidden="true"
@@ -44,7 +44,7 @@ export function CtaSection() {
         <RevealItem className="flex flex-wrap justify-center gap-3">
           <Link
             to={ROUTES.signup}
-            className="rounded-[12px] bg-white px-[22px] py-[14px] font-inter-semibold text-[15px] font-semibold text-primary transition-transform hover:-translate-y-0.5"
+            className="rounded-[12px] bg-white px-[22px] py-[14px] font-inter-semibold text-[15px] font-semibold text-ink transition-transform hover:-translate-y-0.5"
           >
             Join Kreyio →
           </Link>

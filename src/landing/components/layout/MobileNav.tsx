@@ -95,6 +95,7 @@ export function MobileNav({ open, activeSection, onClose }: MobileNavProps) {
                 kind="primary"
                 shape="pill"
                 fullWidth
+                className="!bg-ink hover:!bg-[#27272a]"
                 onClick={onClose}
               >
                 {AUTH_NAV.signup.label}

@@ -286,6 +286,19 @@
   color: transparent;
 }
 
+/* Landing keeps its original blue visual language. Product CTAs opt into black locally. */
+.landing-theme {
+  --color-link: #0f5af2;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4edb;
+  --color-primary-subtle: #f1f4ff;
+  --color-primary-muted: #dee8fe;
+  --color-primary-tint: #eef3ff;
+  --color-primary-soft: #7399f2;
+  --color-brand-from: #014ef6;
+  --color-brand-to: #1eb2fd;
+}
+
 @utility scrollbar-none {
   scrollbar-width: none;
   &::-webkit-scrollbar {

@@ -4,7 +4,7 @@ import { Header } from "@/landing/components/layout/Header";
 
 export function LandingLayout() {
   return (
-    <div className="flex min-h-dvh flex-col bg-white">
+    <div className="landing-theme flex min-h-dvh flex-col bg-white">
       <Header />
       <main className="flex-1">
         <Outlet />

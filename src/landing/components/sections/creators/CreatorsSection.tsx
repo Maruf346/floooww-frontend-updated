@@ -135,7 +135,7 @@ export function CreatorsSection() {
               {desktop && <ViewToggle value={view} onChange={setView} />}
               <Link
                 to={`${ROUTES.signup}?role=brand`}
-                className="rounded-full bg-primary px-5 py-3 font-inter-semibold text-[15px] font-semibold leading-normal text-white whitespace-nowrap transition-[background-color,box-shadow] duration-300 hover:bg-primary-hover hover:shadow-[0_8px_20px_-8px_rgba(37,99,235,0.6)]"
+                className="rounded-full bg-ink px-5 py-3 font-inter-semibold text-[15px] font-semibold leading-normal text-white whitespace-nowrap transition-[background-color,box-shadow] duration-300 hover:bg-[#27272a] hover:shadow-[0_8px_20px_-8px_rgba(13,13,16,0.35)]"
               >
                 {CREATORS_COPY.browse}
               </Link>

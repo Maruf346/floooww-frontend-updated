@@ -173,7 +173,7 @@ export function Footer() {
               <button
                 type="button"
                 onClick={saveCookiePreferences}
-                className="rounded-lg bg-primary px-4 py-2.5 font-inter-medium text-[14px] font-medium text-white hover:bg-primary-hover"
+                className="rounded-lg bg-ink px-4 py-2.5 font-inter-medium text-[14px] font-medium text-white hover:bg-[#27272a]"
               >
                 Save preferences
               </button>

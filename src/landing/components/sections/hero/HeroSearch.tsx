@@ -47,7 +47,7 @@ export function HeroSearch() {
       />
       <button
         type="submit"
-        className="shrink-0 rounded-[10px] bg-primary px-4 py-3 font-inter-semibold text-[15px] font-semibold leading-normal text-white transition-[background-color,transform] duration-200 ease-out hover:bg-primary-hover active:scale-[0.98] sm:px-[22px]"
+        className="shrink-0 rounded-[10px] bg-ink px-4 py-3 font-inter-semibold text-[15px] font-semibold leading-normal text-white transition-[background-color,transform] duration-200 ease-out hover:bg-[#27272a] active:scale-[0.98] sm:px-[22px]"
       >
         {HERO_COPY.searchCta}
       </button>

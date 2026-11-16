@@ -74,21 +74,21 @@ export function WebErrorPage({ kind }: WebErrorPageProps) {
           {isNotFound ? (
             <Button
               to={ROUTES.home}
-              className="h-auto rounded-xl px-6 py-3.5 text-[15px] font-semibold leading-[23px]"
+              className="h-auto rounded-xl !bg-ink px-6 py-3.5 text-[15px] font-semibold leading-[23px] hover:!bg-[#27272a]"
             >
               Go to homepage
             </Button>
           ) : isMaintenance ? (
             <Button
               href="https://status.floooww.com"
-              className="h-auto rounded-xl px-6 py-3.5 text-[15px] font-semibold leading-[23px]"
+              className="h-auto rounded-xl !bg-ink px-6 py-3.5 text-[15px] font-semibold leading-[23px] hover:!bg-[#27272a]"
             >
               Check status
             </Button>
           ) : (
             <Button
               onClick={() => window.location.reload()}
-              className="h-auto rounded-xl px-6 py-3.5 text-[15px] font-semibold leading-[23px]"
+              className="h-auto rounded-xl !bg-ink px-6 py-3.5 text-[15px] font-semibold leading-[23px] hover:!bg-[#27272a]"
             >
               Try again
             </Button>
