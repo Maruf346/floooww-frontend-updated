@@ -37,6 +37,7 @@ function Sidebar({ close }: { close?: () => void }) {
   const isCreatorDiscovery = location.pathname === ROUTES.brandCreatorDiscovery;
   const isContentHub = location.pathname === ROUTES.brandContentHub;
   const isPayments = location.pathname === ROUTES.brandPayments;
+  const isMessages = location.pathname === ROUTES.brandMessages;
   const isCustomReports = location.pathname === ROUTES.brandCustomReports;
   const isOverview = location.pathname === ROUTES.brand;
   const closeMenu = () => close?.();
@@ -180,14 +181,18 @@ function Sidebar({ close }: { close?: () => void }) {
           <span className="flex-1">Payments</span>
           <Count active={isPayments} value="2" />
         </Link>
-        <button
-          type="button"
-          className="flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] hover:bg-subtle"
+        <Link
+          to={ROUTES.brandMessages}
+          onClick={closeMenu}
+          className={
+            "flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] " +
+            topLink(isMessages)
+          }
         >
           <MessageSquare size={18} />
           <span className="flex-1">Messages</span>
-          <Count value="4" />
-        </button>
+          <Count active={isMessages} value="4" />
+        </Link>
         <button
           type="button"
           className="flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] hover:bg-subtle"
@@ -225,7 +230,7 @@ function CollapsedSidebar() {
     [ROUTES.brandContentHub, "Content hub", Image],
     [ROUTES.brandCustomReports, "Custom reports", FileBarChart],
     [ROUTES.brandPayments, "Payments", Wallet],
-    ["#messages", "Messages", MessageSquare],
+    [ROUTES.brandMessages, "Messages", MessageSquare],
     ["#settings", "Settings", Settings],
   ] as const;
 

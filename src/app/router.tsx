@@ -128,6 +128,12 @@ export const router = createBrowserRouter(
           }),
         },
         {
+          path: ROUTES.brandMessages,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandMessagesPage")).BrandMessagesPage,
+          }),
+        },
+        {
           path: ROUTES.brandCustomReports,
           lazy: async () => ({
             Component: (await import("@/brand/pages/BrandCustomReportsPage"))
