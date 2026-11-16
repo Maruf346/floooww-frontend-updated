@@ -12,6 +12,7 @@ import {
   LockKeyhole,
   ReceiptText,
   Scale,
+  UploadCloud,
   WalletCards,
   X,
 } from "lucide-react";
@@ -365,6 +366,174 @@ function DisputesBoard({ onOpen }: { onOpen: (dispute: Dispute) => void }) {
   );
 }
 
+function RaiseDisputeModal({ onClose, onSubmit }: { onClose: () => void; onSubmit: () => void }) {
+  const [collaboration, setCollaboration] = useState("Tara Bose · Vitamin-C Serum");
+  const [deliverable, setDeliverable] = useState("Reel 2: Launch look");
+  const [reason, setReason] = useState("Doesn’t match the brief");
+  const [amount, setAmount] = useState("₹7,500");
+  const [description, setDescription] = useState(
+    "The Reel doesn’t show the 3 steps and the code isn’t mentioned in the video.",
+  );
+  const [fileName, setFileName] = useState("");
+
+  return (
+    <div
+      className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-[#070b13]/40 p-4 sm:p-8"
+      role="presentation"
+      onMouseDown={onClose}
+    >
+      <motion.section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="raise-dispute-title"
+        onMouseDown={(event) => event.stopPropagation()}
+        initial={{ opacity: 0, y: 16, scale: 0.985 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.24, ease: "easeOut" }}
+        className="my-auto w-full max-w-[640px] rounded-2xl bg-white p-5 shadow-[0_24px_60px_rgba(0,0,0,.20)] sm:p-7"
+      >
+        <div className="flex items-center gap-3">
+          <h2
+            id="raise-dispute-title"
+            className="flex-1 text-[26px] font-bold leading-[34px] tracking-[-.01em] text-ink"
+          >
+            Raise a dispute
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="grid size-8 place-items-center rounded-md text-secondary transition hover:bg-subtle hover:text-ink"
+            aria-label="Close raise dispute dialog"
+          >
+            <X size={20} />
+          </button>
+        </div>
+        <p className="mt-3 text-[13px] leading-5 text-secondary">
+          The money for this deliverable stays frozen in escrow until Floooww decides. Both sides
+          reply within 48 hours.
+        </p>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <label className="grid gap-1.5 text-[12px] font-medium leading-4 text-ink">
+            Collaboration
+            <span className="relative">
+              <select
+                value={collaboration}
+                onChange={(event) => setCollaboration(event.target.value)}
+                className="h-10 w-full appearance-none rounded-lg border border-line bg-white px-3 pr-9 text-[13px] font-normal leading-5 text-ink outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
+              >
+                <option>Tara Bose · Vitamin-C Serum</option>
+                <option>Rohan Desai · Monsoon Sunscreen</option>
+                <option>Riya Sen · Lip Tint Drop</option>
+              </select>
+              <ChevronDown
+                size={16}
+                className="pointer-events-none absolute right-3 top-3 text-secondary"
+              />
+            </span>
+          </label>
+          <label className="grid gap-1.5 text-[12px] font-medium leading-4 text-ink">
+            Deliverable
+            <span className="relative">
+              <select
+                value={deliverable}
+                onChange={(event) => setDeliverable(event.target.value)}
+                className="h-10 w-full appearance-none rounded-lg border border-line bg-white px-3 pr-9 text-[13px] font-normal leading-5 text-ink outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
+              >
+                <option>Reel 2: Launch look</option>
+                <option>Story: code reminder</option>
+                <option>Short: product demo</option>
+              </select>
+              <ChevronDown
+                size={16}
+                className="pointer-events-none absolute right-3 top-3 text-secondary"
+              />
+            </span>
+          </label>
+          <label className="grid gap-1.5 text-[12px] font-medium leading-4 text-ink">
+            Reason
+            <span className="relative">
+              <select
+                value={reason}
+                onChange={(event) => setReason(event.target.value)}
+                className="h-10 w-full appearance-none rounded-lg border border-line bg-white px-3 pr-9 text-[13px] font-normal leading-5 text-ink outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
+              >
+                <option>Doesn’t match the brief</option>
+                <option>Late delivery</option>
+                <option>Content quality issue</option>
+                <option>Rights or usage issue</option>
+              </select>
+              <ChevronDown
+                size={16}
+                className="pointer-events-none absolute right-3 top-3 text-secondary"
+              />
+            </span>
+          </label>
+          <label className="grid gap-1.5 text-[12px] font-medium leading-4 text-ink">
+            Amount in question
+            <input
+              value={amount}
+              onChange={(event) => setAmount(event.target.value)}
+              className="h-10 rounded-lg border border-line px-3 text-[13px] font-normal leading-5 text-ink outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
+            />
+          </label>
+        </div>
+
+        <label className="mt-4 grid gap-1.5 text-[12px] font-medium leading-4 text-ink">
+          What happened?
+          <textarea
+            value={description}
+            onChange={(event) => setDescription(event.target.value.slice(0, 1000))}
+            className="min-h-28 w-full resize-y rounded-lg border border-line px-3 py-2.5 text-[13px] font-normal leading-5 text-ink outline-none transition placeholder:text-tertiary focus:border-primary focus:ring-1 focus:ring-primary"
+          />
+          <span className="flex justify-between gap-4 text-[12px] font-normal leading-4 text-tertiary">
+            <span>Be specific: what was agreed and what was delivered</span>
+            <span className="shrink-0">{description.length} / 1,000</span>
+          </span>
+        </label>
+
+        <label className="mt-4 flex min-h-[126px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[#d4d7df] bg-subtle px-5 py-4 text-center transition hover:border-primary hover:bg-[#f8faff]">
+          <UploadCloud size={20} className="text-secondary" />
+          <span className="text-[13px] leading-5 text-ink">
+            Drag a file here or <span className="font-medium text-primary">browse</span>
+          </span>
+          <span className="text-[12px] leading-4 text-tertiary">JPG or PNG · 16:5 · max 5 MB</span>
+          {fileName && (
+            <span className="max-w-full truncate text-[12px] font-medium leading-4 text-primary">
+              {fileName}
+            </span>
+          )}
+          <input
+            type="file"
+            accept="image/jpeg,image/png"
+            className="sr-only"
+            onChange={(event) => setFileName(event.target.files?.[0]?.name ?? "")}
+          />
+        </label>
+
+        <div className="mt-4 flex justify-end gap-2.5">
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-10 items-center justify-center rounded-lg border border-line bg-white px-4 text-[14px] font-medium text-ink transition hover:bg-subtle"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onSubmit}
+            disabled={!description.trim()}
+            className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#dc2626] px-4 text-[14px] font-medium text-white transition hover:bg-[#b91c1c] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Scale size={16} />
+            Raise dispute
+          </button>
+        </div>
+      </motion.section>
+    </div>
+  );
+}
+
 function TransactionsTable({ rows = transactionRows }: { rows?: Transaction[] }) {
   return (
     <div className="overflow-x-auto rounded-xl border border-line">
@@ -660,76 +829,10 @@ export function BrandPaymentsPage() {
         )}
       </div>
       {raiseDispute && (
-        <div
-          className="fixed inset-0 z-50 grid place-items-center bg-ink/35 p-4"
-          role="presentation"
-          onMouseDown={() => {
-            setRaiseDispute(false);
-          }}
-        >
-          <section
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="dispute-dialog-title"
-            onMouseDown={(event) => event.stopPropagation()}
-            className="w-full max-w-md rounded-xl border border-line bg-white p-5 shadow-[0_24px_70px_-20px_rgba(8,10,20,.35)]"
-          >
-            <div className="flex items-start gap-3">
-              <span className="grid size-10 place-items-center rounded-lg bg-[#fde4e3] text-[#db231f]">
-                <Scale size={20} />
-              </span>
-              <div className="min-w-0 flex-1">
-                <h2
-                  id="dispute-dialog-title"
-                  className="text-[16px] font-semibold leading-6 text-ink"
-                >
-                  Raise a dispute
-                </h2>
-                <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-                  Choose a creator and explain the issue. The related amount stays protected in
-                  escrow while it is reviewed.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setRaiseDispute(false);
-                }}
-                className="grid size-8 place-items-center rounded-md border border-line text-secondary hover:bg-subtle"
-                aria-label="Close dispute dialog"
-              >
-                <X size={16} />
-              </button>
-            </div>
-            {raiseDispute && (
-              <textarea
-                autoFocus
-                placeholder="Describe the issue and the outcome you need…"
-                className="mt-5 min-h-28 w-full resize-y rounded-lg border border-line p-3 text-[13px] leading-5 outline-none placeholder:text-tertiary focus:border-primary"
-              />
-            )}
-            <div className="mt-5 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setRaiseDispute(false);
-                }}
-                className="h-9 rounded-lg border border-line px-3 text-[13px] font-medium text-ink hover:bg-subtle"
-              >
-                Close
-              </button>
-              {raiseDispute && (
-                <button
-                  type="button"
-                  onClick={() => setRaiseDispute(false)}
-                  className="h-9 rounded-lg bg-primary px-3 text-[13px] font-medium text-white"
-                >
-                  Submit dispute
-                </button>
-              )}
-            </div>
-          </section>
-        </div>
+        <RaiseDisputeModal
+          onClose={() => setRaiseDispute(false)}
+          onSubmit={() => setRaiseDispute(false)}
+        />
       )}
     </BrandShell>
   );
