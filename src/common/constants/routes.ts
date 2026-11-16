@@ -26,6 +26,7 @@ export const ROUTES = {
   brandCreatorDiscovery: "/brand/creator-discovery",
   brandContentHub: "/brand/content-hub",
   brandPayments: "/brand/payments",
+  brandPaymentDispute: "/brand/payments/disputes/:disputeId",
   brandCustomReports: "/brand/reports",
   brandCustomReportNew: "/brand/reports/new",
   brandNewProject: "/brand/projects/new",
@@ -59,5 +60,7 @@ export const brandInvitedCreatorRoute = (projectId: number | string, creatorId: 
   `/brand/projects/${projectId}/invited/${creatorId}`;
 export const brandCreatorDeliverablesRoute = (projectId: number | string, creatorId: string) =>
   `/brand/projects/${projectId}/invited/${creatorId}/deliverables`;
+export const brandPaymentDisputeRoute = (disputeId: string) =>
+  `/brand/payments/disputes/${disputeId}`;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];

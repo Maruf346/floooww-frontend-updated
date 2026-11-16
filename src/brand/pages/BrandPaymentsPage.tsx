@@ -16,7 +16,9 @@ import {
   X,
 } from "lucide-react";
 import { motion } from "motion/react";
+import { useNavigate } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { brandPaymentDisputeRoute } from "@/common/constants/routes";
 
 type TransactionState = "Released" | "Held" | "Fee" | "Refunded";
 
@@ -85,9 +87,9 @@ const stateTone: Record<TransactionState, string> = {
   Refunded: "bg-[#f1f4ff] text-[#3b5bff]",
 };
 
-type DisputeStatus = "Waiting for you" | "Under review" | "Resolved";
+export type DisputeStatus = "Waiting for you" | "Under review" | "Resolved";
 
-type Dispute = {
+export type Dispute = {
   id: string;
   creator: string;
   avatar: string;
@@ -98,7 +100,7 @@ type Dispute = {
   next: string;
 };
 
-const disputes: Dispute[] = [
+export const disputes: Dispute[] = [
   {
     id: "DSP-0418",
     creator: "Rohan Desai",
@@ -549,9 +551,9 @@ function TabPanel({ tab }: { tab: Exclude<PaymentTab, "Overview"> }) {
 }
 
 export function BrandPaymentsPage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<PaymentTab>("Overview");
   const [range, setRange] = useState("1 Oct – 28 Oct 2026");
-  const [selectedDispute, setSelectedDispute] = useState<Dispute | null>(null);
   const [raiseDispute, setRaiseDispute] = useState(false);
 
   const downloadStatement = () => {
@@ -650,17 +652,18 @@ export function BrandPaymentsPage() {
         {activeTab === "Overview" ? (
           <Overview />
         ) : activeTab === "Disputes" ? (
-          <DisputesBoard onOpen={setSelectedDispute} />
+          <DisputesBoard
+            onOpen={(dispute) => navigate(brandPaymentDisputeRoute(dispute.id.toLowerCase()))}
+          />
         ) : (
           <TabPanel tab={activeTab} />
         )}
       </div>
-      {(selectedDispute || raiseDispute) && (
+      {raiseDispute && (
         <div
           className="fixed inset-0 z-50 grid place-items-center bg-ink/35 p-4"
           role="presentation"
           onMouseDown={() => {
-            setSelectedDispute(null);
             setRaiseDispute(false);
           }}
         >
@@ -680,20 +683,16 @@ export function BrandPaymentsPage() {
                   id="dispute-dialog-title"
                   className="text-[16px] font-semibold leading-6 text-ink"
                 >
-                  {selectedDispute
-                    ? `${selectedDispute.id} · ${selectedDispute.creator}`
-                    : "Raise a dispute"}
+                  Raise a dispute
                 </h2>
                 <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-                  {selectedDispute
-                    ? `${selectedDispute.reason} · ${selectedDispute.amount} is held until the case is decided.`
-                    : "Choose a creator and explain the issue. The related amount stays protected in escrow while it is reviewed."}
+                  Choose a creator and explain the issue. The related amount stays protected in
+                  escrow while it is reviewed.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => {
-                  setSelectedDispute(null);
                   setRaiseDispute(false);
                 }}
                 className="grid size-8 place-items-center rounded-md border border-line text-secondary hover:bg-subtle"
@@ -713,7 +712,6 @@ export function BrandPaymentsPage() {
               <button
                 type="button"
                 onClick={() => {
-                  setSelectedDispute(null);
                   setRaiseDispute(false);
                 }}
                 className="h-9 rounded-lg border border-line px-3 text-[13px] font-medium text-ink hover:bg-subtle"
