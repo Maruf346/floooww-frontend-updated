@@ -41,7 +41,7 @@ export const BLOG_POSTS: BlogPost[] = [
 
 export const CTA_COPY = {
   title: "Ready to run smarter creator projects?",
-  body: "Join brands and creators using Floooww to discover the right partners, manage projects end-to-end, and build lasting creator relationships.",
+  body: "Join brands and creators using Kreyio to discover the right partners, manage projects end-to-end, and build lasting creator relationships.",
   glow: asset("blog/cta-glow.svg"),
 } as const;
 import { asset } from "@/common/utils/asset";

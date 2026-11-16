@@ -84,7 +84,7 @@ export function SignupPage() {
               SIGN UP · STEP 1 OF 3
             </p>
             <h1 className="mt-3 font-inter-bold text-[30px] font-bold leading-[38px] tracking-[-.6px] text-ink">
-              How will you use Floooww?
+              How will you use Kreyio?
             </h1>
             <p className="mt-2 text-[14px] leading-[22px] text-body">
               Pick one. You can add another account type later from Settings.
@@ -221,9 +221,9 @@ export function SignupPage() {
                 I agree to the <span className="text-link">Terms of Service</span> and{" "}
                 <span className="text-link">Privacy Policy</span>.
                 {role === "brand"
-                  ? " Floooww is free for brands."
+                  ? " Kreyio is free for brands."
                   : role === "agency"
-                    ? " Floooww is free for agencies."
+                    ? " Kreyio is free for agencies."
                     : ""}
               </span>
             </button>

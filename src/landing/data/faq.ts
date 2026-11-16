@@ -13,7 +13,7 @@ export const FAQ_COPY = {
   eyebrow: "FAQ",
   title: "Questions, answered.",
   description:
-    "Everything you need to know about running creator projects on Floooww. Can’t find what you’re looking for? Our team replies within a working day.",
+    "Everything you need to know about running creator projects on Kreyio. Can’t find what you’re looking for? Our team replies within a working day.",
   contactTitle: "Still have questions?",
   contactBody: "Talk to a real person about your next project.",
   contactCta: "Contact us",
@@ -24,16 +24,16 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     id: "what-is-floooww",
     category: "Brands",
-    question: "What is Floooww?",
+    question: "What is Kreyio?",
     answer:
-      "Floooww runs the whole creator project in one place, from the first brief to the final payout. You set a goal and a budget, we match creators who fit, and you approve every post and pay only on approval.",
+      "Kreyio runs the whole creator project in one place, from the first brief to the final payout. You set a goal and a budget, we match creators who fit, and you approve every post and pay only on approval.",
   },
   {
     id: "brief-time",
     category: "Brands",
     question: "How long does it take to launch a project?",
     answer:
-      "Most briefs take about two minutes. Pick a goal, a budget and the posts you need, and Floooww turns it into a brief creators actually understand. Matched creators usually start accepting within a day.",
+      "Most briefs take about two minutes. Pick a goal, a budget and the posts you need, and Kreyio turns it into a brief creators actually understand. Matched creators usually start accepting within a day.",
   },
   {
     id: "matching",
@@ -52,7 +52,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     id: "creator-cost",
     category: "Creators",
-    question: "Is Floooww free for creators?",
+    question: "Is Kreyio free for creators?",
     answer:
       "Always. Creators never pay to join, apply or get paid. Build your profile once and get matched to brand projects that fit your niche and audience.",
   },

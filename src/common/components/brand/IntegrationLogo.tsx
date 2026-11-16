@@ -13,7 +13,7 @@ export type IntegrationService =
   | "OpenAI"
   | "Claude"
   | "Gemini"
-  | "Floooww AI";
+  | "Kreyio AI";
 
 /* Lettermark tiles from Figma Integration logo (137:40). */
 const LETTERMARKS: Partial<
@@ -77,7 +77,7 @@ export function IntegrationLogo({
     );
   }
 
-  if (service === "Floooww AI") {
+  if (service === "Kreyio AI") {
     return (
       <span
         role="img"
@@ -86,7 +86,7 @@ export function IntegrationLogo({
       >
         <span className="absolute inset-[8.33%_21.61%]">
           <img
-            src={ASSETS.integration["Floooww AI"]}
+            src={ASSETS.integration["Kreyio AI"]}
             alt=""
             className="absolute inset-0 block size-full max-w-none"
           />

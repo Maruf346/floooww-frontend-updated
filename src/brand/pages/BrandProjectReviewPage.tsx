@@ -69,7 +69,7 @@ const cards: Array<{ title: string; rows: ReviewRow[]; route: string }> = [
       { label: "Fee range", value: "₹3,000 – ₹12,000" },
       { label: "Creators", value: "10" },
       { label: "Creator fees", value: "₹1,00,000 (budget cap)" },
-      { label: "Floooww fee", value: "Free for brands" },
+      { label: "Kreyio fee", value: "Free for brands" },
       { label: "GST (18%) on creator fees", value: "₹18,000" },
       { label: "Total", value: "₹1,18,000" },
     ],

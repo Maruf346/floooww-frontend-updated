@@ -62,4 +62,4 @@ export const FOOTER_SOCIALS: { platform: Platform; href: string }[] = [
   { platform: "Pinterest", href: "https://www.pinterest.com/" },
 ];
 
-export const FOOTER_LEGAL = "Floooww. All rights reserved.";
+export const FOOTER_LEGAL = "Kreyio. All rights reserved.";

@@ -23,7 +23,7 @@ export function DashboardPlaceholder({
     <div className="flex min-h-dvh flex-col bg-subtle">
       <header className="border-b border-line-subtle bg-white">
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-5 py-[18px] sm:px-8">
-          <Link to={ROUTES.home} aria-label="Floooww home" className="rounded-sm">
+          <Link to={ROUTES.home} aria-label="Kreyio home" className="rounded-sm">
             <Logo variant="nav" />
           </Link>
           <Button

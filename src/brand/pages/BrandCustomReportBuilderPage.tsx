@@ -1239,7 +1239,7 @@ export function BrandCustomReportBuilderPage() {
               ))}
             </div>
             <p className="mt-4 text-[10px] leading-4 text-tertiary">
-              71 filters - all from what you set up in Floooww
+              71 filters - all from what you set up in Kreyio
             </p>
           </aside>
           <div className="min-w-0 flex-1" ref={reportExportRef}>

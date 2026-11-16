@@ -1240,7 +1240,7 @@ function PaymentsTab({ creator, project }: { creator: CreatorDetail; project: Pr
                     {creator.escrow} in escrow
                   </p>
                   <p className="text-[12px] leading-4 text-secondary">
-                    + {inr(gst)} GST (18%) = {inr(invoiceTotal)} · no Floooww fee paid by UPI
+                    + {inr(gst)} GST (18%) = {inr(invoiceTotal)} · no Kreyio fee paid by UPI
                   </p>
                 </div>
               </td>
@@ -1942,7 +1942,7 @@ function ReportDeliverableModal({
               </h3>
               <p className="text-[13px] leading-5 text-ink">
                 If there’s no reply, the report stands: the on-time score drops and gift projects
-                pause for 60 days. Floooww reviews repeat cases.
+                pause for 60 days. Kreyio reviews repeat cases.
               </p>
             </div>
           </aside>

@@ -251,7 +251,7 @@ function CollapsedSidebar({ onLogout }: { onLogout: () => void }) {
   return (
     <aside className="flex h-full w-16 flex-col items-center border-r border-line bg-white py-5">
       <Link
-        aria-label="Floooww home"
+        aria-label="Kreyio home"
         className="flex h-11 items-center justify-center [&>img:last-child]:hidden"
         to={ROUTES.brand}
       >
@@ -314,7 +314,7 @@ function LogoutConfirmDialog({ close, confirm }: { close: () => void; confirm: (
         className="w-full max-w-[420px] rounded-2xl bg-white p-7 shadow-[0_12px_32px_rgba(0,0,0,.12)]"
       >
         <h2 id="logout-dialog-title" className="text-[16px] font-semibold leading-6 text-ink">
-          Log out of Floooww?
+          Log out of Kreyio?
         </h2>
         <p className="mt-3 text-[13px] leading-5 text-secondary">
           You’ll need to log in again to see Minimalist. Drafts are saved.
@@ -432,7 +432,7 @@ export function BrandShell({
         <button
           type="button"
           className="fixed bottom-6 right-6 z-20 rounded-full bg-primary p-4 text-white shadow-[0_16px_40px_-8px_rgba(8,10,20,.14)]"
-          aria-label="Open Floooww Assistant"
+          aria-label="Open Kreyio Assistant"
         >
           <MessageSquare size={24} />
         </button>

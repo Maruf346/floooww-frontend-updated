@@ -758,7 +758,7 @@ const integrationGroups: { title: string; description: string; items: Integratio
   },
   {
     title: "Other platforms",
-    description: "Send Floooww updates to the tools your team uses",
+    description: "Send Kreyio updates to the tools your team uses",
     items: [
       {
         id: "slack",
@@ -1034,7 +1034,7 @@ function BillingSettings() {
       list.forEach((entry, index) => {
         if (index) pdf.addPage();
         pdf.setFontSize(22);
-        pdf.text("Floooww GST invoice", 54, 70);
+        pdf.text("Kreyio GST invoice", 54, 70);
         pdf.setFontSize(12);
         pdf.text(`Invoice: ${entry.invoice}`, 54, 112);
         pdf.text(`Date: ${entry.date} 2026`, 54, 134);
@@ -1043,7 +1043,7 @@ function BillingSettings() {
         pdf.text(`Billed to: ${billing.legalName}`, 54, 220);
         pdf.text(`GSTIN: ${billing.gstin}`, 54, 242);
       });
-      pdf.save(list.length === 1 ? `${list[0].invoice}.pdf` : "Floooww-invoices.pdf");
+      pdf.save(list.length === 1 ? `${list[0].invoice}.pdf` : "Kreyio-invoices.pdf");
       setNotice(
         list.length === 1 ? `Downloaded ${list[0].invoice}.` : "Downloaded all GST invoices.",
       );
@@ -1159,7 +1159,7 @@ function BillingSettings() {
           <div className="flex-1">
             <h2 className="text-[16px] font-semibold leading-6 text-ink">Invoices</h2>
             <p className="text-[12px] leading-4 text-tertiary">
-              One GST invoice per payment · Floooww charges brands nothing
+              One GST invoice per payment · Kreyio charges brands nothing
             </p>
           </div>
           <button
@@ -1572,7 +1572,7 @@ function SecuritySettings() {
     },
     {
       id: "iphone",
-      device: "iPhone 15 · Floooww app",
+      device: "iPhone 15 · Kreyio app",
       location: "Mumbai, IN",
       active: "2 h ago",
       current: false,
@@ -1624,7 +1624,7 @@ function SecuritySettings() {
           <section className="rounded-xl border border-[#e5e7eb] bg-white p-5">
             <div>
               <h2 className="text-[16px] font-semibold leading-6 text-[#070b13]">Sign in</h2>
-              <p className="text-[12px] leading-4 text-[#8491a3]">How you get into Floooww</p>
+              <p className="text-[12px] leading-4 text-[#8491a3]">How you get into Kreyio</p>
             </div>
             <div className="mt-3.5">
               {securityRows.map(([label, value, action]) => (

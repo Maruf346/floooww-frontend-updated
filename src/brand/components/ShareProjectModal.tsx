@@ -22,7 +22,7 @@ export function ShareProjectModal({ project, isOpen, onClose }: ShareProjectModa
   const fullUrl = `https://${shareUrl}`;
 
   const [postText, setPostText] = useState(
-    `We’re working with skincare creators on our ${project.name}. Paid collab on ${project.platform || "Instagram and YouTube"}. See it on Floooww.`,
+    `We’re working with skincare creators on our ${project.name}. Paid collab on ${project.platform || "Instagram and YouTube"}. See it on Kreyio.`,
   );
 
   useLockBodyScroll(isOpen);
@@ -126,7 +126,7 @@ export function ShareProjectModal({ project, isOpen, onClose }: ShareProjectModa
                 Share {project.name}
               </h2>
               <p className="text-[13px] text-[#8491a3]">
-                Post it anywhere. People who open the link see the project page on Floooww.
+                Post it anywhere. People who open the link see the project page on Kreyio.
               </p>
             </div>
             <button

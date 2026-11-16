@@ -36,7 +36,7 @@ export function Header() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: EASE_OUT }}
       >
-        <Link to={ROUTES.home} aria-label="Floooww home" className="shrink-0 rounded-sm">
+        <Link to={ROUTES.home} aria-label="Kreyio home" className="shrink-0 rounded-sm">
           <Logo variant="nav" />
         </Link>
 
@@ -82,7 +82,7 @@ export function Header() {
           </Link>
           <Link
             to={AUTH_NAV.signup.to}
-            className="rounded-full bg-primary px-5 py-2.5 font-inter-medium text-[14px] font-medium leading-5 whitespace-nowrap text-white transition-[background-color,box-shadow,transform] duration-300 ease-out hover:bg-primary-hover hover:shadow-[0_8px_20px_-8px_rgba(37,99,235,0.6)] active:scale-[0.98]"
+            className="rounded-full bg-primary px-5 py-2.5 font-inter-medium text-[14px] font-medium leading-5 whitespace-nowrap text-white transition-[background-color,box-shadow,transform] duration-300 ease-out hover:bg-primary-hover hover:shadow-[0_8px_20px_-8px_rgba(13,13,16,0.35)] active:scale-[0.98]"
           >
             {AUTH_NAV.signup.label}
           </Link>

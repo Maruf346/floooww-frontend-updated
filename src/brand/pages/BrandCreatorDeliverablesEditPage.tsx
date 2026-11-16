@@ -875,7 +875,7 @@ function OneTimeReviewPay({
                 <strong className="font-medium text-ink">{money(addedFee)}</strong>
               </div>
               <div className="flex items-center justify-between gap-4 px-3.5 py-2.5">
-                <span className="text-secondary">Floooww fee</span>
+                <span className="text-secondary">Kreyio fee</span>
                 <span className="text-ink">Free</span>
               </div>
               <div className="flex items-center justify-between gap-4 px-3.5 py-2.5">

@@ -34,9 +34,9 @@ const CONTENT: Record<
     reference: "500-8K2D",
   },
   maintenance: {
-    title: "We’re making Floooww better.",
+    title: "We’re making Kreyio better.",
     description:
-      "Floooww is down for scheduled maintenance. Money held in escrow and scheduled payouts are not affected.",
+      "Kreyio is down for scheduled maintenance. Money held in escrow and scheduled payouts are not affected.",
     reference: "503-2J9M",
   },
 };

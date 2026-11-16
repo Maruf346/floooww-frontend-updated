@@ -59,7 +59,7 @@ function ProfileBody({ applicant }: { applicant: ApplicantProfile }) {
     </section>
     <section>
       <h3 className="text-[14px] font-semibold leading-5 text-ink">Details</h3>
-      <div className="mt-3 grid grid-cols-2 gap-2"><DetailCell value={profile.languages} label="Languages" /><DetailCell value={profile.platforms.map(([platform]) => platform).join(", ")} label="Channels" /><DetailCell value={profile.responseTime} label="Usually replies" /><DetailCell value={profile.memberSince} label="On Floooww since" /><DetailCell value={String(Math.max(4, profile.reviewCount - 5))} label="Projects completed" /><DetailCell value={profile.onTime} label="On-time delivery" /></div>
+      <div className="mt-3 grid grid-cols-2 gap-2"><DetailCell value={profile.languages} label="Languages" /><DetailCell value={profile.platforms.map(([platform]) => platform).join(", ")} label="Channels" /><DetailCell value={profile.responseTime} label="Usually replies" /><DetailCell value={profile.memberSince} label="On Kreyio since" /><DetailCell value={String(Math.max(4, profile.reviewCount - 5))} label="Projects completed" /><DetailCell value={profile.onTime} label="On-time delivery" /></div>
     </section>
     <section>
       <h3 className="text-[14px] font-semibold leading-5 text-ink">Brand fit</h3>

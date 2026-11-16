@@ -30,7 +30,7 @@ export function ChooseWorkspacePage() {
           Choose a workspace
         </h1>
         <p className="mt-2 text-[15px] leading-[22px] text-[#6b7280]">
-          Your email is part of more than one Floooww workspace.
+          Your email is part of more than one Kreyio workspace.
         </p>
         <div className="mt-4 space-y-3">
           {options.map((option, index) => (

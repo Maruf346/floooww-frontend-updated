@@ -272,7 +272,7 @@ function CardFields() {
           Save this card securely for future charges
         </label>
         <p className="text-[12px] leading-4 text-secondary">
-          Visa, Mastercard and RuPay. Saved with Razorpay as an RBI token; Floooww never sees your
+          Visa, Mastercard and RuPay. Saved with Razorpay as an RBI token; Kreyio never sees your
           full card number.
         </p>
       </div>

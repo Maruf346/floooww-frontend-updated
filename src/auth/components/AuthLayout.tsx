@@ -21,7 +21,7 @@ export function AuthLayout({ children, className, visual = "auth" }: AuthLayoutP
       <div className="grid min-h-dvh lg:grid-cols-2">
         <section className="relative flex min-h-dvh flex-col px-5 pb-10 pt-8 sm:px-10 lg:px-[80px] lg:pb-[40px] lg:pt-[40px]">
           <header className="flex items-center justify-between">
-            <Link to={ROUTES.home} aria-label="Floooww home" className="rounded-sm">
+            <Link to={ROUTES.home} aria-label="Kreyio home" className="rounded-sm">
               <Logo variant="nav" />
             </Link>
             <Link
@@ -42,7 +42,7 @@ export function AuthLayout({ children, className, visual = "auth" }: AuthLayoutP
             </motion.div>
           </main>
           <footer className="text-[12px] leading-4 text-tertiary">
-            © 2026 Floooww Limited ·{" "}
+            © 2026 Kreyio Limited ·{" "}
             <Link className="hover:text-ink" to={ROUTES.terms}>
               Terms
             </Link>{" "}

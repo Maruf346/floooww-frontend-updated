@@ -409,7 +409,7 @@ function RaiseDisputeModal({ onClose, onSubmit }: { onClose: () => void; onSubmi
           </button>
         </div>
         <p className="mt-3 text-[13px] leading-5 text-secondary">
-          The money for this deliverable stays frozen in escrow until Floooww decides. Both sides
+          The money for this deliverable stays frozen in escrow until Kreyio decides. Both sides
           reply within 48 hours.
         </p>
 
@@ -746,7 +746,7 @@ export function BrandPaymentsPage() {
     );
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = "Floooww-payments-statement-Oct-2026.csv";
+    anchor.download = "Kreyio-payments-statement-Oct-2026.csv";
     anchor.click();
     URL.revokeObjectURL(url);
   };
@@ -761,7 +761,7 @@ export function BrandPaymentsPage() {
             </h1>
             {activeTab !== "Disputes" && (
               <p className="mt-1 text-[13px] leading-5 text-secondary">
-                Every rupee across projects: budget, escrow, released and GST. Floooww is free for
+                Every rupee across projects: budget, escrow, released and GST. Kreyio is free for
                 brands; you only pay creators plus GST.
               </p>
             )}

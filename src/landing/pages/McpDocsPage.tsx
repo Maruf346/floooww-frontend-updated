@@ -84,7 +84,7 @@ export function McpDocsPage() {
               </h1>
             </RevealItem>
             <RevealItem as="p" className="text-[14px] leading-[22px] text-secondary">
-              Connect Floooww to Claude, ChatGPT and other AI assistants with the MCP server, or to
+              Connect Kreyio to Claude, ChatGPT and other AI assistants with the MCP server, or to
               your own systems with the REST API and webhooks.
             </RevealItem>
             <RevealItem className="flex flex-wrap items-center gap-2">

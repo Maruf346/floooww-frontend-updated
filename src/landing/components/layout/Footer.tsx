@@ -55,20 +55,20 @@ export function Footer() {
           className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-[minmax(0,1.6fr)_repeat(4,minmax(0,1fr))]"
         >
           <RevealItem className="col-span-2 md:col-span-1">
-            <Link to={ROUTES.home} aria-label="Floooww home" className="inline-flex rounded-sm">
+            <Link to={ROUTES.home} aria-label="Kreyio home" className="inline-flex rounded-sm">
               <Logo theme="on-dark" />
             </Link>
             <p className="mt-5 max-w-[320px] text-[14px] leading-[22px] text-tertiary">
               {FOOTER_TAGLINE}
             </p>
-            <ul className="mt-6 flex gap-2.5" aria-label="Floooww on social media">
+            <ul className="mt-6 flex gap-2.5" aria-label="Kreyio on social media">
               {FOOTER_SOCIALS.map((social) => (
                 <li key={social.platform}>
                   <a
                     href={social.href}
                     target="_blank"
                     rel="noreferrer noopener"
-                    aria-label={`Floooww on ${social.platform}`}
+                    aria-label={`Kreyio on ${social.platform}`}
                     className="flex size-10 items-center justify-center rounded-full border border-white/10 transition-[background-color,border-color,transform] duration-300 ease-out hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/10"
                   >
                     <PlatformLogo platform={social.platform} variant="White" size={18} />
@@ -134,7 +134,7 @@ export function Footer() {
               Cookie preferences
             </h2>
             <p className="mt-2 text-[14px] leading-6 text-body">
-              We use necessary cookies to keep Floooww secure and working. Optional analytics
+              We use necessary cookies to keep Kreyio secure and working. Optional analytics
               cookies help us understand how the site is used.
             </p>
             <div className="mt-6 divide-y divide-line rounded-xl border border-line">

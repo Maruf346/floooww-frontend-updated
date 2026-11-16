@@ -87,7 +87,7 @@ export const HELP_DOC_SECTIONS: HelpDocSection[] = [
       },
       {
         title: "Raise a dispute",
-        body: "Open the deliverable, choose Raise a dispute, pick a reason and add evidence. Money stays frozen until Floooww decides.",
+        body: "Open the deliverable, choose Raise a dispute, pick a reason and add evidence. Money stays frozen until Kreyio decides.",
       },
     ],
   },

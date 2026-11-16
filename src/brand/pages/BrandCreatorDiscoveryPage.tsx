@@ -83,7 +83,7 @@ const matchingCreators: DiscoveryCreator[] = [
     engagement: "5.9%",
     views: "42K",
     audience: "78%",
-    summary: "Skincare, beauty · 6 brand projects on Floooww",
+    summary: "Skincare, beauty · 6 brand projects on Kreyio",
     fee: "Typical fee ₹12–15K",
     feeNote: "Within your ₹12,500 fee · past brands Kumkum Naturals, Velvet Leaf",
     badge: "Top creator",

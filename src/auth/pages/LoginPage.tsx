@@ -109,7 +109,7 @@ export function LoginPage() {
           Log in
         </Button>
         <p className="mt-4 text-center text-[13px] leading-5 text-body">
-          New to Floooww?{" "}
+          New to Kreyio?{" "}
           <Link to={ROUTES.signup} className="font-medium text-link hover:underline">
             Sign up free
           </Link>

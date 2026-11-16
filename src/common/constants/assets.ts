@@ -26,7 +26,7 @@ export const ASSETS = {
     "Google Analytics": asset("d0009.svg"),
     Meta: asset("776d5.svg"),
     Razorpay: asset("e5458.svg"),
-    "Floooww AI": asset("ae233.svg"),
+    "Kreyio AI": asset("ae233.svg"),
   },
   hero: {
     dot: asset("10ce4.svg"),

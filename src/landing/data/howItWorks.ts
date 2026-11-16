@@ -75,7 +75,7 @@ const BRAND_STEPS: HowItWorksStep[] = [
     id: "brief",
     label: "Brief it",
     title: "Brief it in two minutes.",
-    body: "Pick a goal, a budget and the posts you need. Floooww turns it into a brief creators actually understand.",
+    body: "Pick a goal, a budget and the posts you need. Kreyio turns it into a brief creators actually understand.",
     media: H.brandMedia[0],
     intro: [
       { text: "Launch our monsoon SPF with " },

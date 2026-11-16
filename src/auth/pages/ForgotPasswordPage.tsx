@@ -60,7 +60,7 @@ export function ForgotPasswordPage() {
               Reset your password
             </h1>
             <p className="mt-2 text-[15px] leading-[22px] text-[#6b7280]">
-              Enter the email you use for Floooww and we’ll send you a link to set a new password.
+              Enter the email you use for Kreyio and we’ll send you a link to set a new password.
             </p>
             <div className="mt-5">
               <TextField

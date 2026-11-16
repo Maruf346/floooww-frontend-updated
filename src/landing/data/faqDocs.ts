@@ -10,7 +10,7 @@ export const FAQ_DOC_SECTIONS: FaqDocSection[] = [
     title: "Getting started",
     questions: [
       {
-        question: "Who is Floooww for?",
+        question: "Who is Kreyio for?",
         answer:
           "Brands and agencies that work with influencers and UGC creators, and creators in India who want paid brand work.",
       },
@@ -38,12 +38,12 @@ export const FAQ_DOC_SECTIONS: FaqDocSection[] = [
     title: "Fees",
     questions: [
       {
-        question: "Is Floooww free for brands and agencies?",
+        question: "Is Kreyio free for brands and agencies?",
         answer:
           "Yes. There is no subscription, seat fee or platform fee. You pay only the creator fee agreed in the project.",
       },
       {
-        question: "How do creators pay for Floooww?",
+        question: "How do creators pay for Kreyio?",
         answer:
           "Creators pay a platform & service fee, plus applicable GST, on each transaction. It is deducted from each payment when it is released, and the amount you will receive is shown on every offer before you accept.",
       },
@@ -122,7 +122,7 @@ export const FAQ_DOC_SECTIONS: FaqDocSection[] = [
           "The money held in escrow is refunded to the brand, usually within 5–7 working days.",
       },
       {
-        question: "Can I pay outside Floooww?",
+        question: "Can I pay outside Kreyio?",
         answer: "No. Paying outside removes escrow protection and breaks our terms.",
       },
     ],
@@ -193,7 +193,7 @@ export const FAQ_DOC_SECTIONS: FaqDocSection[] = [
       {
         question: "How are disputes handled?",
         answer:
-          "Raise a dispute on the deliverable. The money stays in escrow while both sides add evidence, and Floooww aims to decide within five working days.",
+          "Raise a dispute on the deliverable. The money stays in escrow while both sides add evidence, and Kreyio aims to decide within five working days.",
       },
       {
         question: "How do you deal with fake followers?",

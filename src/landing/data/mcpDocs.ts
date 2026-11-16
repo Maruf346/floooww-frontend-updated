@@ -10,14 +10,14 @@ export const MCP_DOC_SECTIONS: McpDocSection[] = [
     id: "overview",
     title: "1. Overview",
     body: [
-      "The Floooww MCP server lets AI assistants such as Claude and ChatGPT work with your Floooww workspace: search creators, check project status, review content, read reports and prepare payments, in plain language. It follows the open Model Context Protocol, uses your Floooww login and permissions, and is free with every workspace.",
+      "The Kreyio MCP server lets AI assistants such as Claude and ChatGPT work with your Kreyio workspace: search creators, check project status, review content, read reports and prepare payments, in plain language. It follows the open Model Context Protocol, uses your Kreyio login and permissions, and is free with every workspace.",
     ],
   },
   {
     id: "before-you-start",
     title: "2. Before you start",
     body: [
-      "• A Floooww account with access to at least one workspace",
+      "• A Kreyio account with access to at least one workspace",
       "• An AI client that supports remote MCP servers over Streamable HTTP with OAuth sign-in (Claude, ChatGPT, Claude Code, Cursor, VS Code and others)",
       "• For clients that only support local servers: Node.js 18 or later, to run the mcp-remote bridge",
     ],
@@ -28,7 +28,7 @@ export const MCP_DOC_SECTIONS: McpDocSection[] = [
     body: [
       "Server URL: https://mcp.floooww.com/mcp",
       "Transport: Streamable HTTP",
-      "Authentication: OAuth 2.1 with PKCE, using your Floooww account",
+      "Authentication: OAuth 2.1 with PKCE, using your Kreyio account",
       "API base URL: https://api.floooww.com/v1",
       "Docs: https://docs.floooww.com · Status: https://status.floooww.com",
       "[All URLs are placeholders until the server is live.]",
@@ -40,9 +40,9 @@ export const MCP_DOC_SECTIONS: McpDocSection[] = [
     body: [
       "1. In Claude (web or desktop), open Settings › Connectors.",
       "2. Select Add custom connector.",
-      "3. Name it Floooww and paste the server URL.",
-      "4. Select Connect, sign in to Floooww and choose a workspace.",
-      "5. In a new chat, enable Floooww from the tools menu and ask: “What is waiting for my approval?”",
+      "3. Name it Kreyio and paste the server URL.",
+      "4. Select Connect, sign in to Kreyio and choose a workspace.",
+      "5. In a new chat, enable Kreyio from the tools menu and ask: “What is waiting for my approval?”",
     ],
   },
   {
@@ -51,8 +51,8 @@ export const MCP_DOC_SECTIONS: McpDocSection[] = [
     body: [
       "1. In ChatGPT, open Settings › Connectors.",
       "2. Add a custom connector and paste the server URL.",
-      "3. Sign in to Floooww when asked and choose a workspace.",
-      "4. Start a chat and select Floooww as a connector.",
+      "3. Sign in to Kreyio when asked and choose a workspace.",
+      "4. Start a chat and select Kreyio as a connector.",
     ],
   },
   {
@@ -65,7 +65,7 @@ export const MCP_DOC_SECTIONS: McpDocSection[] = [
     id: "connect-cursor",
     title: "7. Connect Cursor",
     body: [
-      "Add this to ~/.cursor/mcp.json (or .cursor/mcp.json in a project), save and restart Cursor. You will be asked to sign in the first time a Floooww tool is used.",
+      "Add this to ~/.cursor/mcp.json (or .cursor/mcp.json in a project), save and restart Cursor. You will be asked to sign in the first time a Kreyio tool is used.",
     ],
     code: '{\n  "mcpServers": {\n    "floooww": {\n      "url": "https://mcp.floooww.com/mcp"\n    }\n  }\n}',
   },
@@ -81,7 +81,7 @@ export const MCP_DOC_SECTIONS: McpDocSection[] = [
     id: "other-clients",
     title: "9. Other clients (local bridge)",
     body: [
-      "If your client only supports local servers, run Floooww through the mcp-remote bridge:",
+      "If your client only supports local servers, run Kreyio through the mcp-remote bridge:",
     ],
     code: '{\n  "mcpServers": {\n    "floooww": {\n      "command": "npx",\n      "args": ["-y", "mcp-remote", "https://mcp.floooww.com/mcp"]\n    }\n  }\n}',
   },
@@ -89,19 +89,19 @@ export const MCP_DOC_SECTIONS: McpDocSection[] = [
     id: "sign-in",
     title: "10. Sign in and workspaces",
     body: [
-      "The first time your assistant uses Floooww, a browser window opens to sign in. Choose the workspace to connect; agencies can choose the agency workspace or a single client. Access tokens refresh automatically. To disconnect, go to Settings › Connected apps in Floooww and select Revoke.",
+      "The first time your assistant uses Kreyio, a browser window opens to sign in. Choose the workspace to connect; agencies can choose the agency workspace or a single client. Access tokens refresh automatically. To disconnect, go to Settings › Connected apps in Kreyio and select Revoke.",
     ],
   },
   {
     id: "permissions",
     title: "11. Permissions",
     body: [
-      "Your assistant can only do what your Floooww role allows. Scopes requested at sign-in:",
+      "Your assistant can only do what your Kreyio role allows. Scopes requested at sign-in:",
       "• creators:read, search and view creators",
       "• projects:read / projects:write, view projects, create drafts, invite creators",
       "• content:read / content:write, view content, approve or request changes",
       "• reports:read, read performance and custom reports",
-      "• payments:read / payments:write, view payments, prepare releases (always confirmed in Floooww)",
+      "• payments:read / payments:write, view payments, prepare releases (always confirmed in Kreyio)",
     ],
   },
   {
@@ -134,7 +134,7 @@ export const MCP_DOC_SECTIONS: McpDocSection[] = [
     id: "confirmations",
     title: "14. Confirmations",
     body: [
-      "Write tools never act on their own. They return a summary and a link, and nothing happens until you confirm in Floooww. Links expire after 15 minutes.",
+      "Write tools never act on their own. They return a summary and a link, and nothing happens until you confirm in Kreyio. Links expire after 15 minutes.",
     ],
     code: '{\n  "status": "needs_confirmation",\n  "summary": "Release ₹7,500 to Meera Iyer for Short · Vitamin-C Serum",\n  "confirm_url": "https://app.floooww.com/confirm/act_8Kd2",\n  "expires_at": "2026-11-08T10:45:00+05:30"\n}',
   },
@@ -180,7 +180,7 @@ export const MCP_DOC_SECTIONS: McpDocSection[] = [
     title: "19. Troubleshooting",
     body: [
       "Sign-in keeps looping: allow pop-ups for floooww.com and try again.",
-      "Tools are missing: check your role in Floooww; some tools need write access.",
+      "Tools are missing: check your role in Kreyio; some tools need write access.",
       "Wrong workspace: revoke the connection in Settings › Connected apps and connect again.",
       "Behind a company proxy: allow mcp.floooww.com and api.floooww.com.",
     ],
@@ -197,7 +197,7 @@ export const MCP_DOC_SECTIONS: McpDocSection[] = [
     id: "webhooks",
     title: "21. Webhooks",
     body: [
-      "Add a URL in Settings › Developers and choose events: invite.accepted, escrow.held, content.submitted, content.changes_requested, content.approved, post.live, payment.released, dispute.opened. Verify each request’s Floooww-Signature header (HMAC-SHA256 of the raw body with your signing secret). Failed deliveries are retried for 24 hours.",
+      "Add a URL in Settings › Developers and choose events: invite.accepted, escrow.held, content.submitted, content.changes_requested, content.approved, post.live, payment.released, dispute.opened. Verify each request’s Kreyio-Signature header (HMAC-SHA256 of the raw body with your signing secret). Failed deliveries are retried for 24 hours.",
     ],
     code: 'const expected = crypto\n  .createHmac("sha256", process.env.FLOOOWW_WEBHOOK_SECRET)\n  .update(rawBody)\n  .digest("hex");\nif (expected !== req.headers["floooww-signature"]) reject();',
   },
@@ -205,7 +205,7 @@ export const MCP_DOC_SECTIONS: McpDocSection[] = [
     id: "security",
     title: "22. Security and data",
     body: [
-      "The MCP server and API follow our Privacy Policy. Access is limited to your role, tokens can be revoked at any time, and Floooww does not use your workspace data to train AI models. The assistant you connect is run by its own provider, whose terms apply to what you share with it.",
+      "The MCP server and API follow our Privacy Policy. Access is limited to your role, tokens can be revoked at any time, and Kreyio does not use your workspace data to train AI models. The assistant you connect is run by its own provider, whose terms apply to what you share with it.",
     ],
   },
   {

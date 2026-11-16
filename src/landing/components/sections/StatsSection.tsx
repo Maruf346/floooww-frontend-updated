@@ -6,7 +6,7 @@ import { STATS } from "@/landing/data/stats";
 /** Figma "Stats · count-up" (895:2667): counts once when scrolled into view, then stops. */
 export function StatsSection() {
   return (
-    <section aria-label="Floooww in numbers" className="border-y border-line-subtle bg-white">
+    <section aria-label="Kreyio in numbers" className="border-y border-line-subtle bg-white">
       <RevealGroup
         as="dl"
         stagger={0.12}

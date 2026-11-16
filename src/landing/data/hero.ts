@@ -6,7 +6,7 @@ export const HERO_COPY = {
   /** Typed one letter at a time, in this order, forever. */
   rotatingWords: ["your budget.", "your audience.", "your goal.", "your next launch."],
   subheadline:
-    "Floooww runs the whole project in one place, from the first brief to the final payout.",
+    "Kreyio runs the whole project in one place, from the first brief to the final payout.",
   searchPlaceholder: "Search projects, creators, or categories…",
   searchCta: "Search",
   popularLabel: "Popular:",

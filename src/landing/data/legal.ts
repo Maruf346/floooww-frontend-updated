@@ -15,17 +15,17 @@ const terms: LegalSection[] = [
   [
     "about",
     "About these terms",
-    "Floooww is operated by Floooww Limited. These terms apply to everyone who uses floooww.com and our apps: brands, agencies acting for brands, and creators. By creating an account or using Floooww, you accept these terms, our Privacy Policy and our Refund Policy.",
+    "Kreyio is operated by Kreyio Limited. These terms apply to everyone who uses floooww.com and our apps: brands, agencies acting for brands, and creators. By creating an account or using Kreyio, you accept these terms, our Privacy Policy and our Refund Policy.",
   ],
   [
     "definitions",
     "Definitions",
-    "Brand means a business that creates projects. Agency means a business that manages projects for one or more brands. Creator means an individual or business that delivers content. Project means a brief published on Floooww. Deliverable means a piece of content agreed in a project. Escrow means money held by our payment partner until it is released or refunded.",
+    "Brand means a business that creates projects. Agency means a business that manages projects for one or more brands. Creator means an individual or business that delivers content. Project means a brief published on Kreyio. Deliverable means a piece of content agreed in a project. Escrow means money held by our payment partner until it is released or refunded.",
   ],
   [
     "eligibility",
     "Eligibility",
-    "You must be able to enter into a binding contract and provide accurate account information. If you use Floooww for a business, you confirm that you have authority to accept these terms for that business.",
+    "You must be able to enter into a binding contract and provide accurate account information. If you use Kreyio for a business, you confirm that you have authority to accept these terms for that business.",
   ],
   [
     "account",
@@ -35,22 +35,22 @@ const terms: LegalSection[] = [
   [
     "projects",
     "How projects work",
-    "Brands publish briefs, creators accept offers, and both sides agree deliverables, fees, timelines and usage rights. Messages, approvals and changes made through Floooww form the project record.",
+    "Brands publish briefs, creators accept offers, and both sides agree deliverables, fees, timelines and usage rights. Messages, approvals and changes made through Kreyio form the project record.",
   ],
   [
     "fees",
     "Fees",
-    "Brands and agencies pay no Floooww subscription, seat or platform fee. Creators pay the platform and service fee shown before accepting an offer, plus applicable taxes.",
+    "Brands and agencies pay no Kreyio subscription, seat or platform fee. Creators pay the platform and service fee shown before accepting an offer, plus applicable taxes.",
   ],
   [
     "payments",
     "Payments and escrow",
-    "Brands fund each deliverable into escrow when a creator accepts. Money is released when a deliverable is approved and refunds follow our Refund Policy. Paying outside Floooww removes escrow protection.",
+    "Brands fund each deliverable into escrow when a creator accepts. Money is released when a deliverable is approved and refunds follow our Refund Policy. Paying outside Kreyio removes escrow protection.",
   ],
   [
     "taxes",
     "Taxes",
-    "Each party is responsible for its own tax obligations. Floooww may collect or report taxes where required by law and provides payment records and invoices where available.",
+    "Each party is responsible for its own tax obligations. Kreyio may collect or report taxes where required by law and provides payment records and invoices where available.",
   ],
   [
     "content",
@@ -60,7 +60,7 @@ const terms: LegalSection[] = [
   [
     "responsibilities",
     "Your responsibilities",
-    "Use Floooww lawfully, treat other users respectfully, provide accurate project and payment information, and do not infringe rights or upload unlawful, harmful or misleading content.",
+    "Use Kreyio lawfully, treat other users respectfully, provide accurate project and payment information, and do not infringe rights or upload unlawful, harmful or misleading content.",
   ],
   [
     "payment-terms",
@@ -75,7 +75,7 @@ const terms: LegalSection[] = [
   [
     "community",
     "Community guidelines",
-    "Do not use Floooww for fraud, harassment, spam, fake engagement, misleading advertising or activity that harms other users or the platform.",
+    "Do not use Kreyio for fraud, harassment, spam, fake engagement, misleading advertising or activity that harms other users or the platform.",
   ],
   [
     "third-party",
@@ -84,13 +84,13 @@ const terms: LegalSection[] = [
   ],
   [
     "ip",
-    "Floooww’s intellectual property",
-    "Floooww and its software, branding and content are protected by intellectual-property laws. These terms grant you a limited right to use the Services, not ownership of them.",
+    "Kreyio’s intellectual property",
+    "Kreyio and its software, branding and content are protected by intellectual-property laws. These terms grant you a limited right to use the Services, not ownership of them.",
   ],
   [
     "user-disputes",
     "Disputes between users",
-    "Either side can raise a dispute on Floooww. Money stays in escrow while we review the brief, messages and content. We aim to decide within five working days of both sides replying.",
+    "Either side can raise a dispute on Kreyio. Money stays in escrow while we review the brief, messages and content. We aim to decide within five working days of both sides replying.",
   ],
   [
     "suspension",
@@ -105,12 +105,12 @@ const terms: LegalSection[] = [
   [
     "liability",
     "Limitation of liability",
-    "To the extent permitted by law, Floooww is not liable for indirect, incidental or consequential losses arising from use of the Services or a project between users.",
+    "To the extent permitted by law, Kreyio is not liable for indirect, incidental or consequential losses arising from use of the Services or a project between users.",
   ],
   [
     "indemnity",
     "Indemnity",
-    "You will indemnify Floooww against claims arising from your content, projects, breach of these terms or unlawful use of the Services.",
+    "You will indemnify Kreyio against claims arising from your content, projects, breach of these terms or unlawful use of the Services.",
   ],
   [
     "fraud",
@@ -143,12 +143,12 @@ const privacy: LegalSection[] = [
   [
     "about",
     "About this policy",
-    "This Privacy Policy explains how Floooww Limited handles personal data when you use floooww.com, our apps, the MCP server, API and integrations. It applies to brands, agencies, creators and visitors.",
+    "This Privacy Policy explains how Kreyio Limited handles personal data when you use floooww.com, our apps, the MCP server, API and integrations. It applies to brands, agencies, creators and visitors.",
   ],
   [
     "who-we-are",
     "Who we are",
-    "Floooww Limited is responsible for processing personal data described in this policy.",
+    "Kreyio Limited is responsible for processing personal data described in this policy.",
   ],
   [
     "key-terms",
@@ -178,7 +178,7 @@ const privacy: LegalSection[] = [
   [
     "use",
     "How we use your information",
-    "We use information to provide and secure Floooww, operate projects and escrow payments, support users, prevent fraud, issue invoices and meet legal obligations.",
+    "We use information to provide and secure Kreyio, operate projects and escrow payments, support users, prevent fraud, issue invoices and meet legal obligations.",
   ],
   [
     "basis",
@@ -192,8 +192,8 @@ const privacy: LegalSection[] = [
   ],
   [
     "visibility",
-    "Who can see your information on Floooww",
-    "Information is visible to workspace members, invited clients and project participants according to the role and permissions set in Floooww.",
+    "Who can see your information on Kreyio",
+    "Information is visible to workspace members, invited clients and project participants according to the role and permissions set in Kreyio.",
   ],
   [
     "providers",
@@ -223,7 +223,7 @@ const privacy: LegalSection[] = [
   [
     "storage",
     "Where your data is stored",
-    "Data may be processed in locations where Floooww and its service providers operate, subject to appropriate safeguards.",
+    "Data may be processed in locations where Kreyio and its service providers operate, subject to appropriate safeguards.",
   ],
   [
     "security",
@@ -248,7 +248,7 @@ const privacy: LegalSection[] = [
   [
     "children",
     "Children",
-    "Floooww is not intended for children. Do not use the Services if you are below the minimum age required to enter a binding agreement.",
+    "Kreyio is not intended for children. Do not use the Services if you are below the minimum age required to enter a binding agreement.",
   ],
   [
     "purpose",
@@ -276,7 +276,7 @@ const refunds: LegalSection[] = [
   [
     "scope",
     "1. Scope",
-    "This policy covers money brands and agencies pay into escrow for creator fees on Floooww. Floooww itself charges brands and agencies no fee, so there is no Floooww fee to refund.",
+    "This policy covers money brands and agencies pay into escrow for creator fees on Kreyio. Kreyio itself charges brands and agencies no fee, so there is no Kreyio fee to refund.",
   ],
   [
     "full",
@@ -329,14 +329,14 @@ export const LEGAL_DOCUMENTS: Record<"terms" | "privacy" | "refunds", LegalDocum
   terms: {
     eyebrow: "LEGAL",
     title: "Terms of Service",
-    description: "The terms that govern your use of Floooww, projects, payments and content.",
+    description: "The terms that govern your use of Kreyio, projects, payments and content.",
     updated: "Last updated 8 November 2026",
     sections: terms,
   },
   privacy: {
     eyebrow: "LEGAL",
     title: "Privacy Policy",
-    description: "How Floooww collects, uses, shares and protects information.",
+    description: "How Kreyio collects, uses, shares and protects information.",
     updated: "Effective 8 November 2026",
     sections: privacy,
   },

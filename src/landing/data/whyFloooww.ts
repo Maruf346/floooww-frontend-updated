@@ -9,7 +9,7 @@ export interface WhyFeature {
 }
 
 export const WHY_COPY = {
-  eyebrow: "WHY FLOOOWW",
+  eyebrow: "WHY KREYIO",
   title: { before: "Everything you need to run", highlight: " better projects" },
   description: "Find the creators who fit, then run every project with them in one place.",
 };
@@ -21,7 +21,7 @@ export const WHY_FEATURES: WhyFeature[] = [
     number: "01",
     kicker: "Intelligent matching",
     title: "AI Creator Matching",
-    body: "Floooww ranks creators by how well their audience fits your goal. Then it shows you why, so you’re never guessing.",
+    body: "Kreyio ranks creators by how well their audience fits your goal. Then it shows you why, so you’re never guessing.",
     metric: "94.8% match accuracy",
     cta: "Explore feature →",
   },

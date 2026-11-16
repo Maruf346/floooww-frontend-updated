@@ -13,6 +13,6 @@ export const STATS: StatItem[] = [
     label: "Verified creators",
     caption: "across 60+ content categories",
   },
-  { value: 600, suffix: "+", label: "Brand projects", caption: "run through Floooww" },
+  { value: 600, suffix: "+", label: "Brand projects", caption: "run through Kreyio" },
   { value: 18, suffix: " Cr+", label: "Combined reach", caption: "across all creator audiences" },
 ];

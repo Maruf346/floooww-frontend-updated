@@ -120,7 +120,7 @@ export function AssistantChatMock({ play }: { play: boolean }) {
             <p className="text-[7.61px] text-mock-dim whitespace-nowrap">{chat.chatTitle}</p>
             <div className="flex items-center gap-[3.805px] rounded-[5.073px] border-[0.634px] border-mock-border px-[5.707px] py-[2.537px]">
               <Mark src={ASSETS.mcp.markHeader} width={6.459} height={9.48} />
-              <p className="text-[6.976px] text-mock-dim whitespace-nowrap">Floooww</p>
+              <p className="text-[6.976px] text-mock-dim whitespace-nowrap">Kreyio</p>
               <motion.span
                 className="size-[3.805px] shrink-0 rounded-full bg-mock-green"
                 animate={{ opacity: [1, 0.35, 1] }}
@@ -143,7 +143,7 @@ export function AssistantChatMock({ play }: { play: boolean }) {
                 <p className="font-roboto-mono text-[6.976px] text-mock-text whitespace-nowrap">
                   {chat.tool}
                 </p>
-                <p className="text-[6.976px] text-mock-muted whitespace-nowrap">Floooww</p>
+                <p className="text-[6.976px] text-mock-muted whitespace-nowrap">Kreyio</p>
                 <p className="text-[7.61px] text-mock-muted whitespace-nowrap">›</p>
               </div>
             </Beat>
@@ -249,7 +249,7 @@ export function AssistantChatMock({ play }: { play: boolean }) {
               <p className="text-[11.415px] text-mock-text whitespace-nowrap">+</p>
               <div className="flex items-center gap-[3.171px] rounded-[5.073px] border-[0.634px] border-mock-border px-[5.073px] py-[1.902px]">
                 <Mark src={ASSETS.mcp.markComposer} width={5.465} height={8.022} />
-                <p className="text-[6.976px] text-mock-dim whitespace-nowrap">Floooww</p>
+                <p className="text-[6.976px] text-mock-dim whitespace-nowrap">Kreyio</p>
               </div>
               <div className="min-w-px flex-1" />
               <span className="size-[4.439px] shrink-0 rounded-full bg-mock-green" />

@@ -202,7 +202,7 @@ function EnquiryForm() {
           >
             {consent && <Check size={12} strokeWidth={3} />}
           </span>
-          I agree that Floooww can contact me about this enquiry.
+          I agree that Kreyio can contact me about this enquiry.
         </label>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[13px] text-secondary">Average first reply: under 1 working day</p>

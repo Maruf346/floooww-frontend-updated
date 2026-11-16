@@ -1398,7 +1398,7 @@ function Review({
               </p>
             </div>
             <div className={recurring ? "flex items-center justify-between gap-3 text-[13px]" : "hidden"}>
-              <p className="text-secondary">Floooww fee</p>
+              <p className="text-secondary">Kreyio fee</p>
               <p className="text-ink">Free</p>
             </div>
             <div className="flex items-center justify-between gap-3 text-[13px]">

@@ -224,7 +224,7 @@ export function BrandPaymentDisputeDetailPage() {
             >
               <h2 className="text-[16px] font-semibold leading-6 text-ink">Timeline</h2>
               <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-                Floooww decides within 5 working days of both replies.
+                Kreyio decides within 5 working days of both replies.
               </p>
               <div className="mt-5">
                 <TimelineItem
@@ -274,7 +274,7 @@ export function BrandPaymentDisputeDetailPage() {
                   )}
                 </TimelineItem>
                 <TimelineItem
-                  title="Floooww decision"
+                  title="Kreyio decision"
                   description="Release, partial release, refund or redo"
                   date="By 6 Nov"
                   tone="future"
