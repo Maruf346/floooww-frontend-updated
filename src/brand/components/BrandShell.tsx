@@ -38,6 +38,7 @@ function Sidebar({ close }: { close?: () => void }) {
   const isContentHub = location.pathname === ROUTES.brandContentHub;
   const isPayments = location.pathname === ROUTES.brandPayments;
   const isMessages = location.pathname === ROUTES.brandMessages;
+  const isHelp = location.pathname === ROUTES.brandHelp;
   const isSettings = location.pathname === ROUTES.brandSettings;
   const isCustomReports = location.pathname === ROUTES.brandCustomReports;
   const isOverview = location.pathname === ROUTES.brand;
@@ -207,13 +208,16 @@ function Sidebar({ close }: { close?: () => void }) {
         </Link>
       </nav>
       <div className="mt-auto border-t border-line pt-2">
-        <button
-          type="button"
-          className="flex h-9 w-full items-center gap-2.5 px-3 text-[14px] hover:bg-subtle"
+        <Link
+          to={ROUTES.brandHelp}
+          onClick={closeMenu}
+          className={
+            "flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-[14px] " + topLink(isHelp)
+          }
         >
           <CircleHelp size={18} />
           Help centre
-        </button>
+        </Link>
         <button
           type="button"
           className="flex h-9 w-full items-center gap-2.5 px-3 text-[14px] hover:bg-subtle"
@@ -237,6 +241,7 @@ function CollapsedSidebar() {
     [ROUTES.brandPayments, "Payments", Wallet],
     [ROUTES.brandMessages, "Messages", MessageSquare],
     [ROUTES.brandSettings, "Settings", Settings],
+    [ROUTES.brandHelp, "Help centre", CircleHelp],
   ] as const;
 
   return (
@@ -268,14 +273,14 @@ function CollapsedSidebar() {
         })}
       </nav>
       <div className="mt-auto flex w-full flex-col items-center gap-2 border-t border-line pt-2">
-        <button
+        <Link
+          to={ROUTES.brandHelp}
           aria-label="Help centre"
-          className="grid size-10 place-items-center rounded-[10px] text-secondary hover:bg-subtle hover:text-ink"
+          className={`grid size-10 place-items-center rounded-[10px] ${location.pathname === ROUTES.brandHelp ? "bg-primary-subtle text-primary" : "text-secondary hover:bg-subtle hover:text-ink"}`}
           title="Help centre"
-          type="button"
         >
           <CircleHelp size={18} />
-        </button>
+        </Link>
         <button
           aria-label="Logout"
           className="grid size-10 place-items-center rounded-[10px] text-secondary hover:bg-subtle hover:text-ink"
