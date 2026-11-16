@@ -5,12 +5,15 @@ import {
   CheckCircle2,
   ChevronDown,
   CircleAlert,
+  Clock3,
   CreditCard,
   FileText,
   Landmark,
   LockKeyhole,
   ReceiptText,
+  Scale,
   WalletCards,
+  X,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { BrandShell } from "@/brand/components/BrandShell";
@@ -82,6 +85,52 @@ const stateTone: Record<TransactionState, string> = {
   Refunded: "bg-[#f1f4ff] text-[#3b5bff]",
 };
 
+type DisputeStatus = "Waiting for you" | "Under review" | "Resolved";
+
+type Dispute = {
+  id: string;
+  creator: string;
+  avatar: string;
+  project: string;
+  reason: string;
+  amount: string;
+  status: DisputeStatus;
+  next: string;
+};
+
+const disputes: Dispute[] = [
+  {
+    id: "DSP-0418",
+    creator: "Rohan Desai",
+    avatar: "https://www.figma.com/api/mcp/asset/b2043c84-88f8-45ab-8085-3de23d863a87.png",
+    project: "Monsoon Sunscreen",
+    reason: "Late delivery",
+    amount: "₹7,500",
+    status: "Waiting for you",
+    next: "Reply by 30 Oct",
+  },
+  {
+    id: "DSP-0421",
+    creator: "Tara Bose",
+    avatar: "https://www.figma.com/api/mcp/asset/3cd695a6-cf4c-49b8-9030-9453d79576ca.png",
+    project: "Vitamin-C Serum",
+    reason: "Doesn’t match brief",
+    amount: "₹7,500",
+    status: "Under review",
+    next: "Decision by 4 Nov",
+  },
+  {
+    id: "DSP-0377",
+    creator: "Riya Sen",
+    avatar: "https://www.figma.com/api/mcp/asset/5d846c24-5e8d-4dec-8d60-3e25146862f9.png",
+    project: "Lip Tint Drop",
+    reason: "Posted then deleted",
+    amount: "₹5,000",
+    status: "Resolved",
+    next: "Partial refund",
+  },
+];
+
 function StatusPill({ state }: { state: TransactionState }) {
   return (
     <span
@@ -89,6 +138,22 @@ function StatusPill({ state }: { state: TransactionState }) {
     >
       <span className="size-1.5 rounded-full bg-current" />
       {state}
+    </span>
+  );
+}
+
+function DisputePill({ status }: { status: DisputeStatus }) {
+  const tone = {
+    "Waiting for you": "bg-[#fde4e3] text-[#db231f]",
+    "Under review": "bg-[#feefce] text-[#d97706]",
+    Resolved: "bg-[#f4f6fb] text-[#4a4a55]",
+  }[status];
+  return (
+    <span
+      className={`inline-flex h-5 items-center gap-1.5 whitespace-nowrap rounded-full px-2 text-[12px] font-medium leading-4 ${tone}`}
+    >
+      <span className="size-1.5 rounded-full bg-current" />
+      {status}
     </span>
   );
 }
@@ -205,6 +270,96 @@ function UpcomingCard() {
         ))}
       </div>
     </section>
+  );
+}
+
+function DisputesBoard({ onOpen }: { onOpen: (dispute: Dispute) => void }) {
+  return (
+    <>
+      <section className="grid gap-3 rounded-xl border border-line bg-white p-5 sm:grid-cols-3">
+        <Tile
+          icon={CircleAlert}
+          iconClass="bg-[#db231f]"
+          label="Open"
+          value="2"
+          detail="1 needs your reply"
+          delay={0}
+        />
+        <Tile
+          icon={LockKeyhole}
+          iconClass="bg-[#db231f]"
+          label="Money frozen"
+          value="₹15,000"
+          detail="held until decided"
+          delay={0.05}
+        />
+        <Tile
+          icon={Clock3}
+          iconClass="bg-[#db231f]"
+          label="Avg days to resolve"
+          value="4.2"
+          detail="last 90 days"
+          delay={0.1}
+        />
+      </section>
+      <section className="overflow-x-auto rounded-xl border border-line bg-white">
+        <table className="w-full min-w-[960px] border-collapse text-left">
+          <thead className="bg-subtle text-[12px] font-semibold leading-4 text-secondary">
+            <tr>
+              <th className="w-[90px] px-4 py-2.5">ID</th>
+              <th className="w-[170px] px-4 py-2.5">Creator</th>
+              <th className="w-40 px-4 py-2.5">Project</th>
+              <th className="px-4 py-2.5">Reason</th>
+              <th className="w-20 px-4 py-2.5 text-right">Amount</th>
+              <th className="w-[130px] px-4 py-2.5">Status</th>
+              <th className="w-[120px] px-4 py-2.5">Next</th>
+              <th className="w-[70px] px-4 py-2.5">
+                <span className="sr-only">Open case</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {disputes.map((dispute) => (
+              <tr className="border-t border-[#edeff3]" key={dispute.id}>
+                <td className="whitespace-nowrap px-4 py-3 text-[14px] font-medium leading-[22px] text-ink">
+                  {dispute.id}
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2.5">
+                    <img className="size-8 rounded-full object-cover" src={dispute.avatar} alt="" />
+                    <span className="whitespace-nowrap text-[14px] font-medium leading-[22px] text-ink">
+                      {dispute.creator}
+                    </span>
+                  </div>
+                </td>
+                <td className="whitespace-nowrap px-4 py-3 text-[13px] leading-5 text-ink">
+                  {dispute.project}
+                </td>
+                <td className="px-4 py-3 text-[13px] leading-5 text-ink">{dispute.reason}</td>
+                <td className="whitespace-nowrap px-4 py-3 text-right text-[13px] font-medium leading-5 text-ink">
+                  {dispute.amount}
+                </td>
+                <td className="px-4 py-3">
+                  <DisputePill status={dispute.status} />
+                </td>
+                <td className="whitespace-nowrap px-4 py-3 text-[13px] leading-5 text-ink">
+                  {dispute.next}
+                </td>
+                <td className="px-4 py-3">
+                  <button
+                    type="button"
+                    onClick={() => onOpen(dispute)}
+                    className="inline-flex h-8 items-center justify-center rounded-lg border border-line bg-white px-3 text-[13px] font-medium leading-[18px] text-ink transition hover:bg-subtle"
+                  >
+                    Open
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+    </>
   );
 }
 
@@ -342,27 +497,6 @@ function TabPanel({ tab }: { tab: Exclude<PaymentTab, "Overview"> }) {
         description: "Refunds return automatically to the original payment method.",
         rows: transactionRows.filter((row) => row.state === "Refunded"),
       };
-    if (tab === "Disputes")
-      return {
-        title: "Disputes",
-        description: "Two amounts are temporarily frozen while their cases are reviewed.",
-        rows: [
-          {
-            date: "22 Oct",
-            description: "Tara Bose · content dispute",
-            project: "Vitamin-C Serum",
-            state: "Held" as const,
-            amount: "₹7,500",
-          },
-          {
-            date: "18 Oct",
-            description: "Meera Iyer · usage rights review",
-            project: "Glow Squad",
-            state: "Held" as const,
-            amount: "₹7,500",
-          },
-        ],
-      };
     return {
       title: "Payment methods",
       description: "Choose which account pays for creator fees, escrow and GST.",
@@ -417,6 +551,8 @@ function TabPanel({ tab }: { tab: Exclude<PaymentTab, "Overview"> }) {
 export function BrandPaymentsPage() {
   const [activeTab, setActiveTab] = useState<PaymentTab>("Overview");
   const [range, setRange] = useState("1 Oct – 28 Oct 2026");
+  const [selectedDispute, setSelectedDispute] = useState<Dispute | null>(null);
+  const [raiseDispute, setRaiseDispute] = useState(false);
 
   const downloadStatement = () => {
     const lines = [
@@ -445,38 +581,51 @@ export function BrandPaymentsPage() {
             <h1 className="text-[26px] font-bold leading-[34px] tracking-[-.01em] text-ink">
               Payments
             </h1>
-            <p className="mt-1 text-[13px] leading-5 text-secondary">
-              Every rupee across projects: budget, escrow, released and GST. Floooww is free for
-              brands; you only pay creators plus GST.
-            </p>
+            {activeTab !== "Disputes" && (
+              <p className="mt-1 text-[13px] leading-5 text-secondary">
+                Every rupee across projects: budget, escrow, released and GST. Floooww is free for
+                brands; you only pay creators plus GST.
+              </p>
+            )}
           </div>
-          <div className="flex flex-wrap items-center gap-2.5">
-            <label className="relative flex h-10 items-center gap-2 rounded-lg border border-line bg-white px-3 text-[12px] font-medium text-ink">
-              <CalendarDays size={16} className="text-secondary" />
-              <select
-                aria-label="Payment period"
-                value={range}
-                onChange={(event) => setRange(event.target.value)}
-                className="appearance-none bg-transparent pr-5 outline-none"
-              >
-                <option>1 Oct – 28 Oct 2026</option>
-                <option>1 Sep – 30 Sep 2026</option>
-                <option>Last 90 days</option>
-              </select>
-              <ChevronDown
-                size={14}
-                className="pointer-events-none absolute right-3 text-secondary"
-              />
-            </label>
+          {activeTab === "Disputes" ? (
             <button
               type="button"
-              onClick={downloadStatement}
-              className="inline-flex h-10 items-center gap-2 rounded-lg border border-line bg-white px-4 text-[14px] font-medium text-ink transition hover:bg-subtle"
+              onClick={() => setRaiseDispute(true)}
+              className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#0d0d10] px-4 text-[14px] font-medium text-white transition hover:bg-[#27272a]"
             >
-              <ArrowDownToLine size={16} />
-              Download statement
+              <Scale size={16} />
+              Raise a dispute
             </button>
-          </div>
+          ) : (
+            <div className="flex flex-wrap items-center gap-2.5">
+              <label className="relative flex h-10 items-center gap-2 rounded-lg border border-line bg-white px-3 text-[12px] font-medium text-ink">
+                <CalendarDays size={16} className="text-secondary" />
+                <select
+                  aria-label="Payment period"
+                  value={range}
+                  onChange={(event) => setRange(event.target.value)}
+                  className="appearance-none bg-transparent pr-5 outline-none"
+                >
+                  <option>1 Oct – 28 Oct 2026</option>
+                  <option>1 Sep – 30 Sep 2026</option>
+                  <option>Last 90 days</option>
+                </select>
+                <ChevronDown
+                  size={14}
+                  className="pointer-events-none absolute right-3 text-secondary"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={downloadStatement}
+                className="inline-flex h-10 items-center gap-2 rounded-lg border border-line bg-white px-4 text-[14px] font-medium text-ink transition hover:bg-subtle"
+              >
+                <ArrowDownToLine size={16} />
+                Download statement
+              </button>
+            </div>
+          )}
         </header>
 
         <nav className="flex overflow-x-auto border-b border-line" aria-label="Payments navigation">
@@ -498,8 +647,92 @@ export function BrandPaymentsPage() {
           ))}
         </nav>
 
-        {activeTab === "Overview" ? <Overview /> : <TabPanel tab={activeTab} />}
+        {activeTab === "Overview" ? (
+          <Overview />
+        ) : activeTab === "Disputes" ? (
+          <DisputesBoard onOpen={setSelectedDispute} />
+        ) : (
+          <TabPanel tab={activeTab} />
+        )}
       </div>
+      {(selectedDispute || raiseDispute) && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-ink/35 p-4"
+          role="presentation"
+          onMouseDown={() => {
+            setSelectedDispute(null);
+            setRaiseDispute(false);
+          }}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="dispute-dialog-title"
+            onMouseDown={(event) => event.stopPropagation()}
+            className="w-full max-w-md rounded-xl border border-line bg-white p-5 shadow-[0_24px_70px_-20px_rgba(8,10,20,.35)]"
+          >
+            <div className="flex items-start gap-3">
+              <span className="grid size-10 place-items-center rounded-lg bg-[#fde4e3] text-[#db231f]">
+                <Scale size={20} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <h2
+                  id="dispute-dialog-title"
+                  className="text-[16px] font-semibold leading-6 text-ink"
+                >
+                  {selectedDispute
+                    ? `${selectedDispute.id} · ${selectedDispute.creator}`
+                    : "Raise a dispute"}
+                </h2>
+                <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+                  {selectedDispute
+                    ? `${selectedDispute.reason} · ${selectedDispute.amount} is held until the case is decided.`
+                    : "Choose a creator and explain the issue. The related amount stays protected in escrow while it is reviewed."}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedDispute(null);
+                  setRaiseDispute(false);
+                }}
+                className="grid size-8 place-items-center rounded-md border border-line text-secondary hover:bg-subtle"
+                aria-label="Close dispute dialog"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            {raiseDispute && (
+              <textarea
+                autoFocus
+                placeholder="Describe the issue and the outcome you need…"
+                className="mt-5 min-h-28 w-full resize-y rounded-lg border border-line p-3 text-[13px] leading-5 outline-none placeholder:text-tertiary focus:border-primary"
+              />
+            )}
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedDispute(null);
+                  setRaiseDispute(false);
+                }}
+                className="h-9 rounded-lg border border-line px-3 text-[13px] font-medium text-ink hover:bg-subtle"
+              >
+                Close
+              </button>
+              {raiseDispute && (
+                <button
+                  type="button"
+                  onClick={() => setRaiseDispute(false)}
+                  className="h-9 rounded-lg bg-primary px-3 text-[13px] font-medium text-white"
+                >
+                  Submit dispute
+                </button>
+              )}
+            </div>
+          </section>
+        </div>
+      )}
     </BrandShell>
   );
 }
