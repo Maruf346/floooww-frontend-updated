@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { PerformanceReportBlocks } from "@/brand/pages/BrandProjectPerformancePage";
 import { Button } from "@/common/components/ui/Button";
 
 type FilterGroup = { title: string; fields: [string, string][] };
@@ -439,7 +440,8 @@ function ThresholdFilter({
   value: initialValue,
   mode: initialMode,
   lowerIsBetter,
-}: ThresholdFilterConfig) {
+  onChange,
+}: ThresholdFilterConfig & { onChange?: (label: string, value: string) => void }) {
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<ThresholdFilterConfig["mode"]>(initialMode);
   const [value, setValue] = useState(initialValue);
@@ -473,7 +475,10 @@ function ThresholdFilter({
                     : "text-secondary hover:bg-white")
                 }
                 key={option}
-                onClick={() => setMode(option)}
+                onClick={() => {
+                  setMode(option);
+                  onChange?.(label, option + " " + value);
+                }}
                 type="button"
               >
                 {option}
@@ -483,7 +488,10 @@ function ThresholdFilter({
           <div className="mt-2 flex gap-1.5">
             <input
               className="h-8 min-w-0 flex-1 rounded border border-line bg-white px-2 text-[11px] text-ink outline-none placeholder:text-tertiary focus:border-primary"
-              onChange={(event) => setValue(event.target.value)}
+              onChange={(event) => {
+                setValue(event.target.value);
+                onChange?.(label, mode + " " + event.target.value);
+              }}
               value={value}
             />
             {mode === "Between" && (
@@ -508,11 +516,13 @@ function RadioFilter({
   value,
   onChange,
   options,
+  placeholder = "Select...",
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   options: string[];
+  placeholder?: string;
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -527,7 +537,9 @@ function RadioFilter({
         onClick={() => setOpen((shown) => !shown)}
         type="button"
       >
-        <span className="min-w-0 flex-1 truncate">{value}</span>
+        <span className={"min-w-0 flex-1 truncate " + (value ? "" : "text-tertiary")}>
+          {value || placeholder}
+        </span>
         <ChevronDown
           className={"shrink-0 text-tertiary transition-transform " + (open ? "rotate-180" : "")}
           size={13}
@@ -571,7 +583,8 @@ function ProjectMultiSelect({
   options,
   searchable = false,
   searchPlaceholder,
-}: ProjectFilter) {
+  onApply,
+}: ProjectFilter & { onApply?: (label: string, values: string[]) => void }) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<string[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
@@ -674,6 +687,7 @@ function ProjectMultiSelect({
               className="rounded bg-ink px-2 py-1 font-medium text-white"
               onClick={() => {
                 setSelected(draft);
+                onApply?.(label, draft);
                 setOpen(false);
                 setSearch("");
               }}
@@ -696,6 +710,58 @@ export function BrandCustomReportBuilderPage() {
   const [adUsage, setAdUsage] = useState("All content");
   const [funnelStage, setFunnelStage] = useState("Ordered");
   const [refunded, setRefunded] = useState("Any");
+  const [filterVersion, setFilterVersion] = useState(0);
+  const [reportTitle, setReportTitle] = useState("Untitled report");
+  const [titleDraft, setTitleDraft] = useState(reportTitle);
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [hasReport, setHasReport] = useState(false);
+  const [appliedFilters, setAppliedFilters] = useState<Record<string, string[]>>({});
+
+  const updateAppliedFilter = (label: string, values: string[]) => {
+    setAppliedFilters((current) => ({ ...current, [label]: values }));
+    setHasReport(true);
+  };
+
+  const updateSingleFilter = (label: string, value: string) => {
+    setAppliedFilters((current) => ({ ...current, [label]: value ? [value] : [] }));
+    if (value) setHasReport(true);
+  };
+
+  const clearAllFilters = () => {
+    setDateRange("");
+    setComparison("");
+    setAudienceMatch("Any");
+    setRating("Any");
+    setAdUsage("All content");
+    setFunnelStage("Ordered");
+    setRefunded("Any");
+    setAppliedFilters({});
+    setHasReport(false);
+    setFilterVersion((version) => version + 1);
+  };
+
+  const saveReportTitle = () => {
+    setReportTitle(titleDraft.trim() || "Untitled report");
+    setIsRenaming(false);
+  };
+
+  const activeFilterEntries = Object.entries(appliedFilters).filter(
+    ([, values]) => values.length > 0,
+  );
+  const targetMetric = appliedFilters["Target type"]?.[0];
+  const focusMetric =
+    targetMetric === "Orders" || targetMetric === "Views" ? targetMetric : "Net sales";
+  const selectedCreators = (appliedFilters["Creators"] ?? [])
+    .filter((creator) => creator !== "All creators")
+    .map((creator) => creator.split(" · ")[0]);
+  const scopeLabel = activeFilterEntries.length
+    ? activeFilterEntries
+        .slice(0, 3)
+        .map(([label, values]) => label + ": " + values.join(", "))
+        .join("  /  ") +
+      (activeFilterEntries.length > 3 ? "  /  +" + (activeFilterEntries.length - 3) + " more" : "")
+    : "All projects, creators, sales and content";
+
   return (
     <BrandShell compactSidebar hideChat>
       <div className="mx-auto w-full max-w-[1680px] pb-10">
@@ -709,16 +775,40 @@ export function BrandCustomReportBuilderPage() {
           <div className="flex flex-wrap items-center gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <h1 className="text-[24px] font-semibold leading-8 text-tertiary">
-                  Untitled report
-                </h1>
-                <button
-                  aria-label="Rename report"
-                  className="text-primary hover:text-primary-hover"
-                  type="button"
-                >
-                  <PencilLine size={15} />
-                </button>
+                {isRenaming ? (
+                  <input
+                    aria-label="Report title"
+                    autoFocus
+                    className="h-8 w-full max-w-[320px] rounded-md border border-primary bg-white px-2 text-[24px] font-semibold leading-8 text-ink outline-none ring-1 ring-primary"
+                    onBlur={saveReportTitle}
+                    onChange={(event) => setTitleDraft(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") saveReportTitle();
+                      if (event.key === "Escape") {
+                        setTitleDraft(reportTitle);
+                        setIsRenaming(false);
+                      }
+                    }}
+                    value={titleDraft}
+                  />
+                ) : (
+                  <>
+                    <h1 className="truncate text-[24px] font-semibold leading-8 text-tertiary">
+                      {reportTitle}
+                    </h1>
+                    <button
+                      aria-label="Rename report"
+                      className="text-primary hover:text-primary-hover"
+                      onClick={() => {
+                        setTitleDraft(reportTitle);
+                        setIsRenaming(true);
+                      }}
+                      type="button"
+                    >
+                      <PencilLine size={15} />
+                    </button>
+                  </>
+                )}
               </div>
               <p className="mt-1 text-[12px] leading-4 text-tertiary">Auto-saves as you build</p>
             </div>
@@ -728,7 +818,12 @@ export function BrandCustomReportBuilderPage() {
             <Button kind="secondary" size="s" leadingIcon={<Download size={15} />}>
               Download
             </Button>
-            <Button className="bg-ink hover:bg-ink/90" size="s" leadingIcon={<Plus size={15} />}>
+            <Button
+              className="bg-ink hover:bg-ink/90"
+              onClick={() => setHasReport(true)}
+              size="s"
+              leadingIcon={<Plus size={15} />}
+            >
               Add block
             </Button>
           </div>
@@ -739,10 +834,14 @@ export function BrandCustomReportBuilderPage() {
           initial={{ opacity: 0, y: 12 }}
           transition={{ duration: 0.44, delay: 0.07, ease: [0.22, 1, 0.36, 1] }}
         >
-          <aside className="w-full shrink-0 rounded-xl border border-line bg-white p-4 lg:w-[260px]">
+          <aside className="w-full shrink-0 self-start rounded-xl border border-line bg-white p-4 lg:sticky lg:top-4 lg:max-h-[calc(100dvh-2rem)] lg:w-[260px] lg:overflow-y-auto lg:overscroll-contain">
             <div className="flex items-center">
               <h2 className="flex-1 text-[15px] font-semibold leading-5 text-ink">Filters</h2>
-              <button className="text-[11px] font-medium text-primary" type="button">
+              <button
+                className="text-[11px] font-medium text-primary hover:text-primary-hover"
+                onClick={clearAllFilters}
+                type="button"
+              >
                 Clear all
               </button>
             </div>
@@ -756,27 +855,37 @@ export function BrandCustomReportBuilderPage() {
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
                 <RadioFilter
                   label="Date range"
-                  onChange={setDateRange}
+                  onChange={(value) => {
+                    setDateRange(value);
+                    updateSingleFilter("Date range", value);
+                  }}
                   options={dateOptions}
                   value={dateRange}
                 />
                 <RadioFilter
                   label="Compare with"
-                  onChange={setComparison}
+                  onChange={(value) => {
+                    setComparison(value);
+                    updateSingleFilter("Compare with", value);
+                  }}
                   options={comparisonOptions}
                   value={comparison}
                 />
               </div>
             </section>
             <div className="my-3 h-px bg-muted" />
-            <div className="space-y-4">
+            <div className="space-y-4" key={filterVersion}>
               <section>
                 <h3 className="mb-3 pt-1 text-[10px] font-semibold leading-4 tracking-[0.04em] text-tertiary">
                   PROJECT
                 </h3>
                 <div className="space-y-3">
                   {projectFilterFields.map((field) => (
-                    <ProjectMultiSelect key={field.label} {...field} />
+                    <ProjectMultiSelect
+                      key={field.label}
+                      onApply={updateAppliedFilter}
+                      {...field}
+                    />
                   ))}
                 </div>
               </section>
@@ -786,22 +895,36 @@ export function BrandCustomReportBuilderPage() {
                 </h3>
                 <div className="space-y-3">
                   {creatorFilterFields.slice(0, 7).map((field) => (
-                    <ProjectMultiSelect key={field.label} {...field} />
+                    <ProjectMultiSelect
+                      key={field.label}
+                      onApply={updateAppliedFilter}
+                      {...field}
+                    />
                   ))}
                   <RadioFilter
                     label="Audience match"
-                    onChange={setAudienceMatch}
+                    onChange={(value) => {
+                      setAudienceMatch(value);
+                      updateSingleFilter("Audience match", value);
+                    }}
                     options={["Any", "70%+", "80%+", "90%+"]}
                     value={audienceMatch}
                   />
                   <RadioFilter
                     label="Rating"
-                    onChange={setRating}
+                    onChange={(value) => {
+                      setRating(value);
+                      updateSingleFilter("Rating", value);
+                    }}
                     options={["Any", "4+", "4.5+"]}
                     value={rating}
                   />
                   {creatorFilterFields.slice(7).map((field) => (
-                    <ProjectMultiSelect key={field.label} {...field} />
+                    <ProjectMultiSelect
+                      key={field.label}
+                      onApply={updateAppliedFilter}
+                      {...field}
+                    />
                   ))}
                 </div>
               </section>
@@ -809,7 +932,7 @@ export function BrandCustomReportBuilderPage() {
                 <h3 className="mb-3 pt-1 text-[10px] font-semibold leading-4 tracking-[0.04em] text-tertiary">
                   PLATFORM
                 </h3>
-                <ProjectMultiSelect {...platformFilter} />
+                <ProjectMultiSelect {...platformFilter} onApply={updateAppliedFilter} />
                 <p className="mt-1.5 text-[10px] leading-4 text-[#b7791f]">
                   Earnings always shown separately
                 </p>
@@ -820,16 +943,27 @@ export function BrandCustomReportBuilderPage() {
                 </h3>
                 <div className="space-y-3">
                   {contentFilterFields.slice(0, 8).map((field) => (
-                    <ProjectMultiSelect key={field.label} {...field} />
+                    <ProjectMultiSelect
+                      key={field.label}
+                      onApply={updateAppliedFilter}
+                      {...field}
+                    />
                   ))}
                   <RadioFilter
                     label="Ad usage"
-                    onChange={setAdUsage}
+                    onChange={(value) => {
+                      setAdUsage(value);
+                      updateSingleFilter("Ad usage", value);
+                    }}
                     options={["All content", "Ad-ready only"]}
                     value={adUsage}
                   />
                   {contentFilterFields.slice(8).map((field) => (
-                    <ProjectMultiSelect key={field.label} {...field} />
+                    <ProjectMultiSelect
+                      key={field.label}
+                      onApply={updateAppliedFilter}
+                      {...field}
+                    />
                   ))}
                 </div>
               </section>
@@ -839,11 +973,18 @@ export function BrandCustomReportBuilderPage() {
                 </h3>
                 <div className="space-y-3">
                   {conversionFilterFields.slice(0, 2).map((field) => (
-                    <ProjectMultiSelect key={field.label} {...field} />
+                    <ProjectMultiSelect
+                      key={field.label}
+                      onApply={updateAppliedFilter}
+                      {...field}
+                    />
                   ))}
                   <RadioFilter
                     label="Funnel stage"
-                    onChange={setFunnelStage}
+                    onChange={(value) => {
+                      setFunnelStage(value);
+                      updateSingleFilter("Funnel stage", value);
+                    }}
                     options={[
                       "Clicked",
                       "Visited store",
@@ -855,7 +996,11 @@ export function BrandCustomReportBuilderPage() {
                     value={funnelStage}
                   />
                   {conversionFilterFields.slice(2).map((field) => (
-                    <ProjectMultiSelect key={field.label} {...field} />
+                    <ProjectMultiSelect
+                      key={field.label}
+                      onApply={updateAppliedFilter}
+                      {...field}
+                    />
                   ))}
                 </div>
               </section>
@@ -865,7 +1010,11 @@ export function BrandCustomReportBuilderPage() {
                 </h3>
                 <div className="space-y-3">
                   {audienceFilterFields.map((field) => (
-                    <ProjectMultiSelect key={field.label} {...field} />
+                    <ProjectMultiSelect
+                      key={field.label}
+                      onApply={updateAppliedFilter}
+                      {...field}
+                    />
                   ))}
                 </div>
               </section>
@@ -875,7 +1024,11 @@ export function BrandCustomReportBuilderPage() {
                 </h3>
                 <div className="space-y-3">
                   {performanceThresholds.map((threshold) => (
-                    <ThresholdFilter key={threshold.label} {...threshold} />
+                    <ThresholdFilter
+                      key={threshold.label}
+                      onChange={(label, value) => updateSingleFilter(label, value)}
+                      {...threshold}
+                    />
                   ))}
                 </div>
               </section>
@@ -884,15 +1037,22 @@ export function BrandCustomReportBuilderPage() {
                   PAYMENTS
                 </h3>
                 <div className="space-y-3">
-                  <ProjectMultiSelect {...paymentFilterFields[0]} />
+                  <ProjectMultiSelect {...paymentFilterFields[0]} onApply={updateAppliedFilter} />
                   <RadioFilter
                     label="Refunded"
-                    onChange={setRefunded}
+                    onChange={(value) => {
+                      setRefunded(value);
+                      updateSingleFilter("Refunded", value);
+                    }}
                     options={["Any", "Refunded only", "Not refunded"]}
                     value={refunded}
                   />
                   {paymentFilterFields.slice(1).map((field) => (
-                    <ProjectMultiSelect key={field.label} {...field} />
+                    <ProjectMultiSelect
+                      key={field.label}
+                      onApply={updateAppliedFilter}
+                      {...field}
+                    />
                   ))}
                 </div>
               </section>
@@ -902,7 +1062,11 @@ export function BrandCustomReportBuilderPage() {
                 </h3>
                 <div className="space-y-3">
                   {deliveryFilterFields.map((field) => (
-                    <ProjectMultiSelect key={field.label} {...field} />
+                    <ProjectMultiSelect
+                      key={field.label}
+                      onApply={updateAppliedFilter}
+                      {...field}
+                    />
                   ))}
                 </div>
               </section>
@@ -923,21 +1087,45 @@ export function BrandCustomReportBuilderPage() {
               71 filters - all from what you set up in Floooww
             </p>
           </aside>
-          <section className="flex min-h-[620px] min-w-0 flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-line bg-white px-6 text-center">
-            <div className="grid size-12 place-items-center rounded-full bg-subtle text-secondary">
-              <FilePenLine size={22} strokeWidth={1.7} />
-            </div>
-            <h2 className="mt-3 text-[16px] font-medium leading-6 text-ink">
-              Your report will appear here
-            </h2>
-            <p className="mt-1 text-[13px] leading-5 text-secondary">
-              Choose filters on the left, then add a block.
-            </p>
-            <p className="mt-4 flex items-center gap-1.5 text-[12px] leading-4 text-tertiary">
-              <Info size={14} />
-              Every block shares these filters.
-            </p>
-          </section>
+          {hasReport ? (
+            <motion.section
+              animate={{ opacity: 1, y: 0 }}
+              className="min-w-0 flex-1"
+              initial={{ opacity: 0, y: 12 }}
+              key={scopeLabel + focusMetric}
+              transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <PerformanceReportBlocks
+                focusMetric={focusMetric}
+                scopeLabel={scopeLabel}
+                selectedCreators={selectedCreators}
+              />
+              <button
+                className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-primary/40 bg-white text-[13px] font-medium text-primary transition hover:bg-primary-subtle"
+                onClick={() => setHasReport(true)}
+                type="button"
+              >
+                <Plus size={16} />
+                Add block
+              </button>
+            </motion.section>
+          ) : (
+            <section className="flex min-h-[620px] min-w-0 flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-line bg-white px-6 text-center">
+              <div className="grid size-12 place-items-center rounded-full bg-subtle text-secondary">
+                <FilePenLine size={22} strokeWidth={1.7} />
+              </div>
+              <h2 className="mt-3 text-[16px] font-medium leading-6 text-ink">
+                Your report will appear here
+              </h2>
+              <p className="mt-1 text-[13px] leading-5 text-secondary">
+                Choose filters on the left, then add a block.
+              </p>
+              <p className="mt-4 flex items-center gap-1.5 text-[12px] leading-4 text-tertiary">
+                <Info size={14} />
+                Every block shares these filters.
+              </p>
+            </section>
+          )}
         </motion.div>
       </div>
     </BrandShell>

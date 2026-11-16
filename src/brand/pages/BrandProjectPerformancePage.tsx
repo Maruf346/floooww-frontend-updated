@@ -9,163 +9,1670 @@ import { Dropdown } from "@/common/components/ui/Dropdown";
 import { brandProjectPerformanceRoute, brandProjectRoute } from "@/common/constants/routes";
 
 const scorecards = [
-  ["Net sales", "₹5,42,000", "▲ 18% vs prev."], ["Orders", "1,315", "▲ 14% vs prev."],
-  ["Link clicks", "14,800", "▲ 9% vs prev. · CTR 0.8%"], ["Engagement rate", "5.4%", "▲ 0.4 pt vs prev."],
-  ["Views", "18.4 L", "▲ 19% vs prev."], ["Earned media value", "₹2,28,000", "Estimate · not in ROAS"],
+  ["Net sales", "₹5,42,000", "▲ 18% vs prev."],
+  ["Orders", "1,315", "▲ 14% vs prev."],
+  ["Link clicks", "14,800", "▲ 9% vs prev. · CTR 0.8%"],
+  ["Engagement rate", "5.4%", "▲ 0.4 pt vs prev."],
+  ["Views", "18.4 L", "▲ 19% vs prev."],
+  ["Earned media value", "₹2,28,000", "Estimate · not in ROAS"],
 ] as const;
 const creatorRows = [
-  ["Meera Iyer", "@meerabeauty · 4 of 4 delivered", "meera-iyer", "Instagram", "Completed", "₹22,000", "5.2 L", "5.9%", "3,820", "414", "₹1,71,000"],
-  ["Ishita Rao", "@ishitarao · 4 of 4 delivered", "ishita-rao", "Instagram", "Completed", "₹18,000", "4.8 L", "5.6%", "3,110", "352", "₹1,45,000"],
-  ["Emma Clarke", "@emmaclarke · 3 of 4 delivered", "emma-clarke", "TikTok", "Posting", "₹16,000", "3.6 L", "5.2%", "2,842", "276", "₹1,10,000"],
-  ["Kavya Reddy", "@kavyareddy · 2 of 4 delivered", "kavya-reddy", "Instagram", "Review", "₹14,000", "2.9 L", "4.8%", "2,108", "181", "₹72,000"],
+  [
+    "Meera Iyer",
+    "@meerabeauty · 4 of 4 delivered",
+    "meera-iyer",
+    "Instagram",
+    "Completed",
+    "₹22,000",
+    "5.2 L",
+    "5.9%",
+    "3,820",
+    "414",
+    "₹1,71,000",
+  ],
+  [
+    "Ishita Rao",
+    "@ishitarao · 4 of 4 delivered",
+    "ishita-rao",
+    "Instagram",
+    "Completed",
+    "₹18,000",
+    "4.8 L",
+    "5.6%",
+    "3,110",
+    "352",
+    "₹1,45,000",
+  ],
+  [
+    "Emma Clarke",
+    "@emmaclarke · 3 of 4 delivered",
+    "emma-clarke",
+    "TikTok",
+    "Posting",
+    "₹16,000",
+    "3.6 L",
+    "5.2%",
+    "2,842",
+    "276",
+    "₹1,10,000",
+  ],
+  [
+    "Kavya Reddy",
+    "@kavyareddy · 2 of 4 delivered",
+    "kavya-reddy",
+    "Instagram",
+    "Review",
+    "₹14,000",
+    "2.9 L",
+    "4.8%",
+    "2,108",
+    "181",
+    "₹72,000",
+  ],
 ] as const;
 
-function Reveal({ children, delay = 0, className = "" }: { children: ReactNode; delay?: number; className?: string }) {
-  return <motion.div className={className} initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.16 }} transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}>{children}</motion.div>;
+function Reveal({
+  children,
+  delay = 0,
+  className = "",
+}: {
+  children: ReactNode;
+  delay?: number;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.16 }}
+      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
 }
 
 function ProjectTabs({ projectId }: { projectId: number }) {
-  const navigate = useNavigate(); const [platform, setPlatform] = useState("All platforms");
-  const tabs = [["Overview", undefined], ["Applications", "12"], ["Invited creators", "16"], ["Content", "22"], ["Payments", undefined], ["Performance", undefined], ["Brief", undefined]] as const;
-  return <nav className="flex min-h-[37px] flex-wrap items-end justify-between gap-3 border-b border-line"><div className="flex max-w-full gap-6 overflow-x-auto">{tabs.map(([label, count]) => <button type="button" key={label} onClick={() => label === "Performance" ? navigate(brandProjectPerformanceRoute(projectId)) : navigate(brandProjectRoute(projectId))} className={`h-9 shrink-0 border-b-2 bg-transparent text-[14px] leading-[22px] ${label === "Performance" ? "border-primary font-medium text-primary" : "border-transparent text-secondary hover:text-ink"}`}>{label}{count && <span className="ml-1.5 inline-flex h-[18px] items-center rounded-full bg-muted px-[7px] text-[12px] leading-4 text-secondary">{count}</span>}</button>)}</div><div className="mb-0.5 flex items-center gap-2"><span className="hidden text-[12px] text-tertiary sm:block">View by platform</span><Dropdown compact ariaLabel="View by platform" className="w-[118px]" value={platform} onChange={setPlatform} options={["All platforms", "Instagram", "TikTok", "YouTube"]} /><button type="button" aria-label="Download report" className="grid size-8 place-items-center rounded-md border border-line bg-white text-secondary transition hover:bg-subtle"><Download size={16} /></button></div></nav>;
+  const navigate = useNavigate();
+  const [platform, setPlatform] = useState("All platforms");
+  const tabs = [
+    ["Overview", undefined],
+    ["Applications", "12"],
+    ["Invited creators", "16"],
+    ["Content", "22"],
+    ["Payments", undefined],
+    ["Performance", undefined],
+    ["Brief", undefined],
+  ] as const;
+  return (
+    <nav className="flex min-h-[37px] flex-wrap items-end justify-between gap-3 border-b border-line">
+      <div className="flex max-w-full gap-6 overflow-x-auto">
+        {tabs.map(([label, count]) => (
+          <button
+            type="button"
+            key={label}
+            onClick={() =>
+              label === "Performance"
+                ? navigate(brandProjectPerformanceRoute(projectId))
+                : navigate(brandProjectRoute(projectId))
+            }
+            className={`h-9 shrink-0 border-b-2 bg-transparent text-[14px] leading-[22px] ${label === "Performance" ? "border-primary font-medium text-primary" : "border-transparent text-secondary hover:text-ink"}`}
+          >
+            {label}
+            {count && (
+              <span className="ml-1.5 inline-flex h-[18px] items-center rounded-full bg-muted px-[7px] text-[12px] leading-4 text-secondary">
+                {count}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+      <div className="mb-0.5 flex items-center gap-2">
+        <span className="hidden text-[12px] text-tertiary sm:block">View by platform</span>
+        <Dropdown
+          compact
+          ariaLabel="View by platform"
+          className="w-[118px]"
+          value={platform}
+          onChange={setPlatform}
+          options={["All platforms", "Instagram", "TikTok", "YouTube"]}
+        />
+        <button
+          type="button"
+          aria-label="Download report"
+          className="grid size-8 place-items-center rounded-md border border-line bg-white text-secondary transition hover:bg-subtle"
+        >
+          <Download size={16} />
+        </button>
+      </div>
+    </nav>
+  );
 }
 
 function SalesTrend() {
-  const values = [112, 176, 204, 274, 328, 376, 470, 542]; const dates = ["14 Oct", "17 Oct", "20 Oct", "23 Oct", "26 Oct", "29 Oct", "1 Nov", "4 Nov"];
-  const x = (index: number) => 42 + index * (996 / 7); const y = (value: number) => 204 - value / 600 * 184;
-  const line = values.map((value, index) => `${index ? "L" : "M"}${x(index)} ${y(value)}`).join(" ");
-  return <section className="min-h-[348px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-5 text-ink">Net sales over time</h2><p className="mt-1 text-[12px] leading-4 text-secondary">All 16 creators · Shopify codes and links</p><div className="mt-4 overflow-x-auto"><svg viewBox="0 0 1080 244" className="block min-w-[700px] w-full" role="img" aria-label="Net sales from 14 October to 4 November">{[0, 150, 300, 450, 600].map((tick) => <g key={tick}><line x1="42" x2="1038" y1={y(tick)} y2={y(tick)} stroke="#E8EDF3" /><text x="32" y={y(tick) + 4} textAnchor="end" fill="#8491A3" fontSize="11">{tick ? `₹${tick / 100}L` : "₹0"}</text></g>)}{values.map((_, index) => <line key={index} x1={x(index)} x2={x(index)} y1="20" y2="204" stroke="#F1F4F8" />)}<path d={`${line} L1038 204 L42 204 Z`} fill="url(#sales-fill)" /><path d={line} fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /><defs><linearGradient id="sales-fill" x1="0" x2="0" y1="0" y2="1"><stop stopColor="#2563EB" stopOpacity=".16" /><stop offset="1" stopColor="#2563EB" stopOpacity="0" /></linearGradient></defs>{values.map((value, index) => <circle key={index} cx={x(index)} cy={y(value)} r="3" fill="#2563EB" />)}{dates.map((date, index) => <text key={date} x={x(index)} y="238" textAnchor={index === 0 ? "start" : index === dates.length - 1 ? "end" : "middle"} fill="#8491A3" fontSize="11">{date}</text>)}</svg></div></section>;
+  const values = [112, 176, 204, 274, 328, 376, 470, 542];
+  const dates = ["14 Oct", "17 Oct", "20 Oct", "23 Oct", "26 Oct", "29 Oct", "1 Nov", "4 Nov"];
+  const x = (index: number) => 42 + index * (996 / 7);
+  const y = (value: number) => 204 - (value / 600) * 184;
+  const line = values
+    .map((value, index) => `${index ? "L" : "M"}${x(index)} ${y(value)}`)
+    .join(" ");
+  return (
+    <section className="min-h-[348px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-5 text-ink">Net sales over time</h2>
+      <p className="mt-1 text-[12px] leading-4 text-secondary">
+        All 16 creators · Shopify codes and links
+      </p>
+      <div className="mt-4 overflow-x-auto">
+        <svg
+          viewBox="0 0 1080 244"
+          className="block min-w-[700px] w-full"
+          role="img"
+          aria-label="Net sales from 14 October to 4 November"
+        >
+          {[0, 150, 300, 450, 600].map((tick) => (
+            <g key={tick}>
+              <line x1="42" x2="1038" y1={y(tick)} y2={y(tick)} stroke="#E8EDF3" />
+              <text x="32" y={y(tick) + 4} textAnchor="end" fill="#8491A3" fontSize="11">
+                {tick ? `₹${tick / 100}L` : "₹0"}
+              </text>
+            </g>
+          ))}
+          {values.map((_, index) => (
+            <line key={index} x1={x(index)} x2={x(index)} y1="20" y2="204" stroke="#F1F4F8" />
+          ))}
+          <path d={`${line} L1038 204 L42 204 Z`} fill="url(#sales-fill)" />
+          <path
+            d={line}
+            fill="none"
+            stroke="#2563EB"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <defs>
+            <linearGradient id="sales-fill" x1="0" x2="0" y1="0" y2="1">
+              <stop stopColor="#2563EB" stopOpacity=".16" />
+              <stop offset="1" stopColor="#2563EB" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {values.map((value, index) => (
+            <circle key={index} cx={x(index)} cy={y(value)} r="3" fill="#2563EB" />
+          ))}
+          {dates.map((date, index) => (
+            <text
+              key={date}
+              x={x(index)}
+              y="238"
+              textAnchor={index === 0 ? "start" : index === dates.length - 1 ? "end" : "middle"}
+              fill="#8491A3"
+              fontSize="11"
+            >
+              {date}
+            </text>
+          ))}
+        </svg>
+      </div>
+    </section>
+  );
 }
 
 function AnimatedSalesTrend() {
   const values = [112, 176, 204, 274, 328, 376, 470, 542];
   const dates = ["14 Oct", "17 Oct", "20 Oct", "23 Oct", "26 Oct", "29 Oct", "1 Nov", "4 Nov"];
   const x = (index: number) => 42 + index * (996 / 7);
-  const y = (value: number) => 204 - value / 600 * 184;
-  const line = values.map((value, index) => `${index ? "L" : "M"}${x(index)} ${y(value)}`).join(" ");
-  return <section className="min-h-[348px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-5 text-ink">Net sales over time</h2><p className="mt-1 text-[12px] leading-4 text-secondary">All 16 creators · Shopify codes and links</p><div className="mt-4 overflow-x-auto"><svg viewBox="0 0 1080 244" className="block min-w-[700px] w-full" role="img" aria-label="Animated net sales from 14 October to 4 November">{[0, 150, 300, 450, 600].map((tick) => <g key={tick}><line x1="42" x2="1038" y1={y(tick)} y2={y(tick)} stroke="#E8EDF3" /><text x="32" y={y(tick) + 4} textAnchor="end" fill="#8491A3" fontSize="11">{tick ? `₹${tick / 100}L` : "₹0"}</text></g>)}{values.map((_, index) => <line key={index} x1={x(index)} x2={x(index)} y1="20" y2="204" stroke="#F1F4F8" />)}<motion.path d={`${line} L1038 204 L42 204 Z`} fill="url(#animated-sales-fill)" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.9, ease: "easeOut" }} /><motion.path d={line} fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1.35, ease: "easeInOut" }} /><defs><linearGradient id="animated-sales-fill" x1="0" x2="0" y1="0" y2="1"><stop stopColor="#2563EB" stopOpacity=".16" /><stop offset="1" stopColor="#2563EB" stopOpacity="0" /></linearGradient></defs>{values.map((value, index) => <motion.circle key={index} cx={x(index)} cy={y(value)} r="3" fill="#2563EB" initial={{ opacity: 0, scale: 0 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.35, delay: 0.45 + index * 0.08 }} />)}{dates.map((date, index) => <text key={date} x={x(index)} y="238" textAnchor={index === 0 ? "start" : index === dates.length - 1 ? "end" : "middle"} fill="#8491A3" fontSize="11">{date}</text>)}</svg></div></section>;
+  const y = (value: number) => 204 - (value / 600) * 184;
+  const line = values
+    .map((value, index) => `${index ? "L" : "M"}${x(index)} ${y(value)}`)
+    .join(" ");
+  return (
+    <section className="min-h-[348px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-5 text-ink">Net sales over time</h2>
+      <p className="mt-1 text-[12px] leading-4 text-secondary">
+        All 16 creators · Shopify codes and links
+      </p>
+      <div className="mt-4 overflow-x-auto">
+        <svg
+          viewBox="0 0 1080 244"
+          className="block min-w-[700px] w-full"
+          role="img"
+          aria-label="Animated net sales from 14 October to 4 November"
+        >
+          {[0, 150, 300, 450, 600].map((tick) => (
+            <g key={tick}>
+              <line x1="42" x2="1038" y1={y(tick)} y2={y(tick)} stroke="#E8EDF3" />
+              <text x="32" y={y(tick) + 4} textAnchor="end" fill="#8491A3" fontSize="11">
+                {tick ? `₹${tick / 100}L` : "₹0"}
+              </text>
+            </g>
+          ))}
+          {values.map((_, index) => (
+            <line key={index} x1={x(index)} x2={x(index)} y1="20" y2="204" stroke="#F1F4F8" />
+          ))}
+          <motion.path
+            d={`${line} L1038 204 L42 204 Z`}
+            fill="url(#animated-sales-fill)"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9, ease: "easeOut" }}
+          />
+          <motion.path
+            d={line}
+            fill="none"
+            stroke="#2563EB"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            initial={{ pathLength: 0 }}
+            whileInView={{ pathLength: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.35, ease: "easeInOut" }}
+          />
+          <defs>
+            <linearGradient id="animated-sales-fill" x1="0" x2="0" y1="0" y2="1">
+              <stop stopColor="#2563EB" stopOpacity=".16" />
+              <stop offset="1" stopColor="#2563EB" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {values.map((value, index) => (
+            <motion.circle
+              key={index}
+              cx={x(index)}
+              cy={y(value)}
+              r="3"
+              fill="#2563EB"
+              initial={{ opacity: 0, scale: 0 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.35, delay: 0.45 + index * 0.08 }}
+            />
+          ))}
+          {dates.map((date, index) => (
+            <text
+              key={date}
+              x={x(index)}
+              y="238"
+              textAnchor={index === 0 ? "start" : index === dates.length - 1 ? "end" : "middle"}
+              fill="#8491A3"
+              fontSize="11"
+            >
+              {date}
+            </text>
+          ))}
+        </svg>
+      </div>
+    </section>
+  );
 }
 
 function AnimatedConversionFunnel() {
-  const rows = [["Views 18.4 L", "", 420, "#4b5edd"], ["Link clicks 14,800", "CTR 0.8%", 340, "#566bea"], ["Add to cart 3,400", "Add-to-cart rate 23%", 270, "#7290f5"], ["Checkouts initiated 1,910", "Checkout rate 56%", 215, "#9db8fb"], ["Orders 1,315", "Purchase rate 69% · Conversion rate 8.9%", 170, "#22974f"]] as const;
-  return <section className="min-h-[407px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Conversion funnel</h2><p className="mt-1 text-[12px] leading-4 text-secondary">From views to orders · conversion rate at each step</p><div className="mt-4 space-y-1.5">{rows.map(([label, note, width, color], index) => <div className="grid grid-cols-[minmax(454px,1fr)_162px] items-center gap-4 max-[680px]:grid-cols-1" key={label}><motion.svg className="mx-auto h-[52px] max-w-full origin-center" style={{ width }} viewBox={`0 0 ${width} 52`} role="img" aria-label={label} initial={{ opacity: 0, scaleX: 0.35 }} whileInView={{ opacity: 1, scaleX: 1 }} viewport={{ once: true }} transition={{ duration: 0.75, delay: index * 0.13, ease: [0.22, 1, 0.36, 1] }}><path d={`M5 0 H${width - 5} Q${width} 0 ${width - 2} 5 L${width - 21} 47 Q${width - 20} 52 ${width - 25} 52 H25 Q20 52 19 47 L2 5 Q0 0 5 0 Z`} fill={color} /><text x={width / 2} y="30" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">{label}</text></motion.svg><motion.p className="text-[12px] leading-4 text-secondary" initial={{ opacity: 0, x: -8 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.45, delay: 0.25 + index * 0.13 }}>{note}</motion.p></div>)}</div></section>;
+  const rows = [
+    ["Views 18.4 L", "", 420, "#4b5edd"],
+    ["Link clicks 14,800", "CTR 0.8%", 340, "#566bea"],
+    ["Add to cart 3,400", "Add-to-cart rate 23%", 270, "#7290f5"],
+    ["Checkouts initiated 1,910", "Checkout rate 56%", 215, "#9db8fb"],
+    ["Orders 1,315", "Purchase rate 69% · Conversion rate 8.9%", 170, "#22974f"],
+  ] as const;
+  return (
+    <section className="min-h-[407px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-6 text-ink">Conversion funnel</h2>
+      <p className="mt-1 text-[12px] leading-4 text-secondary">
+        From views to orders · conversion rate at each step
+      </p>
+      <div className="mt-4 space-y-1.5">
+        {rows.map(([label, note, width, color], index) => (
+          <div
+            className="grid grid-cols-[minmax(454px,1fr)_162px] items-center gap-4 max-[680px]:grid-cols-1"
+            key={label}
+          >
+            <motion.svg
+              className="mx-auto h-[52px] max-w-full origin-center"
+              style={{ width }}
+              viewBox={`0 0 ${width} 52`}
+              role="img"
+              aria-label={label}
+              initial={{ opacity: 0, scaleX: 0.35 }}
+              whileInView={{ opacity: 1, scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.75, delay: index * 0.13, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <path
+                d={`M5 0 H${width - 5} Q${width} 0 ${width - 2} 5 L${width - 21} 47 Q${width - 20} 52 ${width - 25} 52 H25 Q20 52 19 47 L2 5 Q0 0 5 0 Z`}
+                fill={color}
+              />
+              <text
+                x={width / 2}
+                y="30"
+                textAnchor="middle"
+                fill="white"
+                fontSize="12"
+                fontWeight="500"
+              >
+                {label}
+              </text>
+            </motion.svg>
+            <motion.p
+              className="text-[12px] leading-4 text-secondary"
+              initial={{ opacity: 0, x: -8 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.45, delay: 0.25 + index * 0.13 }}
+            >
+              {note}
+            </motion.p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 function AnimatedRevenue() {
-  const rows = [["Orders · coupon code", "824"], ["Orders · UTM link", "491"], ["Average order value (AOV)", "₹412"], ["ROAS (net sales ÷ fees)", "3.8×"]] as const;
-  const bars = [["₹5,96,000", "Gross sales", "#dbe4ff", 120, "text-ink"], ["− ₹54,000", "Returns", "#dc2626", 10, "text-[#dc2626]"], ["₹5,42,000", "Net sales", "#4f61e8", 110, "text-[#4f61e8]"]] as const;
-  return <section className="min-h-[407px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Revenue</h2><p className="mt-1 text-[12px] leading-4 text-secondary">Gross to net sales · Shopify · all creators</p><div className="mt-4 flex h-[190px] items-end justify-around border-b border-line px-2">{bars.map(([amount, label, color, height, textColor], index) => <div key={label} className="flex h-full w-20 flex-col justify-end text-center"><motion.b className={`mb-2 text-[12px] font-semibold ${textColor}`} initial={{ opacity: 0, y: 7 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45, delay: 0.25 + index * 0.12 }}>{amount}</motion.b><motion.span className="origin-bottom rounded-t-[4px]" style={{ backgroundColor: color }} initial={{ height: 0 }} whileInView={{ height }} viewport={{ once: true }} transition={{ duration: 0.95, delay: index * 0.14, ease: [0.22, 1, 0.36, 1] }} /><small className="mt-2 text-[11px] text-secondary">{label}</small></div>)}</div><dl className="mt-5 space-y-[10px]">{rows.map(([label, value]) => <div className="flex justify-between gap-4 text-[12px] leading-[19px]" key={label}><dt className="text-secondary">{label}</dt><dd className={`font-semibold ${label.startsWith("ROAS") ? "text-[#188a52]" : "text-ink"}`}>{value}</dd></div>)}</dl></section>;
+  const rows = [
+    ["Orders · coupon code", "824"],
+    ["Orders · UTM link", "491"],
+    ["Average order value (AOV)", "₹412"],
+    ["ROAS (net sales ÷ fees)", "3.8×"],
+  ] as const;
+  const bars = [
+    ["₹5,96,000", "Gross sales", "#dbe4ff", 120, "text-ink"],
+    ["− ₹54,000", "Returns", "#dc2626", 10, "text-[#dc2626]"],
+    ["₹5,42,000", "Net sales", "#4f61e8", 110, "text-[#4f61e8]"],
+  ] as const;
+  return (
+    <section className="min-h-[407px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-6 text-ink">Revenue</h2>
+      <p className="mt-1 text-[12px] leading-4 text-secondary">
+        Gross to net sales · Shopify · all creators
+      </p>
+      <div className="mt-4 flex h-[190px] items-end justify-around border-b border-line px-2">
+        {bars.map(([amount, label, color, height, textColor], index) => (
+          <div key={label} className="flex h-full w-20 flex-col justify-end text-center">
+            <motion.b
+              className={`mb-2 text-[12px] font-semibold ${textColor}`}
+              initial={{ opacity: 0, y: 7 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.45, delay: 0.25 + index * 0.12 }}
+            >
+              {amount}
+            </motion.b>
+            <motion.span
+              className="origin-bottom rounded-t-[4px]"
+              style={{ backgroundColor: color }}
+              initial={{ height: 0 }}
+              whileInView={{ height }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.95, delay: index * 0.14, ease: [0.22, 1, 0.36, 1] }}
+            />
+            <small className="mt-2 text-[11px] text-secondary">{label}</small>
+          </div>
+        ))}
+      </div>
+      <dl className="mt-5 space-y-[10px]">
+        {rows.map(([label, value]) => (
+          <div className="flex justify-between gap-4 text-[12px] leading-[19px]" key={label}>
+            <dt className="text-secondary">{label}</dt>
+            <dd
+              className={`font-semibold ${label.startsWith("ROAS") ? "text-[#188a52]" : "text-ink"}`}
+            >
+              {value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
 }
 
 function ConversionFunnel() {
-  const rows = [["Views 18.4 L", "", 420, "#4b5edd"], ["Link clicks 14,800", "CTR 0.8%", 340, "#566bea"], ["Add to cart 3,400", "Add-to-cart rate 23%", 270, "#7290f5"], ["Checkouts initiated 1,910", "Checkout rate 56%", 215, "#9db8fb"], ["Orders 1,315", "Purchase rate 69% · Conversion rate 8.9%", 170, "#22974f"]] as const;
-  return <section className="min-h-[407px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Conversion funnel</h2><p className="mt-1 text-[12px] leading-4 text-secondary">From views to orders · conversion rate at each step</p><div className="mt-4 space-y-1.5">{rows.map(([label, note, width, color]) => <div className="grid grid-cols-[minmax(454px,1fr)_162px] items-center gap-4 max-[680px]:grid-cols-1" key={label}><svg className="mx-auto h-[52px] max-w-full" style={{ width }} viewBox={`0 0 ${width} 52`} role="img" aria-label={label}><path d={`M5 0 H${width - 5} Q${width} 0 ${width - 2} 5 L${width - 21} 47 Q${width - 20} 52 ${width - 25} 52 H25 Q20 52 19 47 L2 5 Q0 0 5 0 Z`} fill={color} /><text x={width / 2} y="30" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">{label}</text></svg><p className="text-[12px] leading-4 text-secondary">{note}</p></div>)}</div></section>;
+  const rows = [
+    ["Views 18.4 L", "", 420, "#4b5edd"],
+    ["Link clicks 14,800", "CTR 0.8%", 340, "#566bea"],
+    ["Add to cart 3,400", "Add-to-cart rate 23%", 270, "#7290f5"],
+    ["Checkouts initiated 1,910", "Checkout rate 56%", 215, "#9db8fb"],
+    ["Orders 1,315", "Purchase rate 69% · Conversion rate 8.9%", 170, "#22974f"],
+  ] as const;
+  return (
+    <section className="min-h-[407px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-6 text-ink">Conversion funnel</h2>
+      <p className="mt-1 text-[12px] leading-4 text-secondary">
+        From views to orders · conversion rate at each step
+      </p>
+      <div className="mt-4 space-y-1.5">
+        {rows.map(([label, note, width, color]) => (
+          <div
+            className="grid grid-cols-[minmax(454px,1fr)_162px] items-center gap-4 max-[680px]:grid-cols-1"
+            key={label}
+          >
+            <svg
+              className="mx-auto h-[52px] max-w-full"
+              style={{ width }}
+              viewBox={`0 0 ${width} 52`}
+              role="img"
+              aria-label={label}
+            >
+              <path
+                d={`M5 0 H${width - 5} Q${width} 0 ${width - 2} 5 L${width - 21} 47 Q${width - 20} 52 ${width - 25} 52 H25 Q20 52 19 47 L2 5 Q0 0 5 0 Z`}
+                fill={color}
+              />
+              <text
+                x={width / 2}
+                y="30"
+                textAnchor="middle"
+                fill="white"
+                fontSize="12"
+                fontWeight="500"
+              >
+                {label}
+              </text>
+            </svg>
+            <p className="text-[12px] leading-4 text-secondary">{note}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 function Revenue() {
-  const rows = [["Orders · coupon code", "824"], ["Orders · UTM link", "491"], ["Average order value (AOV)", "₹412"], ["ROAS (net sales ÷ fees)", "3.8×"]] as const;
-  return <section className="min-h-[407px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Revenue</h2><p className="mt-1 text-[12px] leading-4 text-secondary">Gross to net sales · Shopify · all creators</p><div className="mt-4 flex h-[190px] items-end justify-around border-b border-line px-2"><div className="flex h-full w-20 flex-col justify-end text-center"><b className="mb-2 text-[12px] font-semibold text-ink">₹5,96,000</b><span className="h-[120px] rounded-t-[4px] bg-[#dbe4ff]" /><small className="mt-2 text-[11px] text-secondary">Gross sales</small></div><div className="flex h-full w-20 flex-col justify-end text-center"><b className="mb-2 text-[12px] font-semibold text-[#dc2626]">− ₹54,000</b><span className="h-[10px] rounded-t-[4px] bg-[#dc2626]" /><small className="mt-2 text-[11px] text-secondary">Returns</small></div><div className="flex h-full w-20 flex-col justify-end text-center"><b className="mb-2 text-[12px] font-semibold text-[#4f61e8]">₹5,42,000</b><span className="h-[110px] rounded-t-[4px] bg-[#4f61e8]" /><small className="mt-2 text-[11px] text-secondary">Net sales</small></div></div><dl className="mt-5 space-y-[10px]">{rows.map(([label, value]) => <div className="flex justify-between gap-4 text-[12px] leading-[19px]" key={label}><dt className="text-secondary">{label}</dt><dd className={`font-semibold ${label.startsWith("ROAS") ? "text-[#188a52]" : "text-ink"}`}>{value}</dd></div>)}</dl></section>;
+  const rows = [
+    ["Orders · coupon code", "824"],
+    ["Orders · UTM link", "491"],
+    ["Average order value (AOV)", "₹412"],
+    ["ROAS (net sales ÷ fees)", "3.8×"],
+  ] as const;
+  return (
+    <section className="min-h-[407px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-6 text-ink">Revenue</h2>
+      <p className="mt-1 text-[12px] leading-4 text-secondary">
+        Gross to net sales · Shopify · all creators
+      </p>
+      <div className="mt-4 flex h-[190px] items-end justify-around border-b border-line px-2">
+        <div className="flex h-full w-20 flex-col justify-end text-center">
+          <b className="mb-2 text-[12px] font-semibold text-ink">₹5,96,000</b>
+          <span className="h-[120px] rounded-t-[4px] bg-[#dbe4ff]" />
+          <small className="mt-2 text-[11px] text-secondary">Gross sales</small>
+        </div>
+        <div className="flex h-full w-20 flex-col justify-end text-center">
+          <b className="mb-2 text-[12px] font-semibold text-[#dc2626]">− ₹54,000</b>
+          <span className="h-[10px] rounded-t-[4px] bg-[#dc2626]" />
+          <small className="mt-2 text-[11px] text-secondary">Returns</small>
+        </div>
+        <div className="flex h-full w-20 flex-col justify-end text-center">
+          <b className="mb-2 text-[12px] font-semibold text-[#4f61e8]">₹5,42,000</b>
+          <span className="h-[110px] rounded-t-[4px] bg-[#4f61e8]" />
+          <small className="mt-2 text-[11px] text-secondary">Net sales</small>
+        </div>
+      </div>
+      <dl className="mt-5 space-y-[10px]">
+        {rows.map(([label, value]) => (
+          <div className="flex justify-between gap-4 text-[12px] leading-[19px]" key={label}>
+            <dt className="text-secondary">{label}</dt>
+            <dd
+              className={`font-semibold ${label.startsWith("ROAS") ? "text-[#188a52]" : "text-ink"}`}
+            >
+              {value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
 }
 
-function CreatorBreakdown() {
-  const headers = ["CREATOR", "PLATFORM · CODE", "STATUS", "FEE", "VIEWS ↓", "ENG. RATE", "CLICKS", "ORDERS", "NET SALES"];
-  return <section className="overflow-hidden rounded-xl border border-line bg-white"><div className="overflow-x-auto"><table className="w-full min-w-[1116px] table-fixed"><colgroup><col className="w-[244px]" /><col className="w-[180px]" /><col className="w-[120px]" /><col className="w-[90px]" /><col className="w-[90px]" /><col className="w-[90px]" /><col className="w-[80px]" /><col className="w-[80px]" /><col className="w-[100px]" /></colgroup><thead className="h-[33px] border-b border-line bg-subtle text-[10px] font-semibold tracking-[.06em] text-secondary"><tr>{headers.map((header, index) => <th key={header} className={`px-3 ${index < 2 ? "text-left" : "text-right"}`}>{header}</th>)}</tr></thead><tbody>{creatorRows.map(([name, detail, image, platform, status, fee, views, rate, clicks, orders, sales]) => <tr key={name} className="h-[77px] border-b border-line-subtle last:border-0"><td className="px-3"><div className="flex items-center gap-3"><img src={`/assets/creators/${image}.png`} alt="" className="h-[52px] w-10 rounded-md object-cover" /><div className="min-w-0"><p className="truncate text-[13px] font-medium leading-5 text-ink">{name}</p><p className="mt-0.5 truncate text-[11px] leading-4 text-secondary">{detail}</p></div></div></td><td className="px-3 text-[12px] leading-5 text-ink"><p>{platform}</p><p className="text-[11px] leading-4 text-secondary">Coupon · UTM link</p></td><td className="px-3 text-right"><span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${status === "Completed" ? "bg-success-bg text-success" : status === "Posting" ? "bg-primary-subtle text-primary" : "bg-warning-bg text-warning"}`}>{status}</span></td>{[fee, views, rate, clicks, orders, sales].map((value) => <td key={value} className="px-3 text-right text-[12px] font-medium leading-5 text-ink">{value}</td>)}</tr>)}</tbody></table></div></section>;
+function CreatorBreakdown({ selectedCreators }: { selectedCreators?: string[] }) {
+  const headers = [
+    "CREATOR",
+    "PLATFORM · CODE",
+    "STATUS",
+    "FEE",
+    "VIEWS ↓",
+    "ENG. RATE",
+    "CLICKS",
+    "ORDERS",
+    "NET SALES",
+  ];
+  const visibleCreators =
+    selectedCreators && selectedCreators.length
+      ? creatorRows.filter(([name]) =>
+          selectedCreators.some((creator) => name.toLowerCase().includes(creator.toLowerCase())),
+        )
+      : creatorRows;
+
+  return (
+    <section className="overflow-hidden rounded-xl border border-line bg-white">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[1116px] table-fixed">
+          <colgroup>
+            <col className="w-[244px]" />
+            <col className="w-[180px]" />
+            <col className="w-[120px]" />
+            <col className="w-[90px]" />
+            <col className="w-[90px]" />
+            <col className="w-[90px]" />
+            <col className="w-[80px]" />
+            <col className="w-[80px]" />
+            <col className="w-[100px]" />
+          </colgroup>
+          <thead className="h-[33px] border-b border-line bg-subtle text-[10px] font-semibold tracking-[.06em] text-secondary">
+            <tr>
+              {headers.map((header, index) => (
+                <th key={header} className={`px-3 ${index < 2 ? "text-left" : "text-right"}`}>
+                  {header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {visibleCreators.length ? (
+              visibleCreators.map(
+                ([
+                  name,
+                  detail,
+                  image,
+                  platform,
+                  status,
+                  fee,
+                  views,
+                  rate,
+                  clicks,
+                  orders,
+                  sales,
+                ]) => (
+                  <tr key={name} className="h-[77px] border-b border-line-subtle last:border-0">
+                    <td className="px-3">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={`/assets/creators/${image}.png`}
+                          alt=""
+                          className="h-[52px] w-10 rounded-md object-cover"
+                        />
+                        <div className="min-w-0">
+                          <p className="truncate text-[13px] font-medium leading-5 text-ink">
+                            {name}
+                          </p>
+                          <p className="mt-0.5 truncate text-[11px] leading-4 text-secondary">
+                            {detail}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-3 text-[12px] leading-5 text-ink">
+                      <p>{platform}</p>
+                      <p className="text-[11px] leading-4 text-secondary">Coupon · UTM link</p>
+                    </td>
+                    <td className="px-3 text-right">
+                      <span
+                        className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${status === "Completed" ? "bg-success-bg text-success" : status === "Posting" ? "bg-primary-subtle text-primary" : "bg-warning-bg text-warning"}`}
+                      >
+                        {status}
+                      </span>
+                    </td>
+                    {[fee, views, rate, clicks, orders, sales].map((value) => (
+                      <td
+                        key={value}
+                        className="px-3 text-right text-[12px] font-medium leading-5 text-ink"
+                      >
+                        {value}
+                      </td>
+                    ))}
+                  </tr>
+                ),
+              )
+            ) : (
+              <tr>
+                <td
+                  className="px-3 py-8 text-center text-[12px] leading-4 text-secondary"
+                  colSpan={headers.length}
+                >
+                  No creator performance matches the filters you selected.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
 }
 
 function ViewsCard() {
-  return <section className="h-[250px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Views</h2><p className="mt-0.5 text-[12px] leading-4 text-secondary">Followers vs non-followers · all creators</p><div className="mt-4 flex items-center gap-4"><div className="relative grid size-[150px] shrink-0 place-items-center rounded-full" style={{ background: "conic-gradient(#5164e7 0 39%, #dbe4ff 39% 100%)" }}><div className="grid size-[102px] place-items-center rounded-full bg-white text-center"><b className="text-[20px] leading-6 text-ink">18.4 L</b><span className="text-[12px] leading-4 text-secondary">views</span></div></div><div className="min-w-0 space-y-2.5 text-[13px] leading-[19px]"><div className="flex items-center gap-2"><span className="size-2.5 rounded-full bg-[#5164e7]" /><span className="text-secondary">Followers</span><b className="ml-auto whitespace-nowrap font-medium text-ink">7.2 L · 39%</b></div><div className="flex items-center gap-2"><span className="size-2.5 rounded-full bg-[#dbe4ff]" /><span className="text-secondary">Non-followers</span><b className="ml-auto whitespace-nowrap font-medium text-ink">11.2 L · 61%</b></div></div></div></section>;
+  return (
+    <section className="h-[250px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-6 text-ink">Views</h2>
+      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+        Followers vs non-followers · all creators
+      </p>
+      <div className="mt-4 flex items-center gap-4">
+        <div
+          className="relative grid size-[150px] shrink-0 place-items-center rounded-full"
+          style={{ background: "conic-gradient(#5164e7 0 39%, #dbe4ff 39% 100%)" }}
+        >
+          <div className="grid size-[102px] place-items-center rounded-full bg-white text-center">
+            <b className="text-[20px] leading-6 text-ink">18.4 L</b>
+            <span className="text-[12px] leading-4 text-secondary">views</span>
+          </div>
+        </div>
+        <div className="min-w-0 space-y-2.5 text-[13px] leading-[19px]">
+          <div className="flex items-center gap-2">
+            <span className="size-2.5 rounded-full bg-[#5164e7]" />
+            <span className="text-secondary">Followers</span>
+            <b className="ml-auto whitespace-nowrap font-medium text-ink">7.2 L · 39%</b>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="size-2.5 rounded-full bg-[#dbe4ff]" />
+            <span className="text-secondary">Non-followers</span>
+            <b className="ml-auto whitespace-nowrap font-medium text-ink">11.2 L · 61%</b>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function AnimatedViewsCard() {
-  return <section className="h-[250px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Views</h2><p className="mt-0.5 text-[12px] leading-4 text-secondary">Followers vs non-followers · all creators</p><div className="mt-4 flex items-center gap-4"><motion.div className="relative grid size-[150px] shrink-0 place-items-center rounded-full" style={{ background: "conic-gradient(#5164e7 0 39%, #dbe4ff 39% 100%)" }} initial={{ opacity: 0, scale: 0.65, rotate: -45 }} whileInView={{ opacity: 1, scale: 1, rotate: 0 }} viewport={{ once: true }} transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}><div className="grid size-[102px] place-items-center rounded-full bg-white text-center"><b className="text-[20px] leading-6 text-ink">18.4 L</b><span className="text-[12px] leading-4 text-secondary">views</span></div></motion.div><div className="min-w-0 space-y-2.5 text-[13px] leading-[19px]"><div className="flex items-center gap-2"><span className="size-2.5 rounded-full bg-[#5164e7]" /><span className="text-secondary">Followers</span><b className="ml-auto whitespace-nowrap font-medium text-ink">7.2 L · 39%</b></div><div className="flex items-center gap-2"><span className="size-2.5 rounded-full bg-[#dbe4ff]" /><span className="text-secondary">Non-followers</span><b className="ml-auto whitespace-nowrap font-medium text-ink">11.2 L · 61%</b></div></div></div></section>;
+  return (
+    <section className="h-[250px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-6 text-ink">Views</h2>
+      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+        Followers vs non-followers · all creators
+      </p>
+      <div className="mt-4 flex items-center gap-4">
+        <motion.div
+          className="relative grid size-[150px] shrink-0 place-items-center rounded-full"
+          style={{ background: "conic-gradient(#5164e7 0 39%, #dbe4ff 39% 100%)" }}
+          initial={{ opacity: 0, scale: 0.65, rotate: -45 }}
+          whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="grid size-[102px] place-items-center rounded-full bg-white text-center">
+            <b className="text-[20px] leading-6 text-ink">18.4 L</b>
+            <span className="text-[12px] leading-4 text-secondary">views</span>
+          </div>
+        </motion.div>
+        <div className="min-w-0 space-y-2.5 text-[13px] leading-[19px]">
+          <div className="flex items-center gap-2">
+            <span className="size-2.5 rounded-full bg-[#5164e7]" />
+            <span className="text-secondary">Followers</span>
+            <b className="ml-auto whitespace-nowrap font-medium text-ink">7.2 L · 39%</b>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="size-2.5 rounded-full bg-[#dbe4ff]" />
+            <span className="text-secondary">Non-followers</span>
+            <b className="ml-auto whitespace-nowrap font-medium text-ink">11.2 L · 61%</b>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function AnimatedEngagementCard() {
-  const parts = [["Likes", "36,600 · 31%", "#5164e7", "31%"], ["Comments", "9,400 · 8%", "#9caef8", "8%"], ["Saves", "44,800 · 38%", "#49ba8b", "38%"], ["Shares", "27,200 · 23%", "#eea24a", "23%"]] as const;
-  return <section className="h-[250px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Engagement breakdown</h2><p className="mt-0.5 truncate text-[12px] leading-4 text-secondary">What the 5.4% engagement rate is made of · 1,18,000</p><div className="mt-4 flex h-4 overflow-hidden rounded-full">{parts.map(([, , color, width], index) => <motion.span key={color} className="h-full" style={{ backgroundColor: color }} initial={{ width: 0 }} whileInView={{ width }} viewport={{ once: true }} transition={{ duration: 0.75, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }} />)}</div><div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-2 text-[13px] leading-[19px]">{parts.map(([label, value, color]) => <div className="flex items-center gap-2" key={label}><span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: color }} /><span className="text-secondary">{label}</span><b className="ml-auto whitespace-nowrap font-medium text-ink">{value}</b></div>)}</div><div className="mt-4 space-y-2.5 border-t border-line-subtle pt-3 text-[12px] leading-4"><div className="flex justify-between"><span className="text-secondary">Total interactions</span><b className="font-medium text-ink">1,18,000</b></div><div className="flex justify-between"><span className="text-secondary">Save and share rate</span><b className="font-medium text-ink">3.9%</b></div></div></section>;
+  const parts = [
+    ["Likes", "36,600 · 31%", "#5164e7", "31%"],
+    ["Comments", "9,400 · 8%", "#9caef8", "8%"],
+    ["Saves", "44,800 · 38%", "#49ba8b", "38%"],
+    ["Shares", "27,200 · 23%", "#eea24a", "23%"],
+  ] as const;
+  return (
+    <section className="h-[250px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-6 text-ink">Engagement breakdown</h2>
+      <p className="mt-0.5 truncate text-[12px] leading-4 text-secondary">
+        What the 5.4% engagement rate is made of · 1,18,000
+      </p>
+      <div className="mt-4 flex h-4 overflow-hidden rounded-full">
+        {parts.map(([, , color, width], index) => (
+          <motion.span
+            key={color}
+            className="h-full"
+            style={{ backgroundColor: color }}
+            initial={{ width: 0 }}
+            whileInView={{ width }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.75, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+          />
+        ))}
+      </div>
+      <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-2 text-[13px] leading-[19px]">
+        {parts.map(([label, value, color]) => (
+          <div className="flex items-center gap-2" key={label}>
+            <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
+            <span className="text-secondary">{label}</span>
+            <b className="ml-auto whitespace-nowrap font-medium text-ink">{value}</b>
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 space-y-2.5 border-t border-line-subtle pt-3 text-[12px] leading-4">
+        <div className="flex justify-between">
+          <span className="text-secondary">Total interactions</span>
+          <b className="font-medium text-ink">1,18,000</b>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-secondary">Save and share rate</span>
+          <b className="font-medium text-ink">3.9%</b>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function AnimatedFormatCard() {
-  const formats = [["Reels", 63], ["Shorts", 58], ["Stories", 41]] as const;
-  return <section className="h-[250px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">By Format</h2><p className="mt-0.5 min-h-8 text-[12px] leading-4 text-secondary">Share of views from people who don’t follow the creator</p><div className="mt-4 space-y-3 text-[13px] leading-[19px]">{formats.map(([label, value], index) => <div className="grid grid-cols-[1fr_110px_28px] items-center gap-3" key={label}><span className="text-secondary">{label}</span><span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]"><motion.span className="block h-full rounded-full bg-[#5164e7]" initial={{ width: 0 }} whileInView={{ width: `${value}%` }} viewport={{ once: true }} transition={{ duration: 0.8, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }} /></span><b className="text-right font-medium text-ink">{value}%</b></div>)}</div><p className="mt-4 text-[12px] leading-[17px] text-secondary">Reels reach the most new people. On YouTube: not subscribed.</p></section>;
+  const formats = [
+    ["Reels", 63],
+    ["Shorts", 58],
+    ["Stories", 41],
+  ] as const;
+  return (
+    <section className="h-[250px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-6 text-ink">By Format</h2>
+      <p className="mt-0.5 min-h-8 text-[12px] leading-4 text-secondary">
+        Share of views from people who don’t follow the creator
+      </p>
+      <div className="mt-4 space-y-3 text-[13px] leading-[19px]">
+        {formats.map(([label, value], index) => (
+          <div className="grid grid-cols-[1fr_110px_28px] items-center gap-3" key={label}>
+            <span className="text-secondary">{label}</span>
+            <span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]">
+              <motion.span
+                className="block h-full rounded-full bg-[#5164e7]"
+                initial={{ width: 0 }}
+                whileInView={{ width: `${value}%` }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
+              />
+            </span>
+            <b className="text-right font-medium text-ink">{value}%</b>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-[12px] leading-[17px] text-secondary">
+        Reels reach the most new people. On YouTube: not subscribed.
+      </p>
+    </section>
+  );
 }
 
 function EngagementCard() {
-  const parts = [["Likes", "36,600 · 31%", "#5164e7", "31%"], ["Comments", "9,400 · 8%", "#9caef8", "8%"], ["Saves", "44,800 · 38%", "#49ba8b", "38%"], ["Shares", "27,200 · 23%", "#eea24a", "23%"]] as const;
-  return <section className="h-[250px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Engagement breakdown</h2><p className="mt-0.5 truncate text-[12px] leading-4 text-secondary">What the 5.4% engagement rate is made of · 1,18,000</p><div className="mt-4 flex h-4 overflow-hidden rounded-full">{parts.map(([, , color, width]) => <span key={color} style={{ width, backgroundColor: color }} />)}</div><div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-2 text-[13px] leading-[19px]">{parts.map(([label, value, color]) => <div className="flex items-center gap-2" key={label}><span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: color }} /><span className="text-secondary">{label}</span><b className="ml-auto whitespace-nowrap font-medium text-ink">{value}</b></div>)}</div><div className="mt-4 space-y-2.5 border-t border-line-subtle pt-3 text-[12px] leading-4"><div className="flex justify-between"><span className="text-secondary">Total interactions</span><b className="font-medium text-ink">1,18,000</b></div><div className="flex justify-between"><span className="text-secondary">Save and share rate</span><b className="font-medium text-ink">3.9%</b></div></div></section>;
+  const parts = [
+    ["Likes", "36,600 · 31%", "#5164e7", "31%"],
+    ["Comments", "9,400 · 8%", "#9caef8", "8%"],
+    ["Saves", "44,800 · 38%", "#49ba8b", "38%"],
+    ["Shares", "27,200 · 23%", "#eea24a", "23%"],
+  ] as const;
+  return (
+    <section className="h-[250px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-6 text-ink">Engagement breakdown</h2>
+      <p className="mt-0.5 truncate text-[12px] leading-4 text-secondary">
+        What the 5.4% engagement rate is made of · 1,18,000
+      </p>
+      <div className="mt-4 flex h-4 overflow-hidden rounded-full">
+        {parts.map(([, , color, width]) => (
+          <span key={color} style={{ width, backgroundColor: color }} />
+        ))}
+      </div>
+      <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-2 text-[13px] leading-[19px]">
+        {parts.map(([label, value, color]) => (
+          <div className="flex items-center gap-2" key={label}>
+            <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
+            <span className="text-secondary">{label}</span>
+            <b className="ml-auto whitespace-nowrap font-medium text-ink">{value}</b>
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 space-y-2.5 border-t border-line-subtle pt-3 text-[12px] leading-4">
+        <div className="flex justify-between">
+          <span className="text-secondary">Total interactions</span>
+          <b className="font-medium text-ink">1,18,000</b>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-secondary">Save and share rate</span>
+          <b className="font-medium text-ink">3.9%</b>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function FormatCard() {
-  const formats = [["Reels", 63], ["Shorts", 58], ["Stories", 41]] as const;
-  return <section className="h-[250px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">By Format</h2><p className="mt-0.5 min-h-8 text-[12px] leading-4 text-secondary">Share of views from people who don’t follow the creator</p><div className="mt-4 space-y-3 text-[13px] leading-[19px]">{formats.map(([label, value]) => <div className="grid grid-cols-[1fr_110px_28px] items-center gap-3" key={label}><span className="text-secondary">{label}</span><span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]"><span className="block h-full rounded-full bg-[#5164e7]" style={{ width: `${value}%` }} /></span><b className="text-right font-medium text-ink">{value}%</b></div>)}</div><p className="mt-4 text-[12px] leading-[17px] text-secondary">Reels reach the most new people. On YouTube: not subscribed.</p></section>;
+  const formats = [
+    ["Reels", 63],
+    ["Shorts", 58],
+    ["Stories", 41],
+  ] as const;
+  return (
+    <section className="h-[250px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-6 text-ink">By Format</h2>
+      <p className="mt-0.5 min-h-8 text-[12px] leading-4 text-secondary">
+        Share of views from people who don’t follow the creator
+      </p>
+      <div className="mt-4 space-y-3 text-[13px] leading-[19px]">
+        {formats.map(([label, value]) => (
+          <div className="grid grid-cols-[1fr_110px_28px] items-center gap-3" key={label}>
+            <span className="text-secondary">{label}</span>
+            <span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]">
+              <span
+                className="block h-full rounded-full bg-[#5164e7]"
+                style={{ width: `${value}%` }}
+              />
+            </span>
+            <b className="text-right font-medium text-ink">{value}%</b>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-[12px] leading-[17px] text-secondary">
+        Reels reach the most new people. On YouTube: not subscribed.
+      </p>
+    </section>
+  );
 }
 
 function CountriesCard() {
-  const countries = [["India", "78%"], ["UAE", "6%"], ["United States", "5%"], ["United Kingdom", "4%"], ["Singapore", "3%"], ["Other", "4%"]] as const;
-  const land = ["M47 58l17-20 47-10 35 10 10 20-18 15-17 1-10 19-24 5-19-16-25-4-6-19z", "M138 125l22 8 20 34-12 61-16 21-13-37 4-35-15-23z", "M249 48l47-19 56 5 34 21-5 24-27 7-17 19-44-3-9-22-35-9z", "M293 101l39 7 31 31-11 61-26 34-27-23-13-51z", "M374 52l43-8 54 19 34 34-13 26-28-8-27 15-31-6-26-31z", "M434 151l24 10 20 36-17 47-25-26-4-34z", "M484 196l29-10 31 12 5 27-33 17-28-19z"];
-  return <section className="h-[375px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Countries</h2><p className="mt-0.5 text-[12px] leading-4 text-secondary">Where viewers live · Instagram + YouTube insights</p><div className="mt-4 grid h-[275px] lg:grid-cols-[minmax(0,645px)_minmax(0,1fr)]"><div className="relative overflow-hidden border-b border-line-subtle pr-6 lg:border-b-0 lg:border-r"><svg viewBox="0 0 560 275" className="mx-auto h-full max-w-full" role="img" aria-label="Dotted world map showing audience countries"><defs><pattern id="audience-dots" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="2" fill="#d6def1" /></pattern><clipPath id="audience-land">{land.map((path) => <path key={path} d={path} />)}</clipPath></defs><rect width="560" height="275" fill="url(#audience-dots)" clipPath="url(#audience-land)" /><g fill="#7186f2"><circle cx="106" cy="68" r="4" /><circle cx="114" cy="68" r="4" /><circle cx="122" cy="68" r="4" /><circle cx="130" cy="60" r="4" /><circle cx="138" cy="60" r="4" /><circle cx="146" cy="52" r="4" /><circle cx="306" cy="59" r="4" /><circle cx="314" cy="59" r="4" /><circle cx="322" cy="59" r="4" /><circle cx="498" cy="206" r="4" /></g><g fill="#3f57e8">{[[341, 97], [349, 97], [357, 97], [333, 105], [341, 105], [349, 105], [357, 105], [365, 105], [341, 113], [349, 113], [357, 113], [349, 121]].map(([cx, cy]) => <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="4" />)}</g></svg><span className="absolute left-[42%] top-[18px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">United Kingdom <b className="ml-1 font-medium text-ink">4%</b></span><span className="absolute left-[20%] top-[106px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">United States <b className="ml-1 font-medium text-ink">5%</b></span><span className="absolute left-[57%] top-[130px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">UAE <b className="ml-1 font-medium text-ink">6%</b></span><span className="absolute left-[74%] top-[121px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">India <b className="ml-1 font-medium text-ink">78%</b></span><span className="absolute right-[17%] top-[164px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">Singapore <b className="ml-1 font-medium text-ink">3%</b></span></div><div className="pt-6 lg:pl-6"><h3 className="text-[18px] font-semibold leading-6 text-ink">Top countries</h3><p className="mt-1 text-[12px] leading-4 text-secondary">Share of viewers · Instagram + YouTube insights</p><div className="mt-5 space-y-3.5">{countries.map(([country, share]) => <div key={country} className="grid grid-cols-[122px_minmax(80px,1fr)_30px] items-center gap-3 text-[13px] leading-[19px]"><span className="text-secondary">{country}</span><span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]"><span className="block h-full rounded-full bg-[#4f61e8]" style={{ width: share }} /></span><b className="text-right font-medium text-ink">{share}</b></div>)}</div></div></div></section>;
+  const countries = [
+    ["India", "78%"],
+    ["UAE", "6%"],
+    ["United States", "5%"],
+    ["United Kingdom", "4%"],
+    ["Singapore", "3%"],
+    ["Other", "4%"],
+  ] as const;
+  const land = [
+    "M47 58l17-20 47-10 35 10 10 20-18 15-17 1-10 19-24 5-19-16-25-4-6-19z",
+    "M138 125l22 8 20 34-12 61-16 21-13-37 4-35-15-23z",
+    "M249 48l47-19 56 5 34 21-5 24-27 7-17 19-44-3-9-22-35-9z",
+    "M293 101l39 7 31 31-11 61-26 34-27-23-13-51z",
+    "M374 52l43-8 54 19 34 34-13 26-28-8-27 15-31-6-26-31z",
+    "M434 151l24 10 20 36-17 47-25-26-4-34z",
+    "M484 196l29-10 31 12 5 27-33 17-28-19z",
+  ];
+  return (
+    <section className="h-[375px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-6 text-ink">Countries</h2>
+      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+        Where viewers live · Instagram + YouTube insights
+      </p>
+      <div className="mt-4 grid h-[275px] lg:grid-cols-[minmax(0,645px)_minmax(0,1fr)]">
+        <div className="relative overflow-hidden border-b border-line-subtle pr-6 lg:border-b-0 lg:border-r">
+          <svg
+            viewBox="0 0 560 275"
+            className="mx-auto h-full max-w-full"
+            role="img"
+            aria-label="Dotted world map showing audience countries"
+          >
+            <defs>
+              <pattern id="audience-dots" width="8" height="8" patternUnits="userSpaceOnUse">
+                <circle cx="4" cy="4" r="2" fill="#d6def1" />
+              </pattern>
+              <clipPath id="audience-land">
+                {land.map((path) => (
+                  <path key={path} d={path} />
+                ))}
+              </clipPath>
+            </defs>
+            <rect
+              width="560"
+              height="275"
+              fill="url(#audience-dots)"
+              clipPath="url(#audience-land)"
+            />
+            <g fill="#7186f2">
+              <circle cx="106" cy="68" r="4" />
+              <circle cx="114" cy="68" r="4" />
+              <circle cx="122" cy="68" r="4" />
+              <circle cx="130" cy="60" r="4" />
+              <circle cx="138" cy="60" r="4" />
+              <circle cx="146" cy="52" r="4" />
+              <circle cx="306" cy="59" r="4" />
+              <circle cx="314" cy="59" r="4" />
+              <circle cx="322" cy="59" r="4" />
+              <circle cx="498" cy="206" r="4" />
+            </g>
+            <g fill="#3f57e8">
+              {[
+                [341, 97],
+                [349, 97],
+                [357, 97],
+                [333, 105],
+                [341, 105],
+                [349, 105],
+                [357, 105],
+                [365, 105],
+                [341, 113],
+                [349, 113],
+                [357, 113],
+                [349, 121],
+              ].map(([cx, cy]) => (
+                <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="4" />
+              ))}
+            </g>
+          </svg>
+          <span className="absolute left-[42%] top-[18px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">
+            United Kingdom <b className="ml-1 font-medium text-ink">4%</b>
+          </span>
+          <span className="absolute left-[20%] top-[106px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">
+            United States <b className="ml-1 font-medium text-ink">5%</b>
+          </span>
+          <span className="absolute left-[57%] top-[130px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">
+            UAE <b className="ml-1 font-medium text-ink">6%</b>
+          </span>
+          <span className="absolute left-[74%] top-[121px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">
+            India <b className="ml-1 font-medium text-ink">78%</b>
+          </span>
+          <span className="absolute right-[17%] top-[164px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">
+            Singapore <b className="ml-1 font-medium text-ink">3%</b>
+          </span>
+        </div>
+        <div className="pt-6 lg:pl-6">
+          <h3 className="text-[18px] font-semibold leading-6 text-ink">Top countries</h3>
+          <p className="mt-1 text-[12px] leading-4 text-secondary">
+            Share of viewers · Instagram + YouTube insights
+          </p>
+          <div className="mt-5 space-y-3.5">
+            {countries.map(([country, share]) => (
+              <div
+                key={country}
+                className="grid grid-cols-[122px_minmax(80px,1fr)_30px] items-center gap-3 text-[13px] leading-[19px]"
+              >
+                <span className="text-secondary">{country}</span>
+                <span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]">
+                  <span
+                    className="block h-full rounded-full bg-[#4f61e8]"
+                    style={{ width: share }}
+                  />
+                </span>
+                <b className="text-right font-medium text-ink">{share}</b>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function CitiesCard() {
-  const cities = [["Bengaluru", "21%", 185], ["Mumbai", "17%", 150], ["Delhi NCR", "12%", 106], ["Chennai", "8%", 70], ["Hyderabad", "7%", 62], ["Pune", "6%", 53], ["Other cities", "29%", 220]] as const;
-  return <section className="h-[316px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Cities</h2><p className="mt-0.5 text-[12px] leading-4 text-secondary">Top cities of viewers · Instagram + YouTube insights</p><div className="mt-4 space-y-3 text-[13px] leading-[19px]">{cities.map(([city, share, width]) => <div className="grid grid-cols-[110px_220px_28px] items-center gap-3" key={city}><span className="text-secondary">{city}</span><span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]"><span className="block h-full rounded-full bg-[#4f61e8]" style={{ width }} /></span><b className="font-medium text-ink">{share}</b></div>)}</div></section>;
+  const cities = [
+    ["Bengaluru", "21%", 185],
+    ["Mumbai", "17%", 150],
+    ["Delhi NCR", "12%", 106],
+    ["Chennai", "8%", 70],
+    ["Hyderabad", "7%", 62],
+    ["Pune", "6%", 53],
+    ["Other cities", "29%", 220],
+  ] as const;
+  return (
+    <section className="h-[316px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-6 text-ink">Cities</h2>
+      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+        Top cities of viewers · Instagram + YouTube insights
+      </p>
+      <div className="mt-4 space-y-3 text-[13px] leading-[19px]">
+        {cities.map(([city, share, width]) => (
+          <div className="grid grid-cols-[110px_220px_28px] items-center gap-3" key={city}>
+            <span className="text-secondary">{city}</span>
+            <span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]">
+              <span className="block h-full rounded-full bg-[#4f61e8]" style={{ width }} />
+            </span>
+            <b className="font-medium text-ink">{share}</b>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 function AnimatedCitiesCard() {
-  const cities = [["Bengaluru", "21%", 185], ["Mumbai", "17%", 150], ["Delhi NCR", "12%", 106], ["Chennai", "8%", 70], ["Hyderabad", "7%", 62], ["Pune", "6%", 53], ["Other cities", "29%", 220]] as const;
-  return <section className="h-[316px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Cities</h2><p className="mt-0.5 text-[12px] leading-4 text-secondary">Top cities of viewers · Instagram + YouTube insights</p><div className="mt-4 space-y-3 text-[13px] leading-[19px]">{cities.map(([city, share, width], index) => <div className="grid grid-cols-[110px_220px_28px] items-center gap-3" key={city}><span className="text-secondary">{city}</span><span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]"><motion.span className="block h-full rounded-full bg-[#4f61e8]" initial={{ width: 0 }} whileInView={{ width }} viewport={{ once: true }} transition={{ duration: 0.75, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }} /></span><b className="font-medium text-ink">{share}</b></div>)}</div></section>;
+  const cities = [
+    ["Bengaluru", "21%", 185],
+    ["Mumbai", "17%", 150],
+    ["Delhi NCR", "12%", 106],
+    ["Chennai", "8%", 70],
+    ["Hyderabad", "7%", 62],
+    ["Pune", "6%", 53],
+    ["Other cities", "29%", 220],
+  ] as const;
+  return (
+    <section className="h-[316px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-6 text-ink">Cities</h2>
+      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+        Top cities of viewers · Instagram + YouTube insights
+      </p>
+      <div className="mt-4 space-y-3 text-[13px] leading-[19px]">
+        {cities.map(([city, share, width], index) => (
+          <div className="grid grid-cols-[110px_220px_28px] items-center gap-3" key={city}>
+            <span className="text-secondary">{city}</span>
+            <span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]">
+              <motion.span
+                className="block h-full rounded-full bg-[#4f61e8]"
+                initial={{ width: 0 }}
+                whileInView={{ width }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.75, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
+              />
+            </span>
+            <b className="font-medium text-ink">{share}</b>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 function AgeGenderCard() {
-  const groups = [["13–17", "3%", "0%", 9.5, 2], ["18–24", "30%", "4%", 95, 12.7], ["25–34", "41%", "5%", 130, 15.85], ["35–44", "9%", "3%", 28.5, 9.5], ["45+", "3%", "2%", 9.5, 6.35]] as const;
-  return <section className="h-[316px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Age and gender</h2><p className="mt-0.5 text-[12px] leading-4 text-secondary">Share of viewers · Instagram + YouTube insights</p><div className="relative mt-4 h-[190px] border-b border-line"><div className="absolute inset-x-2 bottom-0 flex h-[160px] justify-between">{groups.map(([age, women, men, womenHeight, menHeight]) => <div className="flex w-[60px] flex-col justify-end text-center" key={age}><div className="flex h-[146px] items-end justify-center gap-1"><div className="relative flex w-7 flex-col justify-end"><span className="absolute -top-4 w-full text-center text-[11px] leading-[13px] text-secondary">{women}</span><span className="w-7 rounded-t-[3px] bg-[#4f61e8]" style={{ height: womenHeight }} /></div><div className="relative flex w-7 flex-col justify-end"><span className="absolute -top-4 w-full text-center text-[11px] leading-[13px] text-secondary">{men}</span><span className="w-7 rounded-t-[3px] bg-[#afbef8]" style={{ height: menHeight }} /></div></div><span className="mt-2 text-[11px] leading-[13px] text-secondary">{age}</span></div>)}</div></div><div className="mt-4 flex items-center gap-4 text-[12px] leading-[15px]"><span className="flex items-center gap-1.5 text-secondary"><i className="size-2 rounded-full bg-[#4f61e8]" />Women <b className="font-medium text-ink">86%</b></span><span className="flex items-center gap-1.5 text-secondary"><i className="size-2 rounded-full bg-[#afbef8]" />Men <b className="font-medium text-ink">14%</b></span></div></section>;
+  const groups = [
+    ["13–17", "3%", "0%", 9.5, 2],
+    ["18–24", "30%", "4%", 95, 12.7],
+    ["25–34", "41%", "5%", 130, 15.85],
+    ["35–44", "9%", "3%", 28.5, 9.5],
+    ["45+", "3%", "2%", 9.5, 6.35],
+  ] as const;
+  return (
+    <section className="h-[316px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-6 text-ink">Age and gender</h2>
+      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+        Share of viewers · Instagram + YouTube insights
+      </p>
+      <div className="relative mt-4 h-[190px] border-b border-line">
+        <div className="absolute inset-x-2 bottom-0 flex h-[160px] justify-between">
+          {groups.map(([age, women, men, womenHeight, menHeight]) => (
+            <div className="flex w-[60px] flex-col justify-end text-center" key={age}>
+              <div className="flex h-[146px] items-end justify-center gap-1">
+                <div className="relative flex w-7 flex-col justify-end">
+                  <span className="absolute -top-4 w-full text-center text-[11px] leading-[13px] text-secondary">
+                    {women}
+                  </span>
+                  <span
+                    className="w-7 rounded-t-[3px] bg-[#4f61e8]"
+                    style={{ height: womenHeight }}
+                  />
+                </div>
+                <div className="relative flex w-7 flex-col justify-end">
+                  <span className="absolute -top-4 w-full text-center text-[11px] leading-[13px] text-secondary">
+                    {men}
+                  </span>
+                  <span
+                    className="w-7 rounded-t-[3px] bg-[#afbef8]"
+                    style={{ height: menHeight }}
+                  />
+                </div>
+              </div>
+              <span className="mt-2 text-[11px] leading-[13px] text-secondary">{age}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="mt-4 flex items-center gap-4 text-[12px] leading-[15px]">
+        <span className="flex items-center gap-1.5 text-secondary">
+          <i className="size-2 rounded-full bg-[#4f61e8]" />
+          Women <b className="font-medium text-ink">86%</b>
+        </span>
+        <span className="flex items-center gap-1.5 text-secondary">
+          <i className="size-2 rounded-full bg-[#afbef8]" />
+          Men <b className="font-medium text-ink">14%</b>
+        </span>
+      </div>
+    </section>
+  );
 }
 
 function AnimatedAgeGenderCard() {
-  const groups = [["13–17", "3%", "0%", 9.5, 2], ["18–24", "30%", "4%", 95, 12.7], ["25–34", "41%", "5%", 130, 15.85], ["35–44", "9%", "3%", 28.5, 9.5], ["45+", "3%", "2%", 9.5, 6.35]] as const;
-  return <section className="h-[316px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Age and gender</h2><p className="mt-0.5 text-[12px] leading-4 text-secondary">Share of viewers · Instagram + YouTube insights</p><div className="relative mt-4 h-[190px] border-b border-line"><div className="absolute inset-x-2 bottom-0 flex h-[160px] justify-between">{groups.map(([age, women, men, womenHeight, menHeight], index) => <div className="flex w-[60px] flex-col justify-end text-center" key={age}><div className="flex h-[146px] items-end justify-center gap-1"><div className="relative flex w-7 flex-col justify-end"><span className="absolute -top-4 w-full text-center text-[11px] leading-[13px] text-secondary">{women}</span><motion.span className="w-7 rounded-t-[3px] bg-[#4f61e8]" initial={{ height: 0 }} whileInView={{ height: womenHeight }} viewport={{ once: true }} transition={{ duration: 0.8, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }} /></div><div className="relative flex w-7 flex-col justify-end"><span className="absolute -top-4 w-full text-center text-[11px] leading-[13px] text-secondary">{men}</span><motion.span className="w-7 rounded-t-[3px] bg-[#afbef8]" initial={{ height: 0 }} whileInView={{ height: menHeight }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.08 + index * 0.1, ease: [0.22, 1, 0.36, 1] }} /></div></div><span className="mt-2 text-[11px] leading-[13px] text-secondary">{age}</span></div>)}</div></div><div className="mt-4 flex items-center gap-4 text-[12px] leading-[15px]"><span className="flex items-center gap-1.5 text-secondary"><i className="size-2 rounded-full bg-[#4f61e8]" />Women <b className="font-medium text-ink">86%</b></span><span className="flex items-center gap-1.5 text-secondary"><i className="size-2 rounded-full bg-[#afbef8]" />Men <b className="font-medium text-ink">14%</b></span></div></section>;
+  const groups = [
+    ["13–17", "3%", "0%", 9.5, 2],
+    ["18–24", "30%", "4%", 95, 12.7],
+    ["25–34", "41%", "5%", 130, 15.85],
+    ["35–44", "9%", "3%", 28.5, 9.5],
+    ["45+", "3%", "2%", 9.5, 6.35],
+  ] as const;
+  return (
+    <section className="h-[316px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-6 text-ink">Age and gender</h2>
+      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+        Share of viewers · Instagram + YouTube insights
+      </p>
+      <div className="relative mt-4 h-[190px] border-b border-line">
+        <div className="absolute inset-x-2 bottom-0 flex h-[160px] justify-between">
+          {groups.map(([age, women, men, womenHeight, menHeight], index) => (
+            <div className="flex w-[60px] flex-col justify-end text-center" key={age}>
+              <div className="flex h-[146px] items-end justify-center gap-1">
+                <div className="relative flex w-7 flex-col justify-end">
+                  <span className="absolute -top-4 w-full text-center text-[11px] leading-[13px] text-secondary">
+                    {women}
+                  </span>
+                  <motion.span
+                    className="w-7 rounded-t-[3px] bg-[#4f61e8]"
+                    initial={{ height: 0 }}
+                    whileInView={{ height: womenHeight }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                  />
+                </div>
+                <div className="relative flex w-7 flex-col justify-end">
+                  <span className="absolute -top-4 w-full text-center text-[11px] leading-[13px] text-secondary">
+                    {men}
+                  </span>
+                  <motion.span
+                    className="w-7 rounded-t-[3px] bg-[#afbef8]"
+                    initial={{ height: 0 }}
+                    whileInView={{ height: menHeight }}
+                    viewport={{ once: true }}
+                    transition={{
+                      duration: 0.8,
+                      delay: 0.08 + index * 0.1,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                  />
+                </div>
+              </div>
+              <span className="mt-2 text-[11px] leading-[13px] text-secondary">{age}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="mt-4 flex items-center gap-4 text-[12px] leading-[15px]">
+        <span className="flex items-center gap-1.5 text-secondary">
+          <i className="size-2 rounded-full bg-[#4f61e8]" />
+          Women <b className="font-medium text-ink">86%</b>
+        </span>
+        <span className="flex items-center gap-1.5 text-secondary">
+          <i className="size-2 rounded-full bg-[#afbef8]" />
+          Men <b className="font-medium text-ink">14%</b>
+        </span>
+      </div>
+    </section>
+  );
 }
 
 function BudgetCard() {
-  const items = [["Paid to creators", "released after you approved content", "₹1,42,800", "71%", "#4f61e8"], ["Held in escrow", "releases as you approve", "₹57,200", "29%", "#9eaff7"], ["Not yet committed", "fully funded", "₹0", "0%", "#e6ebf4"]] as const;
-  return <section className="relative h-[434px] rounded-xl border border-line bg-white p-5"><h2 className="text-[18px] font-semibold leading-6 text-ink">Budget</h2><p className="mt-0.5 text-[12px] leading-4 text-secondary">Paid · one-time · 16 creators · ₹2,00,000 funded</p><div className="relative mx-auto mt-4 grid size-[132px] place-items-center rounded-full" style={{ background: "conic-gradient(#4f61e8 0 71%, #9eaff7 71% 100%)" }}><div className="grid size-[92px] place-items-center rounded-full bg-white text-center"><b className="whitespace-nowrap text-[18px] leading-6 tracking-[-.03em] text-ink">₹2,00,000</b><span className="text-[12px] leading-4 text-secondary">committed</span></div></div><div className="mt-4 space-y-2.5">{items.map(([title, detail, amount, share, color]) => <div className="grid grid-cols-[10px_minmax(0,1fr)_75px] gap-2 text-[13px] leading-5" key={title}><span className="mt-1 size-2.5 rounded-full" style={{ backgroundColor: color }} /><div><p className="font-medium text-ink">{title}</p><p className="text-[12px] leading-4 text-secondary">{detail}</p></div><div className="text-right"><p className="font-medium text-ink">{amount}</p><p className="text-[12px] leading-4 text-secondary">{share}</p></div></div>)}</div><div className="absolute bottom-[58px] left-5 right-5 h-px bg-line" /><div className="absolute bottom-5 left-5 right-5 flex items-center justify-between text-[14px] leading-5"><span className="text-secondary">Total committed</span><b className="text-[16px] font-semibold text-ink">₹2,00,000</b></div></section>;
+  const items = [
+    ["Paid to creators", "released after you approved content", "₹1,42,800", "71%", "#4f61e8"],
+    ["Held in escrow", "releases as you approve", "₹57,200", "29%", "#9eaff7"],
+    ["Not yet committed", "fully funded", "₹0", "0%", "#e6ebf4"],
+  ] as const;
+  return (
+    <section className="relative h-[434px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[18px] font-semibold leading-6 text-ink">Budget</h2>
+      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+        Paid · one-time · 16 creators · ₹2,00,000 funded
+      </p>
+      <div
+        className="relative mx-auto mt-4 grid size-[132px] place-items-center rounded-full"
+        style={{ background: "conic-gradient(#4f61e8 0 71%, #9eaff7 71% 100%)" }}
+      >
+        <div className="grid size-[92px] place-items-center rounded-full bg-white text-center">
+          <b className="whitespace-nowrap text-[18px] leading-6 tracking-[-.03em] text-ink">
+            ₹2,00,000
+          </b>
+          <span className="text-[12px] leading-4 text-secondary">committed</span>
+        </div>
+      </div>
+      <div className="mt-4 space-y-2.5">
+        {items.map(([title, detail, amount, share, color]) => (
+          <div
+            className="grid grid-cols-[10px_minmax(0,1fr)_75px] gap-2 text-[13px] leading-5"
+            key={title}
+          >
+            <span className="mt-1 size-2.5 rounded-full" style={{ backgroundColor: color }} />
+            <div>
+              <p className="font-medium text-ink">{title}</p>
+              <p className="text-[12px] leading-4 text-secondary">{detail}</p>
+            </div>
+            <div className="text-right">
+              <p className="font-medium text-ink">{amount}</p>
+              <p className="text-[12px] leading-4 text-secondary">{share}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="absolute bottom-[58px] left-5 right-5 h-px bg-line" />
+      <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between text-[14px] leading-5">
+        <span className="text-secondary">Total committed</span>
+        <b className="text-[16px] font-semibold text-ink">₹2,00,000</b>
+      </div>
+    </section>
+  );
 }
 
 function CostEfficiencyCard() {
-  const metrics = [["Cost per order", "CPA", "₹109", "vs ₹120 prev.", "−9%", 93], ["Cost per link click", "CPC", "₹9.65", "vs ₹10.05 prev.", "−4%", 104], ["Cost per 1,000 views", "CPM", "₹329", "vs ₹319 prev.", "−4%", 104], ["Cost per engagement", "CPE", "₹5.31", "vs ₹5.42 prev.", "−2%", 102]] as const;
-  return <section className="h-[434px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-[19px] text-ink">Cost efficiency</h2><div className="mt-4"><p className="text-[12px] leading-[15px] text-secondary">Return on ad spend (ROAS)</p><div className="mt-1 flex items-center gap-2"><b className="text-[32px] font-semibold leading-[39px] text-ink">3.8×</b><span className="rounded-full bg-success-bg px-2 py-0.5 text-[11px] font-medium leading-[13px] text-success">▲ 0.5× vs previous period</span></div><p className="mt-1 text-[12px] leading-[15px] text-secondary">₹3.80 in net sales for every ₹1 of fees</p></div><div className="mt-4 h-px bg-line" /><div className="mt-4 flex items-center gap-3"><p className="text-[13px] font-medium leading-4 text-ink">Cost per result</p><span className="h-px flex-1 bg-line" /></div><div className="mt-4 space-y-3.5">{metrics.map(([label, code, value, previous, change, width]) => <div className="grid grid-cols-[140px_170px_minmax(0,1fr)_40px] items-center gap-3" key={code}><div><p className="text-[12px] leading-4 text-ink">{label}</p><p className="text-[11px] leading-[13px] text-secondary">{code}</p></div><div className="space-y-1"><span className="block h-[7px] rounded-full bg-[#4f61e8]" style={{ width }} /><span className="block h-[7px] w-[170px] rounded-full bg-[#e5eaf3]" /></div><div className="whitespace-nowrap text-[12px] leading-[18px]"><b className="font-medium text-ink">{value}</b><span className="ml-1 text-[11px] text-secondary">{previous}</span></div><span className="rounded-full bg-success-bg px-2 py-0.5 text-center text-[11px] font-medium leading-[13px] text-success">{change}</span></div>)}</div><p className="mt-4 text-[11px] leading-[15px] text-tertiary">For costs, lower is better. Compared with the previous period of the same length.</p></section>;
+  const metrics = [
+    ["Cost per order", "CPA", "₹109", "vs ₹120 prev.", "−9%", 93],
+    ["Cost per link click", "CPC", "₹9.65", "vs ₹10.05 prev.", "−4%", 104],
+    ["Cost per 1,000 views", "CPM", "₹329", "vs ₹319 prev.", "−4%", 104],
+    ["Cost per engagement", "CPE", "₹5.31", "vs ₹5.42 prev.", "−2%", 102],
+  ] as const;
+  return (
+    <section className="h-[434px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-[19px] text-ink">Cost efficiency</h2>
+      <div className="mt-4">
+        <p className="text-[12px] leading-[15px] text-secondary">Return on ad spend (ROAS)</p>
+        <div className="mt-1 flex items-center gap-2">
+          <b className="text-[32px] font-semibold leading-[39px] text-ink">3.8×</b>
+          <span className="rounded-full bg-success-bg px-2 py-0.5 text-[11px] font-medium leading-[13px] text-success">
+            ▲ 0.5× vs previous period
+          </span>
+        </div>
+        <p className="mt-1 text-[12px] leading-[15px] text-secondary">
+          ₹3.80 in net sales for every ₹1 of fees
+        </p>
+      </div>
+      <div className="mt-4 h-px bg-line" />
+      <div className="mt-4 flex items-center gap-3">
+        <p className="text-[13px] font-medium leading-4 text-ink">Cost per result</p>
+        <span className="h-px flex-1 bg-line" />
+      </div>
+      <div className="mt-4 space-y-3.5">
+        {metrics.map(([label, code, value, previous, change, width]) => (
+          <div
+            className="grid grid-cols-[140px_170px_minmax(0,1fr)_40px] items-center gap-3"
+            key={code}
+          >
+            <div>
+              <p className="text-[12px] leading-4 text-ink">{label}</p>
+              <p className="text-[11px] leading-[13px] text-secondary">{code}</p>
+            </div>
+            <div className="space-y-1">
+              <span className="block h-[7px] rounded-full bg-[#4f61e8]" style={{ width }} />
+              <span className="block h-[7px] w-[170px] rounded-full bg-[#e5eaf3]" />
+            </div>
+            <div className="whitespace-nowrap text-[12px] leading-[18px]">
+              <b className="font-medium text-ink">{value}</b>
+              <span className="ml-1 text-[11px] text-secondary">{previous}</span>
+            </div>
+            <span className="rounded-full bg-success-bg px-2 py-0.5 text-center text-[11px] font-medium leading-[13px] text-success">
+              {change}
+            </span>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-[11px] leading-[15px] text-tertiary">
+        For costs, lower is better. Compared with the previous period of the same length.
+      </p>
+    </section>
+  );
 }
 
 function AnimatedBudgetCard() {
-  const items = [["Paid to creators", "released after you approved content", "₹1,42,800", "71%", "#4f61e8"], ["Held in escrow", "releases as you approve", "₹57,200", "29%", "#9eaff7"], ["Not yet committed", "fully funded", "₹0", "0%", "#e6ebf4"]] as const;
-  return <section className="relative h-[434px] rounded-xl border border-line bg-white p-5"><h2 className="text-[18px] font-semibold leading-6 text-ink">Budget</h2><p className="mt-0.5 text-[12px] leading-4 text-secondary">Paid · one-time · 16 creators · ₹2,00,000 funded</p><motion.div className="relative mx-auto mt-4 grid size-[132px] place-items-center rounded-full" style={{ background: "conic-gradient(#4f61e8 0 71%, #9eaff7 71% 100%)" }} initial={{ opacity: 0, scale: 0.65, rotate: -45 }} whileInView={{ opacity: 1, scale: 1, rotate: 0 }} viewport={{ once: true, amount: 0.25 }} transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}><div className="grid size-[92px] place-items-center rounded-full bg-white text-center"><b className="whitespace-nowrap text-[18px] leading-6 tracking-[-.03em] text-ink">₹2,00,000</b><span className="text-[12px] leading-4 text-secondary">committed</span></div></motion.div><div className="mt-4 space-y-2.5">{items.map(([title, detail, amount, share, color], index) => <motion.div className="grid grid-cols-[10px_minmax(0,1fr)_75px] gap-2 text-[13px] leading-5" key={title} initial={{ opacity: 0, x: -8 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.45, delay: 0.25 + index * 0.08 }}><span className="mt-1 size-2.5 rounded-full" style={{ backgroundColor: color }} /><div><p className="font-medium text-ink">{title}</p><p className="text-[12px] leading-4 text-secondary">{detail}</p></div><div className="text-right"><p className="font-medium text-ink">{amount}</p><p className="text-[12px] leading-4 text-secondary">{share}</p></div></motion.div>)}</div><div className="absolute bottom-[58px] left-5 right-5 h-px bg-line" /><div className="absolute bottom-5 left-5 right-5 flex items-center justify-between text-[14px] leading-5"><span className="text-secondary">Total committed</span><b className="text-[16px] font-semibold text-ink">₹2,00,000</b></div></section>;
+  const items = [
+    ["Paid to creators", "released after you approved content", "₹1,42,800", "71%", "#4f61e8"],
+    ["Held in escrow", "releases as you approve", "₹57,200", "29%", "#9eaff7"],
+    ["Not yet committed", "fully funded", "₹0", "0%", "#e6ebf4"],
+  ] as const;
+  return (
+    <section className="relative h-[434px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[18px] font-semibold leading-6 text-ink">Budget</h2>
+      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
+        Paid · one-time · 16 creators · ₹2,00,000 funded
+      </p>
+      <motion.div
+        className="relative mx-auto mt-4 grid size-[132px] place-items-center rounded-full"
+        style={{ background: "conic-gradient(#4f61e8 0 71%, #9eaff7 71% 100%)" }}
+        initial={{ opacity: 0, scale: 0.65, rotate: -45 }}
+        whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+        viewport={{ once: true, amount: 0.25 }}
+        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div className="grid size-[92px] place-items-center rounded-full bg-white text-center">
+          <b className="whitespace-nowrap text-[18px] leading-6 tracking-[-.03em] text-ink">
+            ₹2,00,000
+          </b>
+          <span className="text-[12px] leading-4 text-secondary">committed</span>
+        </div>
+      </motion.div>
+      <div className="mt-4 space-y-2.5">
+        {items.map(([title, detail, amount, share, color], index) => (
+          <motion.div
+            className="grid grid-cols-[10px_minmax(0,1fr)_75px] gap-2 text-[13px] leading-5"
+            key={title}
+            initial={{ opacity: 0, x: -8 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.45, delay: 0.25 + index * 0.08 }}
+          >
+            <span className="mt-1 size-2.5 rounded-full" style={{ backgroundColor: color }} />
+            <div>
+              <p className="font-medium text-ink">{title}</p>
+              <p className="text-[12px] leading-4 text-secondary">{detail}</p>
+            </div>
+            <div className="text-right">
+              <p className="font-medium text-ink">{amount}</p>
+              <p className="text-[12px] leading-4 text-secondary">{share}</p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+      <div className="absolute bottom-[58px] left-5 right-5 h-px bg-line" />
+      <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between text-[14px] leading-5">
+        <span className="text-secondary">Total committed</span>
+        <b className="text-[16px] font-semibold text-ink">₹2,00,000</b>
+      </div>
+    </section>
+  );
 }
 
 function AnimatedCostEfficiencyCard() {
-  const metrics = [["Cost per order", "CPA", "₹109", "vs ₹120 prev.", "−9%", 93], ["Cost per link click", "CPC", "₹9.65", "vs ₹10.05 prev.", "−4%", 104], ["Cost per 1,000 views", "CPM", "₹329", "vs ₹319 prev.", "−4%", 104], ["Cost per engagement", "CPE", "₹5.31", "vs ₹5.42 prev.", "−2%", 102]] as const;
-  return <section className="h-[434px] rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-[19px] text-ink">Cost efficiency</h2><div className="mt-4"><p className="text-[12px] leading-[15px] text-secondary">Return on ad spend (ROAS)</p><div className="mt-1 flex items-center gap-2"><motion.b className="text-[32px] font-semibold leading-[39px] text-ink" initial={{ opacity: 0, scale: 0.75 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>3.8×</motion.b><span className="rounded-full bg-success-bg px-2 py-0.5 text-[11px] font-medium leading-[13px] text-success">▲ 0.5× vs previous period</span></div><p className="mt-1 text-[12px] leading-[15px] text-secondary">₹3.80 in net sales for every ₹1 of fees</p></div><div className="mt-4 h-px bg-line" /><div className="mt-4 flex items-center gap-3"><p className="text-[13px] font-medium leading-4 text-ink">Cost per result</p><span className="h-px flex-1 bg-line" /></div><div className="mt-4 space-y-3.5">{metrics.map(([label, code, value, previous, change, width], index) => <div className="grid grid-cols-[140px_170px_minmax(0,1fr)_40px] items-center gap-3" key={code}><div><p className="text-[12px] leading-4 text-ink">{label}</p><p className="text-[11px] leading-[13px] text-secondary">{code}</p></div><div className="space-y-1"><motion.span className="block h-[7px] rounded-full bg-[#4f61e8]" initial={{ width: 0 }} whileInView={{ width }} viewport={{ once: true }} transition={{ duration: 0.8, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }} /><span className="block h-[7px] w-[170px] rounded-full bg-[#e5eaf3]" /></div><div className="whitespace-nowrap text-[12px] leading-[18px]"><b className="font-medium text-ink">{value}</b><span className="ml-1 text-[11px] text-secondary">{previous}</span></div><span className="rounded-full bg-success-bg px-2 py-0.5 text-center text-[11px] font-medium leading-[13px] text-success">{change}</span></div>)}</div><p className="mt-4 text-[11px] leading-[15px] text-tertiary">For costs, lower is better. Compared with the previous period of the same length.</p></section>;
+  const metrics = [
+    ["Cost per order", "CPA", "₹109", "vs ₹120 prev.", "−9%", 93],
+    ["Cost per link click", "CPC", "₹9.65", "vs ₹10.05 prev.", "−4%", 104],
+    ["Cost per 1,000 views", "CPM", "₹329", "vs ₹319 prev.", "−4%", 104],
+    ["Cost per engagement", "CPE", "₹5.31", "vs ₹5.42 prev.", "−2%", 102],
+  ] as const;
+  return (
+    <section className="h-[434px] rounded-xl border border-line bg-white p-5">
+      <h2 className="text-[16px] font-semibold leading-[19px] text-ink">Cost efficiency</h2>
+      <div className="mt-4">
+        <p className="text-[12px] leading-[15px] text-secondary">Return on ad spend (ROAS)</p>
+        <div className="mt-1 flex items-center gap-2">
+          <motion.b
+            className="text-[32px] font-semibold leading-[39px] text-ink"
+            initial={{ opacity: 0, scale: 0.75 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            3.8×
+          </motion.b>
+          <span className="rounded-full bg-success-bg px-2 py-0.5 text-[11px] font-medium leading-[13px] text-success">
+            ▲ 0.5× vs previous period
+          </span>
+        </div>
+        <p className="mt-1 text-[12px] leading-[15px] text-secondary">
+          ₹3.80 in net sales for every ₹1 of fees
+        </p>
+      </div>
+      <div className="mt-4 h-px bg-line" />
+      <div className="mt-4 flex items-center gap-3">
+        <p className="text-[13px] font-medium leading-4 text-ink">Cost per result</p>
+        <span className="h-px flex-1 bg-line" />
+      </div>
+      <div className="mt-4 space-y-3.5">
+        {metrics.map(([label, code, value, previous, change, width], index) => (
+          <div
+            className="grid grid-cols-[140px_170px_minmax(0,1fr)_40px] items-center gap-3"
+            key={code}
+          >
+            <div>
+              <p className="text-[12px] leading-4 text-ink">{label}</p>
+              <p className="text-[11px] leading-[13px] text-secondary">{code}</p>
+            </div>
+            <div className="space-y-1">
+              <motion.span
+                className="block h-[7px] rounded-full bg-[#4f61e8]"
+                initial={{ width: 0 }}
+                whileInView={{ width }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              />
+              <span className="block h-[7px] w-[170px] rounded-full bg-[#e5eaf3]" />
+            </div>
+            <div className="whitespace-nowrap text-[12px] leading-[18px]">
+              <b className="font-medium text-ink">{value}</b>
+              <span className="ml-1 text-[11px] text-secondary">{previous}</span>
+            </div>
+            <span className="rounded-full bg-success-bg px-2 py-0.5 text-center text-[11px] font-medium leading-[13px] text-success">
+              {change}
+            </span>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-[11px] leading-[15px] text-tertiary">
+        For costs, lower is better. Compared with the previous period of the same length.
+      </p>
+    </section>
+  );
 }
 
 function CustomReportCard() {
-  return <section className="flex h-[86px] flex-wrap items-center justify-between gap-4 rounded-xl border border-line bg-white px-5"><div><h2 className="text-[16px] font-semibold leading-6 text-ink">Need a deeper breakdown? Make a custom report</h2><p className="mt-1 text-[12px] leading-4 text-secondary">Split any number by format, platform, date, coupon vs link or audience, then save it or export it as a PDF or CSV.</p></div><Button className="w-[200px] shrink-0">Make custom report</Button></section>;
+  return (
+    <section className="flex h-[86px] flex-wrap items-center justify-between gap-4 rounded-xl border border-line bg-white px-5">
+      <div>
+        <h2 className="text-[16px] font-semibold leading-6 text-ink">
+          Need a deeper breakdown? Make a custom report
+        </h2>
+        <p className="mt-1 text-[12px] leading-4 text-secondary">
+          Split any number by format, platform, date, coupon vs link or audience, then save it or
+          export it as a PDF or CSV.
+        </p>
+      </div>
+      <Button className="w-[200px] shrink-0">Make custom report</Button>
+    </section>
+  );
+}
+
+export function PerformanceReportBlocks({
+  focusMetric = "Net sales",
+  scopeLabel,
+  selectedCreators,
+}: {
+  focusMetric?: string;
+  scopeLabel?: string;
+  selectedCreators?: string[];
+}) {
+  const focusedIndex = Math.max(
+    0,
+    scorecards.findIndex(([label]) => label === focusMetric),
+  );
+  return (
+    <div className="space-y-6">
+      {scopeLabel && (
+        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-primary/20 bg-primary-subtle px-3 py-2 text-[12px] leading-4 text-primary">
+          <span className="size-1.5 rounded-full bg-primary" />
+          {scopeLabel}
+        </div>
+      )}
+      <section className="grid h-[119px] overflow-hidden rounded-xl border border-line bg-white sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        {scorecards.map(([label, value, detail], index) => (
+          <motion.article
+            key={label}
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.62, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+            className={`relative h-full border-line px-[18px] pt-[18px] ${index === focusedIndex ? "bg-primary-subtle" : "bg-white"} ${index < scorecards.length - 1 ? "border-r" : ""}`}
+          >
+            <p className="text-[14px] leading-5 text-secondary">{label}</p>
+            <p
+              className={`font-semibold text-ink ${index === 5 ? "mt-0.5 text-[24px] leading-8" : "mt-[6px] text-[20px] leading-6"}`}
+            >
+              {value}
+            </p>
+            <p
+              className={`text-[12px] leading-4 ${index === 5 ? "mt-0.5 text-secondary" : "mt-[6px] text-success"}`}
+            >
+              {detail}
+            </p>
+            {index === focusedIndex && (
+              <motion.span
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.9, delay: 0.45, ease: "easeOut" }}
+                className="absolute bottom-[18px] left-[18px] right-[18px] h-[3px] origin-left rounded-full bg-primary"
+              />
+            )}
+          </motion.article>
+        ))}
+      </section>
+      <Reveal>
+        <AnimatedSalesTrend />
+      </Reveal>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+        <Reveal>
+          <AnimatedConversionFunnel />
+        </Reveal>
+        <Reveal delay={0.1}>
+          <AnimatedRevenue />
+        </Reveal>
+      </div>
+      <Reveal>
+        <CreatorBreakdown selectedCreators={selectedCreators} />
+      </Reveal>
+      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.185fr)_minmax(0,1.153fr)_minmax(0,1fr)]">
+        <Reveal>
+          <AnimatedViewsCard />
+        </Reveal>
+        <Reveal delay={0.08}>
+          <AnimatedEngagementCard />
+        </Reveal>
+        <Reveal delay={0.16}>
+          <AnimatedFormatCard />
+        </Reveal>
+      </section>
+      <Reveal>
+        <CountriesCard />
+      </Reveal>
+      <section className="grid gap-6 lg:grid-cols-2">
+        <Reveal>
+          <AnimatedCitiesCard />
+        </Reveal>
+        <Reveal delay={0.1}>
+          <AnimatedAgeGenderCard />
+        </Reveal>
+      </section>
+      <section className="grid gap-6 lg:grid-cols-2">
+        <Reveal>
+          <AnimatedBudgetCard />
+        </Reveal>
+        <Reveal delay={0.1}>
+          <AnimatedCostEfficiencyCard />
+        </Reveal>
+      </section>
+    </div>
+  );
 }
 
 export function BrandProjectPerformancePage() {
   const navigate = useNavigate();
   const project = getProject(Number(useParams().projectId));
-  return <BrandShell><div className="w-full pb-10">
-    <motion.header initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }} className="mb-6 flex min-h-[102px] flex-wrap items-end justify-between gap-4"><div><button type="button" onClick={() => navigate("/brand/projects")} className="text-[12px] leading-4 text-tertiary hover:text-primary">Projects / {project.name}</button><h1 className="mt-1 text-[28px] font-bold leading-[34px] tracking-[-.02em] text-ink">{project.name}</h1><span className="mt-1 inline-flex h-5 items-center rounded-full bg-success-bg px-2 text-[11px] font-medium text-success">Live</span><p className="mt-1 text-[13px] leading-5 text-secondary">7 Oct – 7 Nov 2026 · 10 days left</p></div><div className="flex flex-wrap items-center gap-2"><Button kind="secondary">14 Oct – 4 Nov</Button><Button kind="secondary" leadingIcon={<Share2 size={16} />}>Share</Button><Button leadingIcon={<Users size={16} />}>Invite creators</Button><button type="button" aria-label="More actions" className="grid size-9 place-items-center rounded-md border border-line bg-white"><MoreHorizontal size={18} /></button></div></motion.header>
-    <Reveal><ProjectTabs projectId={project.id} /></Reveal>
-    <div className="mt-6 space-y-6">
-      <section className="grid h-[119px] overflow-hidden rounded-xl border border-line bg-white sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">{scorecards.map(([label, value, detail], index) => <motion.article key={label} initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.62, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }} className={`relative h-full border-line px-[18px] pt-[18px] ${index === 0 ? "bg-primary-subtle" : "bg-white"} ${index < scorecards.length - 1 ? "border-r" : ""}`}><p className="text-[14px] leading-5 text-secondary">{label}</p><p className={`font-semibold text-ink ${index === 5 ? "mt-0.5 text-[24px] leading-8" : "mt-[6px] text-[20px] leading-6"}`}>{value}</p><p className={`text-[12px] leading-4 ${index === 5 ? "mt-0.5 text-secondary" : "mt-[6px] text-success"}`}>{detail}</p>{index === 0 && <motion.span initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} transition={{ duration: 0.9, delay: 0.45, ease: "easeOut" }} className="absolute bottom-[18px] left-[18px] right-[18px] h-[3px] origin-left rounded-full bg-primary" />}</motion.article>)}</section>
-      <Reveal><AnimatedSalesTrend /></Reveal>
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]"><Reveal><AnimatedConversionFunnel /></Reveal><Reveal delay={0.1}><AnimatedRevenue /></Reveal></div>
-      <Reveal><CreatorBreakdown /></Reveal>
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.185fr)_minmax(0,1.153fr)_minmax(0,1fr)]"><Reveal><AnimatedViewsCard /></Reveal><Reveal delay={0.08}><AnimatedEngagementCard /></Reveal><Reveal delay={0.16}><AnimatedFormatCard /></Reveal></section>
-      <Reveal><CountriesCard /></Reveal>
-      <section className="grid gap-6 lg:grid-cols-2"><Reveal><AnimatedCitiesCard /></Reveal><Reveal delay={0.1}><AnimatedAgeGenderCard /></Reveal></section>
-      <section className="grid gap-6 lg:grid-cols-2"><Reveal><AnimatedBudgetCard /></Reveal><Reveal delay={0.1}><AnimatedCostEfficiencyCard /></Reveal></section>
-      <Reveal><CustomReportCard /></Reveal>
-    </div>
-  </div></BrandShell>;
+  return (
+    <BrandShell>
+      <div className="w-full pb-10">
+        <motion.header
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-6 flex min-h-[102px] flex-wrap items-end justify-between gap-4"
+        >
+          <div>
+            <button
+              type="button"
+              onClick={() => navigate("/brand/projects")}
+              className="text-[12px] leading-4 text-tertiary hover:text-primary"
+            >
+              Projects / {project.name}
+            </button>
+            <h1 className="mt-1 text-[28px] font-bold leading-[34px] tracking-[-.02em] text-ink">
+              {project.name}
+            </h1>
+            <span className="mt-1 inline-flex h-5 items-center rounded-full bg-success-bg px-2 text-[11px] font-medium text-success">
+              Live
+            </span>
+            <p className="mt-1 text-[13px] leading-5 text-secondary">
+              7 Oct – 7 Nov 2026 · 10 days left
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button kind="secondary">14 Oct – 4 Nov</Button>
+            <Button kind="secondary" leadingIcon={<Share2 size={16} />}>
+              Share
+            </Button>
+            <Button leadingIcon={<Users size={16} />}>Invite creators</Button>
+            <button
+              type="button"
+              aria-label="More actions"
+              className="grid size-9 place-items-center rounded-md border border-line bg-white"
+            >
+              <MoreHorizontal size={18} />
+            </button>
+          </div>
+        </motion.header>
+        <Reveal>
+          <ProjectTabs projectId={project.id} />
+        </Reveal>
+        <div className="mt-6 space-y-6">
+          <section className="grid h-[119px] overflow-hidden rounded-xl border border-line bg-white sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+            {scorecards.map(([label, value, detail], index) => (
+              <motion.article
+                key={label}
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.62, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                className={`relative h-full border-line px-[18px] pt-[18px] ${index === 0 ? "bg-primary-subtle" : "bg-white"} ${index < scorecards.length - 1 ? "border-r" : ""}`}
+              >
+                <p className="text-[14px] leading-5 text-secondary">{label}</p>
+                <p
+                  className={`font-semibold text-ink ${index === 5 ? "mt-0.5 text-[24px] leading-8" : "mt-[6px] text-[20px] leading-6"}`}
+                >
+                  {value}
+                </p>
+                <p
+                  className={`text-[12px] leading-4 ${index === 5 ? "mt-0.5 text-secondary" : "mt-[6px] text-success"}`}
+                >
+                  {detail}
+                </p>
+                {index === 0 && (
+                  <motion.span
+                    initial={{ scaleX: 0 }}
+                    whileInView={{ scaleX: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.9, delay: 0.45, ease: "easeOut" }}
+                    className="absolute bottom-[18px] left-[18px] right-[18px] h-[3px] origin-left rounded-full bg-primary"
+                  />
+                )}
+              </motion.article>
+            ))}
+          </section>
+          <Reveal>
+            <AnimatedSalesTrend />
+          </Reveal>
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+            <Reveal>
+              <AnimatedConversionFunnel />
+            </Reveal>
+            <Reveal delay={0.1}>
+              <AnimatedRevenue />
+            </Reveal>
+          </div>
+          <Reveal>
+            <CreatorBreakdown />
+          </Reveal>
+          <section className="grid gap-6 xl:grid-cols-[minmax(0,1.185fr)_minmax(0,1.153fr)_minmax(0,1fr)]">
+            <Reveal>
+              <AnimatedViewsCard />
+            </Reveal>
+            <Reveal delay={0.08}>
+              <AnimatedEngagementCard />
+            </Reveal>
+            <Reveal delay={0.16}>
+              <AnimatedFormatCard />
+            </Reveal>
+          </section>
+          <Reveal>
+            <CountriesCard />
+          </Reveal>
+          <section className="grid gap-6 lg:grid-cols-2">
+            <Reveal>
+              <AnimatedCitiesCard />
+            </Reveal>
+            <Reveal delay={0.1}>
+              <AnimatedAgeGenderCard />
+            </Reveal>
+          </section>
+          <section className="grid gap-6 lg:grid-cols-2">
+            <Reveal>
+              <AnimatedBudgetCard />
+            </Reveal>
+            <Reveal delay={0.1}>
+              <AnimatedCostEfficiencyCard />
+            </Reveal>
+          </section>
+          <Reveal>
+            <CustomReportCard />
+          </Reveal>
+        </div>
+      </div>
+    </BrandShell>
+  );
 }
