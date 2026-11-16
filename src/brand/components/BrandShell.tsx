@@ -36,6 +36,7 @@ function Sidebar({ close }: { close?: () => void }) {
   const isProjects = location.pathname === ROUTES.brandProjects;
   const isCreatorDiscovery = location.pathname === ROUTES.brandCreatorDiscovery;
   const isContentHub = location.pathname === ROUTES.brandContentHub;
+  const isCustomReports = location.pathname === ROUTES.brandCustomReports;
   const isOverview = location.pathname === ROUTES.brand;
   const closeMenu = () => close?.();
   const topLink = (active: boolean) =>
@@ -152,13 +153,17 @@ function Sidebar({ close }: { close?: () => void }) {
         <p className="px-3 pb-1.5 pt-4 text-[12px] font-semibold leading-4 tracking-[.06em] text-tertiary">
           CONTENT &amp; DATA
         </p>
-        <button
-          type="button"
-          className="flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] hover:bg-subtle"
+        <Link
+          to={ROUTES.brandCustomReports}
+          onClick={closeMenu}
+          className={
+            "flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] " +
+            topLink(isCustomReports)
+          }
         >
           <FileBarChart size={18} />
           Custom reports
-        </button>
+        </Link>
         <p className="px-3 pb-1.5 pt-4 text-[12px] font-semibold leading-4 tracking-[.06em] text-tertiary">
           ACCOUNT
         </p>
