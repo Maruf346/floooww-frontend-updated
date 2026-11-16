@@ -1383,6 +1383,453 @@ function NotificationsSettings() {
   );
 }
 
+function SecurityToggle({
+  enabled,
+  label,
+  onChange,
+}: {
+  enabled: boolean;
+  label: string;
+  onChange: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={enabled}
+      onClick={onChange}
+      className="flex items-center gap-2.5 text-left focus:outline-none"
+    >
+      <span
+        className={`flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition ${
+          enabled ? "justify-end bg-primary" : "justify-start bg-[#cbd2dc]"
+        }`}
+      >
+        <span className="size-4 rounded-full bg-white shadow-[0_1px_2px_rgba(8,10,20,.2)]" />
+      </span>
+      <span className="text-[13px] leading-5 text-[#070b13]">{label}</span>
+    </button>
+  );
+}
+
+function SecuritySettings() {
+  const [email, setEmail] = useState("ananya@minimalist.in");
+  const [googleConnected, setGoogleConnected] = useState(true);
+  const [requireTwoStep, setRequireTwoStep] = useState(true);
+  const [paymentTwoStep, setPaymentTwoStep] = useState(true);
+  const [paymentDelay, setPaymentDelay] = useState(true);
+  const [signInAlerts, setSignInAlerts] = useState(true);
+  const [passwords, setPasswords] = useState({ current: "", next: "" });
+  const [sessions, setSessions] = useState([
+    {
+      id: "macbook",
+      device: "MacBook Pro · Chrome",
+      subline: "This device",
+      location: "Mumbai, IN",
+      active: "Now",
+      current: true,
+    },
+    {
+      id: "iphone",
+      device: "iPhone 15 · Floooww app",
+      location: "Mumbai, IN",
+      active: "2 h ago",
+      current: false,
+    },
+    {
+      id: "windows",
+      device: "Windows · Edge",
+      location: "Pune, IN",
+      active: "3 days ago",
+      current: false,
+    },
+  ]);
+  const [dialog, setDialog] = useState<"email" | "password" | "two-step" | "codes" | null>(null);
+  const [notice, setNotice] = useState("");
+  const [showAllActivity, setShowAllActivity] = useState(false);
+
+  const closeDialog = () => setDialog(null);
+  const signOut = (id: string) => {
+    setSessions((current) => current.filter((session) => session.id !== id));
+    setNotice("Device signed out.");
+  };
+  const signOutAllOthers = () => {
+    setSessions((current) => current.filter((session) => session.current));
+    setNotice("All other devices have been signed out.");
+  };
+
+  const securityRows = [
+    ["Email", email, () => setDialog("email")],
+    ["Password", "Last changed 14 Aug 2026", () => setDialog("password")],
+  ] as const;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.28, ease: "easeOut" }}
+      className="space-y-4"
+    >
+      {notice && (
+        <p
+          role="status"
+          className="rounded-lg bg-[#e1fce3] px-3 py-2 text-[12px] font-medium leading-4 text-[#149d46]"
+        >
+          {notice}
+        </p>
+      )}
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="space-y-5">
+          <section className="rounded-xl border border-[#e5e7eb] bg-white p-5">
+            <div>
+              <h2 className="text-[16px] font-semibold leading-6 text-[#070b13]">Sign in</h2>
+              <p className="text-[12px] leading-4 text-[#8491a3]">How you get into Floooww</p>
+            </div>
+            <div className="mt-3.5">
+              {securityRows.map(([label, value, action]) => (
+                <div
+                  key={label}
+                  className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-[#edeff3] py-2.5 text-[13px] leading-5"
+                >
+                  <span className="w-[150px] shrink-0 text-[#8491a3]">{label}</span>
+                  <span className="min-w-0 flex-1 font-medium text-[#070b13]">{value}</span>
+                  <button
+                    type="button"
+                    onClick={action}
+                    className="font-medium text-primary hover:underline"
+                  >
+                    Change
+                  </button>
+                </div>
+              ))}
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-[#edeff3] py-2.5 text-[13px] leading-5">
+                <span className="w-[150px] shrink-0 text-[#8491a3]">Google sign-in</span>
+                <span className="min-w-0 flex-1 font-medium text-[#070b13]">
+                  {googleConnected ? `Connected · ${email}` : "Not connected"}
+                </span>
+                {googleConnected && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setGoogleConnected(false);
+                      setNotice("Google sign-in removed.");
+                    }}
+                    className="font-medium text-primary hover:underline"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-xl border border-[#e5e7eb] bg-white p-5">
+            <div className="flex items-start gap-2">
+              <div className="min-w-0 flex-1">
+                <h2 className="text-[16px] font-semibold leading-6 text-[#070b13]">
+                  Two-step verification
+                </h2>
+                <p className="text-[12px] leading-4 text-[#8491a3]">
+                  A code from your phone each time you sign in
+                </p>
+              </div>
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#e1fce3] px-2 py-0.5 text-[12px] font-medium leading-4 text-[#149d46]">
+                <span className="size-1.5 rounded-full bg-current" />
+                On
+              </span>
+            </div>
+            <div className="mt-3.5">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-[#edeff3] py-2.5 text-[13px] leading-5">
+                <span className="w-[150px] shrink-0 text-[#8491a3]">Method</span>
+                <span className="min-w-0 flex-1 font-medium text-[#070b13]">
+                  Authenticator app · set up 12 Mar 2026
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setDialog("two-step")}
+                  className="font-medium text-primary hover:underline"
+                >
+                  Change
+                </button>
+              </div>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-[#edeff3] py-2.5 text-[13px] leading-5">
+                <span className="w-[150px] shrink-0 text-[#8491a3]">Backup codes</span>
+                <span className="min-w-0 flex-1 font-medium text-[#070b13]">8 of 10 left</span>
+                <button
+                  type="button"
+                  onClick={() => setDialog("codes")}
+                  className="font-medium text-primary hover:underline"
+                >
+                  View codes
+                </button>
+              </div>
+            </div>
+            <div className="mt-3.5 border-t border-[#edeff3] pt-3.5">
+              <SecurityToggle
+                enabled={requireTwoStep}
+                onChange={() => setRequireTwoStep((value) => !value)}
+                label="Require two-step for everyone in this workspace"
+              />
+            </div>
+          </section>
+
+          <section className="rounded-xl border border-[#e5e7eb] bg-white p-5">
+            <div className="flex flex-wrap items-start gap-3">
+              <div className="min-w-0 flex-1">
+                <h2 className="text-[16px] font-semibold leading-6 text-[#070b13]">
+                  Where you’re signed in
+                </h2>
+                <p className="text-[12px] leading-4 text-[#8491a3]">
+                  Sign out anything you don’t recognise
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={signOutAllOthers}
+                disabled={sessions.length === 1}
+                className="h-8 rounded-lg border border-line px-3 text-[13px] font-medium leading-[18px] text-ink hover:bg-subtle disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Sign out all others
+              </button>
+            </div>
+            <div className="mt-3.5 overflow-x-auto rounded-[10px] border border-[#e5e7eb]">
+              <div className="min-w-[610px]">
+                <div className="grid grid-cols-[minmax(190px,1fr)_140px_120px_80px] gap-3 bg-[#f3f5f7] px-3.5 py-[9px] text-[12px] font-medium leading-4 text-[#8491a3]">
+                  <span>DEVICE</span>
+                  <span>LOCATION</span>
+                  <span>LAST ACTIVE</span>
+                  <span />
+                </div>
+                {sessions.map((session) => (
+                  <div
+                    key={session.id}
+                    className="grid grid-cols-[minmax(190px,1fr)_140px_120px_80px] items-center gap-3 border-t border-[#edeff3] px-3.5 py-3 text-[13px] leading-4 text-[#070b13]"
+                  >
+                    <div>
+                      <p>{session.device}</p>
+                      {session.subline && (
+                        <p className="mt-0.5 text-[12px] leading-4 text-[#8491a3]">
+                          {session.subline}
+                        </p>
+                      )}
+                    </div>
+                    <span>{session.location}</span>
+                    <span>{session.active}</span>
+                    {!session.current && (
+                      <button
+                        type="button"
+                        onClick={() => signOut(session.id)}
+                        className="text-left font-medium leading-5 text-primary hover:underline"
+                      >
+                        Sign out
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div className="space-y-5">
+          <section className="rounded-xl border border-[#e5e7eb] bg-white p-5">
+            <h2 className="text-[16px] font-semibold leading-6 text-[#070b13]">Payment safety</h2>
+            <p className="text-[12px] leading-4 text-[#8491a3]">Extra checks before money moves</p>
+            <div className="mt-3.5 space-y-3.5">
+              <SecurityToggle
+                enabled={paymentTwoStep}
+                onChange={() => setPaymentTwoStep((value) => !value)}
+                label="Ask for a two-step code on payments over ₹50,000"
+              />
+              <SecurityToggle
+                enabled={paymentDelay}
+                onChange={() => setPaymentDelay((value) => !value)}
+                label="New payment methods wait 24 h before first use"
+              />
+            </div>
+            <p className="mt-3.5 text-[12px] leading-4 text-[#8491a3]">
+              Works with Spend controls in Billing.
+            </p>
+          </section>
+
+          <section className="rounded-xl border border-[#e5e7eb] bg-white p-5">
+            <h2 className="text-[16px] font-semibold leading-6 text-[#070b13]">Sign-in alerts</h2>
+            <p className="text-[12px] leading-4 text-[#8491a3]">Know when someone signs in</p>
+            <div className="mt-3.5">
+              <SecurityToggle
+                enabled={signInAlerts}
+                onChange={() => setSignInAlerts((value) => !value)}
+                label="Email me about sign-ins from a new device"
+              />
+            </div>
+          </section>
+
+          <section className="rounded-xl border border-[#e5e7eb] bg-white p-5">
+            <div className="flex items-start gap-3">
+              <div className="min-w-0 flex-1">
+                <h2 className="text-[16px] font-semibold leading-6 text-[#070b13]">
+                  Recent activity
+                </h2>
+                <p className="text-[12px] leading-4 text-[#8491a3]">
+                  Last 7 days in this workspace
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAllActivity((value) => !value)}
+                className="shrink-0 text-[12px] font-medium leading-4 text-primary hover:underline"
+              >
+                {showAllActivity ? "Show less" : "View all"}
+              </button>
+            </div>
+            <div className="mt-3.5">
+              {[
+                ["28 Oct, 10:12", "Ananya added Visa •••• 4242"],
+                ["27 Oct, 18:40", "Ananya changed billing address"],
+                ["26 Oct, 09:05", "New sign-in · iPhone 15 · Mumbai"],
+                ...(showAllActivity
+                  ? [["23 Oct, 14:30", "Ananya updated notification settings"]]
+                  : []),
+              ].map(([date, event]) => (
+                <div
+                  key={`${date}-${event}`}
+                  className="flex gap-3 border-t border-[#edeff3] py-2.5 text-[13px] leading-5"
+                >
+                  <span className="w-[100px] shrink-0 text-[#8491a3]">{date}</span>
+                  <span className="font-medium text-[#070b13]">{event}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+
+      {dialog === "email" && (
+        <TeamDialog
+          title="Change email"
+          subtitle="We’ll use this address for sign-in and account notices."
+          close={closeDialog}
+        >
+          <Field label="Email address" value={email} onChange={setEmail} />
+          <div className="mt-5 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={closeDialog}
+              className="h-10 rounded-lg border border-line px-4 text-[14px] font-medium text-ink hover:bg-subtle"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                closeDialog();
+                setNotice("Email address updated.");
+              }}
+              className="h-10 rounded-lg bg-[#0d0d10] px-4 text-[14px] font-medium text-white"
+            >
+              Save email
+            </button>
+          </div>
+        </TeamDialog>
+      )}
+      {dialog === "password" && (
+        <TeamDialog
+          title="Change password"
+          subtitle="Use a unique password you do not use elsewhere."
+          close={closeDialog}
+        >
+          <div className="grid gap-3">
+            <Field
+              label="Current password"
+              value={passwords.current}
+              placeholder="Enter current password"
+              onChange={(current) => setPasswords((value) => ({ ...value, current }))}
+            />
+            <Field
+              label="New password"
+              value={passwords.next}
+              placeholder="At least 12 characters"
+              onChange={(next) => setPasswords((value) => ({ ...value, next }))}
+            />
+          </div>
+          <div className="mt-5 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={closeDialog}
+              className="h-10 rounded-lg border border-line px-4 text-[14px] font-medium text-ink hover:bg-subtle"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                closeDialog();
+                setNotice("Password updated.");
+              }}
+              className="h-10 rounded-lg bg-[#0d0d10] px-4 text-[14px] font-medium text-white"
+            >
+              Update password
+            </button>
+          </div>
+        </TeamDialog>
+      )}
+      {dialog === "two-step" && (
+        <TeamDialog
+          title="Change two-step method"
+          subtitle="Use an authenticator app for the most secure sign-in."
+          close={closeDialog}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              closeDialog();
+              setNotice("Authenticator app remains your two-step method.");
+            }}
+            className="flex w-full items-center justify-between rounded-lg bg-primary-subtle px-3 py-3 text-left text-[13px] font-medium text-primary"
+          >
+            Authenticator app
+            <Check size={16} />
+          </button>
+        </TeamDialog>
+      )}
+      {dialog === "codes" && (
+        <TeamDialog
+          title="Backup codes"
+          subtitle="Store these one-time codes somewhere secure."
+          close={closeDialog}
+        >
+          <div className="grid grid-cols-2 gap-2 rounded-lg bg-subtle p-3 font-mono text-[13px] text-ink">
+            {[
+              "FLW-8241",
+              "FLW-1193",
+              "FLW-4572",
+              "FLW-9031",
+              "FLW-2648",
+              "FLW-7359",
+              "FLW-3184",
+              "FLW-6620",
+            ].map((code) => (
+              <span key={code}>{code}</span>
+            ))}
+          </div>
+          <div className="mt-5 flex justify-end">
+            <button
+              type="button"
+              onClick={() => {
+                closeDialog();
+                setNotice("New backup codes generated.");
+              }}
+              className="h-10 rounded-lg bg-[#0d0d10] px-4 text-[14px] font-medium text-white"
+            >
+              Generate new codes
+            </button>
+          </div>
+        </TeamDialog>
+      )}
+    </motion.div>
+  );
+}
+
 export function BrandSettingsPage() {
   const [activeTab, setActiveTab] = useState<(typeof settingsTabs)[number][0]>("Account");
   return (
@@ -1421,6 +1868,8 @@ export function BrandSettingsPage() {
               <BillingSettings />
             ) : activeTab === "Notifications" ? (
               <NotificationsSettings />
+            ) : activeTab === "Security" ? (
+              <SecuritySettings />
             ) : (
               <section className="rounded-xl border border-line bg-white p-5">
                 <h2 className="text-[16px] font-semibold leading-6 text-ink">{activeTab}</h2>
