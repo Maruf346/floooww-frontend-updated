@@ -1155,6 +1155,234 @@ function BillingSettings() {
   );
 }
 
+type NotificationPreference = {
+  id: string;
+  label: string;
+  description: string;
+  email: boolean | null;
+  inApp: boolean;
+};
+
+const notificationGroups: Array<{
+  label: string;
+  events: NotificationPreference[];
+}> = [
+  {
+    label: "Applications and invites",
+    events: [
+      {
+        id: "new-application",
+        label: "New application",
+        description: "A creator applies to a project",
+        email: false,
+        inApp: true,
+      },
+      {
+        id: "invite-response",
+        label: "Invite accepted or declined",
+        description: "Including counter-offers on fee",
+        email: true,
+        inApp: true,
+      },
+    ],
+  },
+  {
+    label: "Content",
+    events: [
+      {
+        id: "content-for-approval",
+        label: "Content sent for approval",
+        description: "Drafts and files waiting for you",
+        email: true,
+        inApp: true,
+      },
+      {
+        id: "post-live",
+        label: "Post went live",
+        description: "We checked the link works",
+        email: false,
+        inApp: true,
+      },
+      {
+        id: "deliverable-late",
+        label: "Deliverable is late",
+        description: "Not posted by the date you set",
+        email: true,
+        inApp: true,
+      },
+    ],
+  },
+  {
+    label: "Shipping",
+    events: [
+      {
+        id: "product-delivered",
+        label: "Product delivered",
+        description: "Courier or creator confirmed it",
+        email: false,
+        inApp: true,
+      },
+      {
+        id: "delivery-problem",
+        label: "Delivery problem",
+        description: "Returned, damaged or wrong item",
+        email: null,
+        inApp: true,
+      },
+    ],
+  },
+  {
+    label: "Payments",
+    events: [
+      {
+        id: "payment-charged",
+        label: "Payment charged",
+        description: "Into escrow or GST",
+        email: false,
+        inApp: true,
+      },
+      {
+        id: "payment-released",
+        label: "Payment released to a creator",
+        description: "After you approve",
+        email: false,
+        inApp: true,
+      },
+      {
+        id: "refund-dispute",
+        label: "Refund or dispute",
+        description: "Any change to your money",
+        email: true,
+        inApp: true,
+      },
+    ],
+  },
+  {
+    label: "Reports",
+    events: [
+      {
+        id: "weekly-results",
+        label: "Weekly results",
+        description: "Every Monday at 9 am",
+        email: false,
+        inApp: false,
+      },
+    ],
+  },
+];
+
+function NotificationCheckbox({
+  checked,
+  label,
+  onClick,
+}: {
+  checked: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      aria-pressed={checked}
+      onClick={onClick}
+      className={`grid size-4 place-items-center rounded-[4px] border transition focus:outline-none focus:ring-2 focus:ring-primary/25 ${
+        checked
+          ? "border-primary bg-primary text-white"
+          : "border-[#cbd2dc] bg-white text-transparent hover:border-primary"
+      }`}
+    >
+      <Check size={12} strokeWidth={3} aria-hidden="true" />
+    </button>
+  );
+}
+
+function NotificationsSettings() {
+  const [preferences, setPreferences] = useState(() =>
+    Object.fromEntries(
+      notificationGroups.flatMap((group) =>
+        group.events.map((event) => [event.id, { email: event.email, inApp: event.inApp }]),
+      ),
+    ),
+  );
+
+  const togglePreference = (eventId: string, channel: "email" | "inApp") => {
+    setPreferences((current) => ({
+      ...current,
+      [eventId]: {
+        ...current[eventId],
+        [channel]: !current[eventId][channel],
+      },
+    }));
+  };
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.28, ease: "easeOut" }}
+      className="rounded-xl border border-[#e5e7eb] bg-white p-5"
+    >
+      <div>
+        <h2 className="text-[16px] font-semibold leading-6 text-[#070b13]">Notifications</h2>
+        <p className="text-[12px] leading-4 text-[#8491a3]">Choose how you hear about each event</p>
+      </div>
+
+      <div className="mt-4 overflow-x-auto rounded-[10px] border border-[#e5e7eb]">
+        <div className="min-w-[460px]">
+          <div className="grid grid-cols-[minmax(0,1fr)_90px_90px] gap-3 bg-[#f3f5f7] px-3.5 py-[9px] text-[12px] font-medium leading-4 text-[#8491a3]">
+            <span>EVENT</span>
+            <span className="text-center">EMAIL</span>
+            <span className="text-center">IN APP</span>
+          </div>
+
+          {notificationGroups.map((group) => (
+            <div key={group.label}>
+              <p className="border-t border-[#edeff3] px-3.5 pb-1 pt-2.5 text-[13px] font-semibold leading-4 text-[#070b13]">
+                {group.label}
+              </p>
+              {group.events.map((event) => {
+                const preference = preferences[event.id];
+                return (
+                  <div
+                    key={event.id}
+                    className="grid grid-cols-[minmax(0,1fr)_90px_90px] items-center gap-3 px-3.5 py-2"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-[13px] font-medium leading-4 text-[#070b13]">
+                        {event.label}
+                      </p>
+                      <p className="mt-0.5 text-[12px] leading-4 text-[#8491a3]">
+                        {event.description}
+                      </p>
+                    </div>
+                    <div className="flex justify-center">
+                      {preference.email !== null && (
+                        <NotificationCheckbox
+                          checked={preference.email}
+                          label={`${event.label}: email notifications`}
+                          onClick={() => togglePreference(event.id, "email")}
+                        />
+                      )}
+                    </div>
+                    <div className="flex justify-center">
+                      <NotificationCheckbox
+                        checked={preference.inApp}
+                        label={`${event.label}: in-app notifications`}
+                        onClick={() => togglePreference(event.id, "inApp")}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+    </motion.section>
+  );
+}
+
 export function BrandSettingsPage() {
   const [activeTab, setActiveTab] = useState<(typeof settingsTabs)[number][0]>("Account");
   return (
@@ -1191,6 +1419,8 @@ export function BrandSettingsPage() {
               <IntegrationsSettings />
             ) : activeTab === "Billing & tax" ? (
               <BillingSettings />
+            ) : activeTab === "Notifications" ? (
+              <NotificationsSettings />
             ) : (
               <section className="rounded-xl border border-line bg-white p-5">
                 <h2 className="text-[16px] font-semibold leading-6 text-ink">{activeTab}</h2>
