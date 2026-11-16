@@ -1,7 +1,6 @@
 import { useState, type ReactNode } from "react";
 import {
   Bell,
-  BriefcaseBusiness,
   ChevronDown,
   CircleHelp,
   FolderKanban,
@@ -12,6 +11,7 @@ import {
   MessageSquare,
   Search,
   Settings,
+  TrendingUp,
   WalletCards,
   X,
 } from "lucide-react";
@@ -54,14 +54,14 @@ function CreatorSidebar({ close }: { close?: () => void }) {
       <nav className="mt-4 flex flex-col">
         <p className="px-3 pb-1.5 text-[12px] font-semibold leading-4 tracking-[.06em] text-tertiary">MAIN</p>
         <button type="button" className={`${navClass} bg-primary-subtle font-semibold text-primary`}><Home size={18} />Overview</button>
+        <button type="button" className={`${navClass} mt-0.5 text-ink hover:bg-subtle`}><Search size={18} />Project discovery</button>
         <div className="mt-0.5">
           <button type="button" onClick={() => setProjectsOpen((value) => !value)} className={`${navClass} text-ink hover:bg-subtle`} aria-expanded={projectsOpen}><FolderKanban size={18} /><span className="flex-1 text-left">My projects</span><ChevronDown size={14} className={`transition-transform duration-200 ${projectsOpen ? "" : "-rotate-90"}`} /></button>
           {projectsOpen && <div>{projectLinks.map(([label, count]) => <button key={label} type="button" className="flex h-8 w-full items-center gap-2.5 rounded-md px-3 pl-10 text-[13px] text-secondary transition-colors hover:bg-subtle"><span className="size-1 rounded-full bg-current" /><span className="flex-1 text-left">{label}</span><NavCount>{count}</NavCount></button>)}</div>}
         </div>
-        <button type="button" className={`${navClass} mt-0.5 text-ink hover:bg-subtle`}><BriefcaseBusiness size={18} />Find projects</button>
         <button type="button" className={`${navClass} text-ink hover:bg-subtle`}><Image size={18} /><span className="flex-1 text-left">Content</span><NavCount>5</NavCount></button>
         <p className="px-3 pb-1.5 pt-4 text-[12px] font-semibold leading-4 tracking-[.06em] text-tertiary">CONTENT &amp; DATA</p>
-        <button type="button" className={`${navClass} text-ink hover:bg-subtle`}><FolderKanban size={18} />Performance</button>
+        <button type="button" className={`${navClass} text-ink hover:bg-subtle`}><TrendingUp size={18} />Performance</button>
         <button type="button" className={`${navClass} text-ink hover:bg-subtle`}><WalletCards size={18} />Earnings</button>
         <p className="px-3 pb-1.5 pt-4 text-[12px] font-semibold leading-4 tracking-[.06em] text-tertiary">ACCOUNT</p>
         <button type="button" className={`${navClass} text-ink hover:bg-subtle`}><MessageSquare size={18} /><span className="flex-1 text-left">Messages</span><NavCount>3</NavCount></button>
