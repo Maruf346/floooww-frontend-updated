@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowDownToLine,
   CheckCircle2,
@@ -16,7 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { brandPaymentDisputeRoute } from "@/common/constants/routes";
@@ -581,7 +581,7 @@ function TransactionsTable({ rows = transactionRows }: { rows?: Transaction[] })
   );
 }
 
-function Overview() {
+function Overview({ onViewAll }: { onViewAll: () => void }) {
   return (
     <>
       <section className="grid gap-3 rounded-xl border border-line bg-white p-5 sm:grid-cols-2 xl:grid-cols-5">
@@ -637,6 +637,7 @@ function Overview() {
           </h2>
           <button
             type="button"
+            onClick={onViewAll}
             className="text-[12px] font-medium leading-4 text-primary hover:text-[#1d4ed8]"
           >
             View all
@@ -721,8 +722,15 @@ function TabPanel({ tab }: { tab: Exclude<PaymentTab, "Overview"> }) {
 
 export function BrandPaymentsPage() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<PaymentTab>("Overview");
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState<PaymentTab>(() =>
+    new URLSearchParams(window.location.search).get("tab") === "disputes" ? "Disputes" : "Overview",
+  );
   const [raiseDispute, setRaiseDispute] = useState(false);
+
+  useEffect(() => {
+    setActiveTab(new URLSearchParams(location.search).get("tab") === "disputes" ? "Disputes" : "Overview");
+  }, [location.search]);
 
   const downloadStatement = () => {
     const lines = [
@@ -802,7 +810,7 @@ export function BrandPaymentsPage() {
         </nav>
 
         {activeTab === "Overview" ? (
-          <Overview />
+          <Overview onViewAll={() => setActiveTab("Collaborations")} />
         ) : activeTab === "Disputes" ? (
           <DisputesBoard
             onOpen={(dispute) => navigate(brandPaymentDisputeRoute(dispute.id.toLowerCase()))}

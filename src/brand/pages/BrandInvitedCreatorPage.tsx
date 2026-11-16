@@ -463,7 +463,7 @@ function Pipeline({ onView }: { onView: () => void }) {
   );
 }
 
-function Deliverables({ creator }: { creator: CreatorDetail }) {
+function Deliverables({ creator, onViewAll }: { creator: CreatorDetail; onViewAll: () => void }) {
   return (
     <Panel
       title="Deliverables"
@@ -471,6 +471,7 @@ function Deliverables({ creator }: { creator: CreatorDetail }) {
       action={
         <button
           type="button"
+          onClick={onViewAll}
           className="border-0 bg-transparent p-0 text-[12px] font-medium text-primary"
         >
           View all
@@ -2165,7 +2166,7 @@ export function BrandInvitedCreatorPage() {
               <main className="space-y-4">
                 <DeliverableProgress creator={creator} project={project} />
                 <Pipeline onView={() => setTab("Deliverables")} />
-                <Deliverables creator={creator} />
+                <Deliverables creator={creator} onViewAll={() => setTab("Deliverables")} />
               </main>
               <aside className="space-y-4">
                 <NextActions onApprove={() => setApproved(true)} />

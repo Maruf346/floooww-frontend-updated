@@ -2375,7 +2375,7 @@ export function BrandProjectPublishedPage() {
           ) : (
             <InvitedCreatorsEmptyState
               onGoToApplications={() => setTab("Applications")}
-              onFindCreators={() => navigate(ROUTES.brandNewProjectCreators)}
+              onFindCreators={() => navigate(ROUTES.brandCreatorDiscovery)}
             />
           )
         ) : tab === "Brief" ? (
@@ -2498,7 +2498,12 @@ export function BrandProjectPublishedPage() {
                 >
                   Copy project link
                 </Button>
-                <Button leadingIcon={<Search size={16} />}>Find creators</Button>
+                <Button
+                  leadingIcon={<Search size={16} />}
+                  onClick={() => navigate(ROUTES.brandCreatorDiscovery)}
+                >
+                  Find creators
+                </Button>
               </div>
             </motion.section>
           </section>

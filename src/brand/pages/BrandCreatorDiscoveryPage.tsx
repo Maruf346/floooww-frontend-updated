@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Bookmark,
   Check,
@@ -15,6 +16,7 @@ import { motion } from "motion/react";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import { Button } from "@/common/components/ui/Button";
+import { brandCreatorInviteRoute, brandCreatorProfileRoute } from "@/common/constants/routes";
 import type { Platform } from "@/common/types";
 
 const initialFilters = [
@@ -239,12 +241,16 @@ function DiscoveryCreatorCard({
   invited,
   onShortlist,
   onInvite,
+  onMessage,
+  onViewProfile,
 }: {
   creator: DiscoveryCreator;
   shortlisted: boolean;
   invited: boolean;
   onShortlist: () => void;
   onInvite: () => void;
+  onMessage: () => void;
+  onViewProfile: () => void;
 }) {
   return (
     <motion.article
@@ -309,10 +315,10 @@ function DiscoveryCreatorCard({
       </div>
       <div className="mt-auto space-y-2">
         <div className="grid grid-cols-2 gap-2">
-          <Button kind="secondary" size="s" fullWidth>
+          <Button kind="secondary" size="s" fullWidth onClick={onMessage}>
             Message
           </Button>
-          <Button kind="secondary" size="s" fullWidth>
+          <Button kind="secondary" size="s" fullWidth onClick={onViewProfile}>
             View profile
           </Button>
         </div>
@@ -412,6 +418,7 @@ function DiscoveryDropdown({
 }
 
 export function BrandCreatorDiscoveryPage() {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("Kannada skincare creators");
   const [filters, setFilters] = useState<string[]>(initialFilters);
   const [showResults, setShowResults] = useState(false);
@@ -423,6 +430,7 @@ export function BrandCreatorDiscoveryPage() {
   const [niche, setNiche] = useState("Skincare");
   const [fee, setFee] = useState("Up to ₹20K");
   const [sort, setSort] = useState("Match %");
+  const matchedProjectId = projectMatch.startsWith("Glow") ? 3 : projectMatch.startsWith("Skin") ? 6 : 1;
 
   const updateFilter = (prefix: string, nextValue: string | null) => {
     setFilters((items) => [
@@ -610,13 +618,22 @@ export function BrandCreatorDiscoveryPage() {
                     creator={creator}
                     invited={invited.includes(creator.id)}
                     key={creator.id}
-                    onInvite={() => setInvited((items) => [...items, creator.id])}
+                    onInvite={() => {
+                      setInvited((items) => [...items, creator.id]);
+                      navigate(brandCreatorInviteRoute(matchedProjectId, creator.id));
+                    }}
+                    onMessage={() => {
+                      window.location.href = `mailto:?subject=${encodeURIComponent(`Collaboration opportunity — ${creator.name}`)}`;
+                    }}
                     onShortlist={() =>
                       setShortlisted((items) =>
                         items.includes(creator.id)
                           ? items.filter((id) => id !== creator.id)
                           : [...items, creator.id],
                       )
+                    }
+                    onViewProfile={() =>
+                      navigate(brandCreatorProfileRoute(matchedProjectId, creator.id))
                     }
                     shortlisted={shortlisted.includes(creator.id)}
                   />

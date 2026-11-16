@@ -21,6 +21,7 @@ const actions = [
     "Sales for Vitamin-C Serum and Glow Squad are not being tracked since 26 Oct",
     "Now",
     "bg-danger-bg text-danger",
+    ROUTES.brandSettings,
   ],
   [
     FileCheck2,
@@ -28,6 +29,7 @@ const actions = [
     "Vitamin-C Serum - waiting up to 52 h - releases \u20B930,000",
     "Overdue",
     "bg-danger-bg text-danger",
+    ROUTES.brandContentHub,
   ],
   [
     Scale,
@@ -35,6 +37,7 @@ const actions = [
     "Monsoon Sunscreen - Rohan Desai - \u20B97,500 on hold",
     "In 1 d",
     "bg-warning-bg text-warning",
+    `${ROUTES.brandPayments}?tab=disputes`,
   ],
   [
     Gift,
@@ -42,6 +45,7 @@ const actions = [
     "Hydration Bundle - Ishita Rao and 2 others - dispatch by 3 Nov",
     "Due today",
     "bg-warning-bg text-warning",
+    ROUTES.brandProjects,
   ],
 ] as const;
 
@@ -166,11 +170,11 @@ function ActionRequired() {
       <h2 className="text-[16px] font-semibold leading-6">Action required</h2>
       <p className="text-[12px] leading-4 text-secondary">4 things need your attention</p>
       <div className="mt-3">
-        {actions.map(([Icon, title, body, due, tone]) => {
+        {actions.map(([Icon, title, body, due, tone, to]) => {
           const ActionIcon = Icon as typeof Gift;
           return (
-            <button
-              type="button"
+            <Link
+              to={to}
               key={title}
               className="flex w-full items-center gap-3 border-t border-line-subtle py-3 text-left"
             >
@@ -186,7 +190,7 @@ function ActionRequired() {
               >
                 {due}
               </span>
-            </button>
+            </Link>
           );
         })}
       </div>
@@ -225,9 +229,9 @@ function Projects() {
             6 projects - 5 live, 1 starting 4 Nov
           </p>
         </div>
-        <button type="button" className="shrink-0 text-[12px] font-medium text-link">
+        <Link to={ROUTES.brandProjects} className="shrink-0 text-[12px] font-medium text-link">
           View All Projects
-        </button>
+        </Link>
       </div>
       <div className="mt-3 overflow-x-auto">
         <table className="w-full min-w-[700px] text-left">
@@ -289,9 +293,9 @@ function Budget() {
             {"\u20B910,00,000 across 6 projects"}
           </p>
         </div>
-        <button type="button" className="text-[12px] font-medium text-link">
+        <Link to={ROUTES.brandPayments} className="text-[12px] font-medium text-link">
           Payments
-        </button>
+        </Link>
       </div>
       <p className="mt-5 text-[12px] leading-4 text-secondary">Left to commit</p>
       <p className="text-[28px] font-semibold leading-[34px] tracking-[-.02em]">

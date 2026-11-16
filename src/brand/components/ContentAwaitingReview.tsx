@@ -1,5 +1,7 @@
 import { ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { ASSETS } from "@/common/constants/assets";
+import { ROUTES } from "@/common/constants/routes";
 
 const reviewItems = [
   {
@@ -43,12 +45,12 @@ export function ContentAwaitingReview() {
             4 of 9 items shown · oldest waiting 3 days
           </p>
         </div>
-        <button
-          type="button"
+        <Link
+          to={ROUTES.brandContentHub}
           className="inline-flex shrink-0 items-center gap-1 text-[12px] font-medium text-link"
         >
           Review all content <ChevronRight size={14} />
-        </button>
+        </Link>
       </div>
       <div className="mt-3 overflow-x-auto pb-1">
         <div className="grid min-w-[728px] grid-cols-4 gap-4">
