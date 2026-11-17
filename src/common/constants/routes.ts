@@ -51,7 +51,12 @@ export const ROUTES = {
   agency: "/agency",
   creator: "/creator",
   creatorProjects: "/creator/projects",
+  creatorProject: "/creator/projects/:projectId",
+  creatorProjectDetail: "/creator/project",
 } as const;
+
+export const creatorProjectRoute = (projectId: number | string) =>
+  `/creator/projects/${projectId}`;
 
 export const brandProjectRoute = (projectId: number | string) => `/brand/projects/${projectId}`;
 export const brandProjectPerformanceRoute = (projectId: number | string) =>

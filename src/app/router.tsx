@@ -289,6 +289,20 @@ export const router = createBrowserRouter(
               .CreatorProjectDiscoveryPage,
           }),
         },
+        {
+          path: ROUTES.creatorProject,
+          lazy: async () => ({
+            Component: (await import("@/creator/pages/Cr03ProjectPageInfluencerPaidLongTerm"))
+              .default,
+          }),
+        },
+        {
+          path: ROUTES.creatorProjectDetail,
+          lazy: async () => ({
+            Component: (await import("@/creator/pages/Cr03ProjectPageInfluencerPaidLongTerm"))
+              .default,
+          }),
+        },
       ],
     },
   ],

@@ -1,4 +1,5 @@
 import { useMemo, useState, type ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "motion/react";
 import {
   Bookmark,
@@ -16,6 +17,7 @@ import {
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import { RevealGroup, RevealItem } from "@/common/components/motion/Reveal";
 import { DURATION, EASE_OUT } from "@/common/constants/motion";
+import { creatorProjectRoute } from "@/common/constants/routes";
 
 type Platform = "Instagram" | "YouTube";
 
@@ -73,8 +75,21 @@ function Stat({ value, label }: { value: string; label: string }) {
 
 function ProjectCard({ project, saved, applied, onSave, onApply, onMessage }: { project: Project; saved: boolean; applied: boolean; onSave: () => void; onApply: () => void; onMessage: () => void }) {
   return <article className="flex h-full min-w-0 flex-col gap-3.5 rounded-xl border border-line bg-white p-5 shadow-[0_1px_2px_rgba(13,13,16,0.02)]">
-    <img src={project.banner} alt="" className="h-[132px] w-full rounded-lg object-cover" />
-    <div className="flex min-w-0 items-center gap-3"><span className={`grid size-11 shrink-0 place-items-center rounded-[9px] text-[16px] font-semibold text-white ${project.logoClass}`}>{project.initials}</span><div className="min-w-0 flex-1"><h2 className="truncate text-[14px] font-medium leading-[22px] text-ink">{project.name}</h2><p className="truncate text-[12px] leading-4 text-secondary">{project.brand} · {project.meta}</p></div><MatchRing match={project.match} /></div>
+    <Link to={creatorProjectRoute(project.id)} className="block overflow-hidden rounded-lg">
+      <img src={project.banner} alt="" className="h-[132px] w-full rounded-lg object-cover transition-transform duration-200 hover:scale-[1.02]" />
+    </Link>
+    <div className="flex min-w-0 items-center gap-3">
+      <Link to={creatorProjectRoute(project.id)} className={`grid size-11 shrink-0 place-items-center rounded-[9px] text-[16px] font-semibold text-white ${project.logoClass}`}>
+        {project.initials}
+      </Link>
+      <div className="min-w-0 flex-1">
+        <Link to={creatorProjectRoute(project.id)} className="block truncate text-[14px] font-medium leading-[22px] text-ink hover:underline">
+          {project.name}
+        </Link>
+        <p className="truncate text-[12px] leading-4 text-secondary">{project.brand} · {project.meta}</p>
+      </div>
+      <MatchRing match={project.match} />
+    </div>
     <div className="flex min-w-0 items-center gap-1.5"><PlatformLogo platform={project.platform} size={16} /><p className="truncate text-[13px] leading-5 text-ink">{project.platform} · {project.platformLabel}</p><span className="flex-1" />{project.badge && <ProjectBadge badge={project.badge} />}</div>
     <div className="grid grid-cols-3 gap-2"><Stat value={project.fee} label="Fee" /><Stat value={project.deliverables} label="Deliverables" /><Stat value={project.deadline} label={project.deadlineLabel ?? "Apply by"} /></div>
     <p className="text-[13px] leading-5 text-secondary">{project.descriptor}</p>
@@ -114,8 +129,12 @@ function MatchSettings() {
 }
 
 function SavedProjects() {
-  const items = [["MI", "bg-[#3b5bff]", "Monsoon Sunscreen", "Minimalist · apply by 2 Nov"], ["MI", "bg-[#3b5bff]", "Hydration Bundle", "Minimalist · gift · apply by 3 Nov"], ["PP", "bg-[#149d46]", "Clean Beauty Collective", "Petal & Pine · apply by 10 Nov"]] as const;
-  return <section className="rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Saved projects</h2><p className="mt-0.5 text-[12px] leading-4 text-secondary">6 saved · 2 close this week</p><div className="mt-4 space-y-3">{items.map(([initials, color, title, detail]) => <button type="button" key={title} className="flex w-full items-center gap-2.5 text-left"><span className={`grid size-8 shrink-0 place-items-center rounded-md text-[12px] font-semibold text-white ${color}`}>{initials}</span><span className="min-w-0 flex-1"><span className="block truncate text-[14px] font-medium leading-[22px] text-ink">{title}</span><span className="block truncate text-[12px] leading-4 text-secondary">{detail}</span></span><ChevronRight size={14} className="shrink-0 text-secondary" /></button>)}</div><button type="button" className="mt-4 h-10 w-full rounded-md bg-ink px-4 text-[14px] font-medium leading-5 text-white transition hover:bg-ink/85">View all saved</button></section>;
+  const items = [
+    ["MI", "bg-[#3b5bff]", "Monsoon Sunscreen", "Minimalist · apply by 2 Nov", "monsoon-sunscreen"],
+    ["MI", "bg-[#3b5bff]", "Hydration Bundle", "Minimalist · gift · apply by 3 Nov", "hydration-bundle"],
+    ["PP", "bg-[#149d46]", "Clean Beauty Collective", "Petal & Pine · apply by 10 Nov", "clean-beauty"],
+  ] as const;
+  return <section className="rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Saved projects</h2><p className="mt-0.5 text-[12px] leading-4 text-secondary">6 saved · 2 close this week</p><div className="mt-4 space-y-3">{items.map(([initials, color, title, detail, id]) => <Link to={creatorProjectRoute(id)} key={title} className="flex w-full items-center gap-2.5 text-left transition hover:opacity-85"><span className={`grid size-8 shrink-0 place-items-center rounded-md text-[12px] font-semibold text-white ${color}`}>{initials}</span><span className="min-w-0 flex-1"><span className="block truncate text-[14px] font-medium leading-[22px] text-ink">{title}</span><span className="block truncate text-[12px] leading-4 text-secondary">{detail}</span></span><ChevronRight size={14} className="shrink-0 text-secondary" /></Link>)}</div><button type="button" className="mt-4 h-10 w-full rounded-md bg-ink px-4 text-[14px] font-medium leading-5 text-white transition hover:bg-ink/85">View all saved</button></section>;
 }
 
 function RecentSearches() {
