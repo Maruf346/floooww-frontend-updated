@@ -99,7 +99,6 @@ export function CreatorShell({ children }: CreatorShellProps) {
           <main className="min-h-[calc(100dvh-64px)] p-5 sm:p-8">{children}</main>
         </div>
       </div>
-      <button type="button" aria-label="Open Kreyio Assistant" className="fixed bottom-6 right-6 z-20 grid size-14 place-items-center rounded-full bg-ink text-white shadow-[0_16px_40px_-8px_rgba(8,10,20,.14)]"><MessageSquare size={24} /></button>
     </div>
   );
 }

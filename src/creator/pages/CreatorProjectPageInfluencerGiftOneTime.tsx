@@ -30,7 +30,6 @@ const imgPlatformLogo = "https://www.figma.com/api/mcp/asset/6e36843d-5479-4b32-
 const imgIconCheck = "https://www.figma.com/api/mcp/asset/4495b46d-7ed6-44f1-9539-e1cc7f1a7506.svg";
 const imgIcon19 = "https://www.figma.com/api/mcp/asset/205c08ae-82d8-49da-9847-26971e11a6c7.svg";
 const imgIcon20 = "https://www.figma.com/api/mcp/asset/65b31315-c09b-47a1-b9ad-add0e58dcac3.svg";
-const imgIcon21 = "https://www.figma.com/api/mcp/asset/76db217e-a9dc-4764-bd07-b38fbd40b415.svg";
 
 type BadgeProps = {
   className?: string;
@@ -978,11 +977,6 @@ export default function CreatorProjectPageInfluencerGiftOneTime() {
               </p>
             </div>
           </div>
-        </div>
-      </div>
-      <div className="absolute bg-[var(--primary-default,#0d0d10)] content-stretch flex items-center justify-center overflow-clip right-[24px] rounded-[var(--radius-full,999px)] shadow-[0px_16px_40px_-8px_rgba(8,10,20,0.14)] size-[56px] top-[820px]" data-node-id="773:10318" data-name="Chatbot launcher">
-        <div className="relative shrink-0 size-[24px]" data-node-id="I773:10318;19:46" data-name="Icon">
-          <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon21} />
         </div>
       </div>
       <CounterOfferModal

@@ -428,15 +428,6 @@ export function BrandShell({
           </main>
         </div>
       </div>
-      {!hideChat && (
-        <button
-          type="button"
-          className="fixed bottom-6 right-6 z-20 rounded-full bg-primary p-4 text-white shadow-[0_16px_40px_-8px_rgba(8,10,20,.14)]"
-          aria-label="Open Kreyio Assistant"
-        >
-          <MessageSquare size={24} />
-        </button>
-      )}
       {logoutOpen && <LogoutConfirmDialog close={() => setLogoutOpen(false)} confirm={logOut} />}
     </div>
   );
