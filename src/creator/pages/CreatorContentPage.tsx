@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Check, ChevronDown, ChevronUp, Image as ImageIcon } from "lucide-react";
 import { ROUTES } from "@/common/constants/routes";
 
-// Assets extracted from Figma designs (552:277 and 793:13612)
+// Assets extracted from Figma designs (552:277, 793:13612, and 793:13021)
 const imgDot = "https://www.figma.com/api/mcp/asset/9ebb528a-1588-4521-b6ac-d077bc640ff9.svg";
 const imgDot1 = "https://www.figma.com/api/mcp/asset/91e1a14d-9974-404e-9a6a-b54ec2d2a318.svg";
 const imgDot2 = "https://www.figma.com/api/mcp/asset/2d3b438f-eaa6-489f-9c10-32bfd72f9c95.svg";
@@ -41,8 +41,16 @@ const imgIconDropdownArrow = "https://www.figma.com/api/mcp/asset/b62b693f-4950-
 const imgIconGridView = "https://www.figma.com/api/mcp/asset/9060fba3-509b-4b40-bfd4-f0ed5884eb9b.svg";
 const imgIconListView = "https://www.figma.com/api/mcp/asset/4e849046-068d-43b8-947b-d8493e479001.svg";
 const imgPlatformLogo = "https://www.figma.com/api/mcp/asset/ef3e1679-93fa-4b73-87ea-6fc5bc4403a8.svg";
+const imgPlatformLogo1 = "https://www.figma.com/api/mcp/asset/534b76df-bc67-4610-a881-a7b2115dee31.svg";
 const imgIconUsageRights = "https://www.figma.com/api/mcp/asset/5756f26b-0409-4814-ada1-003350673816.svg";
 const imgEmptyMediaIcon = "https://www.figma.com/api/mcp/asset/374ee941-780f-4c23-aa80-4a353b5c9aeb.svg";
+
+// Drawer specific assets (793:13021)
+const imgIconClose = "https://www.figma.com/api/mcp/asset/c5418ee2-fe5a-4fde-ac3e-c439e7eedbf9.svg";
+const imgEllipsePlay = "https://www.figma.com/api/mcp/asset/866edc72-5817-4ecd-9283-3401bcffc3c0.svg";
+const imgPolygonPlay = "https://www.figma.com/api/mcp/asset/d9addc76-551b-4342-ac7f-4c7d8a5834b2.svg";
+const imgIconOfferMoreTime = "https://www.figma.com/api/mcp/asset/737241b8-ef47-493d-b044-f204f95a98f6.svg";
+const imgIconExternalLink = "https://www.figma.com/api/mcp/asset/80d9eb46-4c92-4c29-a110-75bd662037f2.svg";
 
 const imgEllipse = "https://www.figma.com/api/mcp/asset/9479446d-6cb7-44cc-bb1c-cca598774b9b.svg";
 const imgEllipse1 = "https://www.figma.com/api/mcp/asset/1c5a8310-8637-47ce-9042-77b4151c7ac5.svg";
@@ -78,6 +86,14 @@ interface ContentItem {
   views?: string;
   er?: string;
   orders?: number;
+  liveDate?: string;
+  linkClicks?: string;
+  salesDrove?: string;
+  earnings?: string;
+  livePostUrl?: string;
+  trackingLink?: string;
+  couponCode?: string;
+  fileName?: string;
 }
 
 const ALL_CONTENT_ITEMS: ContentItem[] = [
@@ -100,6 +116,14 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     views: "3.0 L",
     er: "6.9%",
     orders: 214,
+    liveDate: "14 Oct",
+    linkClicks: "5,300",
+    salesDrove: "₹78,000",
+    earnings: "₹12,750",
+    livePostUrl: "instagram.com/reel/C8xMeera1",
+    trackingLink: "flw.to/ishita-vcs",
+    couponCode: "ISHITA15 · 236 orders",
+    fileName: "meera_grwm.mp4 · 48 MB",
   },
   {
     id: "cnt-2",
@@ -120,6 +144,14 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     views: "2.6 L",
     er: "7.4%",
     orders: 178,
+    liveDate: "15 Oct",
+    linkClicks: "4,120",
+    salesDrove: "₹62,000",
+    earnings: "₹9,500",
+    livePostUrl: "instagram.com/stories/ishita_launch",
+    trackingLink: "flw.to/ishita-story1",
+    couponCode: "ISHITA15 · 178 orders",
+    fileName: "story_launch_day.mp4 · 32 MB",
   },
   {
     id: "cnt-3",
@@ -137,6 +169,17 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     statsText: "“Add ISHITA15 on screen” · v2 approved 21 Oct",
     usageRightsText: "Organic · 30 days",
     usageRightsType: "organic_active",
+    views: "—",
+    er: "—",
+    orders: 0,
+    liveDate: "Pending v2 review",
+    linkClicks: "0",
+    salesDrove: "₹0",
+    earnings: "₹10,000 (escrow)",
+    livePostUrl: "Draft in upload review",
+    trackingLink: "flw.to/ishita-vcs-r7",
+    couponCode: "ISHITA15",
+    fileName: "v2_results_7days.mp4 · 24 MB",
   },
   {
     id: "cnt-4",
@@ -154,6 +197,17 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     statsText: "Approved · goes live 1 Nov",
     usageRightsText: "Organic · until 31 Jan",
     usageRightsType: "organic_active",
+    views: "Scheduled",
+    er: "—",
+    orders: 0,
+    liveDate: "1 Nov",
+    linkClicks: "0",
+    salesDrove: "₹0",
+    earnings: "₹15,000",
+    livePostUrl: "Scheduled for 1 Nov 2026",
+    trackingLink: "flw.to/glow-squad-1",
+    couponCode: "GLOWISHITA10",
+    fileName: "glow_squad_m1.mp4 · 52 MB",
   },
   {
     id: "cnt-5",
@@ -173,6 +227,14 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     views: "1.2 L",
     er: "6.1%",
     orders: 88,
+    liveDate: "18 Sep",
+    linkClicks: "2,400",
+    salesDrove: "₹34,000",
+    earnings: "₹8,000",
+    livePostUrl: "instagram.com/reel/C7layering",
+    trackingLink: "flw.to/layering-ish",
+    couponCode: "GLOW10",
+    fileName: "serum_layering_edit.mp4 · 41 MB",
   },
   {
     id: "cnt-6",
@@ -192,6 +254,15 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsType: "organic_active",
     views: "42K",
     er: "5.2%",
+    orders: 34,
+    liveDate: "20 Sep",
+    linkClicks: "980",
+    salesDrove: "₹12,400",
+    earnings: "₹4,000",
+    livePostUrl: "instagram.com/stories/night_routine",
+    trackingLink: "flw.to/night-ish",
+    couponCode: "GLOW10",
+    fileName: "night_routine.mp4 · 18 MB",
   },
   {
     id: "cnt-7",
@@ -210,6 +281,14 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsType: "organic_ended",
     views: "1.8 L",
     orders: 58,
+    liveDate: "12 Aug",
+    linkClicks: "1,890",
+    salesDrove: "₹24,500",
+    earnings: "₹7,500",
+    livePostUrl: "instagram.com/reel/velvetlip1",
+    trackingLink: "flw.to/velvet-ishita",
+    couponCode: "VELVET15",
+    fileName: "lipliner_looks.mp4 · 36 MB",
   },
   {
     id: "cnt-8",
@@ -229,6 +308,15 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsType: "organic_active",
     views: "96K",
     er: "6.9%",
+    orders: 45,
+    liveDate: "5 Oct",
+    linkClicks: "1,450",
+    salesDrove: "₹18,000",
+    earnings: "₹6,000",
+    livePostUrl: "instagram.com/reel/dewdrop_mist",
+    trackingLink: "flw.to/dew-ish",
+    couponCode: "DEW10",
+    fileName: "mist_routine.mp4 · 29 MB",
   },
   {
     id: "cnt-9",
@@ -246,6 +334,17 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     statsText: "UGC file · 1080 × 1920 · in their ads",
     usageRightsText: "Paid ads · until 2 Nov",
     usageRightsType: "paid_ads",
+    views: "4.2 L (in ads)",
+    er: "8.1%",
+    orders: 310,
+    liveDate: "20 Sep",
+    linkClicks: "8,900",
+    salesDrove: "₹1,24,000",
+    earnings: "₹22,000",
+    livePostUrl: "Meta Ad Library ID #98231",
+    trackingLink: "flw.to/strand-ad",
+    couponCode: "STRAND20",
+    fileName: "hair_oil_demo_ugc.mp4 · 65 MB",
   },
   {
     id: "cnt-10",
@@ -265,6 +364,14 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsType: "organic_ended",
     views: "1.1 L",
     orders: 140,
+    liveDate: "2 Jul",
+    linkClicks: "3,100",
+    salesDrove: "₹48,000",
+    earnings: "₹11,000",
+    livePostUrl: "instagram.com/reel/summer_glow",
+    trackingLink: "flw.to/summer-ish",
+    couponCode: "SUMMER15",
+    fileName: "summer_glow.mp4 · 38 MB",
   },
   {
     id: "cnt-11",
@@ -284,6 +391,14 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsType: "organic_ended",
     views: "92K",
     orders: 64,
+    liveDate: "15 May",
+    linkClicks: "1,520",
+    salesDrove: "₹21,000",
+    earnings: "₹6,500",
+    livePostUrl: "instagram.com/reel/ubtan_reel",
+    trackingLink: "flw.to/ubtan-ish",
+    couponCode: "KUMKUM10",
+    fileName: "ubtan_glow.mp4 · 31 MB",
   },
   {
     id: "cnt-12",
@@ -303,6 +418,15 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsType: "organic_active",
     views: "41K",
     er: "7.2%",
+    orders: 28,
+    liveDate: "10 Oct",
+    linkClicks: "840",
+    salesDrove: "₹11,200",
+    earnings: "Gifted product",
+    livePostUrl: "instagram.com/reel/petal_rose",
+    trackingLink: "flw.to/petal-rose",
+    couponCode: "PETAL10",
+    fileName: "rose_toner.mp4 · 26 MB",
   },
   // Additional items loaded when clicking "Load more" to complete 18 items
   {
@@ -321,6 +445,16 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     statsText: "Submitted 28 Oct · Brand reviewing",
     usageRightsText: "Organic · 30 days",
     usageRightsType: "organic_active",
+    liveDate: "Pending approval",
+    views: "—",
+    er: "—",
+    orders: 0,
+    salesDrove: "₹0",
+    earnings: "₹5,000",
+    livePostUrl: "Under brand review",
+    trackingLink: "flw.to/unboxing-vcs",
+    couponCode: "ISHITA15",
+    fileName: "unboxing_first_look.mp4 · 22 MB",
   },
   {
     id: "cnt-14",
@@ -341,6 +475,14 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     views: "1.4 L",
     er: "5.8%",
     orders: 72,
+    liveDate: "18 Oct",
+    linkClicks: "2,100",
+    salesDrove: "₹28,500",
+    earnings: "₹8,500",
+    livePostUrl: "instagram.com/reel/texture_comp",
+    trackingLink: "flw.to/texture-vcs",
+    couponCode: "ISHITA15",
+    fileName: "texture_comparison.mp4 · 42 MB",
   },
   {
     id: "cnt-15",
@@ -360,6 +502,15 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsType: "organic_active",
     views: "88K",
     er: "6.1%",
+    orders: 38,
+    liveDate: "14 Oct",
+    linkClicks: "1,200",
+    salesDrove: "₹15,000",
+    earnings: "₹7,000",
+    livePostUrl: "instagram.com/reel/dewdrop_breakdown",
+    trackingLink: "flw.to/dew-breakdown",
+    couponCode: "DEW10",
+    fileName: "routine_breakdown.mp4 · 55 MB",
   },
   {
     id: "cnt-16",
@@ -379,6 +530,14 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsType: "organic_ended",
     views: "64K",
     orders: 42,
+    liveDate: "15 Aug",
+    linkClicks: "1,150",
+    salesDrove: "₹16,800",
+    earnings: "₹4,500",
+    livePostUrl: "instagram.com/stories/velvet_swatch",
+    trackingLink: "flw.to/velvet-swatch",
+    couponCode: "VELVET15",
+    fileName: "swatch_test.mp4 · 19 MB",
   },
   {
     id: "cnt-17",
@@ -398,6 +557,14 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsType: "organic_ended",
     views: "1.1 L",
     orders: 68,
+    liveDate: "28 May",
+    linkClicks: "2,200",
+    salesDrove: "₹26,000",
+    earnings: "₹8,000",
+    livePostUrl: "instagram.com/reel/morning_glow",
+    trackingLink: "flw.to/morning-glow",
+    couponCode: "KUMKUM10",
+    fileName: "morning_glow.mp4 · 46 MB",
   },
   {
     id: "cnt-18",
@@ -417,6 +584,15 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsType: "organic_active",
     views: "53K",
     er: "6.8%",
+    orders: 31,
+    liveDate: "12 Oct",
+    linkClicks: "920",
+    salesDrove: "₹12,500",
+    earnings: "Gifted product",
+    livePostUrl: "instagram.com/reel/floral_test",
+    trackingLink: "flw.to/floral-test",
+    couponCode: "PETAL10",
+    fileName: "floral_toner_test.mp4 · 34 MB",
   },
 ];
 
@@ -431,8 +607,20 @@ export default function CreatorContentPage() {
   // Active Tab
   const [activeTab, setActiveTab] = useState<ContentStatus>("all");
 
-  // Selection state
+  // Selection state (checkboxes)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  // Active Detail Panel (Figma 793:13021)
+  const initialDetailId = searchParams.get("detail");
+  const initialDetailItem = useMemo(() => {
+    if (initialDetailId) {
+      return ALL_CONTENT_ITEMS.find((i) => i.id === initialDetailId) || null;
+    }
+    // Default open on "cnt-1" if requested or null
+    return null;
+  }, [initialDetailId]);
+
+  const [activeDetailItem, setActiveDetailItem] = useState<ContentItem | null>(initialDetailItem);
 
   // Pagination / Load more
   const [itemsLimit, setItemsLimit] = useState(12);
@@ -468,6 +656,18 @@ export default function CreatorContentPage() {
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Keyboard shortcut to close detail panel with Escape
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setActiveDetailItem(null);
+        setOpenDropdown(null);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   // Filtered Items
@@ -552,16 +752,6 @@ export default function CreatorContentPage() {
       return;
     }
     showToast(`Downloading ${selectedIds.size} file${selectedIds.size > 1 ? "s" : ""}...`);
-  };
-
-  const handleToggleEmptyMode = () => {
-    const nextState = !isEmptyMode;
-    setIsEmptyMode(nextState);
-    if (nextState) {
-      setSearchParams({ view: "empty" });
-    } else {
-      setSearchParams({});
-    }
   };
 
   const visibleCards = displayedItems.slice(0, itemsLimit);
@@ -916,19 +1106,20 @@ export default function CreatorContentPage() {
                 <button
                   type="button"
                   onClick={() => setIsEmptyMode(false)}
-                  className={`px-[10px] py-[6px] rounded-[6px] transition cursor-pointer ${
-                    !isEmptyMode ? "bg-white text-[#0d0d10] shadow-xs font-semibold" : "text-[#71717a] hover:text-[#0d0d10]"
-                  }`}
+                  className={`px-[10px] py-[6px] rounded-[6px] transition cursor-pointer ${!isEmptyMode ? "bg-white text-[#0d0d10] shadow-xs font-semibold" : "text-[#71717a] hover:text-[#0d0d10]"
+                    }`}
                   title="View with 18 items (Figma 552:277)"
                 >
                   Content view (18)
                 </button>
                 <button
                   type="button"
-                  onClick={() => setIsEmptyMode(true)}
-                  className={`px-[10px] py-[6px] rounded-[6px] transition cursor-pointer ${
-                    isEmptyMode ? "bg-white text-[#0d0d10] shadow-xs font-semibold" : "text-[#71717a] hover:text-[#0d0d10]"
-                  }`}
+                  onClick={() => {
+                    setIsEmptyMode(true);
+                    setActiveDetailItem(null);
+                  }}
+                  className={`px-[10px] py-[6px] rounded-[6px] transition cursor-pointer ${isEmptyMode ? "bg-white text-[#0d0d10] shadow-xs font-semibold" : "text-[#71717a] hover:text-[#0d0d10]"
+                    }`}
                   title="View empty state (Figma 793:13612)"
                 >
                   Empty state (0)
@@ -940,11 +1131,10 @@ export default function CreatorContentPage() {
                 <button
                   type="button"
                   onClick={handleDownloadSelected}
-                  className={`border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 transition cursor-pointer ${
-                    selectedIds.size > 0
+                  className={`border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 transition cursor-pointer ${selectedIds.size > 0
                       ? "bg-[#0d0d10] text-white hover:bg-[#202024]"
                       : "bg-[var(--bg-surface,white)] text-[color:var(--text-primary,#0d0d10)] hover:bg-[#f4f6fb]"
-                  }`}
+                    }`}
                   data-name="Button"
                 >
                   <div className="relative shrink-0 size-[16px]">
@@ -981,26 +1171,23 @@ export default function CreatorContentPage() {
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id as ContentStatus)}
-                  className={`content-stretch flex gap-[6px] items-center overflow-clip pb-[12px] relative shrink-0 cursor-pointer transition border-b-2 ${
-                    isActive
+                  className={`content-stretch flex gap-[6px] items-center overflow-clip pb-[12px] relative shrink-0 cursor-pointer transition border-b-2 ${isActive
                       ? "border-[var(--primary-default,#0d0d10)] text-[color:var(--primary-default,#0d0d10)] font-medium"
                       : "border-transparent text-[color:var(--text-secondary,#0d0d10)] hover:text-[#0d0d10]"
-                  }`}
+                    }`}
                   data-name={`Tab · ${tab.label}`}
                 >
                   <p className="font-['Inter:Medium'] text-[14px] leading-[22px] whitespace-nowrap">
                     {tab.label}
                   </p>
                   <div
-                    className={`content-stretch flex items-start overflow-clip px-[7px] py-px relative rounded-[var(--radius-full,999px)] shrink-0 ${
-                      isActive ? "bg-[var(--primary-subtle,#f1f4ff)]" : "bg-[var(--bg-muted,#edeff3)]"
-                    }`}
+                    className={`content-stretch flex items-start overflow-clip px-[7px] py-px relative rounded-[var(--radius-full,999px)] shrink-0 ${isActive ? "bg-[var(--primary-subtle,#f1f4ff)]" : "bg-[var(--bg-muted,#edeff3)]"
+                      }`}
                     data-name="count"
                   >
                     <p
-                      className={`font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${
-                        isActive ? "text-[color:var(--primary-default,#0d0d10)]" : "text-[color:var(--text-secondary,#0d0d10)]"
-                      }`}
+                      className={`font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${isActive ? "text-[color:var(--primary-default,#0d0d10)]" : "text-[color:var(--text-secondary,#0d0d10)]"
+                        }`}
                     >
                       {tab.count}
                     </p>
@@ -1070,7 +1257,7 @@ export default function CreatorContentPage() {
               </div>
             </div>
           ) : (
-            /* VIEW: ACTIVE CONTENT STATE (Figma Node 552:277) */
+            /* VIEW: ACTIVE CONTENT STATE (Figma Node 552:277 & 793:13021) */
             <div className="w-full flex flex-col gap-[16px]" ref={dropdownRef}>
               {/* Toolbar */}
               <div className="content-stretch flex gap-[8px] items-center overflow-visible relative shrink-0 w-full" data-name="Toolbar">
@@ -1354,17 +1541,22 @@ export default function CreatorContentPage() {
                 </div>
               </div>
 
-              {/* CARD GRID LAYOUT (4 Columns matching Figma 552:277) */}
+              {/* CARD GRID LAYOUT (4 Columns matching Figma 552:277 & 793:13021) */}
               {viewMode === "grid" ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[16px] w-full" data-name="Grid">
                   {visibleCards.map((item) => {
                     const isSelected = selectedIds.has(item.id);
+                    const isDetailActive = activeDetailItem?.id === item.id;
                     return (
                       <div
                         key={item.id}
-                        onClick={() => toggleSelect(item.id)}
-                        className={`bg-[var(--bg-surface,white)] border border-solid content-stretch flex flex-col gap-[10px] items-start overflow-clip pb-[12px] relative rounded-[var(--radius-lg,12px)] transition cursor-pointer group hover:shadow-md ${
-                          isSelected ? "border-[#0d0d10] ring-2 ring-[#0d0d10]" : "border-[var(--border-default,#e3e5ec)]"
+                        onClick={() => setActiveDetailItem(item)}
+                        className={`bg-[var(--bg-surface,white)] border content-stretch flex flex-col gap-[10px] items-start overflow-clip pb-[12px] relative rounded-[var(--radius-lg,12px)] transition cursor-pointer group hover:shadow-md ${
+                          isDetailActive
+                            ? "border-[#3b5bff] ring-2 ring-[#3b5bff]"
+                            : isSelected
+                            ? "border-[#0d0d10] ring-1 ring-[#0d0d10]"
+                            : "border-[var(--border-default,#e3e5ec)]"
                         }`}
                         data-name={`Tile · ${item.title}`}
                       >
@@ -1517,12 +1709,13 @@ export default function CreatorContentPage() {
                   </div>
                   {visibleCards.map((item) => {
                     const isSelected = selectedIds.has(item.id);
+                    const isDetailActive = activeDetailItem?.id === item.id;
                     return (
                       <div
                         key={item.id}
-                        onClick={() => toggleSelect(item.id)}
+                        onClick={() => setActiveDetailItem(item)}
                         className={`px-4 py-3 flex items-center gap-3 transition cursor-pointer hover:bg-[#f9fafb] ${
-                          isSelected ? "bg-blue-50/40" : ""
+                          isDetailActive ? "bg-blue-50/70 border-l-4 border-l-[#3b5bff]" : isSelected ? "bg-blue-50/40" : ""
                         }`}
                       >
                         <div
@@ -1604,6 +1797,294 @@ export default function CreatorContentPage() {
           )}
         </div>
       </div>
-    </div>
+
+      {/* DETAIL DRAWER / PANEL (Figma Node 793:13021) */}
+      {activeDetailItem && (
+        <>
+          {/* Subtle dim backdrop */}
+          <div
+            className="fixed inset-0 bg-black/20 z-40 transition-opacity"
+            onClick={() => setActiveDetailItem(null)}
+          />
+
+          <div
+            className="fixed inset-y-0 right-0 z-50 bg-[var(--bg-surface,white)] content-stretch flex flex-col gap-[18px] h-screen items-start overflow-y-auto p-[24px] shadow-[-8px_0px_32px_0px_rgba(0,0,0,0.18)] w-[520px] max-w-[92vw] animate-in slide-in-from-right duration-250 [scrollbar-width:thin]"
+            data-node-id="793:13292"
+            data-name="Detail panel"
+          >
+            {/* Header */}
+            <div className="content-stretch flex gap-[8px] items-start overflow-clip relative shrink-0 w-full" data-node-id="793:13293" data-name="h">
+              <div className="content-stretch flex flex-[1_0_0] flex-col gap-[4px] items-start min-w-px overflow-clip relative" data-name="t">
+                <p className="font-['Inter:Semi_Bold'] font-semibold leading-[24px] text-[16px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                  {activeDetailItem.title}
+                </p>
+                <div className="content-stretch flex gap-[6px] items-center overflow-clip relative shrink-0" data-name="m">
+                  <div className="relative shrink-0 size-[16px]">
+                    <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgPlatformLogo1} />
+                  </div>
+                  <p className="font-['Inter:Regular'] font-normal leading-[16px] text-[12px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap">
+                    {activeDetailItem.brand} · {activeDetailItem.campaign} · live {activeDetailItem.liveDate || "14 Oct"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Status Badge */}
+              {activeDetailItem.statusCode === "live" && (
+                <div className="bg-[var(--status-success-bg,#e1fce3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0">
+                  <div className="relative shrink-0 size-[6px]">
+                    <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgDot} />
+                  </div>
+                  <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[color:var(--status-success-fg,#16a34a)] whitespace-nowrap">
+                    Live
+                  </p>
+                </div>
+              )}
+              {activeDetailItem.statusCode === "changes_requested" && (
+                <div className="bg-[var(--status-danger-bg,#fde4e3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0">
+                  <div className="relative shrink-0 size-[6px]">
+                    <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgDot1} />
+                  </div>
+                  <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[#dc2626] whitespace-nowrap">
+                    Changes requested
+                  </p>
+                </div>
+              )}
+              {activeDetailItem.statusCode === "approved" && (
+                <div className="bg-[var(--status-info-bg,#f1f4ff)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0">
+                  <div className="relative shrink-0 size-[6px]">
+                    <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgDot2} />
+                  </div>
+                  <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[color:var(--status-info-fg,#3b5bff)] whitespace-nowrap">
+                    Approved
+                  </p>
+                </div>
+              )}
+              {activeDetailItem.statusCode === "used_in_ads" && (
+                <div className="bg-[var(--primary-muted,#e3e9ff)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0">
+                  <div className="relative shrink-0 size-[6px]">
+                    <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgDot3} />
+                  </div>
+                  <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[#3b5bff] whitespace-nowrap">
+                    Used in ads
+                  </p>
+                </div>
+              )}
+              {activeDetailItem.statusCode === "waiting" && (
+                <div className="bg-[#feefce] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0">
+                  <div className="relative shrink-0 size-[6px] rounded-full bg-[#f59e0b]" />
+                  <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[#b45309] whitespace-nowrap">
+                    Waiting for approval
+                  </p>
+                </div>
+              )}
+
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={() => setActiveDetailItem(null)}
+                className="relative shrink-0 size-[24px] p-0.5 rounded hover:bg-[#f4f6fb] transition cursor-pointer flex items-center justify-center"
+                data-node-id="793:13300"
+                data-name="Icon"
+                aria-label="Close"
+              >
+                <img alt="Close" className="size-[18px]" src={imgIconClose} />
+              </button>
+            </div>
+
+            {/* Media Row: 170px preview + "Your results" stats */}
+            <div className="content-stretch flex gap-[16px] items-start overflow-clip relative shrink-0 w-full" data-node-id="793:13301" data-name="Row">
+              {/* Video Thumbnail (170px x 300px) */}
+              <div className="h-[300px] overflow-clip relative rounded-[10px] shrink-0 w-[170px] bg-slate-900 shadow-xs" data-node-id="793:13302" data-name="Video">
+                <img
+                  alt={activeDetailItem.title}
+                  className="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[10px] size-full"
+                  src={activeDetailItem.mediaUrl}
+                />
+                {/* Center Play Button Overlay */}
+                <div className="absolute left-[63px] size-[44px] top-[128px]" data-name="Ellipse">
+                  <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgEllipsePlay} />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <img alt="Play" className="size-[16px] ml-0.5" src={imgPolygonPlay} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Column: Your Results */}
+              <div className="content-stretch flex flex-[1_0_0] flex-col gap-[10px] items-start min-w-px not-italic overflow-clip relative" data-node-id="793:13305" data-name="Column">
+                <p className="font-['Inter:Medium'] font-medium leading-[22px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                  Your results
+                </p>
+                <div className="content-stretch flex gap-[8px] items-center overflow-clip relative shrink-0 w-full" data-name="kv">
+                  <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] text-[13px] text-[color:var(--text-secondary,#0d0d10)]">
+                    Views
+                  </p>
+                  <p className="font-['Inter:Medium'] font-medium leading-[22px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                    {activeDetailItem.views || "3.0 L"}
+                  </p>
+                </div>
+                <div className="content-stretch flex gap-[8px] items-center overflow-clip relative shrink-0 w-full" data-name="kv">
+                  <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] text-[13px] text-[color:var(--text-secondary,#0d0d10)]">
+                    Engagement rate
+                  </p>
+                  <p className="font-['Inter:Medium'] font-medium leading-[22px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                    {activeDetailItem.er || "6.9%"}
+                  </p>
+                </div>
+                <div className="content-stretch flex gap-[8px] items-center overflow-clip relative shrink-0 w-full" data-name="kv">
+                  <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] text-[13px] text-[color:var(--text-secondary,#0d0d10)]">
+                    Link clicks
+                  </p>
+                  <p className="font-['Inter:Medium'] font-medium leading-[22px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                    {activeDetailItem.linkClicks || "5,300"}
+                  </p>
+                </div>
+                <div className="content-stretch flex gap-[8px] items-center overflow-clip relative shrink-0 w-full" data-name="kv">
+                  <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] text-[13px] text-[color:var(--text-secondary,#0d0d10)]">
+                    Orders
+                  </p>
+                  <p className="font-['Inter:Medium'] font-medium leading-[22px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                    {activeDetailItem.orders ?? 214}
+                  </p>
+                </div>
+                <div className="content-stretch flex gap-[8px] items-center overflow-clip relative shrink-0 w-full" data-name="kv">
+                  <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] text-[13px] text-[color:var(--text-secondary,#0d0d10)]">
+                    Sales you drove
+                  </p>
+                  <p className="font-['Inter:Medium'] font-medium leading-[22px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                    {activeDetailItem.salesDrove || "₹78,000"}
+                  </p>
+                </div>
+                <div className="content-stretch flex gap-[8px] items-center overflow-clip relative shrink-0 w-full" data-name="kv">
+                  <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] text-[13px] text-[color:var(--text-secondary,#0d0d10)]">
+                    You were paid
+                  </p>
+                  <p className="font-['Inter:Medium'] font-medium leading-[22px] text-[14px] text-[color:var(--status-success-fg,#16a34a)] whitespace-nowrap">
+                    {activeDetailItem.earnings || "₹12,750"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Usage Rights Box */}
+            <div className="border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-col gap-[8px] items-start overflow-clip p-[14px] relative rounded-[var(--radius-md,8px)] shrink-0 w-full" data-node-id="793:13325" data-name="Usage">
+              <p className="font-['Inter:Medium'] font-medium leading-[22px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="793:13326">
+                Usage rights
+              </p>
+              <div className="content-stretch flex gap-[8px] items-center not-italic overflow-clip relative shrink-0 w-full" data-name="kv">
+                <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] text-[13px] text-[color:var(--text-secondary,#0d0d10)]">
+                  {activeDetailItem.brand} may use it for
+                </p>
+                <p className="font-['Inter:Medium'] font-medium leading-[22px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                  Organic reposts on {activeDetailItem.brand}’s Instagram
+                </p>
+              </div>
+              <div className="content-stretch flex gap-[8px] items-center not-italic overflow-clip relative shrink-0 w-full" data-name="kv">
+                <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] text-[13px] text-[color:var(--text-secondary,#0d0d10)]">
+                  Until
+                </p>
+                <p className="font-['Inter:Medium'] font-medium leading-[22px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                  {activeDetailItem.usageRightsText} · 37 days left
+                </p>
+              </div>
+              <div className="content-stretch flex gap-[8px] items-center not-italic overflow-clip relative shrink-0 w-full" data-name="kv">
+                <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] text-[13px] text-[color:var(--text-secondary,#0d0d10)]">
+                  Paid ads
+                </p>
+                <p className="font-['Inter:Medium'] font-medium leading-[22px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                  {activeDetailItem.usageRightsType === "paid_ads" ? "Included" : "Not included"}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => showToast(`Sent request to ${activeDetailItem.brand} to offer extended usage rights.`)}
+                className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] h-[32px] items-center justify-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#f4f6fb] transition cursor-pointer mt-1"
+                data-name="Button"
+              >
+                <div className="relative shrink-0 size-[14px]">
+                  <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconOfferMoreTime} />
+                </div>
+                <p className="font-['Inter:Medium'] font-medium leading-[18px] text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                  Offer more time
+                </p>
+              </button>
+            </div>
+
+            {/* Links and files Box */}
+            <div className="border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-col gap-[8px] items-start not-italic overflow-clip p-[14px] relative rounded-[var(--radius-md,8px)] shrink-0 w-full" data-node-id="793:13339" data-name="Links">
+              <p className="font-['Inter:Medium'] font-medium leading-[22px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                Links and files
+              </p>
+              <div className="content-stretch flex font-['Inter:Regular'] font-normal gap-[8px] items-center leading-[20px] overflow-clip relative shrink-0 text-[13px] w-full" data-name="kv">
+                <p className="flex-[1_0_0] text-[color:var(--text-secondary,#0d0d10)]">
+                  Live post
+                </p>
+                <a
+                  href={`https://${activeDetailItem.livePostUrl || "instagram.com/reel/C8xMeera1"}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[color:var(--text-link,#3b5bff)] hover:underline whitespace-nowrap"
+                >
+                  {activeDetailItem.livePostUrl || "instagram.com/reel/C8xMeera1"}
+                </a>
+              </div>
+              <div className="content-stretch flex gap-[8px] items-center overflow-clip relative shrink-0 w-full" data-name="kv">
+                <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] text-[13px] text-[color:var(--text-secondary,#0d0d10)]">
+                  Tracking link
+                </p>
+                <p className="font-['Inter:Medium'] font-medium leading-[22px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                  {activeDetailItem.trackingLink || "flw.to/ishita-vcs"}
+                </p>
+              </div>
+              <div className="content-stretch flex gap-[8px] items-center overflow-clip relative shrink-0 w-full" data-name="kv">
+                <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] text-[13px] text-[color:var(--text-secondary,#0d0d10)]">
+                  Coupon
+                </p>
+                <p className="font-['Inter:Medium'] font-medium leading-[22px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                  {activeDetailItem.couponCode || "ISHITA15 · 236 orders"}
+                </p>
+              </div>
+              <div className="content-stretch flex gap-[8px] items-center overflow-clip relative shrink-0 w-full" data-name="kv">
+                <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] text-[13px] text-[color:var(--text-secondary,#0d0d10)]">
+                  Original file
+                </p>
+                <p className="font-['Inter:Medium'] font-medium leading-[22px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                  {activeDetailItem.fileName || "meera_grwm.mp4 · 48 MB"}
+                </p>
+              </div>
+            </div>
+
+        {/* Bottom Action Buttons: Download & Open Project */}
+        <div className="content-stretch flex gap-[8px] items-start overflow-clip relative shrink-0 w-full mt-auto pt-2" data-node-id="793:13353" data-name="btns">
+          <button
+            type="button"
+            onClick={() => showToast(`Downloading ${activeDetailItem.fileName || "original deliverable file"}...`)}
+            className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-[1_0_0] gap-[8px] h-[40px] items-center justify-center min-w-px overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] hover:bg-[#f4f6fb] transition cursor-pointer"
+            data-name="Button"
+          >
+            <div className="relative shrink-0 size-[16px]">
+              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconDownload} />
+            </div>
+            <p className="font-['Inter:Medium'] font-medium leading-[20px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+              Download
+            </p>
+          </button>
+          <Link
+            to="/creator/project"
+            className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-[1_0_0] gap-[8px] h-[40px] items-center justify-center min-w-px overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
+            data-name="Button"
+          >
+            <div className="relative shrink-0 size-[16px]">
+              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconExternalLink} />
+            </div>
+            <p className="font-['Inter:Medium'] font-medium leading-[20px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+              Open project
+            </p>
+          </Link>
+        </div>
+      </div>
+    </>
+  )
+}
+    </div >
   );
 }
