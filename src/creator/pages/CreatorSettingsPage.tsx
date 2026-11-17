@@ -92,6 +92,115 @@ export default function CreatorSettingsPage() {
   } | null>(null);
   const [selectedConnectChannel, setSelectedConnectChannel] = useState<string | null>(null);
   const [isAddToolModalOpen, setIsAddToolModalOpen] = useState(false);
+
+  // Payouts & tax state
+  const [bankAccount, setBankAccount] = useState({
+    bankName: "HDFC Bank",
+    accountNumberMasked: "···· 4821",
+    accountNumber: "50100482194821",
+    accountHolder: "Ishita Rao",
+    accountType: "savings",
+    verifiedDate: "verified 4 Jan 2025",
+    isDefault: true,
+  });
+
+  const [upiDetails, setUpiDetails] = useState({
+    upiId: "ishita@okhdfcbank",
+    note: "Backup if a bank transfer fails",
+  });
+
+  const [taxDetails, setTaxDetails] = useState({
+    legalName: "Ishita Rao",
+    gstin: "Not registered · under ₹20 L a year",
+    address: "Chennai, Tamil Nadu",
+    placeOfSupply: "Tamil Nadu",
+    invoicesTo: "ishita@ishitarao.in",
+  });
+
+  const [payoutsList] = useState([
+    {
+      id: "1",
+      date: "21 Oct",
+      invoiceId: "FLW-P-2110-1043",
+      project: "Vitamin-C Serum · Reel 2",
+      subtitle: "",
+      amount: "₹12,750",
+      status: "Paid",
+    },
+    {
+      id: "2",
+      date: "16 Oct",
+      invoiceId: "FLW-P-1610-0997",
+      project: "Vitamin-C Serum · Reel 1",
+      subtitle: "",
+      amount: "₹12,750",
+      status: "Paid",
+    },
+    {
+      id: "3",
+      date: "14 Sep",
+      invoiceId: "FLW-P-1409-0856",
+      project: "Mist launch",
+      subtitle: "gift + fee",
+      amount: "₹5,340",
+      status: "Paid",
+    },
+    {
+      id: "4",
+      date: "2 Sep",
+      invoiceId: "FLW-P-0209-0811",
+      project: "Lip Liner Collab",
+      subtitle: "2 Reels",
+      amount: "₹22,320",
+      status: "Paid",
+    },
+  ]);
+
+  const [isAddPaymentMethodModalOpen, setIsAddPaymentMethodModalOpen] = useState(false);
+  const [isEditBankModalOpen, setIsEditBankModalOpen] = useState(false);
+  const [isEditUpiModalOpen, setIsEditUpiModalOpen] = useState(false);
+  const [isEditTaxModalOpen, setIsEditTaxModalOpen] = useState(false);
+
+  const handleDownloadInvoice = (invoiceId: string) => {
+    const element = document.createElement("a");
+    const file = new Blob(
+      [
+        `INVOICE: ${invoiceId}\nLegal Name: ${taxDetails.legalName}\nDate: ${new Date().toLocaleDateString()}\nStatus: Paid\n\nThank you for collaborating through Floooww / Kreyio!`,
+      ],
+      { type: "text/plain" }
+    );
+    element.href = URL.createObjectURL(file);
+    element.download = `${invoiceId}.txt`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+    showToast(`Downloaded invoice ${invoiceId}`);
+  };
+
+  const handleDownloadAllPayouts = () => {
+    const content = payoutsList
+      .map(
+        (p) =>
+          `${p.date} | Invoice: ${p.invoiceId} | Project: ${p.project}${
+            p.subtitle ? ` (${p.subtitle})` : ""
+          } | Net: ${p.amount} | Status: ${p.status}`
+      )
+      .join("\n");
+    const file = new Blob(
+      [
+        `ALL PAYOUTS STATEMENT\nCreator: ${taxDetails.legalName} (${taxDetails.invoicesTo})\nGenerated: ${new Date().toLocaleDateString()}\n\n${content}`,
+      ],
+      { type: "text/plain" }
+    );
+    const element = document.createElement("a");
+    element.href = URL.createObjectURL(file);
+    element.download = `Payouts_Statement_${new Date().getFullYear()}.txt`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+    showToast("Downloaded all payouts statement.");
+  };
+
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -956,43 +1065,196 @@ export default function CreatorSettingsPage() {
 
           {/* 5. Tab Content: Payouts & Tax */}
           {activeTab === "payouts" && (
-            <div className="bg-white border border-[#e3e5ec] rounded-[12px] p-6 max-w-3xl flex flex-col gap-6 shadow-2xs">
-              <div>
-                <h2 className="text-[16px] font-semibold text-[#0d0d10]">Payout methods &amp; Tax IDs</h2>
-                <p className="text-[13px] text-[#71717a] mt-1">
-                  Manage bank account details, UPI ID, PAN, and GSTIN registered for escrow disbursements.
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-4">
-                <div className="border border-[#e3e5ec] p-4 rounded-xl flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-lg bg-[#f1f4ff] text-[#3b5bff] flex items-center justify-center">
-                      <Building2 className="size-5" />
+            <div className="flex flex-col gap-6 w-full">
+              {/* Top Row: Payment Methods & Tax Details */}
+              <div className="flex flex-col lg:flex-row gap-5 items-stretch w-full">
+                {/* Left Card: Where we pay you */}
+                <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5 flex-1 flex flex-col gap-3.5">
+                  <div className="flex items-center justify-between gap-2 w-full">
+                    <div className="flex flex-col gap-0.5">
+                      <h2 className="text-[16px] font-semibold text-[#070b13] leading-5">
+                        Where we pay you
+                      </h2>
+                      <p className="text-[12px] text-[#8491a3] leading-4">
+                        Released fees reach this account 2 days after approval
+                      </p>
                     </div>
-                    <div>
-                      <p className="text-[14px] font-semibold text-[#0d0d10]">HDFC Bank ···· 4821</p>
-                      <p className="text-[12px] text-[#71717a]">IFSC: HDFC0001234 · Primary account</p>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsAddPaymentMethodModalOpen(true)}
+                      className="h-8 px-3 rounded-[8px] border border-[#e3e5ec] bg-white text-[13px] font-medium text-[#0d0d10] hover:bg-[#f8f9fb] transition cursor-pointer shrink-0"
+                    >
+                      Add method
+                    </button>
                   </div>
-                  <span className="text-[12px] font-medium text-[#16a34a] bg-[#e1fce3] px-2.5 py-0.5 rounded-full">
-                    Active
-                  </span>
+
+                  {/* Method 1: HDFC Bank */}
+                  <div className="border-t border-[#edeff3] pt-3 pb-3 flex items-center justify-between gap-3 w-full">
+                    <div className="flex flex-col gap-0.5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[14px] font-medium text-[#070b13]">
+                          {bankAccount.bankName} {bankAccount.accountNumberMasked}
+                        </span>
+                        {bankAccount.isDefault && (
+                          <span className="bg-[#f1f4ff] text-[#3b5bff] text-[12px] font-medium px-2 py-0.5 rounded-full leading-normal">
+                            Default
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[12px] text-[#8491a3] leading-normal">
+                        {bankAccount.accountHolder} · {bankAccount.accountType} · {bankAccount.verifiedDate}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditBankModalOpen(true)}
+                      className="text-[13px] font-medium text-[#3b5bff] hover:underline cursor-pointer shrink-0"
+                    >
+                      Edit
+                    </button>
+                  </div>
+
+                  {/* Method 2: UPI */}
+                  <div className="border-t border-[#edeff3] pt-3 pb-3 flex items-center justify-between gap-3 w-full">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-[14px] font-medium text-[#070b13]">
+                        UPI · {upiDetails.upiId}
+                      </span>
+                      <p className="text-[12px] text-[#8491a3] leading-normal">
+                        {upiDetails.note}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditUpiModalOpen(true)}
+                      className="text-[13px] font-medium text-[#3b5bff] hover:underline cursor-pointer shrink-0"
+                    >
+                      Edit
+                    </button>
+                  </div>
                 </div>
 
-                <div className="border border-[#e3e5ec] p-4 rounded-xl flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-lg bg-[#f4f6fb] text-[#4a4a55] flex items-center justify-center">
-                      <CreditCard className="size-5" />
+                {/* Right Card: Tax Details */}
+                <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5 w-full lg:w-[380px] shrink-0 flex flex-col gap-3.5">
+                  <div className="flex items-center justify-between gap-2 w-full">
+                    <div className="flex flex-col gap-0.5">
+                      <h2 className="text-[16px] font-semibold text-[#070b13] leading-5">
+                        Tax details
+                      </h2>
+                      <p className="text-[12px] text-[#8491a3] leading-4">
+                        Used on the invoices Kreyio makes for you
+                      </p>
                     </div>
-                    <div>
-                      <p className="text-[14px] font-semibold text-[#0d0d10]">UPI ID: ishita@okhdfc</p>
-                      <p className="text-[12px] text-[#71717a]">Instant transfer backup</p>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditTaxModalOpen(true)}
+                      className="h-8 px-3 rounded-[8px] border border-[#e3e5ec] bg-white text-[13px] font-medium text-[#0d0d10] hover:bg-[#f8f9fb] transition cursor-pointer shrink-0"
+                    >
+                      Edit
+                    </button>
+                  </div>
+
+                  <div className="flex flex-col text-[13px]">
+                    <div className="border-t border-[#edeff3] py-2.5 flex items-center">
+                      <span className="text-[#8491a3] w-[110px] shrink-0">Legal name</span>
+                      <span className="font-medium text-[#070b13] flex-1">{taxDetails.legalName}</span>
+                    </div>
+                    <div className="border-t border-[#edeff3] py-2.5 flex items-center">
+                      <span className="text-[#8491a3] w-[110px] shrink-0">GSTIN</span>
+                      <span className="font-medium text-[#070b13] flex-1">{taxDetails.gstin}</span>
+                    </div>
+                    <div className="border-t border-[#edeff3] py-2.5 flex items-center">
+                      <span className="text-[#8491a3] w-[110px] shrink-0">Address</span>
+                      <span className="font-medium text-[#070b13] flex-1">{taxDetails.address}</span>
+                    </div>
+                    <div className="border-t border-[#edeff3] py-2.5 flex items-center">
+                      <span className="text-[#8491a3] w-[110px] shrink-0">Place of supply</span>
+                      <span className="font-medium text-[#070b13] flex-1">{taxDetails.placeOfSupply}</span>
+                    </div>
+                    <div className="border-t border-[#edeff3] py-2.5 flex items-center">
+                      <span className="text-[#8491a3] w-[110px] shrink-0">Invoices to</span>
+                      <span className="font-medium text-[#070b13] flex-1">{taxDetails.invoicesTo}</span>
                     </div>
                   </div>
-                  <span className="text-[12px] font-medium text-[#16a34a] bg-[#e1fce3] px-2.5 py-0.5 rounded-full">
-                    Verified
-                  </span>
+                </div>
+              </div>
+
+              {/* Bottom Card: Invoices / Payouts */}
+              <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5 flex flex-col gap-3.5 w-full">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+                  <div className="flex flex-col gap-0.5">
+                    <h2 className="text-[16px] font-semibold text-[#070b13] leading-5">
+                      Payouts
+                    </h2>
+                    <p className="text-[12px] text-[#8491a3] leading-4">
+                      Every payout with its invoice · 11% Kreyio fee shown on each payout · GST is paid by the brand on top
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleDownloadAllPayouts}
+                    className="h-8 px-3 rounded-[8px] border border-[#e3e5ec] bg-white text-[13px] font-medium text-[#0d0d10] hover:bg-[#f8f9fb] transition cursor-pointer self-start sm:self-auto shrink-0"
+                  >
+                    Download all
+                  </button>
+                </div>
+
+                {/* Table */}
+                <div className="border border-[#e5e7eb] rounded-[10px] overflow-hidden w-full">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse min-w-[700px]">
+                      <thead>
+                        <tr className="bg-[#f3f5f7] text-[12px] font-medium text-[#8491a3] border-b border-[#e5e7eb]">
+                          <th className="py-2.5 px-3.5 w-[90px]">DATE</th>
+                          <th className="py-2.5 px-3.5 w-[150px]">INVOICE</th>
+                          <th className="py-2.5 px-3.5">PROJECT</th>
+                          <th className="py-2.5 px-3.5 w-[110px]">AMOUNT</th>
+                          <th className="py-2.5 px-3.5 w-[110px]">STATUS</th>
+                          <th className="py-2.5 px-3.5 w-[80px] text-right"></th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#edeff3] text-[13px]">
+                        {payoutsList.map((p) => (
+                          <tr key={p.id} className="hover:bg-[#fafafa] transition">
+                            <td className="py-3 px-3.5 font-medium text-[#070b13] whitespace-nowrap">
+                              {p.date}
+                            </td>
+                            <td className="py-3 px-3.5 text-[#070b13] whitespace-nowrap">
+                              {p.invoiceId}
+                            </td>
+                            <td className="py-3 px-3.5">
+                              <div className="flex flex-col">
+                                <span className="text-[#070b13]">{p.project}</span>
+                                {p.subtitle && (
+                                  <span className="text-[12px] text-[#8491a3]">
+                                    {p.subtitle}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="py-3 px-3.5 text-[#070b13] whitespace-nowrap">
+                              {p.amount}
+                            </td>
+                            <td className="py-3 px-3.5 whitespace-nowrap">
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[12px] font-medium bg-[#e1fce3] text-[#149d46]">
+                                <span className="size-1.5 rounded-full bg-[#149d46]" />
+                                Paid
+                              </span>
+                            </td>
+                            <td className="py-3 px-3.5 text-right whitespace-nowrap">
+                              <button
+                                type="button"
+                                onClick={() => handleDownloadInvoice(p.invoiceId)}
+                                className="text-[13px] font-medium text-[#3b5bff] hover:underline cursor-pointer"
+                              >
+                                Download
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1629,6 +1891,356 @@ export default function CreatorSettingsPage() {
                 className="px-4 h-9 rounded-lg border border-[#e3e5ec] text-[13px] font-medium text-[#4a4a55] hover:bg-[#f8f9fb]"
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 10: Add Payment Method Modal */}
+      {isAddPaymentMethodModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-[12px] border border-[#e3e5ec] shadow-xl max-w-md w-full p-6 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-[16px] font-semibold text-[#0d0d10]">Add payment method</h3>
+                <p className="text-[12px] text-[#71717a]">
+                  Direct escrow disbursements for completed brand deals
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddPaymentMethodModalOpen(false)}
+                className="size-8 rounded-md flex items-center justify-center text-[#71717a] hover:bg-[#f4f6fb]"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-3 text-[13px]">
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">
+                  Bank Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. ICICI Bank, Axis Bank, SBI"
+                  id="new-bank-name"
+                  defaultValue="ICICI Bank"
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">
+                  Account Number
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter bank account number"
+                  id="new-acc-num"
+                  defaultValue="102938475612"
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">
+                  IFSC Code
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. ICIC0001029"
+                  id="new-ifsc"
+                  defaultValue="ICIC0000047"
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">
+                  Beneficiary Name
+                </label>
+                <input
+                  type="text"
+                  id="new-beneficiary"
+                  defaultValue={name}
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsAddPaymentMethodModalOpen(false)}
+                className="px-4 h-9 rounded-lg border border-[#e3e5ec] text-[13px] font-medium text-[#4a4a55] hover:bg-[#f8f9fb]"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const bName = (document.getElementById("new-bank-name") as HTMLInputElement)?.value || "Bank Account";
+                  const bNum = (document.getElementById("new-acc-num") as HTMLInputElement)?.value || "4821";
+                  setBankAccount({
+                    ...bankAccount,
+                    bankName: bName,
+                    accountNumberMasked: `···· ${bNum.slice(-4)}`,
+                    verifiedDate: "verified just now",
+                  });
+                  setIsAddPaymentMethodModalOpen(false);
+                  showToast("Payment method added successfully.");
+                }}
+                className="px-4 h-9 rounded-lg bg-[#0d0d10] text-[13px] font-medium text-white hover:bg-black inline-flex items-center gap-1.5"
+              >
+                <Check className="size-4" />
+                <span>Add method</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 11: Edit Bank Modal */}
+      {isEditBankModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-[12px] border border-[#e3e5ec] shadow-xl max-w-md w-full p-6 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-[16px] font-semibold text-[#0d0d10]">Edit Bank Account</h3>
+                <p className="text-[12px] text-[#71717a]">Update account details or set as primary</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsEditBankModalOpen(false)}
+                className="size-8 rounded-md flex items-center justify-center text-[#71717a] hover:bg-[#f4f6fb]"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-3 text-[13px]">
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">Bank Name</label>
+                <input
+                  type="text"
+                  value={bankAccount.bankName}
+                  onChange={(e) => setBankAccount({ ...bankAccount, bankName: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">Account Holder</label>
+                <input
+                  type="text"
+                  value={bankAccount.accountHolder}
+                  onChange={(e) => setBankAccount({ ...bankAccount, accountHolder: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">Account Type</label>
+                <select
+                  value={bankAccount.accountType}
+                  onChange={(e) => setBankAccount({ ...bankAccount, accountType: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                >
+                  <option value="savings">Savings Account</option>
+                  <option value="current">Current Account</option>
+                </select>
+              </div>
+
+              <label className="flex items-center gap-2 pt-1 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={bankAccount.isDefault}
+                  onChange={(e) => setBankAccount({ ...bankAccount, isDefault: e.target.checked })}
+                  className="size-4 rounded border-[#e3e5ec] text-[#0d0d10] focus:ring-0"
+                />
+                <span className="text-[13px] text-[#070b13]">Default payment method</span>
+              </label>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsEditBankModalOpen(false)}
+                className="px-4 h-9 rounded-lg border border-[#e3e5ec] text-[13px] font-medium text-[#4a4a55] hover:bg-[#f8f9fb]"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditBankModalOpen(false);
+                  showToast("Bank account details saved.");
+                }}
+                className="px-4 h-9 rounded-lg bg-[#0d0d10] text-[13px] font-medium text-white hover:bg-black inline-flex items-center gap-1.5"
+              >
+                <Check className="size-4" />
+                <span>Save changes</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 12: Edit UPI Modal */}
+      {isEditUpiModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-[12px] border border-[#e3e5ec] shadow-xl max-w-md w-full p-6 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-[16px] font-semibold text-[#0d0d10]">Edit UPI ID</h3>
+                <p className="text-[12px] text-[#71717a]">Instant transfer fallback</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsEditUpiModalOpen(false)}
+                className="size-8 rounded-md flex items-center justify-center text-[#71717a] hover:bg-[#f4f6fb]"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-3 text-[13px]">
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">UPI ID</label>
+                <input
+                  type="text"
+                  value={upiDetails.upiId}
+                  onChange={(e) => setUpiDetails({ ...upiDetails, upiId: e.target.value })}
+                  placeholder="e.g. username@okhdfcbank"
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">Note / Description</label>
+                <input
+                  type="text"
+                  value={upiDetails.note}
+                  onChange={(e) => setUpiDetails({ ...upiDetails, note: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsEditUpiModalOpen(false)}
+                className="px-4 h-9 rounded-lg border border-[#e3e5ec] text-[13px] font-medium text-[#4a4a55] hover:bg-[#f8f9fb]"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditUpiModalOpen(false);
+                  showToast("UPI details updated.");
+                }}
+                className="px-4 h-9 rounded-lg bg-[#0d0d10] text-[13px] font-medium text-white hover:bg-black inline-flex items-center gap-1.5"
+              >
+                <Check className="size-4" />
+                <span>Save</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 13: Edit Tax Details Modal */}
+      {isEditTaxModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-[12px] border border-[#e3e5ec] shadow-xl max-w-md w-full p-6 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-[16px] font-semibold text-[#0d0d10]">Edit Tax details</h3>
+                <p className="text-[12px] text-[#71717a]">Used on invoices generated for brands</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsEditTaxModalOpen(false)}
+                className="size-8 rounded-md flex items-center justify-center text-[#71717a] hover:bg-[#f4f6fb]"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-3 text-[13px]">
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">Legal name</label>
+                <input
+                  type="text"
+                  value={taxDetails.legalName}
+                  onChange={(e) => setTaxDetails({ ...taxDetails, legalName: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">GSTIN</label>
+                <input
+                  type="text"
+                  value={taxDetails.gstin}
+                  onChange={(e) => setTaxDetails({ ...taxDetails, gstin: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">Address</label>
+                <input
+                  type="text"
+                  value={taxDetails.address}
+                  onChange={(e) => setTaxDetails({ ...taxDetails, address: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">Place of supply</label>
+                <input
+                  type="text"
+                  value={taxDetails.placeOfSupply}
+                  onChange={(e) => setTaxDetails({ ...taxDetails, placeOfSupply: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">Invoices to</label>
+                <input
+                  type="email"
+                  value={taxDetails.invoicesTo}
+                  onChange={(e) => setTaxDetails({ ...taxDetails, invoicesTo: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsEditTaxModalOpen(false)}
+                className="px-4 h-9 rounded-lg border border-[#e3e5ec] text-[13px] font-medium text-[#4a4a55] hover:bg-[#f8f9fb]"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditTaxModalOpen(false);
+                  showToast("Tax details saved successfully.");
+                }}
+                className="px-4 h-9 rounded-lg bg-[#0d0d10] text-[13px] font-medium text-white hover:bg-black inline-flex items-center gap-1.5"
+              >
+                <Check className="size-4" />
+                <span>Save tax details</span>
               </button>
             </div>
           </div>
