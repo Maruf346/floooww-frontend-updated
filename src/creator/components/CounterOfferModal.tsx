@@ -59,6 +59,23 @@ export function CounterOfferModal({
     }
   }, [reasonDropdownOpen]);
 
+  // Handle ESC key to close modal
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        if (reasonDropdownOpen) {
+          setReasonDropdownOpen(false);
+        } else {
+          onClose();
+        }
+      }
+    }
+    if (isOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [isOpen, reasonDropdownOpen, onClose]);
+
   // Sync fee when initialFee changes or modal opens
   useEffect(() => {
     if (isOpen) {
@@ -73,7 +90,7 @@ export function CounterOfferModal({
       setIsSubmitted(false);
       setReasonDropdownOpen(false);
     }
-  }, [isOpen, initialFee, defaultNote]);
+  }, [isOpen, initialFee, defaultNote, quickPicks]);
 
   if (!isOpen) return null;
 
@@ -130,7 +147,7 @@ export function CounterOfferModal({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-[460px] rounded-[16px] bg-white p-[22px] shadow-[0px_20px_48px_-12px_rgba(13,13,16,0.18)] border border-[var(--border-default,#e3e5ec)]"
+        className="relative w-full max-w-[430px] rounded-[16px] bg-white p-[22px] shadow-[0px_20px_48px_-12px_rgba(13,13,16,0.18)] border border-[#e5e7eb]"
         onClick={(e) => e.stopPropagation()}
       >
         {isSubmitted ? (
@@ -150,17 +167,17 @@ export function CounterOfferModal({
             {/* Header */}
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="font-['Inter:Bold'] font-bold text-[18px] leading-[24px] text-[color:var(--text-primary,#0d0d10)]">
+                <h3 className="font-['Inter:Semi_Bold'] font-semibold text-[17px] leading-[22px] text-[#0d0d10]">
                   Counter offer
                 </h3>
-                <p className="mt-[2px] font-['Inter:Regular'] font-normal text-[13px] leading-[18px] text-[color:var(--text-secondary,#6b7280)]">
+                <p className="mt-[2px] font-['Inter:Regular'] font-normal text-[13px] leading-[18px] text-[#6b7280]">
                   {rangeText}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-full p-1 text-[#6b7280] transition hover:bg-[#f3f4f6] hover:text-[#0d0d10]"
+                className="rounded-full p-1 text-[#6b7280] transition hover:bg-[#f3f4f6] hover:text-[#0d0d10] cursor-pointer"
                 aria-label="Close"
               >
                 <X size={18} />
@@ -169,7 +186,7 @@ export function CounterOfferModal({
 
             {/* Quick pick */}
             <div>
-              <p className="font-['Inter:Medium'] font-medium text-[13px] text-[color:var(--text-primary,#0d0d10)]">
+              <p className="font-['Inter:Medium'] font-medium text-[13px] text-[#0d0d10]">
                 Quick pick
               </p>
               <div className="mt-[8px] flex items-center gap-[8px]">
@@ -182,7 +199,7 @@ export function CounterOfferModal({
                       onClick={() => handleQuickPick(amount)}
                       className={`h-[34px] rounded-full px-[14px] text-[13px] font-medium transition cursor-pointer ${
                         isSelected
-                          ? "border-2 border-[#0d0d10] text-[#0d0d10] bg-white font-semibold"
+                          ? "border-[1.5px] border-[#0d0d10] text-[#0d0d10] bg-white font-semibold"
                           : "border border-[#d1d5db] text-[#374151] hover:bg-[#f9fafb]"
                       }`}
                     >
@@ -195,7 +212,7 @@ export function CounterOfferModal({
                   onClick={handleOtherClick}
                   className={`h-[34px] rounded-full px-[14px] text-[13px] font-medium transition cursor-pointer ${
                     selectedQuickPick === "other"
-                      ? "border-2 border-[#0d0d10] text-[#0d0d10] bg-white font-semibold"
+                      ? "border-[1.5px] border-[#0d0d10] text-[#0d0d10] bg-white font-semibold"
                       : "border border-[#d1d5db] text-[#374151] hover:bg-[#f9fafb]"
                   }`}
                 >
@@ -208,7 +225,7 @@ export function CounterOfferModal({
             <div>
               <label
                 htmlFor="fee-input"
-                className="block font-['Inter:Medium'] font-medium text-[13px] text-[color:var(--text-primary,#0d0d10)]"
+                className="block font-['Inter:Medium'] font-medium text-[13px] text-[#0d0d10]"
               >
                 Your fee for {postsText} <span className="text-[#ef4444]">*</span>
               </label>
@@ -218,29 +235,29 @@ export function CounterOfferModal({
                   type="text"
                   value={feeInput}
                   onChange={handleFeeChange}
-                  className="h-[44px] w-full rounded-[8px] border-2 border-[#6366f1] bg-white px-[14px] text-[15px] font-medium text-[color:var(--text-primary,#0d0d10)] outline-none shadow-sm focus:border-[#4f46e5]"
+                  className="h-[42px] w-full rounded-[8px] border-[1.5px] border-[#6366f1] ring-2 ring-[#6366f1]/15 bg-white px-[14px] text-[15px] font-medium text-[#0d0d10] outline-none transition"
                 />
               </div>
-              <p className="mt-[6px] text-[12px] leading-[16px] text-[color:var(--text-secondary,#6b7280)]">
+              <p className="mt-[6px] text-[12px] leading-[16px] text-[#6b7280]">
                 {feeComparisonText} · you receive ₹{receivedAmount.toLocaleString("en-IN")} after platform & service fee
               </p>
             </div>
 
             {/* Reason dropdown */}
             <div className="relative" ref={dropdownRef}>
-              <label className="block font-['Inter:Medium'] font-medium text-[13px] text-[color:var(--text-primary,#0d0d10)]">
+              <label className="block font-['Inter:Medium'] font-medium text-[13px] text-[#0d0d10]">
                 Reason <span className="text-[#ef4444]">*</span>
               </label>
               <button
                 type="button"
                 onClick={() => setReasonDropdownOpen((prev) => !prev)}
-                className={`mt-[6px] flex h-[42px] w-full items-center justify-between rounded-[8px] bg-white px-[14px] text-left text-[14px] transition cursor-pointer ${
+                className={`mt-[6px] flex h-[40px] w-full items-center justify-between rounded-[8px] bg-white px-[14px] text-left text-[14px] transition cursor-pointer ${
                   reasonDropdownOpen
-                    ? "border-2 border-[#0d0d10] text-[#0d0d10]"
+                    ? "border-[1.5px] border-[#0d0d10] text-[#0d0d10]"
                     : "border border-[#d1d5db] text-[#0d0d10] hover:border-[#9ca3af]"
                 }`}
               >
-                <span className="truncate">{reason}</span>
+                <span className="truncate text-[14px]">{reason}</span>
                 {reasonDropdownOpen ? (
                   <ChevronUp size={16} className="text-[#0d0d10] shrink-0" />
                 ) : (
@@ -250,7 +267,7 @@ export function CounterOfferModal({
 
               {/* Dropdown menu */}
               {reasonDropdownOpen && (
-                <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-20 rounded-[10px] border border-[#e5e7eb] bg-white p-[6px] shadow-[0px_10px_24px_rgba(0,0,0,0.08)]">
+                <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-30 rounded-[10px] border border-[#e5e7eb] bg-white p-[6px] shadow-[0px_10px_24px_rgba(0,0,0,0.1)]">
                   {COUNTER_OFFER_REASONS.map((opt) => {
                     const isSelected = reason === opt;
                     return (
@@ -280,7 +297,7 @@ export function CounterOfferModal({
             <div>
               <label
                 htmlFor="note-input"
-                className="block font-['Inter:Medium'] font-medium text-[13px] text-[color:var(--text-primary,#0d0d10)]"
+                className="block font-['Inter:Medium'] font-medium text-[13px] text-[#0d0d10]"
               >
                 Note to {brandName} (optional)
               </label>
@@ -290,7 +307,7 @@ export function CounterOfferModal({
                   maxLength={300}
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
-                  className="h-[84px] w-full resize-none rounded-[8px] border border-[#d1d5db] p-[12px] text-[13px] leading-[19px] text-[color:var(--text-primary,#0d0d10)] outline-none transition focus:border-[#0d0d10] focus:ring-0"
+                  className="h-[84px] w-full resize-none rounded-[8px] border border-[#d1d5db] p-[12px] text-[13px] leading-[19px] text-[#0d0d10] outline-none transition focus:border-[#0d0d10] focus:ring-0"
                 />
               </div>
               <p className="mt-[4px] text-[12px] text-[#9ca3af]">
@@ -299,7 +316,7 @@ export function CounterOfferModal({
             </div>
 
             {/* Disclaimer box */}
-            <div className="rounded-[8px] bg-[var(--bg-subtle,#f4f6fb)] p-[12px] text-[12px] leading-[18px] text-[#4b5563]">
+            <div className="rounded-[8px] bg-[#f4f6fb] p-[12px] text-[12px] leading-[18px] text-[#4b5563]">
               {brandName} can accept, suggest another fee or reply in Messages. Nothing is charged to you.
             </div>
 
@@ -308,13 +325,13 @@ export function CounterOfferModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="h-[40px] rounded-[8px] border border-[#e5e7eb] px-[18px] text-[14px] font-medium text-[color:var(--text-primary,#0d0d10)] transition hover:bg-[#f9fafb] cursor-pointer"
+                className="h-[38px] rounded-[8px] border border-[#e5e7eb] px-[16px] text-[13px] font-medium text-[#0d0d10] transition hover:bg-[#f9fafb] cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex h-[40px] items-center gap-[8px] rounded-[8px] bg-[#0d0d10] px-[18px] text-[14px] font-medium text-white transition hover:bg-[#0d0d10]/90 cursor-pointer shadow-sm"
+                className="flex h-[38px] items-center gap-[8px] rounded-[8px] bg-[#0d0d10] px-[16px] text-[13px] font-medium text-white transition hover:bg-[#0d0d10]/90 cursor-pointer shadow-sm"
               >
                 <Send size={14} className="shrink-0 -rotate-12" />
                 Send counter offer · ₹{fee.toLocaleString("en-IN")}

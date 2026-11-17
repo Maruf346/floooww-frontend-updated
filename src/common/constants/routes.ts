@@ -51,6 +51,7 @@ export const ROUTES = {
   agency: "/agency",
   creator: "/creator",
   creatorProjects: "/creator/projects",
+  creatorMyProjects: "/creator/my-projects",
   creatorProject: "/creator/projects/:projectId",
   creatorProjectDetail: "/creator/project",
 } as const;

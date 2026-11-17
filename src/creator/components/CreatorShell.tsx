@@ -22,11 +22,11 @@ import { ROUTES } from "@/common/constants/routes";
 type CreatorShellProps = { children: ReactNode };
 
 const projectLinks = [
-  ["Invitations & offers", "4"],
-  ["Applied", "2"],
-  ["Active", "2"],
-  ["Completed", "8"],
-  ["Declined", "1"],
+  ["Invitations & offers", "4", "invitations"],
+  ["Applied", "3", "applied"],
+  ["Active", "2", "live"],
+  ["Completed", "7", "completed"],
+  ["Declined", "3", "declined"],
 ] as const;
 
 function NavCount({ children }: { children: string }) {
@@ -43,6 +43,7 @@ function CreatorSidebar({ close }: { close?: () => void }) {
   const navClass = "flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-[14px] transition-colors";
   const overviewActive = pathname === ROUTES.creator;
   const discoveryActive = pathname === ROUTES.creatorProjects || pathname.startsWith(`${ROUTES.creatorProjects}/`);
+  const myProjectsActive = pathname === ROUTES.creatorMyProjects;
 
   return (
     <aside className="flex h-full w-[260px] flex-col overflow-y-auto border-r border-line bg-white px-4 pb-4 pt-5">
@@ -58,11 +59,44 @@ function CreatorSidebar({ close }: { close?: () => void }) {
       </button>
       <nav className="mt-4 flex flex-col">
         <p className="px-3 pb-1.5 text-[12px] font-semibold leading-4 tracking-[.06em] text-tertiary">MAIN</p>
-        <Link to={ROUTES.creator} className={`${navClass} ${overviewActive ? "bg-primary-subtle font-semibold text-primary" : "text-ink hover:bg-subtle"}`}><Home size={18} />Overview</Link>
-        <Link to={ROUTES.creatorProjects} className={`${navClass} mt-0.5 ${discoveryActive ? "bg-primary-subtle font-semibold text-primary" : "text-ink hover:bg-subtle"}`}><Search size={18} />Project discovery</Link>
+        <Link to={ROUTES.creator} onClick={close} className={`${navClass} ${overviewActive ? "bg-primary-subtle font-semibold text-primary" : "text-ink hover:bg-subtle"}`}><Home size={18} />Overview</Link>
+        <Link to={ROUTES.creatorProjects} onClick={close} className={`${navClass} mt-0.5 ${discoveryActive ? "bg-primary-subtle font-semibold text-primary" : "text-ink hover:bg-subtle"}`}><Search size={18} />Project discovery</Link>
         <div className="mt-0.5">
-          <button type="button" onClick={() => setProjectsOpen((value) => !value)} className={`${navClass} text-ink hover:bg-subtle`} aria-expanded={projectsOpen}><FolderKanban size={18} /><span className="flex-1 text-left">My projects</span><ChevronDown size={14} className={`transition-transform duration-200 ${projectsOpen ? "" : "-rotate-90"}`} /></button>
-          {projectsOpen && <div>{projectLinks.map(([label, count]) => <button key={label} type="button" className="flex h-8 w-full items-center gap-2.5 rounded-md px-3 pl-10 text-[13px] text-secondary transition-colors hover:bg-subtle"><span className="size-1 rounded-full bg-current" /><span className="flex-1 text-left">{label}</span><NavCount>{count}</NavCount></button>)}</div>}
+          <div className="flex items-center">
+            <Link
+              to={ROUTES.creatorMyProjects}
+              onClick={close}
+              className={`flex-1 ${navClass} ${myProjectsActive ? "bg-primary-subtle font-semibold text-primary" : "text-ink hover:bg-subtle"}`}
+            >
+              <FolderKanban size={18} />
+              <span className="flex-1 text-left">My projects</span>
+            </Link>
+            <button
+              type="button"
+              onClick={() => setProjectsOpen((value) => !value)}
+              className="p-2 text-secondary hover:text-ink cursor-pointer"
+              aria-label="Toggle My Projects menu"
+              aria-expanded={projectsOpen}
+            >
+              <ChevronDown size={14} className={`transition-transform duration-200 ${projectsOpen ? "" : "-rotate-90"}`} />
+            </button>
+          </div>
+          {projectsOpen && (
+            <div>
+              {projectLinks.map(([label, count, tab]) => (
+                <Link
+                  key={label}
+                  to={`${ROUTES.creatorMyProjects}?tab=${tab}`}
+                  onClick={close}
+                  className="flex h-8 w-full items-center gap-2.5 rounded-md px-3 pl-10 text-[13px] text-secondary transition-colors hover:bg-subtle hover:text-ink"
+                >
+                  <span className="size-1 rounded-full bg-current" />
+                  <span className="flex-1 text-left">{label}</span>
+                  <NavCount>{count}</NavCount>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
         <button type="button" className={`${navClass} text-ink hover:bg-subtle`}><Image size={18} /><span className="flex-1 text-left">Content</span><NavCount>5</NavCount></button>
         <p className="px-3 pb-1.5 pt-4 text-[12px] font-semibold leading-4 tracking-[.06em] text-tertiary">CONTENT &amp; DATA</p>
