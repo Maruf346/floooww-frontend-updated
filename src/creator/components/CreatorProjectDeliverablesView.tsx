@@ -89,13 +89,28 @@ export function CreatorProjectDeliverablesView({
 }: Props) {
   const [selectedId, setSelectedId] = useState<number>(3);
   const [isPanelOpen, setIsPanelOpen] = useState(true);
-  const [panelTab, setPanelTab] = useState<"content" | "comments" | "history">("content");
+  const [panelTab, setPanelTab] = useState<"content" | "comments" | "history">("comments");
   const [newComment, setNewComment] = useState("");
-  const [comments, setComments] = useState<Array<{ author: string; time: string; text: string; isBrand?: boolean }>>([
+  const [comments, setComments] = useState<Array<{ author: string; initials: string; time: string; text: string; isBrand?: boolean }>>([
     {
-      author: "Ananya Mehta · Minimalist",
+      author: "Ananya Mehta",
+      initials: "AM",
       time: "28 Oct, 09:15",
-      text: "“Love it. Please add ISHITA15 on screen for the last 3 seconds.”",
+      text: "Love it. Please add ISHITA15 on screen for the last 3 seconds.",
+      isBrand: true,
+    },
+    {
+      author: "You",
+      initials: "MI",
+      time: "28 Oct, 09:40",
+      text: "Sure! I’ll send version 2 tonight with the code at 0:19.",
+      isBrand: false,
+    },
+    {
+      author: "Ananya Mehta",
+      initials: "AM",
+      time: "28 Oct, 09:52",
+      text: "Perfect, thank you. Keep the link sticker as it is.",
       isBrand: true,
     },
   ]);
@@ -106,7 +121,8 @@ export function CreatorProjectDeliverablesView({
     setComments((prev) => [
       ...prev,
       {
-        author: "Ishita Rao",
+        author: "You",
+        initials: "MI",
         time: "Just now",
         text: newComment.trim(),
         isBrand: false,
@@ -570,45 +586,69 @@ export function CreatorProjectDeliverablesView({
             </div>
 
             {/* Panel Tabs */}
-            <div className="border-[#e5e7eb] border-b border-solid content-stretch flex gap-[22px] items-start overflow-clip relative shrink-0 w-full" data-node-id="715:3556" data-name="Panel tabs">
+            <div className="border-[#e5e7eb] border-b border-solid content-stretch flex gap-[22px] items-start overflow-clip relative shrink-0 w-full" data-node-id="715:4240" data-name="Panel tabs">
               <button
                 type="button"
                 onClick={() => setPanelTab("content")}
                 className="content-stretch cursor-pointer flex flex-col gap-[8px] items-start overflow-clip relative shrink-0"
+                data-node-id="715:4241"
+                data-name="t"
               >
-                <p
-                  className={`[word-break:break-word] font-['Inter:Medium'] leading-[normal] not-italic relative shrink-0 text-[13px] whitespace-nowrap transition ${panelTab === "content" ? "text-[#3b5bff] font-semibold" : "text-[#8491a3] hover:text-[#070b13]"
+                <div className="content-stretch flex items-start overflow-clip relative shrink-0" data-node-id="715:4242" data-name="r">
+                  <p
+                    className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[13px] text-left whitespace-nowrap transition ${
+                      panelTab === "content" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#070b13]"
                     }`}
-                >
-                  Content
-                </p>
-                <div className={`h-[2px] relative shrink-0 w-full transition ${panelTab === "content" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} />
+                    data-node-id="715:4243"
+                  >
+                    Content
+                  </p>
+                </div>
+                <div className={`h-[2px] relative shrink-0 w-full transition ${panelTab === "content" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="715:4244" data-name="Rectangle" />
               </button>
               <button
                 type="button"
                 onClick={() => setPanelTab("comments")}
                 className="content-stretch cursor-pointer flex flex-col gap-[8px] items-start overflow-clip relative shrink-0"
+                data-node-id="715:4245"
+                data-name="t"
               >
-                <p
-                  className={`[word-break:break-word] font-['Inter:Medium'] leading-[normal] not-italic relative shrink-0 text-[13px] whitespace-nowrap transition ${panelTab === "comments" ? "text-[#3b5bff] font-semibold" : "text-[#8491a3] hover:text-[#070b13]"
+                <div className="content-stretch flex gap-[6px] items-start overflow-clip relative shrink-0" data-node-id="715:4246" data-name="r">
+                  <p
+                    className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[13px] whitespace-nowrap transition ${
+                      panelTab === "comments" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#070b13]"
                     }`}
-                >
-                  Comments ({comments.length})
-                </p>
-                <div className={`h-[2px] relative shrink-0 w-full transition ${panelTab === "comments" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} />
+                    data-node-id="715:4247"
+                  >
+                    Comments
+                  </p>
+                  <Badge
+                    className="bg-[var(--status-neutral-bg,#f4f6fb)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0"
+                    label={String(comments.length)}
+                    showDot={false}
+                    tone="Neutral"
+                  />
+                </div>
+                <div className={`h-[2px] relative shrink-0 w-full transition ${panelTab === "comments" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="715:4250" data-name="Rectangle" />
               </button>
               <button
                 type="button"
                 onClick={() => setPanelTab("history")}
                 className="content-stretch cursor-pointer flex flex-col gap-[8px] items-start overflow-clip relative shrink-0"
+                data-node-id="715:4251"
+                data-name="t"
               >
-                <p
-                  className={`[word-break:break-word] font-['Inter:Medium'] leading-[normal] not-italic relative shrink-0 text-[13px] whitespace-nowrap transition ${panelTab === "history" ? "text-[#3b5bff] font-semibold" : "text-[#8491a3] hover:text-[#070b13]"
+                <div className="content-stretch flex items-start overflow-clip relative shrink-0" data-node-id="715:4252" data-name="r">
+                  <p
+                    className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[13px] text-left whitespace-nowrap transition ${
+                      panelTab === "history" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#070b13]"
                     }`}
-                >
-                  History
-                </p>
-                <div className={`h-[2px] relative shrink-0 w-full transition ${panelTab === "history" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} />
+                    data-node-id="715:4253"
+                  >
+                    History
+                  </p>
+                </div>
+                <div className={`h-[2px] relative shrink-0 w-full transition ${panelTab === "history" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="715:4254" data-name="Rectangle" />
               </button>
             </div>
 
@@ -783,33 +823,90 @@ export function CreatorProjectDeliverablesView({
               </>
             )}
 
-            {/* Panel Tab: Comments */}
+            {/* Panel Tab: Comments (matches Figma node 715:3658) */}
             {panelTab === "comments" && (
-              <div className="flex flex-col gap-3 w-full py-2">
-                <div className="flex flex-col gap-3 max-h-[300px] overflow-y-auto">
-                  {comments.map((c, i) => (
-                    <div key={i} className="rounded-[8px] border border-[#e5e7eb] p-3 bg-[#f9fafb]">
-                      <div className="flex items-center justify-between text-[11px] text-[#6b7280]">
-                        <span className="font-medium text-[#070b13]">{c.author}</span>
-                        <span>{c.time}</span>
-                      </div>
-                      <p className="mt-1.5 text-[12px] text-[#374151]">{c.text}</p>
-                    </div>
-                  ))}
+              <div className="content-stretch flex flex-col gap-[14px] items-start relative shrink-0 w-full" data-node-id="715:4255_wrapper">
+                {/* Title & subtitle */}
+                <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] not-italic overflow-clip relative shrink-0 w-full whitespace-nowrap" data-node-id="715:4255" data-name="t">
+                  <p className="font-['Inter:Semi_Bold'] font-semibold relative shrink-0 text-[#070b13] text-[14px]" data-node-id="715:4256">
+                    Comments on this deliverable
+                  </p>
+                  <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] text-[12px]" data-node-id="715:4257">
+                    Minimalist sees these too · also in Messages
+                  </p>
                 </div>
-                <form onSubmit={handleSendComment} className="flex gap-2 mt-2 w-full">
+
+                {/* Comment bubbles */}
+                <div className="content-stretch flex flex-col gap-[10px] items-start relative shrink-0 w-full">
+                  {comments.map((comment, index) => {
+                    const isUser = !comment.isBrand;
+                    return (
+                      <div
+                        key={index}
+                        className="content-stretch flex gap-[10px] items-start relative shrink-0 w-full"
+                        data-node-id={isUser ? "715:4266" : "715:4258"}
+                        data-name="Comment"
+                      >
+                        <div
+                          className="bg-[#3b5bff] content-stretch flex items-center justify-center overflow-clip relative rounded-[15px] shrink-0 size-[30px]"
+                          data-node-id={isUser ? "715:4267" : "715:4259"}
+                          data-name="Avatar"
+                        >
+                          <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[11px] text-white whitespace-nowrap">
+                            {comment.initials}
+                          </p>
+                        </div>
+                        <div
+                          className={`[word-break:break-word] ${
+                            isUser ? "bg-[#f1f4ff]" : "bg-[#f8f9fb]"
+                          } content-stretch flex flex-[1_0_0] flex-col gap-[4px] items-start leading-[normal] min-w-px not-italic p-[12px] relative rounded-[10px]`}
+                          data-node-id={isUser ? "715:4269" : "715:4261"}
+                          data-name="Bubble"
+                        >
+                          <div className="content-stretch flex gap-[6px] items-start relative shrink-0 whitespace-nowrap" data-name="h">
+                            <p className="font-['Inter:Semi_Bold'] font-semibold relative shrink-0 text-[#070b13] text-[12px]">
+                              {comment.author}
+                            </p>
+                            <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] text-[11px]">
+                              {comment.time}
+                            </p>
+                          </div>
+                          <p className="font-['Inter:Regular'] font-normal min-w-full relative shrink-0 text-[#394357] text-[13px] w-[min-content] [word-break:break-word]">
+                            {comment.text}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Input form */}
+                <form
+                  onSubmit={handleSendComment}
+                  className="bg-white border border-[#e5e7eb] border-solid content-stretch flex gap-[8px] items-center p-[6px] pl-[12px] relative rounded-[10px] shrink-0 w-full"
+                  data-node-id="715:4282"
+                  data-name="Input"
+                >
                   <input
                     type="text"
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Reply to Minimalist..."
-                    className="flex-1 rounded-[8px] border border-[#e5e7eb] px-3 py-1.5 text-[12px] focus:border-[#3b5bff] focus:outline-none"
+                    placeholder="Write a comment… mention a time, e.g. 0:19"
+                    className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[normal] min-w-px not-italic relative text-[#070b13] placeholder:text-[#8491a3] text-[13px] bg-transparent outline-none border-none py-1"
+                    data-node-id="715:4283"
                   />
                   <button
                     type="submit"
-                    className="rounded-[8px] bg-[#0d0d10] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#1a1a24] transition"
+                    disabled={!newComment.trim()}
+                    className={`bg-[var(--prim-gray-900,#0d0d10)] content-stretch flex gap-[6px] h-[32px] items-center justify-center px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 transition cursor-pointer ${
+                      !newComment.trim() ? "opacity-50 cursor-not-allowed" : "hover:bg-[#1a1a24]"
+                    }`}
+                    data-node-id="715:4284"
+                    data-name="Button"
                   >
-                    Send
+                    <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[18px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-on-primary,white)] whitespace-nowrap" data-node-id="I715:4284;5:21">
+                      Send
+                    </p>
                   </button>
                 </form>
               </div>
@@ -844,30 +941,32 @@ export function CreatorProjectDeliverablesView({
               </div>
             )}
 
-            {/* Panel Actions */}
-            <div className="content-stretch flex gap-[8px] items-start overflow-clip relative shrink-0 w-full pt-1" data-node-id="715:3632" data-name="Actions">
-              <button
-                type="button"
-                onClick={onOpenUploadModal}
-                className="bg-[var(--prim-gray-900,#0d0d10)] content-stretch flex flex-[1_0_0] gap-[8px] h-[40px] items-center justify-center min-w-px overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] hover:bg-[#1a1a24] transition cursor-pointer"
-                data-node-id="715:3633"
-                data-name="Button"
-              >
-                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-on-primary,white)] text-left whitespace-nowrap" data-node-id="I715:3633;5:9">
-                  {storyV2Uploaded ? "Upload new version" : "Upload version 2"}
-                </p>
-              </button>
-              <Link
-                to="/brand/messages"
-                className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-[1_0_0] gap-[8px] h-[40px] items-center justify-center min-w-px overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] hover:bg-[#f4f6fb] transition cursor-pointer"
-                data-node-id="715:3638"
-                data-name="Button"
-              >
-                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] text-left whitespace-nowrap" data-node-id="I715:3638;5:33">
-                  Message brand
-                </p>
-              </Link>
-            </div>
+            {/* Panel Actions (shown only when Content or History tab is active) */}
+            {panelTab !== "comments" && (
+              <div className="content-stretch flex gap-[8px] items-start overflow-clip relative shrink-0 w-full pt-1" data-node-id="715:3632" data-name="Actions">
+                <button
+                  type="button"
+                  onClick={onOpenUploadModal}
+                  className="bg-[var(--prim-gray-900,#0d0d10)] content-stretch flex flex-[1_0_0] gap-[8px] h-[40px] items-center justify-center min-w-px overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] hover:bg-[#1a1a24] transition cursor-pointer"
+                  data-node-id="715:3633"
+                  data-name="Button"
+                >
+                  <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-on-primary,white)] text-left whitespace-nowrap" data-node-id="I715:3633;5:9">
+                    {storyV2Uploaded ? "Upload new version" : "Upload version 2"}
+                  </p>
+                </button>
+                <Link
+                  to="/brand/messages"
+                  className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-[1_0_0] gap-[8px] h-[40px] items-center justify-center min-w-px overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] hover:bg-[#f4f6fb] transition cursor-pointer"
+                  data-node-id="715:3638"
+                  data-name="Button"
+                >
+                  <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] text-left whitespace-nowrap" data-node-id="I715:3638;5:33">
+                    Message brand
+                  </p>
+                </Link>
+              </div>
+            )}
           </div>
       )}
         </div>
