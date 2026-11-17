@@ -20,15 +20,175 @@ import {
 } from "lucide-react";
 import { CreatorShell } from "@/creator/components/CreatorShell";
 
-// Date range options matching Figma
-const DATE_RANGE_OPTIONS = [
-  "1 Aug 2026 – 31 Jan 2027",
-  "Last 30 days",
-  "Last 90 days",
-  "This financial year (FY 2026–27)",
-  "Past financial year (FY 2025–26)",
-  "All time",
+// Period options matching Figma node Dropdown · Period
+const PERIOD_OPTIONS = [
+  "This month",
+  "Last 3 months",
+  "This year",
+  "Last year",
+  "Custom range…",
 ] as const;
+
+type PeriodOption = (typeof PERIOD_OPTIONS)[number];
+
+// 1. Dropdown · Period component
+function PeriodDropdown({
+  value,
+  onChange,
+  isOpen,
+  onToggle,
+}: {
+  value: PeriodOption;
+  onChange: (val: PeriodOption) => void;
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div
+      className="relative inline-block text-left w-[180px] sm:w-[190px]"
+      data-name="Dropdown · Period"
+    >
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        className={`bg-white flex items-center justify-between gap-2 h-[40px] px-[12px] py-[8px] rounded-[8px] cursor-pointer transition select-none w-full ${
+          isOpen
+            ? "border-2 border-[#0d0d10]"
+            : "border border-[#e3e5ec] hover:border-[#0d0d10]"
+        }`}
+      >
+        <span className="truncate font-['Inter:Regular'] font-normal text-[13px] text-[#0d0d10] leading-[20px] text-left">
+          {value}
+        </span>
+        <div className="shrink-0 size-[14px] flex items-center justify-center text-[#0d0d10]">
+          {isOpen ? (
+            <ChevronUp className="size-3.5 stroke-[2.2]" />
+          ) : (
+            <ChevronDown className="size-3.5 stroke-[2.2]" />
+          )}
+        </div>
+      </button>
+
+      {isOpen && (
+        <div
+          role="listbox"
+          className="absolute left-0 top-[calc(100%+6px)] z-50 w-full min-w-[190px] bg-white border border-[#e3e5ec] rounded-[8px] p-[6px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)] flex flex-col gap-[2px] animate-in fade-in zoom-in-95 duration-100"
+        >
+          {PERIOD_OPTIONS.map((option) => {
+            const isSelected = value === option;
+            return (
+              <button
+                key={option}
+                type="button"
+                role="option"
+                aria-selected={isSelected}
+                onClick={() => onChange(option)}
+                className={`w-full flex items-center justify-between px-[10px] py-[8px] rounded-[6px] transition cursor-pointer text-left ${
+                  isSelected
+                    ? "bg-[#f1f4ff] text-[#0d0d10] font-medium"
+                    : "text-[#0d0d10] hover:bg-[#f8f9fb]"
+                }`}
+              >
+                <span className="font-['Inter:Regular'] font-normal text-[13px] leading-[20px] truncate">
+                  {option}
+                </span>
+                {isSelected && (
+                  <Check className="size-3.5 text-[#0d0d10] shrink-0 stroke-[2.2]" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// 2. Dropdown · Download statement component
+function DownloadStatementDropdown({
+  isOpen,
+  onToggle,
+  onSelectAction,
+}: {
+  isOpen: boolean;
+  onToggle: () => void;
+  onSelectAction: (actionKey: "pdf" | "csv" | "itr") => void;
+}) {
+  return (
+    <div
+      className="relative inline-block text-left w-[200px] sm:w-[220px]"
+      data-name="Dropdown · Download statement"
+    >
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-haspopup="menu"
+        aria-expanded={isOpen}
+        className={`bg-white flex items-center justify-between gap-2 h-[40px] px-[12px] py-[8px] rounded-[8px] cursor-pointer transition select-none w-full ${
+          isOpen
+            ? "border-2 border-[#0d0d10]"
+            : "border border-[#e3e5ec] hover:border-[#0d0d10]"
+        }`}
+      >
+        <span className="truncate font-['Inter:Regular'] font-normal text-[13px] text-[#0d0d10] leading-[20px] text-left">
+          Download statement
+        </span>
+        <div className="shrink-0 size-[14px] flex items-center justify-center text-[#0d0d10]">
+          {isOpen ? (
+            <ChevronUp className="size-3.5 stroke-[2.2]" />
+          ) : (
+            <ChevronDown className="size-3.5 stroke-[2.2]" />
+          )}
+        </div>
+      </button>
+
+      {isOpen && (
+        <div
+          role="menu"
+          className="absolute right-0 top-[calc(100%+6px)] z-50 w-[230px] bg-white border border-[#e3e5ec] rounded-[8px] p-[6px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)] flex flex-col gap-[2px] animate-in fade-in zoom-in-95 duration-100"
+        >
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => onSelectAction("pdf")}
+            className="w-full flex items-center gap-2.5 px-[10px] py-[8px] rounded-[6px] transition cursor-pointer text-left text-[#0d0d10] hover:bg-[#f8f9fb]"
+          >
+            <Download className="size-4 text-[#4a4a55] shrink-0" />
+            <span className="font-['Inter:Regular'] font-normal text-[13px] leading-[20px] truncate">
+              PDF statement
+            </span>
+          </button>
+
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => onSelectAction("csv")}
+            className="w-full flex items-center gap-2.5 px-[10px] py-[8px] rounded-[6px] transition cursor-pointer text-left text-[#0d0d10] hover:bg-[#f8f9fb]"
+          >
+            <Download className="size-4 text-[#4a4a55] shrink-0" />
+            <span className="font-['Inter:Regular'] font-normal text-[13px] leading-[20px] truncate">
+              CSV for your accountant
+            </span>
+          </button>
+
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => onSelectAction("itr")}
+            className="w-full flex items-center gap-2.5 px-[10px] py-[8px] rounded-[6px] transition cursor-pointer text-left text-[#0d0d10] hover:bg-[#f8f9fb]"
+          >
+            <FileText className="size-4 text-[#4a4a55] shrink-0" />
+            <span className="font-['Inter:Regular'] font-normal text-[13px] leading-[20px] truncate">
+              Annual statement for ITR
+            </span>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // Monthly earnings bar chart data
 const MONTHLY_EARNINGS = [
@@ -155,8 +315,8 @@ const PAYMENTS_DATA: PaymentRow[] = [
 ];
 
 export default function CreatorEarningsPage() {
-  const [selectedDateRange, setSelectedDateRange] = useState<string>("1 Aug 2026 – 31 Jan 2027");
-  const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] = useState<PeriodOption>("This year");
+  const [openDropdown, setOpenDropdown] = useState<"period" | "download" | null>(null);
   const [hoveredBarIndex, setHoveredBarIndex] = useState<number | null>(null);
 
   // Modals state
@@ -178,17 +338,17 @@ export default function CreatorEarningsPage() {
     isGstRegistered: false,
   });
 
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const toolbarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDateDropdownOpen(false);
+      if (toolbarRef.current && !toolbarRef.current.contains(event.target as Node)) {
+        setOpenDropdown(null);
       }
     }
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        setIsDateDropdownOpen(false);
+        setOpenDropdown(null);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -199,8 +359,15 @@ export default function CreatorEarningsPage() {
     };
   }, []);
 
-  const handleDownloadStatement = () => {
-    setIsStatementModalOpen(true);
+  const handleDownloadAction = (actionKey: "pdf" | "csv" | "itr") => {
+    setOpenDropdown(null);
+    if (actionKey === "pdf") {
+      setIsStatementModalOpen(true);
+    } else if (actionKey === "csv") {
+      alert(`Exporting "CSV for your accountant" for ${selectedPeriod}...`);
+    } else if (actionKey === "itr") {
+      alert(`Generating "Annual statement for ITR" (FY 2026–27)...`);
+    }
   };
 
   return (
@@ -218,73 +385,24 @@ export default function CreatorEarningsPage() {
               </p>
             </div>
 
-            <div className="flex items-center gap-2.5 shrink-0 relative" ref={dropdownRef}>
-              {/* Date Range Dropdown Trigger */}
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setIsDateDropdownOpen((prev) => !prev)}
-                  className={`bg-white flex items-center gap-2 h-[40px] px-[12px] rounded-[8px] cursor-pointer transition select-none ${
-                    isDateDropdownOpen
-                      ? "border-2 border-[#0d0d10]"
-                      : "border border-[#e3e5ec] hover:border-[#0d0d10]"
-                  }`}
-                  aria-haspopup="listbox"
-                  aria-expanded={isDateDropdownOpen}
-                >
-                  <CalendarDays className="size-4 text-[#4a4a55]" />
-                  <span className="text-[13px] font-medium text-[#0d0d10] leading-5 whitespace-nowrap">
-                    {selectedDateRange}
-                  </span>
-                  {isDateDropdownOpen ? (
-                    <ChevronUp className="size-3.5 text-[#0d0d10] stroke-[2.2]" />
-                  ) : (
-                    <ChevronDown className="size-3.5 text-[#0d0d10] stroke-[2.2]" />
-                  )}
-                </button>
+            <div className="flex items-center gap-2.5 shrink-0 relative" ref={toolbarRef} data-name="Actions">
+              {/* 1. Dropdown · Period */}
+              <PeriodDropdown
+                value={selectedPeriod}
+                onChange={(val) => {
+                  setSelectedPeriod(val);
+                  setOpenDropdown(null);
+                }}
+                isOpen={openDropdown === "period"}
+                onToggle={() => setOpenDropdown(openDropdown === "period" ? null : "period")}
+              />
 
-                {/* Popover */}
-                {isDateDropdownOpen && (
-                  <div
-                    role="listbox"
-                    className="absolute right-0 top-[calc(100%+6px)] z-50 min-w-[240px] bg-white border border-[#e3e5ec] rounded-[8px] p-[6px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)] flex flex-col gap-[2px] animate-in fade-in zoom-in-95 duration-100"
-                  >
-                    {DATE_RANGE_OPTIONS.map((opt) => {
-                      const isSelected = selectedDateRange === opt;
-                      return (
-                        <button
-                          key={opt}
-                          type="button"
-                          role="option"
-                          aria-selected={isSelected}
-                          onClick={() => {
-                            setSelectedDateRange(opt);
-                            setIsDateDropdownOpen(false);
-                          }}
-                          className={`w-full flex items-center justify-between px-[10px] py-[8px] rounded-[6px] transition cursor-pointer text-left ${
-                            isSelected
-                              ? "bg-[#f1f4ff] text-[#0d0d10] font-medium"
-                              : "text-[#0d0d10] hover:bg-[#f8f9fb]"
-                          }`}
-                        >
-                          <span className="text-[13px] leading-[20px] truncate">{opt}</span>
-                          {isSelected && <Check className="size-3.5 text-[#0d0d10] shrink-0 stroke-[2.2]" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              {/* Download Statement Button */}
-              <button
-                type="button"
-                onClick={handleDownloadStatement}
-                className="inline-flex items-center gap-2 h-[40px] px-4 bg-white border border-[#e3e5ec] rounded-[8px] text-[13px] font-medium text-[#0d0d10] hover:bg-[#f8f9fb] transition cursor-pointer shadow-xs whitespace-nowrap"
-              >
-                <Download className="size-4 text-[#4a4a55]" />
-                <span>Download statement</span>
-              </button>
+              {/* 2. Dropdown · Download statement */}
+              <DownloadStatementDropdown
+                isOpen={openDropdown === "download"}
+                onToggle={() => setOpenDropdown(openDropdown === "download" ? null : "download")}
+                onSelectAction={handleDownloadAction}
+              />
             </div>
           </div>
 
@@ -988,7 +1106,7 @@ export default function CreatorEarningsPage() {
                 <div className="p-3 bg-[#f8f9fb] rounded-lg border border-[#e3e5ec]">
                   <div className="flex justify-between items-center text-[13px] font-medium text-[#0d0d10]">
                     <span>Statement period</span>
-                    <span className="text-[#3b5bff]">{selectedDateRange}</span>
+                    <span className="text-[#3b5bff]">{selectedPeriod}</span>
                   </div>
                   <div className="flex justify-between items-center text-[12px] text-[#4a4a55] mt-1.5">
                     <span>Total disbursements</span>
@@ -1031,7 +1149,7 @@ export default function CreatorEarningsPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    alert(`Statement for "${selectedDateRange}" generated and downloaded successfully!`);
+                    alert(`Statement for "${selectedPeriod}" generated and downloaded successfully!`);
                     setIsStatementModalOpen(false);
                   }}
                   className="px-4 h-9 rounded-lg bg-[#0d0d10] text-[13px] font-medium text-white hover:bg-black inline-flex items-center gap-1.5"
