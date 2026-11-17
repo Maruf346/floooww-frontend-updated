@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Eye, Upload, Link2, Clock, Flag, MoreHorizontal, Check, X } from "lucide-react";
 
 const imgDot1 = "https://www.figma.com/api/mcp/asset/649212b9-66f6-4f20-85bb-9d5364d794d8.svg";
 const imgPlatformInstagramStyleColor = "https://www.figma.com/api/mcp/asset/624c17aa-a5df-4e44-9245-16c3532a8557.svg";
@@ -72,12 +73,134 @@ function PlatformLogo({ className }: { className?: string }) {
   );
 }
 
+function DeliverableActionsMenu({
+  deliverableTitle,
+  onViewContent,
+  onUploadVersion,
+  onAddLivePostLink,
+  onCounterOfferTime,
+  onReportProblem,
+  onClose,
+}: {
+  deliverableTitle: string;
+  onViewContent: () => void;
+  onUploadVersion: () => void;
+  onAddLivePostLink: () => void;
+  onCounterOfferTime: () => void;
+  onReportProblem: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div
+      className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-col items-start overflow-clip p-[6px] relative rounded-[var(--radius-md,8px)] shadow-[0px_12px_32px_0px_rgba(0,0,0,0.18)] shrink-0 w-[210px] animate-in fade-in zoom-in-95 duration-100"
+      data-node-id="747:9495"
+      data-name="Menu"
+    >
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onViewContent();
+          onClose();
+        }}
+        className="content-stretch flex gap-[10px] items-center overflow-clip px-[10px] py-[8px] relative rounded-[var(--radius-sm,6px)] shrink-0 w-full hover:bg-[#f4f6fb] transition text-left cursor-pointer"
+        data-node-id="747:9522"
+        data-name="Option"
+      >
+        <div className="relative shrink-0 size-[14px]" data-node-id="747:9523" data-name="Icon">
+          <Eye size={14} className="text-[#0d0d10]" />
+        </div>
+        <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px not-italic relative text-[13px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="747:9524">
+          View content
+        </p>
+      </button>
+
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onUploadVersion();
+          onClose();
+        }}
+        className="content-stretch flex gap-[10px] items-center overflow-clip px-[10px] py-[8px] relative rounded-[var(--radius-sm,6px)] shrink-0 w-full hover:bg-[#f4f6fb] transition text-left cursor-pointer"
+        data-node-id="747:9527"
+        data-name="Option"
+      >
+        <div className="relative shrink-0 size-[14px]" data-node-id="747:9528" data-name="Icon">
+          <Upload size={14} className="text-[#0d0d10]" />
+        </div>
+        <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px not-italic relative text-[13px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="747:9529">
+          Upload new version
+        </p>
+      </button>
+
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onAddLivePostLink();
+          onClose();
+        }}
+        className="content-stretch flex gap-[10px] items-center overflow-clip px-[10px] py-[8px] relative rounded-[var(--radius-sm,6px)] shrink-0 w-full hover:bg-[#f4f6fb] transition text-left cursor-pointer"
+        data-node-id="747:9532"
+        data-name="Option"
+      >
+        <div className="relative shrink-0 size-[14px]" data-node-id="747:9533" data-name="Icon">
+          <Link2 size={14} className="text-[#0d0d10]" />
+        </div>
+        <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px not-italic relative text-[13px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="747:9534">
+          Add live post link
+        </p>
+      </button>
+
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onCounterOfferTime();
+          onClose();
+        }}
+        className="content-stretch flex gap-[10px] items-center overflow-clip px-[10px] py-[8px] relative rounded-[var(--radius-sm,6px)] shrink-0 w-full hover:bg-[#f4f6fb] transition text-left cursor-pointer"
+        data-node-id="747:9537"
+        data-name="Option"
+      >
+        <div className="relative shrink-0 size-[14px]" data-node-id="747:9538" data-name="Icon">
+          <Clock size={14} className="text-[#0d0d10]" />
+        </div>
+        <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px not-italic relative text-[13px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="747:9539">
+          Counter offer time
+        </p>
+      </button>
+
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onReportProblem();
+          onClose();
+        }}
+        className="content-stretch flex gap-[10px] items-center overflow-clip px-[10px] py-[8px] relative rounded-[var(--radius-sm,6px)] shrink-0 w-full hover:bg-[#fef2f2] transition text-left cursor-pointer"
+        data-node-id="747:9542"
+        data-name="Option"
+      >
+        <div className="relative shrink-0 size-[14px]" data-node-id="747:9543" data-name="Icon">
+          <Flag size={14} className="text-[#dc2626]" />
+        </div>
+        <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px not-italic relative text-[13px] text-[color:var(--status-danger-fg,#dc2626)]" data-node-id="747:9544">
+          Report a product problem
+        </p>
+      </button>
+    </div>
+  );
+}
+
 type Props = {
   onOpenUploadModal: () => void;
   storyV2Uploaded?: boolean;
   uploadedFileName?: string;
   productReceived?: boolean;
   onConfirmProduct?: () => void;
+  onCounterOfferTime?: (deliverableTitle: string) => void;
 };
 
 export function CreatorProjectDeliverablesView({
@@ -86,10 +209,49 @@ export function CreatorProjectDeliverablesView({
   uploadedFileName = "",
   productReceived = false,
   onConfirmProduct,
+  onCounterOfferTime,
 }: Props) {
   const [selectedId, setSelectedId] = useState<number>(3);
   const [isPanelOpen, setIsPanelOpen] = useState(true);
   const [panelTab, setPanelTab] = useState<"content" | "comments" | "history">("history");
+  const [openMenuRowId, setOpenMenuRowId] = useState<number | null>(null);
+  const menuContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuContainerRef.current && !menuContainerRef.current.contains(e.target as Node)) {
+        setOpenMenuRowId(null);
+      }
+    };
+    if (openMenuRowId !== null) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [openMenuRowId]);
+
+  const [livePostModal, setLivePostModal] = useState<{ open: boolean; id: number; title: string; currentLink: string }>({
+    open: false,
+    id: 0,
+    title: "",
+    currentLink: "",
+  });
+  const [reportModal, setReportModal] = useState<{ open: boolean; id: number; title: string }>({
+    open: false,
+    id: 0,
+    title: "",
+  });
+  const [successToast, setSuccessToast] = useState<string | null>(null);
+
+  const [deliverableLinks, setDeliverableLinks] = useState<{ [key: number]: string }>({
+    1: "https://www.instagram.com/reel/DBQF32xM8_g/",
+    2: "https://www.instagram.com/stories/highlights/1799283719/",
+  });
+
+  const showToast = (msg: string) => {
+    setSuccessToast(msg);
+    setTimeout(() => setSuccessToast(null), 3500);
+  };
+
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState<Array<{ author: string; initials: string; time: string; text: string; isBrand?: boolean }>>([
     {
@@ -140,7 +302,7 @@ export function CreatorProjectDeliverablesView({
         data-name="Left"
       >
         {/* Deliverables (4) Card */}
-        <div className="bg-white border border-[#e5e7eb] border-solid content-stretch flex flex-col gap-[14px] items-start overflow-clip p-[20px] relative rounded-[12px] shrink-0 w-full" data-node-id="715:3418" data-name="Deliverables (3)">
+        <div className="bg-white border border-[#e5e7eb] border-solid content-stretch flex flex-col gap-[14px] items-start p-[20px] relative rounded-[12px] shrink-0 w-full" data-node-id="715:3418" data-name="Deliverables (3)">
           <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="715:3419" data-name="Card head">
             <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start leading-[normal] min-w-px not-italic overflow-clip relative whitespace-nowrap" data-node-id="715:3420" data-name="t">
               <p className="font-['Inter:Semi_Bold'] font-semibold relative shrink-0 text-[#070b13] text-[16px]" data-node-id="715:3421">
@@ -152,9 +314,9 @@ export function CreatorProjectDeliverablesView({
             </div>
           </div>
 
-          <div className="border border-[#e5e7eb] border-solid content-stretch flex flex-col items-start overflow-clip relative rounded-[10px] shrink-0 w-full" data-node-id="715:3477" data-name="Table">
+          <div className="border border-[#e5e7eb] border-solid content-stretch flex flex-col items-start relative rounded-[10px] shrink-0 w-full" data-node-id="715:3477" data-name="Table">
             {/* Table Header */}
-            <div className="bg-[#f3f5f7] content-stretch flex gap-[12px] items-center overflow-clip px-[14px] py-[9px] relative shrink-0 w-full" data-node-id="715:3478" data-name="Header">
+            <div className="bg-[#f3f5f7] content-stretch flex gap-[12px] items-center px-[14px] py-[9px] relative shrink-0 w-full rounded-t-[10px]" data-node-id="715:3478" data-name="Header">
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[20px]" data-node-id="715:3479" data-name="Cell">
                 <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[12px] whitespace-nowrap" data-node-id="715:3480">
                   #
@@ -175,7 +337,7 @@ export function CreatorProjectDeliverablesView({
                   LIVE POST
                 </p>
               </div>
-              <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[96px]" data-node-id="715:3487" data-name="Cell">
+              <div className="content-stretch flex flex-col items-start relative shrink-0 w-[100px]" data-node-id="715:3487" data-name="Cell">
                 <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[12px] whitespace-nowrap" data-node-id="715:3488">
                   ACTIONS
                 </p>
@@ -188,8 +350,9 @@ export function CreatorProjectDeliverablesView({
                 setSelectedId(1);
                 setIsPanelOpen(true);
               }}
-              className={`border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center overflow-clip px-[14px] py-[12px] relative shrink-0 w-full transition cursor-pointer ${selectedId === 1 && isPanelOpen ? "bg-[#f1f4ff]" : "hover:bg-[#f9fafb]"
-                }`}
+              className={`border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center px-[14px] py-[12px] relative shrink-0 w-full transition cursor-pointer ${
+                selectedId === 1 && isPanelOpen ? "bg-[#f1f4ff]" : "hover:bg-[#f9fafb]"
+              }`}
               data-node-id="715:3489"
               data-name="Row"
             >
@@ -230,13 +393,73 @@ export function CreatorProjectDeliverablesView({
                   </p>
                 </div>
               </div>
-              <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[96px]" data-node-id="715:3495" data-name="Cell">
-                <div className="content-stretch flex items-start overflow-clip relative shrink-0" data-node-id="715:3434" data-name="a">
-                  <div className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] h-[32px] items-center justify-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#f4f6fb] transition" data-node-id="715:3435" data-name="Button">
-                    <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[18px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="I715:3435;5:45">
-                      View
-                    </p>
-                  </div>
+              <div className="content-stretch flex items-center gap-[6px] relative shrink-0 w-[100px]" data-node-id="715:3495" data-name="Cell">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedId(1);
+                    setIsPanelOpen(true);
+                  }}
+                  className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] h-[32px] items-center justify-center px-[10px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#f4f6fb] transition cursor-pointer"
+                  data-name="Button"
+                >
+                  <p className="font-['Inter:Medium'] font-medium leading-[18px] text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                    View
+                  </p>
+                </button>
+                <div className={`relative ${openMenuRowId === 1 ? "z-50" : "z-10"}`}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenMenuRowId(openMenuRowId === 1 ? null : 1);
+                    }}
+                    className={`size-[32px] rounded-[var(--radius-md,8px)] border flex items-center justify-center transition cursor-pointer ${
+                      openMenuRowId === 1
+                        ? "bg-[#0d0d10] text-white border-[#0d0d10]"
+                        : "bg-white text-[#0d0d10] border-[#e3e5ec] hover:bg-[#f4f6fb]"
+                    }`}
+                    title="Deliverable actions"
+                  >
+                    <MoreHorizontal size={15} />
+                  </button>
+                  {openMenuRowId === 1 && (
+                    <div ref={menuContainerRef} className="absolute right-0 top-[36px] z-50">
+                      <DeliverableActionsMenu
+                        deliverableTitle="Festive GRWM · Reel"
+                        onViewContent={() => {
+                          setSelectedId(1);
+                          setIsPanelOpen(true);
+                          setPanelTab("content");
+                        }}
+                        onUploadVersion={onOpenUploadModal}
+                        onAddLivePostLink={() => {
+                          setLivePostModal({
+                            open: true,
+                            id: 1,
+                            title: "Festive GRWM · Reel",
+                            currentLink: deliverableLinks[1] || "",
+                          });
+                        }}
+                        onCounterOfferTime={() => {
+                          if (onCounterOfferTime) {
+                            onCounterOfferTime("Festive GRWM · Reel");
+                          } else {
+                            showToast('Counter offer time requested for "Festive GRWM · Reel"');
+                          }
+                        }}
+                        onReportProblem={() => {
+                          setReportModal({
+                            open: true,
+                            id: 1,
+                            title: "Festive GRWM · Reel",
+                          });
+                        }}
+                        onClose={() => setOpenMenuRowId(null)}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -247,8 +470,9 @@ export function CreatorProjectDeliverablesView({
                 setSelectedId(2);
                 setIsPanelOpen(true);
               }}
-              className={`border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center overflow-clip px-[14px] py-[12px] relative shrink-0 w-full transition cursor-pointer ${selectedId === 2 && isPanelOpen ? "bg-[#f1f4ff]" : "hover:bg-[#f9fafb]"
-                }`}
+              className={`border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center px-[14px] py-[12px] relative shrink-0 w-full transition cursor-pointer ${
+                selectedId === 2 && isPanelOpen ? "bg-[#f1f4ff]" : "hover:bg-[#f9fafb]"
+              }`}
               data-node-id="715:3496"
               data-name="Row"
             >
@@ -289,13 +513,73 @@ export function CreatorProjectDeliverablesView({
                   </p>
                 </div>
               </div>
-              <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[96px]" data-node-id="715:3502" data-name="Cell">
-                <div className="content-stretch flex items-start overflow-clip relative shrink-0" data-node-id="715:3453" data-name="a">
-                  <div className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] h-[32px] items-center justify-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#f4f6fb] transition" data-node-id="715:3454" data-name="Button">
-                    <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[18px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="I715:3454;5:45">
-                      View
-                    </p>
-                  </div>
+              <div className="content-stretch flex items-center gap-[6px] relative shrink-0 w-[100px]" data-node-id="715:3502" data-name="Cell">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedId(2);
+                    setIsPanelOpen(true);
+                  }}
+                  className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] h-[32px] items-center justify-center px-[10px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#f4f6fb] transition cursor-pointer"
+                  data-name="Button"
+                >
+                  <p className="font-['Inter:Medium'] font-medium leading-[18px] text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                    View
+                  </p>
+                </button>
+                <div className={`relative ${openMenuRowId === 2 ? "z-50" : "z-10"}`}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenMenuRowId(openMenuRowId === 2 ? null : 2);
+                    }}
+                    className={`size-[32px] rounded-[var(--radius-md,8px)] border flex items-center justify-center transition cursor-pointer ${
+                      openMenuRowId === 2
+                        ? "bg-[#0d0d10] text-white border-[#0d0d10]"
+                        : "bg-white text-[#0d0d10] border-[#e3e5ec] hover:bg-[#f4f6fb]"
+                    }`}
+                    title="Deliverable actions"
+                  >
+                    <MoreHorizontal size={15} />
+                  </button>
+                  {openMenuRowId === 2 && (
+                    <div ref={menuContainerRef} className="absolute right-0 top-[36px] z-50">
+                      <DeliverableActionsMenu
+                        deliverableTitle="Launch day · Story"
+                        onViewContent={() => {
+                          setSelectedId(2);
+                          setIsPanelOpen(true);
+                          setPanelTab("content");
+                        }}
+                        onUploadVersion={onOpenUploadModal}
+                        onAddLivePostLink={() => {
+                          setLivePostModal({
+                            open: true,
+                            id: 2,
+                            title: "Launch day · Story",
+                            currentLink: deliverableLinks[2] || "",
+                          });
+                        }}
+                        onCounterOfferTime={() => {
+                          if (onCounterOfferTime) {
+                            onCounterOfferTime("Launch day · Story");
+                          } else {
+                            showToast('Counter offer time requested for "Launch day · Story"');
+                          }
+                        }}
+                        onReportProblem={() => {
+                          setReportModal({
+                            open: true,
+                            id: 2,
+                            title: "Launch day · Story",
+                          });
+                        }}
+                        onClose={() => setOpenMenuRowId(null)}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -306,8 +590,9 @@ export function CreatorProjectDeliverablesView({
                 setSelectedId(3);
                 setIsPanelOpen(true);
               }}
-              className={`border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center overflow-clip px-[14px] py-[12px] relative shrink-0 w-full transition cursor-pointer ${selectedId === 3 && isPanelOpen ? "bg-[#f1f4ff]" : "hover:bg-[#f9fafb]"
-                }`}
+              className={`border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center px-[14px] py-[12px] relative shrink-0 w-full transition cursor-pointer ${
+                selectedId === 3 && isPanelOpen ? "bg-[#f1f4ff]" : "hover:bg-[#f9fafb]"
+              }`}
               data-node-id="715:3503"
               data-name="Row"
             >
@@ -346,13 +631,73 @@ export function CreatorProjectDeliverablesView({
                   Not live yet
                 </p>
               </div>
-              <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[96px]" data-node-id="715:3509" data-name="Cell">
-                <div className="content-stretch flex items-start overflow-clip relative shrink-0" data-node-id="715:3469" data-name="a">
-                  <div className="bg-[#3b5bff] content-stretch flex gap-[6px] h-[32px] items-center justify-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 shadow-xs" data-node-id="715:3470" data-name="Button">
-                    <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[18px] not-italic relative shrink-0 text-[13px] text-white whitespace-nowrap">
-                      View
-                    </p>
-                  </div>
+              <div className="content-stretch flex items-center gap-[6px] relative shrink-0 w-[100px]" data-node-id="715:3509" data-name="Cell">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedId(3);
+                    setIsPanelOpen(true);
+                  }}
+                  className="bg-[#3b5bff] content-stretch flex gap-[6px] h-[32px] items-center justify-center px-[10px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#2f4acc] transition cursor-pointer shadow-xs"
+                  data-name="Button"
+                >
+                  <p className="font-['Inter:Medium'] font-medium leading-[18px] text-[13px] text-white whitespace-nowrap">
+                    View
+                  </p>
+                </button>
+                <div className={`relative ${openMenuRowId === 3 ? "z-50" : "z-10"}`}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenMenuRowId(openMenuRowId === 3 ? null : 3);
+                    }}
+                    className={`size-[32px] rounded-[var(--radius-md,8px)] border flex items-center justify-center transition cursor-pointer ${
+                      openMenuRowId === 3
+                        ? "bg-[#0d0d10] text-white border-[#0d0d10]"
+                        : "bg-white text-[#0d0d10] border-[#e3e5ec] hover:bg-[#f4f6fb]"
+                    }`}
+                    title="Deliverable actions"
+                  >
+                    <MoreHorizontal size={15} />
+                  </button>
+                  {openMenuRowId === 3 && (
+                    <div ref={menuContainerRef} className="absolute right-0 top-[36px] z-50">
+                      <DeliverableActionsMenu
+                        deliverableTitle="Results after 7 days · Reel"
+                        onViewContent={() => {
+                          setSelectedId(3);
+                          setIsPanelOpen(true);
+                          setPanelTab("content");
+                        }}
+                        onUploadVersion={onOpenUploadModal}
+                        onAddLivePostLink={() => {
+                          setLivePostModal({
+                            open: true,
+                            id: 3,
+                            title: "Results after 7 days · Reel",
+                            currentLink: deliverableLinks[3] || "",
+                          });
+                        }}
+                        onCounterOfferTime={() => {
+                          if (onCounterOfferTime) {
+                            onCounterOfferTime("Results after 7 days · Reel");
+                          } else {
+                            showToast('Counter offer time requested for "Results after 7 days · Reel"');
+                          }
+                        }}
+                        onReportProblem={() => {
+                          setReportModal({
+                            open: true,
+                            id: 3,
+                            title: "Results after 7 days · Reel",
+                          });
+                        }}
+                        onClose={() => setOpenMenuRowId(null)}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -363,8 +708,9 @@ export function CreatorProjectDeliverablesView({
                 setSelectedId(4);
                 setIsPanelOpen(true);
               }}
-              className={`border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center overflow-clip px-[14px] py-[12px] relative shrink-0 w-full transition cursor-pointer ${selectedId === 4 && isPanelOpen ? "bg-[#f1f4ff]" : "hover:bg-[#f9fafb]"
-                }`}
+              className={`border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center px-[14px] py-[12px] relative shrink-0 w-full transition cursor-pointer ${
+                selectedId === 4 && isPanelOpen ? "bg-[#f1f4ff]" : "hover:bg-[#f9fafb]"
+              }`}
               data-node-id="1663:78"
               data-name="Row"
             >
@@ -406,22 +752,72 @@ export function CreatorProjectDeliverablesView({
                   Not started
                 </p>
               </div>
-              <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[96px]" data-node-id="1663:87" data-name="Cell">
-                <div className="content-stretch flex items-start overflow-clip relative shrink-0" data-node-id="1663:88" data-name="a">
+              <div className="content-stretch flex items-center gap-[6px] relative shrink-0 w-[100px]" data-node-id="1663:87" data-name="Cell">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenUploadModal();
+                  }}
+                  className="bg-[var(--prim-gray-900,#0d0d10)] content-stretch flex gap-[6px] h-[32px] items-center justify-center px-[10px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#1a1a24] transition cursor-pointer"
+                  data-name="Button"
+                >
+                  <p className="font-['Inter:Medium'] font-medium leading-[18px] text-[13px] text-white whitespace-nowrap">
+                    Upload
+                  </p>
+                </button>
+                <div className={`relative ${openMenuRowId === 4 ? "z-50" : "z-10"}`}>
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onOpenUploadModal();
+                      setOpenMenuRowId(openMenuRowId === 4 ? null : 4);
                     }}
-                    className="bg-[var(--prim-gray-900,#0d0d10)] content-stretch flex gap-[6px] h-[32px] items-center justify-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#1a1a24] transition cursor-pointer"
-                    data-node-id="1663:89"
-                    data-name="Button"
+                    className={`size-[32px] rounded-[var(--radius-md,8px)] border flex items-center justify-center transition cursor-pointer ${
+                      openMenuRowId === 4
+                        ? "bg-[#0d0d10] text-white border-[#0d0d10]"
+                        : "bg-white text-[#0d0d10] border-[#e3e5ec] hover:bg-[#f4f6fb]"
+                    }`}
+                    title="Deliverable actions"
                   >
-                    <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[18px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-on-primary,white)] whitespace-nowrap" data-node-id="I1663:89;5:21">
-                      Upload
-                    </p>
+                    <MoreHorizontal size={15} />
                   </button>
+                  {openMenuRowId === 4 && (
+                    <div ref={menuContainerRef} className="absolute right-0 top-[36px] z-50">
+                      <DeliverableActionsMenu
+                        deliverableTitle="Last-day reminder · Story"
+                        onViewContent={() => {
+                          setSelectedId(4);
+                          setIsPanelOpen(true);
+                          setPanelTab("content");
+                        }}
+                        onUploadVersion={onOpenUploadModal}
+                        onAddLivePostLink={() => {
+                          setLivePostModal({
+                            open: true,
+                            id: 4,
+                            title: "Last-day reminder · Story",
+                            currentLink: deliverableLinks[4] || "",
+                          });
+                        }}
+                        onCounterOfferTime={() => {
+                          if (onCounterOfferTime) {
+                            onCounterOfferTime("Last-day reminder · Story");
+                          } else {
+                            showToast('Counter offer time requested for "Last-day reminder · Story"');
+                          }
+                        }}
+                        onReportProblem={() => {
+                          setReportModal({
+                            open: true,
+                            id: 4,
+                            title: "Last-day reminder · Story",
+                          });
+                        }}
+                        onClose={() => setOpenMenuRowId(null)}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1153,8 +1549,180 @@ export function CreatorProjectDeliverablesView({
             )}
           </div>
       )}
+
+      {/* Live Post Link Modal */}
+      {livePostModal.open && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150"
+          onClick={() => setLivePostModal({ open: false, id: 0, title: "", currentLink: "" })}
+        >
+          <div
+            className="w-full max-w-[440px] rounded-[16px] bg-white p-6 shadow-2xl border border-[#e5e7eb] animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="font-['Inter:Semi_Bold'] text-[17px] font-semibold text-[#0d0d10]">
+                  Add Live Post Link
+                </h3>
+                <p className="mt-1 text-[13px] text-[#6b7280]">
+                  {livePostModal.title}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setLivePostModal({ open: false, id: 0, title: "", currentLink: "" })}
+                className="text-[#9ca3af] hover:text-[#111827] p-1 rounded-md transition cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="mt-4">
+              <label className="block text-[12px] font-medium text-[#374151] mb-1.5">
+                Instagram URL
+              </label>
+              <div className="flex items-center gap-2 rounded-[8px] border border-[#e3e5ec] px-3 py-2 focus-within:border-[#3b5bff]">
+                <Link2 size={16} className="text-[#9ca3af] shrink-0" />
+                <input
+                  type="url"
+                  value={livePostModal.currentLink}
+                  onChange={(e) =>
+                    setLivePostModal((prev) => ({ ...prev, currentLink: e.target.value }))
+                  }
+                  placeholder="https://www.instagram.com/reel/..."
+                  className="w-full text-[13px] text-[#0d0d10] placeholder:text-[#9ca3af] focus:outline-none"
+                  autoFocus
+                />
+              </div>
+              <p className="text-[11px] text-[#8491a3] mt-1.5">
+                Paste the public Instagram Reel or Story link so Minimalist can verify live engagement.
+              </p>
+            </div>
+
+            <div className="mt-6 flex items-center justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={() => setLivePostModal({ open: false, id: 0, title: "", currentLink: "" })}
+                className="px-3.5 py-2 text-[13px] font-medium text-[#4b5563] hover:text-[#111827] transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (livePostModal.currentLink.trim()) {
+                    setDeliverableLinks((prev) => ({
+                      ...prev,
+                      [livePostModal.id]: livePostModal.currentLink.trim(),
+                    }));
+                    showToast(`Live post link saved for "${livePostModal.title}"`);
+                  }
+                  setLivePostModal({ open: false, id: 0, title: "", currentLink: "" });
+                }}
+                className="rounded-[8px] bg-[#0d0d10] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#1a1a24] transition cursor-pointer"
+              >
+                Save link
+              </button>
+            </div>
+          </div>
         </div>
-      );
+      )}
+
+      {/* Report a Product Problem Modal */}
+      {reportModal.open && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150"
+          onClick={() => setReportModal({ open: false, id: 0, title: "" })}
+        >
+          <div
+            className="w-full max-w-[460px] rounded-[16px] bg-white p-6 shadow-2xl border border-[#e5e7eb] animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <div className="size-7 rounded-full bg-[#fef2f2] flex items-center justify-center text-[#dc2626]">
+                    <Flag size={14} />
+                  </div>
+                  <h3 className="font-['Inter:Semi_Bold'] text-[17px] font-semibold text-[#0d0d10]">
+                    Report a Product Problem
+                  </h3>
+                </div>
+                <p className="mt-1.5 text-[13px] text-[#6b7280]">
+                  Reporting an issue with {reportModal.title} pauses delivery deadlines until resolved.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setReportModal({ open: false, id: 0, title: "" })}
+                className="text-[#9ca3af] hover:text-[#111827] p-1 rounded-md transition cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              <div>
+                <label className="block text-[12px] font-medium text-[#374151] mb-1">
+                  Issue type
+                </label>
+                <select className="w-full rounded-[8px] border border-[#e3e5ec] p-2 text-[13px] text-[#0d0d10] focus:border-[#3b5bff] focus:outline-none">
+                  <option>Damaged in transit</option>
+                  <option>Wrong product received</option>
+                  <option>Missing kit accessories</option>
+                  <option>Courier marked delivered but not received</option>
+                  <option>Product expired or defective</option>
+                  <option>Other issue</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[12px] font-medium text-[#374151] mb-1">
+                  Description
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Describe the issue in detail so Minimalist support can send a replacement quickly..."
+                  className="w-full rounded-[8px] border border-[#e3e5ec] p-2.5 text-[13px] text-[#0d0d10] placeholder:text-[#9ca3af] focus:border-[#3b5bff] focus:outline-none resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex items-center justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={() => setReportModal({ open: false, id: 0, title: "" })}
+                className="px-3.5 py-2 text-[13px] font-medium text-[#4b5563] hover:text-[#111827] transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  showToast(`Problem reported for "${reportModal.title}". Deadline paused.`);
+                  setReportModal({ open: false, id: 0, title: "" });
+                }}
+                className="rounded-[8px] bg-[#dc2626] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#b91c1c] transition cursor-pointer"
+              >
+                Submit Report
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Success Toast */}
+      {successToast && (
+        <div className="fixed bottom-6 right-6 z-[120] flex items-center gap-2.5 rounded-[10px] bg-[#0d0d10] text-white px-4 py-3 shadow-2xl border border-white/10 animate-in fade-in slide-in-from-bottom-2 duration-150">
+          <div className="size-5 rounded-full bg-[#16a34a] flex items-center justify-center text-white shrink-0">
+            <Check size={12} strokeWidth={3} />
+          </div>
+          <span className="text-[13px] font-medium">{successToast}</span>
+        </div>
+      )}
+    </div>
+  );
 }
 
-      export default CreatorProjectDeliverablesView;
+export default CreatorProjectDeliverablesView;

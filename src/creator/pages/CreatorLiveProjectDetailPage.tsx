@@ -508,6 +508,7 @@ export function CreatorLiveProjectDetailPage() {
               uploadedFileName={uploadedFileName}
               productReceived={productReceived}
               onConfirmProduct={() => setProductReceived(true)}
+              onCounterOfferTime={(_deliverableTitle) => setIsCounterOfferOpen(true)}
             />
           ) : activeTab !== "overview" ? (
             <div className="flex flex-col items-center justify-center p-16 rounded-[12px] border border-[#e5e7eb] bg-white w-full text-center">
