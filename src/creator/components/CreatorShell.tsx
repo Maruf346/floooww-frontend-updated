@@ -45,6 +45,7 @@ function CreatorSidebar({ close }: { close?: () => void }) {
   const discoveryActive = pathname === ROUTES.creatorProjects || pathname.startsWith(`${ROUTES.creatorProjects}/`);
   const myProjectsActive = pathname === ROUTES.creatorMyProjects;
   const contentActive = pathname === ROUTES.creatorContent;
+  const performanceActive = pathname === ROUTES.creatorPerformance;
 
   return (
     <aside className="flex h-full w-[260px] flex-col overflow-y-auto border-r border-line bg-white px-4 pb-4 pt-5">
@@ -109,7 +110,14 @@ function CreatorSidebar({ close }: { close?: () => void }) {
           <NavCount>18</NavCount>
         </Link>
         <p className="px-3 pb-1.5 pt-4 text-[12px] font-semibold leading-4 tracking-[.06em] text-tertiary">CONTENT &amp; DATA</p>
-        <button type="button" className={`${navClass} text-ink hover:bg-subtle`}><TrendingUp size={18} />Performance</button>
+        <Link
+          to={ROUTES.creatorPerformance}
+          onClick={close}
+          className={`${navClass} mt-0.5 ${performanceActive ? "bg-primary-subtle font-semibold text-primary" : "text-ink hover:bg-subtle"}`}
+        >
+          <TrendingUp size={18} />
+          <span className="flex-1 text-left">Performance</span>
+        </Link>
         <button type="button" className={`${navClass} text-ink hover:bg-subtle`}><WalletCards size={18} />Earnings</button>
         <p className="px-3 pb-1.5 pt-4 text-[12px] font-semibold leading-4 tracking-[.06em] text-tertiary">ACCOUNT</p>
         <button type="button" className={`${navClass} text-ink hover:bg-subtle`}><MessageSquare size={18} /><span className="flex-1 text-left">Messages</span><NavCount>3</NavCount></button>
