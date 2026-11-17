@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Check, ChevronDown, MoreHorizontal } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, MoreHorizontal } from "lucide-react";
 import { creatorProjectRoute, ROUTES } from "@/common/constants/routes";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import CounterOfferModal from "../components/CounterOfferModal";
@@ -147,21 +147,23 @@ function Logo({ className }: { className?: string }) {
   );
 }
 
-// Filter dropdown mirroring Brand All Projects
+// Filter dropdown matching Figma design
 function FilterDropdown({
   label,
   value,
-  values,
+  defaultOption,
+  options,
   onChange,
 }: {
   label: string;
   value: string;
-  values: string[];
+  defaultOption: string;
+  options: string[];
   onChange: (value: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const isSelected = value !== "All";
+  const isSelected = value !== defaultOption;
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -180,26 +182,27 @@ function FilterDropdown({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className={`content-stretch flex gap-[6px] items-center overflow-clip px-[12px] py-[6px] relative rounded-[var(--radius-full,999px)] border transition cursor-pointer ${isSelected
-            ? "bg-[#eff4ff] border-[#3b5bff] text-[#3b5bff] font-semibold"
-            : "bg-[var(--bg-surface,white)] border-[var(--border-default,#e3e5ec)] text-[color:var(--text-primary,#0d0d10)] hover:bg-[#f9fafb]"
-          }`}
+        className={`content-stretch flex gap-[8px] h-[40px] items-center justify-between overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] border transition cursor-pointer min-w-[105px] ${
+          open
+            ? "border-[1.5px] border-[#0d0d10] bg-white text-[#0d0d10]"
+            : isSelected
+              ? "border border-[#3b5bff] bg-[#eff4ff] text-[#3b5bff] font-medium"
+              : "border border-[var(--border-default,#e3e5ec)] bg-white text-[color:var(--text-primary,#0d0d10)] hover:border-[#9ca3af]"
+        }`}
       >
-        <span className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic text-[12px] whitespace-nowrap">
+        <span className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic text-[13px] whitespace-nowrap">
           {isSelected ? `${label}: ${value}` : label}
         </span>
-        <div className="relative shrink-0 size-[14px]">
-          <img
-            alt=""
-            className={`block size-full transition-transform ${open ? "rotate-180" : ""}`}
-            src={imgTrailingIcon}
-          />
-        </div>
+        {open ? (
+          <ChevronUp size={15} className="text-[#0d0d10] shrink-0" />
+        ) : (
+          <ChevronDown size={15} className="text-[#6b7280] shrink-0" />
+        )}
       </button>
 
       {open && (
-        <div className="absolute left-0 top-[calc(100%+6px)] z-30 min-w-[170px] rounded-[10px] border border-[#e5e7eb] bg-white p-[6px] shadow-[0px_10px_24px_rgba(0,0,0,0.08)]">
-          {["All", ...values].map((opt) => {
+        <div className="absolute left-0 top-[calc(100%+6px)] z-40 min-w-[180px] rounded-[8px] border border-[#e5e7eb] bg-white p-[6px] shadow-[0px_10px_24px_rgba(0,0,0,0.08)] animate-in fade-in zoom-in-95 duration-100">
+          {[defaultOption, ...options].map((opt) => {
             const active = value === opt;
             return (
               <button
@@ -209,13 +212,14 @@ function FilterDropdown({
                   onChange(opt);
                   setOpen(false);
                 }}
-                className={`flex w-full items-center justify-between rounded-[6px] px-[12px] py-[7px] text-left text-[13px] transition cursor-pointer ${active
+                className={`flex w-full items-center justify-between rounded-[6px] px-[12px] py-[8px] text-left text-[13px] transition cursor-pointer ${
+                  active
                     ? "bg-[#eff4ff] font-medium text-[#0d0d10]"
                     : "text-[#374151] hover:bg-[#f9fafb]"
-                  }`}
+                }`}
               >
                 <span>{opt}</span>
-                {active && <Check size={15} className="text-[#0d0d10]" />}
+                {active && <Check size={14} className="text-[#0d0d10]" />}
               </button>
             );
           })}
@@ -665,11 +669,11 @@ export function CreatorMyProjectsPage() {
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState("");
-  const [typeFilter, setTypeFilter] = useState("All");
-  const [partnershipFilter, setPartnershipFilter] = useState("All");
-  const [durationFilter, setDurationFilter] = useState("All");
-  const [platformFilter, setPlatformFilter] = useState("All");
-  const [feeFilter, setFeeFilter] = useState("All");
+  const [typeFilter, setTypeFilter] = useState("Any type");
+  const [partnershipFilter, setPartnershipFilter] = useState("Any");
+  const [durationFilter, setDurationFilter] = useState("Any");
+  const [platformFilter, setPlatformFilter] = useState("Any platform");
+  const [feeFilter, setFeeFilter] = useState("Any fee");
   const [dateRange, setDateRange] = useState("1 Oct – 28 Oct 2026");
 
   // Counter offer and row actions
@@ -708,24 +712,34 @@ export function CreatorMyProjectsPage() {
         if (!matches) return false;
       }
 
-      if (typeFilter !== "All" && p.type !== typeFilter) return false;
-      if (partnershipFilter !== "All" && p.partnership !== partnershipFilter) return false;
-      if (durationFilter !== "All" && p.duration !== durationFilter) return false;
-      if (platformFilter !== "All" && p.platform !== platformFilter) return false;
+      if (typeFilter !== "Any type" && p.type !== typeFilter) return false;
 
-      if (feeFilter !== "All") {
-        if (feeFilter === "Gift only" && p.partnership !== "Gift exchange") return false;
-        if (feeFilter === "Under ₹10,000") {
+      if (partnershipFilter !== "Any") {
+        if (partnershipFilter === "Gift + fee") {
+          const hasGiftAndFee =
+            (p.fee.includes("+") || p.feeNote.includes("kit")) &&
+            p.fee !== "Gift exchange";
+          if (!hasGiftAndFee) return false;
+        } else if (p.partnership !== partnershipFilter) {
+          return false;
+        }
+      }
+
+      if (durationFilter !== "Any" && p.duration !== durationFilter) return false;
+      if (platformFilter !== "Any platform" && p.platform !== platformFilter) return false;
+
+      if (feeFilter !== "Any fee") {
+        if (feeFilter === "Gift only") {
+          if (p.partnership !== "Gift exchange") return false;
+        } else if (feeFilter === "Under ₹10,000") {
           const num = parseInt(p.fee.replace(/[^0-9]/g, ""), 10) || 0;
           if (num > 10000 || p.partnership === "Gift exchange") return false;
-        }
-        if (feeFilter === "₹10,000–₹20,000") {
+        } else if (feeFilter === "₹10,000 – ₹25,000" || feeFilter === "₹10,000–₹25,000") {
           const num = parseInt(p.fee.replace(/[^0-9]/g, ""), 10) || 0;
-          if (num < 10000 || num > 20000) return false;
-        }
-        if (feeFilter === "Over ₹20,000") {
+          if (num < 10000 || num > 25000) return false;
+        } else if (feeFilter === "₹25,000+") {
           const num = parseInt(p.fee.replace(/[^0-9]/g, ""), 10) || 0;
-          if (num < 20000) return false;
+          if (num < 25000) return false;
         }
       }
 
@@ -1443,53 +1457,58 @@ export function CreatorMyProjectsPage() {
               </div>
             </div>
 
-            {/* Filter Dropdowns mirroring brand All projects */}
+            {/* Filter Dropdowns matching Figma exactly */}
             <FilterDropdown
               label="Type"
               value={typeFilter}
-              values={["Influencer", "UGC"]}
+              defaultOption="Any type"
+              options={["Influencer", "UGC", "AI videos"]}
               onChange={setTypeFilter}
             />
             <FilterDropdown
               label="Partnership"
               value={partnershipFilter}
-              values={["Paid", "Gift exchange"]}
+              defaultOption="Any"
+              options={["Paid", "Gift exchange", "Gift + fee"]}
               onChange={setPartnershipFilter}
             />
             <FilterDropdown
               label="Duration"
               value={durationFilter}
-              values={["One-time", "Long-term"]}
+              defaultOption="Any"
+              options={["One-time", "Long-term"]}
               onChange={setDurationFilter}
             />
             <FilterDropdown
               label="Platform"
               value={platformFilter}
-              values={["Instagram", "YouTube", "Pinterest", "Snapchat"]}
+              defaultOption="Any platform"
+              options={["Instagram", "YouTube", "Pinterest", "Snapchat"]}
               onChange={setPlatformFilter}
             />
             <FilterDropdown
               label="Fee"
               value={feeFilter}
-              values={["Under ₹10,000", "₹10,000–₹20,000", "Over ₹20,000", "Gift only"]}
+              defaultOption="Any fee"
+              options={["Under ₹10,000", "₹10,000 – ₹25,000", "₹25,000+", "Gift only"]}
               onChange={setFeeFilter}
             />
 
-            {(typeFilter !== "All" ||
-              partnershipFilter !== "All" ||
-              durationFilter !== "All" ||
-              platformFilter !== "All" ||
-              feeFilter !== "All") && (
+            {(typeFilter !== "Any type" ||
+              partnershipFilter !== "Any" ||
+              durationFilter !== "Any" ||
+              platformFilter !== "Any platform" ||
+              feeFilter !== "Any fee") && (
                 <button
                   type="button"
                   onClick={() => {
-                    setTypeFilter("All");
-                    setPartnershipFilter("All");
-                    setDurationFilter("All");
-                    setPlatformFilter("All");
-                    setFeeFilter("All");
+                    setTypeFilter("Any type");
+                    setPartnershipFilter("Any");
+                    setDurationFilter("Any");
+                    setPlatformFilter("Any platform");
+                    setFeeFilter("Any fee");
                   }}
-                  className="text-[12px] font-medium text-[#3b5bff] hover:underline ml-2"
+                  className="text-[12px] font-medium text-[#3b5bff] hover:underline ml-2 cursor-pointer"
                 >
                   Reset filters
                 </button>
@@ -1708,7 +1727,11 @@ export function CreatorMyProjectsPage() {
                             e.stopPropagation();
                             setOpenActionRowId((prev) => (prev === row.id ? null : row.id));
                           }}
-                          className="relative shrink-0 size-[28px] rounded-md flex items-center justify-center text-[#6b7280] hover:text-[#0d0d10] hover:bg-black/5 cursor-pointer transition"
+                          className={`relative shrink-0 size-[32px] rounded-md border flex items-center justify-center cursor-pointer transition ${
+                            openActionRowId === row.id
+                              ? "border-[1.5px] border-[#0d0d10] bg-white text-[#0d0d10]"
+                              : "border border-transparent text-[#6b7280] hover:text-[#0d0d10] hover:bg-black/5"
+                          }`}
                           data-name="Icon"
                         >
                           <img alt="" className="size-[16px]" src={imgIcon21} />
@@ -1716,25 +1739,58 @@ export function CreatorMyProjectsPage() {
                         {openActionRowId === row.id && (
                           <div
                             onClick={(e) => e.stopPropagation()}
-                            className="absolute right-0 top-full mt-1.5 z-40 w-44 rounded-lg border border-[#e5e7eb] bg-white p-1 shadow-lg text-[13px] text-[#0d0d10] animate-in fade-in zoom-in-95 duration-100"
+                            className="absolute right-0 top-full mt-1.5 z-40 w-48 rounded-[8px] border border-[#e5e7eb] bg-white p-[6px] shadow-[0px_10px_24px_rgba(0,0,0,0.08)] text-[13px] text-[#0d0d10] animate-in fade-in zoom-in-95 duration-100"
                           >
                             <Link
                               to={creatorProjectRoute(row.id)}
-                              className="flex w-full items-center px-2.5 py-1.5 rounded-md hover:bg-[#f4f6fb] text-[#0d0d10] font-medium"
+                              className="flex w-full items-center justify-between rounded-[6px] px-[12px] py-[8px] text-left text-[13px] transition cursor-pointer bg-[#eff4ff] text-[#0d0d10] font-medium"
                               onClick={() => setOpenActionRowId(null)}
                             >
-                              View details
+                              <span>View project</span>
+                              <Check size={14} className="text-[#0d0d10]" />
                             </Link>
                             <button
                               type="button"
                               onClick={() => {
-                                setCounterOfferTargetRow(row);
                                 setOpenActionRowId(null);
+                                navigate(`/creator/messages?brand=${encodeURIComponent(row.brand)}`);
                               }}
-                              className="flex w-full items-center px-2.5 py-1.5 rounded-md hover:bg-[#f4f6fb] text-[#0d0d10] font-medium text-left cursor-pointer"
+                              className="flex w-full items-center justify-between rounded-[6px] px-[12px] py-[8px] text-left text-[13px] text-[#374151] hover:bg-[#f9fafb] transition cursor-pointer"
                             >
-                              Counter offer
+                              <span>Message brand</span>
                             </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenActionRowId(null);
+                                alert(`Downloading invoice for ${row.name} (${row.brand})`);
+                              }}
+                              className="flex w-full items-center justify-between rounded-[6px] px-[12px] py-[8px] text-left text-[13px] text-[#374151] hover:bg-[#f9fafb] transition cursor-pointer"
+                            >
+                              <span>Download invoice</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenActionRowId(null);
+                                alert(`Project ${row.name} archived`);
+                              }}
+                              className="flex w-full items-center justify-between rounded-[6px] px-[12px] py-[8px] text-left text-[13px] text-[#374151] hover:bg-[#f9fafb] transition cursor-pointer"
+                            >
+                              <span>Archive</span>
+                            </button>
+                            {row.tab === "invitations" && row.partnership === "Paid" && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setCounterOfferTargetRow(row);
+                                  setOpenActionRowId(null);
+                                }}
+                                className="flex w-full items-center justify-between rounded-[6px] px-[12px] py-[8px] text-left text-[13px] text-[#3b5bff] font-medium hover:bg-[#eff4ff] transition cursor-pointer border-t border-[#f3f4f6] mt-1 pt-1.5"
+                              >
+                                <span>Counter offer</span>
+                              </button>
+                            )}
                           </div>
                         )}
                       </div>
