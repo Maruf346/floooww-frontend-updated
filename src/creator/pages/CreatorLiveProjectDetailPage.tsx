@@ -8,6 +8,8 @@ import { CreatorUploadDeliverableModal } from "../components/CreatorUploadDelive
 import { CreatorProjectPaymentsView } from "../components/CreatorProjectPaymentsView";
 import { CreatorProjectReviewView } from "../components/CreatorProjectReviewView";
 import { CreatorProjectPerformanceView } from "../components/CreatorProjectPerformanceView";
+import { CreatorDeliverableFilterDropdown, type DeliverableFilterOption } from "../components/CreatorDeliverableFilterDropdown";
+import { CreatorDateRangeDropdown } from "../components/CreatorDateRangeDropdown";
 import { Upload, FileVideo, X, Check } from "lucide-react";
 
 const imgDot = "https://www.figma.com/api/mcp/asset/fb6bd003-1496-4762-b97a-541e1bc8599d.svg";
@@ -160,6 +162,7 @@ export function CreatorLiveProjectDetailPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [storyV2Uploaded, setStoryV2Uploaded] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
+  const [deliverableFilter, setDeliverableFilter] = useState<DeliverableFilterOption>("All deliverables");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -479,7 +482,7 @@ export function CreatorLiveProjectDetailPage() {
               </button>
             </div>
           </div>
-          <div className="content-stretch flex gap-[16px] items-end overflow-clip relative shrink-0 w-full" data-node-id="789:11646" data-name="Tab row">
+          <div className="content-stretch flex gap-[16px] items-end relative shrink-0 w-full z-30" data-node-id="789:11646" data-name="Tab row">
             <div className="flex flex-[1_0_0] flex-row items-end self-stretch" data-node-id="714:2957">
               <div className="border-[#e5e7eb] border-b border-solid content-stretch flex flex-[1_0_0] gap-[28px] h-full items-start min-w-px overflow-clip relative" data-name="Tabs">
                 <button type="button" onClick={() => handleTabChange("overview")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2958" data-name="Tab · Overview">
@@ -514,7 +517,13 @@ export function CreatorLiveProjectDetailPage() {
                 </button>
               </div>
             </div>
-            <DateRange className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[8px] h-[40px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0" range="7 Oct – 7 Nov 2026" showCompare={false} />
+            <div className="flex items-center gap-[10px] shrink-0 relative z-30">
+              <CreatorDeliverableFilterDropdown
+                value={deliverableFilter}
+                onChange={setDeliverableFilter}
+              />
+              <CreatorDateRangeDropdown />
+            </div>
           </div>
           {activeTab === "deliverables" ? (
             <CreatorProjectDeliverablesView
@@ -524,6 +533,8 @@ export function CreatorLiveProjectDetailPage() {
               productReceived={productReceived}
               onConfirmProduct={() => setProductReceived(true)}
               onCounterOfferTime={(_deliverableTitle) => setIsCounterOfferOpen(true)}
+              deliverableFilter={deliverableFilter}
+              onDeliverableFilterChange={setDeliverableFilter}
             />
           ) : activeTab === "payments" ? (
             <CreatorProjectPaymentsView />

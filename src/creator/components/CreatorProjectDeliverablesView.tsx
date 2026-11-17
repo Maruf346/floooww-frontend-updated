@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Eye, Upload, Link2, Clock, Flag, MoreHorizontal, Check, X } from "lucide-react";
+import { CreatorDeliverableFilterDropdown, type DeliverableFilterOption } from "./CreatorDeliverableFilterDropdown";
 
 const imgDot1 = "https://www.figma.com/api/mcp/asset/649212b9-66f6-4f20-85bb-9d5364d794d8.svg";
 const imgPlatformInstagramStyleColor = "https://www.figma.com/api/mcp/asset/624c17aa-a5df-4e44-9245-16c3532a8557.svg";
@@ -201,6 +202,8 @@ type Props = {
   productReceived?: boolean;
   onConfirmProduct?: () => void;
   onCounterOfferTime?: (deliverableTitle: string) => void;
+  deliverableFilter?: DeliverableFilterOption;
+  onDeliverableFilterChange?: (filter: DeliverableFilterOption) => void;
 };
 
 export function CreatorProjectDeliverablesView({
@@ -210,7 +213,13 @@ export function CreatorProjectDeliverablesView({
   productReceived = false,
   onConfirmProduct,
   onCounterOfferTime,
+  deliverableFilter,
+  onDeliverableFilterChange,
 }: Props) {
+  const [internalFilter, setInternalFilter] = useState<DeliverableFilterOption>("All deliverables");
+  const currentFilter = deliverableFilter !== undefined ? deliverableFilter : internalFilter;
+  const setFilter = onDeliverableFilterChange || setInternalFilter;
+
   const [selectedId, setSelectedId] = useState<number>(3);
   const [isPanelOpen, setIsPanelOpen] = useState(true);
   const [panelTab, setPanelTab] = useState<"content" | "comments" | "history">("history");
@@ -303,15 +312,24 @@ export function CreatorProjectDeliverablesView({
       >
         {/* Deliverables (4) Card */}
         <div className="bg-white border border-[#e5e7eb] border-solid content-stretch flex flex-col gap-[14px] items-start p-[20px] relative rounded-[12px] shrink-0 w-full" data-node-id="715:3418" data-name="Deliverables (3)">
-          <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="715:3419" data-name="Card head">
+          <div className="content-stretch flex items-center justify-between overflow-visible relative shrink-0 w-full z-20" data-node-id="715:3419" data-name="Card head">
             <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start leading-[normal] min-w-px not-italic overflow-clip relative whitespace-nowrap" data-node-id="715:3420" data-name="t">
-              <p className="font-['Inter:Semi_Bold'] font-semibold relative shrink-0 text-[#070b13] text-[16px]" data-node-id="715:3421">
-                Deliverables (4)
+              <p className="font-['Inter:Semi_Bold'] font-semibold relative shrink-0 text-[#070b13] text-[16px]">
+                Deliverables ({currentFilter === "All deliverables" ? 4 : 1})
               </p>
-              <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] text-[12px]" data-node-id="715:3422">
+              <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] text-[12px]">
                 Track each deliverable from brief to live post. Minimalist sees the same status.
               </p>
             </div>
+            <CreatorDeliverableFilterDropdown
+              value={currentFilter}
+              onChange={(val) => {
+                setFilter(val);
+                if (val === "Festive GRWM · Reel") setSelectedId(1);
+                else if (val === "Launch day · Story") setSelectedId(2);
+                else if (val === "Results after 7 days · Reel") setSelectedId(3);
+              }}
+            />
           </div>
 
           <div className="border border-[#e5e7eb] border-solid content-stretch flex flex-col items-start relative rounded-[10px] shrink-0 w-full" data-node-id="715:3477" data-name="Table">
@@ -345,6 +363,7 @@ export function CreatorProjectDeliverablesView({
             </div>
 
             {/* Row 1: Festive GRWM */}
+            {(currentFilter === "All deliverables" || currentFilter === "Festive GRWM · Reel") && (
             <div
               onClick={() => {
                 setSelectedId(1);
@@ -463,8 +482,10 @@ export function CreatorProjectDeliverablesView({
                 </div>
               </div>
             </div>
+            )}
 
             {/* Row 2: Launch day */}
+            {(currentFilter === "All deliverables" || currentFilter === "Launch day · Story") && (
             <div
               onClick={() => {
                 setSelectedId(2);
@@ -583,8 +604,10 @@ export function CreatorProjectDeliverablesView({
                 </div>
               </div>
             </div>
+            )}
 
             {/* Row 3: Results after 7 days (Selected by default) */}
+            {(currentFilter === "All deliverables" || currentFilter === "Results after 7 days · Reel") && (
             <div
               onClick={() => {
                 setSelectedId(3);
@@ -701,8 +724,10 @@ export function CreatorProjectDeliverablesView({
                 </div>
               </div>
             </div>
+            )}
 
             {/* Row 4: Last-day reminder */}
+            {currentFilter === "All deliverables" && (
             <div
               onClick={() => {
                 setSelectedId(4);
@@ -821,6 +846,7 @@ export function CreatorProjectDeliverablesView({
                 </div>
               </div>
             </div>
+            )}
           </div>
         </div>
 
