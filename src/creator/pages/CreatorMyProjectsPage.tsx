@@ -63,6 +63,19 @@ const imgIconWalletLive = "https://www.figma.com/api/mcp/asset/cb8241a2-92d1-4a4
 const imgIcon19Live = "https://www.figma.com/api/mcp/asset/d7c142c3-4333-4f2a-8745-702a2ad8eff8.svg";
 const imgIcon20Live = "https://www.figma.com/api/mcp/asset/9a33ee05-8aa0-4b72-85d2-0e749f675970.svg";
 
+// Assets for Completed tab
+const imgRectangleCompleted0 = "https://www.figma.com/api/mcp/asset/b1cd4b21-79ed-478c-8982-2198012c3ccc.png";
+const imgRectangleCompleted1 = "https://www.figma.com/api/mcp/asset/8f04c8ec-3bf8-4355-9da9-23328f75aa3f.png";
+const imgRectangleCompleted2 = "https://www.figma.com/api/mcp/asset/ef567670-dd04-434e-a8e0-2f2ae86b542b.png";
+const imgRectangleCompleted3 = "https://www.figma.com/api/mcp/asset/f91733d1-a6af-465a-9bcd-e355950c292e.png";
+const imgRectangleCompleted4 = "https://www.figma.com/api/mcp/asset/c4164790-1ee7-4df1-b6ee-dc599a9cf0a7.png";
+const imgRectangleCompleted5 = "https://www.figma.com/api/mcp/asset/196f0780-26dd-4d43-8a59-cb6770fc736a.png";
+const imgRectangleCompleted6 = "https://www.figma.com/api/mcp/asset/0c7204ea-fc11-45c4-b6ad-ec1e76452b05.png";
+const imgIcon17Completed = "https://www.figma.com/api/mcp/asset/9e1229cd-8835-4cce-9fb2-c88f0f049f14.svg";
+const imgIcon18Completed = "https://www.figma.com/api/mcp/asset/21f984ec-4f08-4317-b4d5-4a7dc84fe5cb.svg";
+const imgIcon19Completed = "https://www.figma.com/api/mcp/asset/12671620-a77a-4faa-844e-4dcc48525674.svg";
+const imgIcon20Completed = "https://www.figma.com/api/mcp/asset/dfac32fc-788f-49af-827b-f5aa074be992.svg";
+
 type BadgeTone = "Warning" | "Info" | "Neutral" | "Success";
 
 type BadgeProps = {
@@ -421,143 +434,143 @@ const ALL_PROJECTS: ProjectRowData[] = [
 
   // Completed (7)
   {
-    id: "summer-hydration",
-    name: "Summer Hydration Routine",
-    brand: "Minimalist",
-    type: "Influencer",
-    partnership: "Paid",
-    duration: "One-time",
-    platform: "Instagram",
-    status: "Completed",
-    badgeTone: "Success",
-    posts: 3,
-    match: 95,
-    fee: "₹18,000",
-    feeNote: "Paid to bank",
-    replyBy: "28 Sep",
-    replyNote: "Closed successfully",
-    received: "1 Sep",
-    image: imgRectangle1,
-    tab: "completed",
-  },
-  {
-    id: "autumn-lip",
-    name: "Autumn Lip Stain",
-    brand: "Velvet Lip Co.",
-    type: "Influencer",
-    partnership: "Paid",
-    duration: "One-time",
-    platform: "Instagram",
-    status: "Completed",
-    badgeTone: "Success",
-    posts: 2,
-    match: 90,
-    fee: "₹14,000",
-    feeNote: "Paid to bank",
-    replyBy: "15 Sep",
-    replyNote: "Closed successfully",
-    received: "20 Aug",
-    image: imgRectangle,
-    tab: "completed",
-  },
-  {
-    id: "hair-mask",
-    name: "Festive Styling Reel",
-    brand: "Strand Studio",
-    type: "UGC",
-    partnership: "Paid",
-    duration: "One-time",
-    platform: "YouTube",
-    status: "Completed",
-    badgeTone: "Success",
-    posts: 1,
-    match: 85,
-    fee: "₹10,000",
-    feeNote: "Paid to bank",
-    replyBy: "1 Sep",
-    replyNote: "Closed successfully",
-    received: "10 Aug",
-    image: "/assets/creator/projects/festive-haircare-tutorials.png",
-    tab: "completed",
-  },
-  {
-    id: "dew-routine",
-    name: "Morning Dew Routine",
+    id: "mist-launch",
+    name: "Mist launch",
     brand: "Dewdrop Naturals",
     type: "Influencer",
     partnership: "Paid",
     duration: "One-time",
     platform: "Instagram",
     status: "Completed",
-    badgeTone: "Success",
-    posts: 2,
-    match: 88,
-    fee: "₹12,000",
-    feeNote: "Paid to bank",
-    replyBy: "20 Aug",
-    replyNote: "Closed successfully",
-    received: "25 Jul",
-    image: imgRectangle2,
+    badgeTone: "Neutral",
+    posts: 3,
+    match: "5.0",
+    fee: "₹5,340",
+    feeNote: "+ kit ₹2,400",
+    replyBy: "96K views",
+    replyNote: "6.9% engagement",
+    received: "12 Sep",
+    image: imgRectangleCompleted0,
     tab: "completed",
   },
   {
-    id: "spf-mist",
-    name: "SPF Daily Protection",
-    brand: "Minimalist",
-    type: "Influencer",
-    partnership: "Paid",
-    duration: "One-time",
-    platform: "Instagram",
-    status: "Completed",
-    badgeTone: "Success",
-    posts: 2,
-    match: 92,
-    fee: "₹15,000",
-    feeNote: "Paid to bank",
-    replyBy: "22 Jul",
-    replyNote: "Closed successfully",
-    received: "2 Jul",
-    image: imgRectangle1,
-    tab: "completed",
-  },
-  {
-    id: "tint-launch",
-    name: "Hydra Dew Tint",
+    id: "lip-liner-collab",
+    name: "Lip Liner Collab",
     brand: "Velvet Lip Co.",
     type: "Influencer",
     partnership: "Paid",
     duration: "One-time",
     platform: "Instagram",
     status: "Completed",
-    badgeTone: "Success",
+    badgeTone: "Neutral",
     posts: 2,
-    match: 89,
-    fee: "₹12,000",
-    feeNote: "Paid to bank",
-    replyBy: "8 Jul",
-    replyNote: "Closed successfully",
-    received: "15 Jun",
-    image: imgRectangle,
+    match: "4.8",
+    fee: "₹22,320",
+    feeNote: "paid 2 Sep",
+    replyBy: "58 orders",
+    replyNote: "₹21,400 sales",
+    received: "28 Aug",
+    image: imgRectangleCompleted1,
     tab: "completed",
   },
   {
-    id: "clay-glow",
-    name: "Pure Clay Mask",
-    brand: "Petal & Pine",
+    id: "summer-glow-edit",
+    name: "Summer Glow Edit",
+    brand: "Minimalist",
     type: "Influencer",
     partnership: "Paid",
     duration: "One-time",
     platform: "Instagram",
     status: "Completed",
-    badgeTone: "Success",
+    badgeTone: "Neutral",
+    posts: 3,
+    match: "5.0",
+    fee: "₹26,700",
+    feeNote: "paid 2 Aug",
+    replyBy: "140 orders",
+    replyNote: "₹51,200 sales",
+    received: "30 Jul",
+    image: imgRectangleCompleted2,
+    tab: "completed",
+  },
+  {
+    id: "sunscreen-stories",
+    name: "Sunscreen Stories",
+    brand: "Minimalist",
+    type: "Influencer",
+    partnership: "Paid",
+    duration: "One-time",
+    platform: "Instagram",
+    status: "Completed",
+    badgeTone: "Neutral",
+    posts: 2,
+    match: "4.9",
+    fee: "₹13,950",
+    feeNote: "paid 20 Jun",
+    replyBy: "3.1 L reach",
+    replyNote: "CPM ₹4.60",
+    received: "18 Jun",
+    image: imgRectangleCompleted3,
+    tab: "completed",
+  },
+  {
+    id: "ubtan-glow-reel",
+    name: "Ubtan Glow Reel",
+    brand: "Kumkum Naturals",
+    type: "Influencer",
+    partnership: "Paid",
+    duration: "One-time",
+    platform: "Instagram",
+    status: "Completed",
+    badgeTone: "Neutral",
     posts: 1,
-    match: 83,
-    fee: "₹8,000",
-    feeNote: "Paid to bank",
-    replyBy: "18 Jun",
-    replyNote: "Closed successfully",
-    received: "1 Jun",
-    image: "/assets/creator/projects/clean-beauty-ambassadors.png",
+    match: "4.8",
+    fee: "₹9,300",
+    feeNote: "paid 24 May",
+    replyBy: "64 orders",
+    replyNote: "₹19,800 sales",
+    received: "22 May",
+    image: imgRectangleCompleted4,
+    tab: "completed",
+  },
+  {
+    id: "rose-toner",
+    name: "Rose Toner",
+    brand: "Petal Theory",
+    type: "Influencer",
+    partnership: "Gift exchange",
+    duration: "One-time",
+    platform: "Instagram",
+    status: "Completed",
+    badgeTone: "Neutral",
+    posts: 1,
+    match: "5.0",
+    fee: "Gift exchange",
+    feeNote: "kit worth ₹1,900",
+    replyBy: "41K views",
+    replyNote: "7.2% engagement",
+    received: "10 May",
+    image: imgRectangleCompleted5,
+    tab: "completed",
+  },
+  {
+    id: "hair-oil-ugc",
+    name: "Hair Oil UGC",
+    brand: "Strand Studio",
+    type: "UGC",
+    partnership: "Paid",
+    duration: "One-time",
+    platform: "Instagram",
+    status: "Completed",
+    badgeTone: "Neutral",
+    posts: 4,
+    match: "4.9",
+    fee: "₹12,040",
+    feeNote: "paid 4 May",
+    replyBy: "4 files",
+    replyNote: "all approved",
+    received: "2 May",
+    image: imgRectangleCompleted6,
     tab: "completed",
   },
 
@@ -798,32 +811,32 @@ export function CreatorMyProjectsPage() {
       case "completed":
         return [
           {
-            title: "Completed projects",
+            title: "Completed",
             value: "7",
-            sub: "all approved",
+            sub: "this year",
             bg: "bg-[#3b5bff]",
-            icon: imgIcon17,
+            icon: imgIcon17Completed,
           },
           {
-            title: "Total earnings",
-            value: "₹89,000",
-            sub: "100% paid to bank",
+            title: "You received",
+            value: "₹91,090",
+            sub: "+ 2 product kits",
             bg: "bg-[var(--bg-inverse,#0d0d10)]",
-            icon: imgIcon18,
+            icon: imgIcon18Completed,
           },
           {
             title: "Brand rating",
-            value: "4.9 / 5",
-            sub: "7 positive reviews",
+            value: "4.9",
+            sub: "from 7 brands",
             bg: "bg-[var(--status-success-fg,#16a34a)]",
-            icon: imgIcon19,
+            icon: imgIcon19Completed,
           },
           {
-            title: "Repeat collaborations",
-            value: "4 brands",
-            sub: "worked together 2+ times",
+            title: "Repeat brands",
+            value: "3",
+            sub: "Minimalist asked you again",
             bg: "bg-[#3b5bff]",
-            icon: imgIcon20,
+            icon: imgIcon20Completed,
           },
         ];
       case "declined":
@@ -1224,7 +1237,7 @@ export function CreatorMyProjectsPage() {
                     : activeTab === "live"
                       ? "Ishita Rao · 2 live projects · next payout ₹27,000 on 2 Nov"
                       : activeTab === "completed"
-                        ? `Ishita Rao · ${tabCounts.completed} completed collaborations · 100% on time`
+                        ? "Ishita Rao · 7 projects finished this year · rated 4.9 by brands"
                         : `Ishita Rao · ${tabCounts.declined} declined offers · no standing impact`}
               </p>
             </div>
@@ -1500,12 +1513,12 @@ export function CreatorMyProjectsPage() {
               </div>
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[74px]" data-name="Cell">
                 <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] tracking-[0.72px] whitespace-nowrap">
-                  {activeTab === "live" ? "LIVE" : "MATCH"}
+                  {activeTab === "live" ? "LIVE" : activeTab === "completed" ? "RATING" : "MATCH"}
                 </p>
               </div>
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[130px]" data-name="Cell">
                 <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] tracking-[0.72px] whitespace-nowrap">
-                  {activeTab === "applied" ? "YOUR FEE" : "FEE"}
+                  {activeTab === "applied" ? "YOUR FEE" : activeTab === "completed" ? "YOU RECEIVED" : "FEE"}
                 </p>
               </div>
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[136px]" data-name="Cell">
@@ -1515,13 +1528,13 @@ export function CreatorMyProjectsPage() {
                     : activeTab === "applied"
                     ? "BRAND DECIDES"
                     : activeTab === "completed"
-                    ? "COMPLETED"
+                    ? "RESULT"
                     : "REPLY BY"}
                 </p>
               </div>
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[72px]" data-name="Cell">
                 <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] tracking-[0.72px] whitespace-nowrap">
-                  {activeTab === "live" ? "NEXT STEP" : activeTab === "applied" ? "APPLIED" : "RECEIVED"}
+                  {activeTab === "live" ? "NEXT STEP" : activeTab === "applied" ? "APPLIED" : activeTab === "completed" ? "FINISHED" : "RECEIVED"}
                 </p>
               </div>
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[96px]" data-name="Cell">
@@ -1603,7 +1616,7 @@ export function CreatorMyProjectsPage() {
                   {/* Match cell */}
                   <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[74px]" data-name="Cell">
                     <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
-                      {row.match}{activeTab === "live" ? "" : "%"}
+                      {row.match}{activeTab === "live" || activeTab === "completed" ? "" : "%"}
                     </p>
                   </div>
 
@@ -1665,7 +1678,7 @@ export function CreatorMyProjectsPage() {
                         data-name="Button"
                       >
                         <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[18px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
-                          {activeTab === "live" ? "Open" : "View"}
+                          {activeTab === "completed" ? "Report" : activeTab === "live" ? "Open" : "View"}
                         </p>
                       </Link>
                       <div className="relative">
@@ -1774,3 +1787,4 @@ export default CreatorMyProjectsPage;
 export { CreatorMyProjectsPage as Cr04MyProjectsInvitationsOffers };
 export { CreatorMyProjectsPage as Cr04MyProjectsApplied };
 export { CreatorMyProjectsPage as Cr04MyProjectsLive };
+export { CreatorMyProjectsPage as Cr04MyProjectsCompleted };
