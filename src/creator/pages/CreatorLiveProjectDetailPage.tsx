@@ -457,7 +457,7 @@ export function CreatorLiveProjectDetailPage() {
                 Minimalist · 7 Oct – 7 Nov 2026 · fee ₹17,000
               </p>
             </div>
-            <div className="content-stretch flex items-center overflow-clip relative shrink-0" data-node-id="551:923" data-name="Actions">
+            <div className="content-stretch flex items-center gap-[10px] overflow-clip relative shrink-0" data-node-id="551:923" data-name="Actions">
               <Link to="/brand/messages" className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#f4f6fb] transition" data-node-id="551:924" data-name="Button">
                 <div className="relative shrink-0 size-[16px]" data-node-id="I551:924;5:30" data-name="Icon">
                   <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon16} />
@@ -466,37 +466,48 @@ export function CreatorLiveProjectDetailPage() {
                   Message brand
                 </p>
               </Link>
+              <button
+                type="button"
+                onClick={() => setIsUploadOpen(true)}
+                className="bg-[var(--prim-gray-900,#0d0d10)] cursor-pointer hover:bg-black/80 content-stretch flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 transition"
+                data-name="Button"
+              >
+                <Upload className="size-4 text-white" />
+                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-white text-left whitespace-nowrap">
+                  {storyV2Uploaded ? "Story v2 Uploaded" : "Upload Story v2"}
+                </p>
+              </button>
             </div>
           </div>
           <div className="content-stretch flex gap-[16px] items-end overflow-clip relative shrink-0 w-full" data-node-id="789:11646" data-name="Tab row">
             <div className="flex flex-[1_0_0] flex-row items-end self-stretch" data-node-id="714:2957">
               <div className="border-[#e5e7eb] border-b border-solid content-stretch flex flex-[1_0_0] gap-[28px] h-full items-start min-w-px overflow-clip relative" data-name="Tabs">
                 <button type="button" onClick={() => handleTabChange("overview")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2958" data-name="Tab · Overview">
-                  <p className={`[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[14px] whitespace-nowrap transition ${activeTab === "overview" ? "text-[#3b5bff]" : "text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2959">
+                  <p className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[14px] whitespace-nowrap transition ${activeTab === "overview" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2959">
                     Overview
                   </p>
                   <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "overview" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2960" data-name="Rectangle" />
                 </button>
                 <button type="button" onClick={() => handleTabChange("deliverables")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2961" data-name="Tab · Deliverables">
-                  <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[14px] text-left whitespace-nowrap transition ${activeTab === "deliverables" ? "text-[#3b5bff] font-semibold" : "text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2962">
+                  <p className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[14px] text-left whitespace-nowrap transition ${activeTab === "deliverables" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2962">
                     Deliverables
                   </p>
                   <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "deliverables" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2963" data-name="Rectangle" />
                 </button>
                 <button type="button" onClick={() => handleTabChange("payments")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2964" data-name="Tab · Payments">
-                  <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[14px] text-left whitespace-nowrap transition ${activeTab === "payments" ? "text-[#3b5bff] font-semibold" : "text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2965">
+                  <p className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[14px] text-left whitespace-nowrap transition ${activeTab === "payments" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2965">
                     Payments
                   </p>
                   <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "payments" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2966" data-name="Rectangle" />
                 </button>
                 <button type="button" onClick={() => handleTabChange("review")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2967" data-name="Tab · Review">
-                  <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[14px] text-left whitespace-nowrap transition ${activeTab === "review" ? "text-[#3b5bff] font-semibold" : "text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2968">
+                  <p className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[14px] text-left whitespace-nowrap transition ${activeTab === "review" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2968">
                     Review
                   </p>
                   <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "review" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2969" data-name="Rectangle" />
                 </button>
                 <button type="button" onClick={() => handleTabChange("performance")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2970" data-name="Tab · Performance">
-                  <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[14px] whitespace-nowrap transition ${activeTab === "performance" ? "text-[#3b5bff] font-semibold" : "text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2971">
+                  <p className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[14px] whitespace-nowrap transition ${activeTab === "performance" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2971">
                     Performance
                   </p>
                   <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "performance" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2972" data-name="Rectangle" />

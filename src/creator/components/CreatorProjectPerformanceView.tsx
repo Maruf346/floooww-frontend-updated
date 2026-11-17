@@ -62,8 +62,8 @@ export function CreatorProjectPerformanceView() {
         </div>
       </div>
 
-      {/* Performance Dashboard from Brand/Creator Mirror */}
-      <CreatorPerformanceTab creatorName="Ishita Rao" platform={platform} />
+      {/* Performance Dashboard from Brand/Creator Mirror (Custom report omitted for creator) */}
+      <CreatorPerformanceTab creatorName="Ishita Rao" platform={platform} showCustomReport={false} />
     </div>
   );
 }

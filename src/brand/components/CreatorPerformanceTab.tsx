@@ -3,7 +3,11 @@ import type { ReactNode } from "react";
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import type { Platform } from "@/common/types";
 
-type CreatorPerformanceTabProps = { creatorName: string; platform: Platform };
+type CreatorPerformanceTabProps = {
+  creatorName: string;
+  platform: Platform;
+  showCustomReport?: boolean;
+};
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -922,7 +926,11 @@ function CustomReport() {
   );
 }
 
-export function CreatorPerformanceTab({ creatorName, platform }: CreatorPerformanceTabProps) {
+export function CreatorPerformanceTab({
+  creatorName,
+  platform,
+  showCustomReport = true,
+}: CreatorPerformanceTabProps) {
   return (
     <div className="mt-6 space-y-6">
       <Scorecards />
@@ -970,9 +978,11 @@ export function CreatorPerformanceTab({ creatorName, platform }: CreatorPerforma
           <CostEfficiencyCard />
         </Reveal>
       </section>
-      <Reveal>
-        <CustomReport />
-      </Reveal>
+      {showCustomReport && (
+        <Reveal>
+          <CustomReport />
+        </Reveal>
+      )}
     </div>
   );
 }
