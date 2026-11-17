@@ -1,8 +1,8 @@
 import { useParams, useSearchParams } from "react-router-dom";
-import Cr03ProjectPageInfluencerPaidLongTerm from "./Cr03ProjectPageInfluencerPaidLongTerm";
-import Cr03ProjectPageInfluencerPaidOneTime from "./Cr03ProjectPageInfluencerPaidOneTime";
-import Cr03ProjectPageInfluencerGiftOneTime from "./Cr03ProjectPageInfluencerGiftOneTime";
-import Cr03ProjectPageUgcPaidOneTime from "./Cr03ProjectPageUgcPaidOneTime";
+import CreatorProjectPageInfluencerPaidLongTerm from "./CreatorProjectPageInfluencerPaidLongTerm";
+import CreatorProjectPageInfluencerPaidOneTime from "./CreatorProjectPageInfluencerPaidOneTime";
+import CreatorProjectPageInfluencerGiftOneTime from "./CreatorProjectPageInfluencerGiftOneTime";
+import CreatorProjectPageUgcPaidOneTime from "./CreatorProjectPageUgcPaidOneTime";
 
 export function CreatorProjectDetailPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -18,7 +18,7 @@ export function CreatorProjectDetailPage() {
     projectId === "gift-one-time" ||
     projectId === "gift"
   ) {
-    return <Cr03ProjectPageInfluencerGiftOneTime />;
+    return <CreatorProjectPageInfluencerGiftOneTime />;
   }
 
   if (
@@ -30,7 +30,7 @@ export function CreatorProjectDetailPage() {
     projectId === "ugc-one-time" ||
     projectId === "ugc"
   ) {
-    return <Cr03ProjectPageUgcPaidOneTime />;
+    return <CreatorProjectPageUgcPaidOneTime />;
   }
 
   if (
@@ -39,12 +39,13 @@ export function CreatorProjectDetailPage() {
     projectId === "monsoon-sunscreen" ||
     projectId === "one-time" ||
     projectId === "cr-03-one-time" ||
+    projectId === "creator-one-time" ||
     projectId === "influencer-paid-one-time"
   ) {
-    return <Cr03ProjectPageInfluencerPaidOneTime />;
+    return <CreatorProjectPageInfluencerPaidOneTime />;
   }
 
-  return <Cr03ProjectPageInfluencerPaidLongTerm />;
+  return <CreatorProjectPageInfluencerPaidLongTerm />;
 }
 
 export default CreatorProjectDetailPage;

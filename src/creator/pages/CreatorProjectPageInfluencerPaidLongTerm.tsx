@@ -82,10 +82,10 @@ function Logo({ className, theme = "On light" }: LogoProps) {
   );
 }
 
-export default function Cr03ProjectPageInfluencerPaidLongTerm() {
+export default function CreatorProjectPageInfluencerPaidLongTerm() {
   const [isCounterOfferOpen, setIsCounterOfferOpen] = useState(false);
   return (
-    <div className="bg-[var(--bg-page,white)] content-stretch flex items-start relative size-full" data-node-id="772:9644" data-name="CR-03 · Project page: Influencer · Paid · Long-term">
+    <div className="bg-[var(--bg-page,white)] content-stretch flex items-start relative size-full" data-node-id="772:9644" data-name="Creator · Project page: Influencer · Paid · Long-term">
       <div className="bg-[var(--bg-surface,white)] border-[var(--border-default,#e3e5ec)] border-r border-solid content-stretch flex flex-col gap-[2px] items-start overflow-clip pb-[16px] pt-[20px] px-[16px] relative self-stretch shrink-0 w-[260px]" data-node-id="772:9645" data-name="Sidebar / Creator">
         <Logo className="content-stretch flex items-center overflow-clip relative rounded-[9.778px] shrink-0" />
         <div className="h-[16px] relative shrink-0 w-[10px]" data-node-id="I772:9645;9:488" data-name="gap" />
@@ -1030,4 +1030,5 @@ export default function Cr03ProjectPageInfluencerPaidLongTerm() {
   );
 }
 
-export { Cr03ProjectPageInfluencerPaidLongTerm };
+export { CreatorProjectPageInfluencerPaidLongTerm };
+
