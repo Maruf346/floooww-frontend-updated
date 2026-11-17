@@ -1136,22 +1136,22 @@ export function CreatorMyProjectsPage() {
             CONTENT &amp; DATA
           </p>
         </div>
-        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-name="Performance">
+        <Link to={ROUTES.creatorPerformance} className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition cursor-pointer" data-name="Performance">
           <div className="relative shrink-0 size-[18px]" data-name="Icon">
             <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon7} />
           </div>
           <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]">
             Performance
           </p>
-        </div>
-        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-name="Earnings">
+        </Link>
+        <Link to={ROUTES.creatorEarnings} className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition cursor-pointer" data-name="Earnings">
           <div className="relative shrink-0 size-[18px]" data-name="Icon">
             <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon8} />
           </div>
           <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]">
             Earnings
           </p>
-        </div>
+        </Link>
 
         {/* ACCOUNT */}
         <div className="content-stretch flex items-start overflow-clip pb-[6px] pt-[16px] px-[12px] relative shrink-0" data-name="Section · ACCOUNT">

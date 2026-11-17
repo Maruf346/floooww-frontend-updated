@@ -347,22 +347,22 @@ export function CreatorLiveProjectDetailPage() {
         <div className="content-stretch flex items-start overflow-clip pb-[6px] pt-[16px] px-[12px] relative shrink-0" data-node-id="I551:748;9:571" data-name="Section · CONTENT & DATA">
           <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] tracking-[0.72px] whitespace-nowrap" data-node-id="I551:748;9:572">{`CONTENT & DATA`}</p>
         </div>
-        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-node-id="I551:748;9:573" data-name="Performance">
+        <Link to={ROUTES.creatorPerformance} className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition cursor-pointer" data-node-id="I551:748;9:573" data-name="Performance">
           <div className="relative shrink-0 size-[18px]" data-node-id="I551:748;9:573;9:8" data-name="Icon">
             <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon7} />
           </div>
           <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="I551:748;9:573;9:11">
             Performance
           </p>
-        </div>
-        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-node-id="I551:748;9:584" data-name="Earnings">
+        </Link>
+        <Link to={ROUTES.creatorEarnings} className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition cursor-pointer" data-node-id="I551:748;9:584" data-name="Earnings">
           <div className="relative shrink-0 size-[18px]" data-node-id="I551:748;9:584;9:8" data-name="Icon">
             <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon8} />
           </div>
           <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="I551:748;9:584;9:11">
             Earnings
           </p>
-        </div>
+        </Link>
         <div className="content-stretch flex items-start overflow-clip pb-[6px] pt-[16px] px-[12px] relative shrink-0" data-node-id="I551:748;9:596" data-name="Section · ACCOUNT">
           <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] tracking-[0.72px] whitespace-nowrap" data-node-id="I551:748;9:597">
             ACCOUNT
