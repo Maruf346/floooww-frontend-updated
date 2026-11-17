@@ -1,3 +1,6 @@
+import { useState } from "react";
+import CounterOfferModal from "../components/CounterOfferModal";
+
 const imgDot = "https://www.figma.com/api/mcp/asset/a91b4316-0eba-4711-99a6-bb19ec6deb1f.svg";
 const imgDot1 = "https://www.figma.com/api/mcp/asset/a834d692-f233-4d1d-bcb1-c35e03dd0045.svg";
 const imgKreyioWordmark = "https://www.figma.com/api/mcp/asset/4307356b-f8ad-4693-8952-ded842ee22bc.svg";
@@ -80,6 +83,7 @@ function Logo({ className, theme = "On light" }: LogoProps) {
 }
 
 export default function Cr03ProjectPageInfluencerPaidLongTerm() {
+  const [isCounterOfferOpen, setIsCounterOfferOpen] = useState(false);
   return (
     <div className="bg-[var(--bg-page,white)] content-stretch flex items-start relative size-full" data-node-id="772:9644" data-name="CR-03 · Project page: Influencer · Paid · Long-term">
       <div className="bg-[var(--bg-surface,white)] border-[var(--border-default,#e3e5ec)] border-r border-solid content-stretch flex flex-col gap-[2px] items-start overflow-clip pb-[16px] pt-[20px] px-[16px] relative self-stretch shrink-0 w-[260px]" data-node-id="772:9645" data-name="Sidebar / Creator">
@@ -363,14 +367,20 @@ export default function Cr03ProjectPageInfluencerPaidLongTerm() {
                     Message brand
                   </p>
                 </a>
-                <a className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0" data-node-id="772:9672" data-name="Button">
+                <button
+                  type="button"
+                  onClick={() => setIsCounterOfferOpen(true)}
+                  className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#f9fafb] transition"
+                  data-node-id="772:9672"
+                  data-name="Button"
+                >
                   <div className="relative shrink-0 size-[16px]" data-node-id="I772:9672;5:30" data-name="Icon">
                     <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon16} />
                   </div>
                   <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] text-left whitespace-nowrap" data-node-id="I772:9672;5:33">
                     Counter offer
                   </p>
-                </a>
+                </button>
                 <a className="bg-[var(--prim-gray-900,#0d0d10)] content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0" data-node-id="772:9673" data-name="Button">
                   <div className="relative shrink-0 size-[16px]" data-node-id="I772:9673;5:6" data-name="Icon">
                     <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon17} />
@@ -1005,6 +1015,17 @@ export default function Cr03ProjectPageInfluencerPaidLongTerm() {
           </div>
         </div>
       </div>
+      <CounterOfferModal
+        isOpen={isCounterOfferOpen}
+        onClose={() => setIsCounterOfferOpen(false)}
+        brandName="Petal & Pine"
+        rangeText="Petal & Pine's fee is ₹20,000 / month for 6 months"
+        postsText="monthly deliverables (6 posts/mo)"
+        initialFee={25000}
+        quickPicks={[24000, 28000]}
+        maxRange={20000}
+        defaultNote="I have strong organic engagement with clean beauty and skincare audiences."
+      />
     </div>
   );
 }

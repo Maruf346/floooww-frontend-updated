@@ -1,3 +1,6 @@
+import { useState } from "react";
+import CounterOfferModal from "../components/CounterOfferModal";
+
 const imgDot = "https://www.figma.com/api/mcp/asset/82cd51e2-0158-4f6b-9b42-ef142e2504d5.svg";
 const imgDot1 = "https://www.figma.com/api/mcp/asset/2fb31e0f-8110-4ffb-9a01-6cdce35e9fef.svg";
 const imgKreyioWordmark = "https://www.figma.com/api/mcp/asset/e2928aaf-e386-4817-b13e-d249c30af080.svg";
@@ -81,6 +84,7 @@ function Logo({ className, theme = "On light" }: LogoProps) {
 }
 
 export default function Cr03ProjectPageInfluencerGiftOneTime() {
+  const [isCounterOfferOpen, setIsCounterOfferOpen] = useState(false);
   return (
     <div className="bg-[var(--bg-page,white)] content-stretch flex items-start relative size-full" data-node-id="773:10036" data-name="CR-03 · Project page: Influencer · Gift · One-time">
       <div className="bg-[var(--bg-surface,white)] border-[var(--border-default,#e3e5ec)] border-r border-solid content-stretch flex flex-col gap-[2px] items-start overflow-clip pb-[16px] pt-[20px] px-[16px] relative self-stretch shrink-0 w-[260px]" data-node-id="773:10037" data-name="Sidebar / Creator">
@@ -368,14 +372,20 @@ export default function Cr03ProjectPageInfluencerGiftOneTime() {
                     Message brand
                   </p>
                 </a>
-                <a className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0" data-node-id="773:10064" data-name="Button">
+                <button
+                  type="button"
+                  onClick={() => setIsCounterOfferOpen(true)}
+                  className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#f9fafb] transition"
+                  data-node-id="773:10064"
+                  data-name="Button"
+                >
                   <div className="relative shrink-0 size-[16px]" data-node-id="I773:10064;5:30" data-name="Icon">
                     <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon16} />
                   </div>
                   <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] text-left whitespace-nowrap" data-node-id="I773:10064;5:33">
                     Ask for a fee
                   </p>
-                </a>
+                </button>
                 <a className="bg-[var(--prim-gray-900,#0d0d10)] content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0" data-node-id="773:10065" data-name="Button">
                   <div className="relative shrink-0 size-[16px]" data-node-id="I773:10065;5:6" data-name="Icon">
                     <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon17} />
@@ -975,6 +985,17 @@ export default function Cr03ProjectPageInfluencerGiftOneTime() {
           <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon21} />
         </div>
       </div>
+      <CounterOfferModal
+        isOpen={isCounterOfferOpen}
+        onClose={() => setIsCounterOfferOpen(false)}
+        brandName="Minimalist"
+        rangeText="Minimalist's project is Gift (Kit worth ₹6,500) for 1 Reel + 1 Story"
+        postsText="1 Reel + 1 Story"
+        initialFee={6000}
+        quickPicks={[4000, 6000, 8000]}
+        maxRange={0}
+        defaultNote="I can create an in-depth routine Reel + Story featuring the full Hydration kit."
+      />
     </div>
   );
 }

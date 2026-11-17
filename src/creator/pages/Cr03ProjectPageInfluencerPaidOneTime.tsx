@@ -1,3 +1,6 @@
+import { useState } from "react";
+import CounterOfferModal from "../components/CounterOfferModal";
+
 const imgDot = "https://www.figma.com/api/mcp/asset/49c9641a-9e97-4432-a71d-61c3bf1eafe6.svg";
 const imgDot1 = "https://www.figma.com/api/mcp/asset/8907a981-c3b5-4ed9-9f47-9cc4409d5d4b.svg";
 const imgKreyioWordmark = "https://www.figma.com/api/mcp/asset/359c636f-e8fc-46ea-9d5a-3058e1053995.svg";
@@ -80,6 +83,7 @@ function Logo({ className, theme = "On light" }: LogoProps) {
 }
 
 export default function Cr03ProjectPageInfluencerPaidOneTime() {
+  const [isCounterOfferOpen, setIsCounterOfferOpen] = useState(false);
   return (
     <div className="bg-[var(--bg-page,white)] content-stretch flex items-start relative size-full" data-node-id="550:670" data-name="CR-03 · Project page: Influencer · Paid · One-time">
       <div className="bg-[var(--bg-surface,white)] border-[var(--border-default,#e3e5ec)] border-r border-solid content-stretch flex flex-col gap-[2px] items-start overflow-clip pb-[16px] pt-[20px] px-[16px] relative self-stretch shrink-0 w-[260px]" data-node-id="550:671" data-name="Sidebar / Creator">
@@ -367,14 +371,20 @@ export default function Cr03ProjectPageInfluencerPaidOneTime() {
                     Message brand
                   </p>
                 </a>
-                <a className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0" data-node-id="766:9756" data-name="Button">
+                <button
+                  type="button"
+                  onClick={() => setIsCounterOfferOpen(true)}
+                  className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#f9fafb] transition"
+                  data-node-id="766:9756"
+                  data-name="Button"
+                >
                   <div className="relative shrink-0 size-[16px]" data-node-id="I766:9756;5:30" data-name="Icon">
                     <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon16} />
                   </div>
                   <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] text-left whitespace-nowrap" data-node-id="I766:9756;5:33">
                     Counter offer
                   </p>
-                </a>
+                </button>
                 <a className="bg-[var(--prim-gray-900,#0d0d10)] content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0" data-node-id="765:9926" data-name="Button">
                   <div className="relative shrink-0 size-[16px]" data-node-id="I765:9926;5:6" data-name="Icon">
                     <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon17} />
@@ -1030,6 +1040,17 @@ export default function Cr03ProjectPageInfluencerPaidOneTime() {
           </div>
         </div>
       </div>
+      <CounterOfferModal
+        isOpen={isCounterOfferOpen}
+        onClose={() => setIsCounterOfferOpen(false)}
+        brandName="Minimalist"
+        rangeText="Minimalist's range is ₹15,000 – ₹20,000 for 3 posts"
+        postsText="all 3 posts"
+        initialFee={24000}
+        quickPicks={[22000, 25000]}
+        maxRange={20000}
+        defaultNote="My Minimalist Reels averaged 2.8 L views and drove 392 orders in Vitamin-C Serum."
+      />
     </div>
   );
 }
