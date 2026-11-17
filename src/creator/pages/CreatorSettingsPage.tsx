@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router";
 import {
   Info,
   Play,
@@ -18,6 +19,8 @@ import {
   Upload,
   ArrowRight,
   Sparkles,
+  MessageCircle,
+  RefreshCw,
 } from "lucide-react";
 import { CreatorShell } from "@/creator/components/CreatorShell";
 
@@ -33,7 +36,18 @@ const media5 = "/assets/creator/settings/media-5.png";
 type TabKey = "account" | "connected" | "payouts" | "notifications" | "security";
 
 export default function CreatorSettingsPage() {
-  const [activeTab, setActiveTab] = useState<TabKey>("account");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = (searchParams.get("tab") as TabKey) || "account";
+  const [activeTab, setActiveTabState] = useState<TabKey>(
+    ["account", "connected", "payouts", "notifications", "security"].includes(initialTab)
+      ? initialTab
+      : "account"
+  );
+
+  const setActiveTab = (tab: TabKey) => {
+    setActiveTabState(tab);
+    setSearchParams(tab === "account" ? {} : { tab });
+  };
 
   // Profile editable states
   const [name, setName] = useState("Ishita Rao");
@@ -70,6 +84,14 @@ export default function CreatorSettingsPage() {
   const [isManagePinsModalOpen, setIsManagePinsModalOpen] = useState(false);
   const [isBrandPreviewModalOpen, setIsBrandPreviewModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [selectedManageChannel, setSelectedManageChannel] = useState<{
+    platform: string;
+    handle: string;
+    status: string;
+    synced: string;
+  } | null>(null);
+  const [selectedConnectChannel, setSelectedConnectChannel] = useState<string | null>(null);
+  const [isAddToolModalOpen, setIsAddToolModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -755,68 +777,178 @@ export default function CreatorSettingsPage() {
 
           {/* 4. Tab Content: Connected Accounts */}
           {activeTab === "connected" && (
-            <div className="bg-white border border-[#e3e5ec] rounded-[12px] p-6 max-w-3xl flex flex-col gap-6 shadow-2xs">
-              <div>
-                <h2 className="text-[16px] font-semibold text-[#0d0d10]">Connected social channels</h2>
-                <p className="text-[13px] text-[#71717a] mt-1">
-                  Floooww reads reach, views, engagement, and follower metrics every 24 hours to keep your portfolio verified.
-                </p>
+            <div className="flex flex-col gap-7 w-full max-w-[1200px]" data-node-id="795:14178">
+              {/* Group 1: Social accounts */}
+              <div className="flex flex-col gap-3 w-full">
+                <div className="flex flex-col gap-0.5">
+                  <h2 className="text-[16px] font-semibold text-[#070b13] leading-5">
+                    Social accounts
+                  </h2>
+                  <p className="text-[12px] text-[#8491a3] leading-4">
+                    We read your stats here, so brands see real numbers · connect more for full reach
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-4 items-start w-full">
+                  {/* Card 1: Instagram */}
+                  <div className="bg-white border border-[#e3e5ec] rounded-[12px] p-5 w-full sm:w-[361px] flex flex-col gap-3 shadow-2xs">
+                    <div className="flex items-center gap-2.5 w-full">
+                      <div className="size-10 rounded-[8px] bg-[#f4f6fb] flex items-center justify-center shrink-0">
+                        <img
+                          src="/assets/platform-instagram.svg"
+                          alt="Instagram"
+                          className="size-6 shrink-0"
+                        />
+                      </div>
+                      <p className="flex-1 font-semibold text-[14px] text-[#0d0d10] leading-5 truncate">
+                        Instagram · @ishitarao
+                      </p>
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[12px] font-medium bg-[#e1fce3] text-[#16a34a] whitespace-nowrap">
+                        <span className="size-1.5 rounded-full bg-[#16a34a]" />
+                        Connected
+                      </span>
+                    </div>
+                    <p className="text-[13px] text-[#0d0d10] leading-5">
+                      Followers, reach and post stats · synced today
+                    </p>
+                    <div className="pt-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedManageChannel({ platform: "Instagram", handle: "@ishitarao", status: "Connected", synced: "Synced today" })}
+                        className="h-8 px-3 rounded-[8px] border border-[#e3e5ec] bg-white text-[13px] font-medium text-[#0d0d10] hover:bg-[#f8f9fb] transition cursor-pointer"
+                      >
+                        Manage
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Card 2: YouTube */}
+                  <div className="bg-white border border-[#e3e5ec] rounded-[12px] p-5 w-full sm:w-[361px] flex flex-col gap-3 shadow-2xs">
+                    <div className="flex items-center gap-2.5 w-full">
+                      <div className="size-10 rounded-[8px] bg-[#f4f6fb] flex items-center justify-center shrink-0">
+                        <img
+                          src="/assets/platform-youtube.svg"
+                          alt="YouTube"
+                          className="size-6 shrink-0"
+                        />
+                      </div>
+                      <p className="flex-1 font-semibold text-[14px] text-[#0d0d10] leading-5 truncate">
+                        YouTube · @ishitarao
+                      </p>
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[12px] font-medium bg-[#e1fce3] text-[#16a34a] whitespace-nowrap">
+                        <span className="size-1.5 rounded-full bg-[#16a34a]" />
+                        Connected
+                      </span>
+                    </div>
+                    <p className="text-[13px] text-[#0d0d10] leading-5">
+                      Subscribers and video stats · synced today
+                    </p>
+                    <div className="pt-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedManageChannel({ platform: "YouTube", handle: "@ishitarao", status: "Connected", synced: "Synced today" })}
+                        className="h-8 px-3 rounded-[8px] border border-[#e3e5ec] bg-white text-[13px] font-medium text-[#0d0d10] hover:bg-[#f8f9fb] transition cursor-pointer"
+                      >
+                        Manage
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Card 3: Pinterest */}
+                  <div className="bg-white border border-[#e3e5ec] rounded-[12px] p-5 w-full sm:w-[361px] flex flex-col gap-3 shadow-2xs">
+                    <div className="flex items-center gap-2.5 w-full">
+                      <div className="size-10 rounded-[8px] bg-[#f3f5f7] flex items-center justify-center shrink-0">
+                        <img
+                          src="/assets/platform-pinterest.svg"
+                          alt="Pinterest"
+                          className="size-5 shrink-0"
+                        />
+                      </div>
+                      <p className="flex-1 font-semibold text-[14px] text-[#0d0d10] leading-5 truncate">
+                        Pinterest
+                      </p>
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[12px] font-medium bg-[#f4f6fb] text-[#4a4a55] whitespace-nowrap">
+                        <span className="size-1.5 rounded-full bg-[#71717a]" />
+                        Not connected
+                      </span>
+                    </div>
+                    <p className="text-[13px] text-[#0d0d10] leading-5">
+                      Pins and saves.
+                    </p>
+                    <div className="pt-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedConnectChannel("Pinterest")}
+                        className="h-8 px-3 rounded-[8px] border border-[#e3e5ec] bg-white text-[13px] font-medium text-[#0d0d10] hover:bg-[#f8f9fb] transition cursor-pointer"
+                      >
+                        Connect
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Card 4: Snapchat */}
+                  <div className="bg-white border border-[#e3e5ec] rounded-[12px] p-5 w-full sm:w-[361px] flex flex-col gap-3 shadow-2xs">
+                    <div className="flex items-center gap-2.5 w-full">
+                      <div className="size-10 rounded-[8px] bg-[#f3f5f7] flex items-center justify-center shrink-0">
+                        <img
+                          src="/assets/platform-snapchat.svg"
+                          alt="Snapchat"
+                          className="size-5 shrink-0"
+                        />
+                      </div>
+                      <p className="flex-1 font-semibold text-[14px] text-[#0d0d10] leading-5 truncate">
+                        Snapchat
+                      </p>
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[12px] font-medium bg-[#f4f6fb] text-[#4a4a55] whitespace-nowrap">
+                        <span className="size-1.5 rounded-full bg-[#71717a]" />
+                        Not connected
+                      </span>
+                    </div>
+                    <p className="text-[13px] text-[#0d0d10] leading-5">
+                      Story views and Spotlight.
+                    </p>
+                    <div className="pt-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedConnectChannel("Snapchat")}
+                        className="h-8 px-3 rounded-[8px] border border-[#e3e5ec] bg-white text-[13px] font-medium text-[#0d0d10] hover:bg-[#f8f9fb] transition cursor-pointer"
+                      >
+                        Connect
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="flex flex-col divide-y divide-[#edeff3]">
-                {/* Instagram */}
-                <div className="py-4 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <img src="/assets/platform-instagram.svg" alt="Instagram" className="size-6" />
-                    <div>
-                      <p className="text-[14px] font-medium text-[#0d0d10]">Instagram</p>
-                      <p className="text-[12px] text-[#71717a]">@ishitarao · Connected · Last synced 1 hr ago</p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => showToast("Instagram connection verified.")}
-                    className="h-8 px-3 rounded-[8px] border border-[#e3e5ec] bg-white text-[13px] font-medium text-[#0d0d10] hover:bg-[#f8f9fb] transition cursor-pointer"
-                  >
-                    Reconnect
-                  </button>
+              {/* Group 2: Your tools */}
+              <div className="flex flex-col gap-3 w-full">
+                <div className="flex flex-col gap-0.5">
+                  <h2 className="text-[16px] font-semibold text-[#070b13] leading-5">
+                    Your tools
+                  </h2>
+                  <p className="text-[12px] text-[#8491a3] leading-4">
+                    Anything else you connected
+                  </p>
                 </div>
 
-                {/* YouTube */}
-                <div className="py-4 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <img src="/assets/platform-youtube.svg" alt="YouTube" className="size-6" />
-                    <div>
-                      <p className="text-[14px] font-medium text-[#0d0d10]">YouTube</p>
-                      <p className="text-[12px] text-[#71717a]">Ishita Rao (Channel ID: UC...92) · Connected</p>
+                <div className="flex flex-wrap gap-4 items-start w-full">
+                  <div className="bg-[#fafafa] border border-[#d4d7df] border-dashed rounded-[12px] p-5 w-full sm:w-[361px] flex flex-col gap-2">
+                    <p className="font-semibold text-[14px] text-[#070b13] leading-5">
+                      Add any tool
+                    </p>
+                    <p className="text-[13px] text-[#8491a3] leading-5">
+                      Search 100+ apps, or connect your own tool with a webhook or API key.
+                    </p>
+                    <div className="pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setIsAddToolModalOpen(true)}
+                        className="h-8 px-3 rounded-[8px] bg-[#0d0d10] text-white text-[13px] font-medium hover:bg-black transition cursor-pointer"
+                      >
+                        Add integration
+                      </button>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => showToast("YouTube connection verified.")}
-                    className="h-8 px-3 rounded-[8px] border border-[#e3e5ec] bg-white text-[13px] font-medium text-[#0d0d10] hover:bg-[#f8f9fb] transition cursor-pointer"
-                  >
-                    Reconnect
-                  </button>
-                </div>
-
-                {/* TikTok */}
-                <div className="py-4 flex items-center justify-between">
-                  <div className="flex items-center gap-3 opacity-60">
-                    <Globe className="size-6 text-[#71717a]" />
-                    <div>
-                      <p className="text-[14px] font-medium text-[#0d0d10]">Snapchat / TikTok</p>
-                      <p className="text-[12px] text-[#71717a]">Not linked yet</p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => showToast("Connecting new channel...")}
-                    className="h-8 px-3 rounded-[8px] bg-[#0d0d10] text-white text-[13px] font-medium hover:bg-black transition cursor-pointer inline-flex items-center gap-1.5"
-                  >
-                    <Plus className="size-3.5" />
-                    <span>Connect</span>
-                  </button>
                 </div>
               </div>
             </div>
@@ -1303,6 +1435,215 @@ export default function CreatorSettingsPage() {
           </div>
         </div>
       )}
+      {/* MODAL 7: Manage Channel Modal */}
+      {selectedManageChannel && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-[12px] border border-[#e3e5ec] shadow-xl max-w-md w-full p-6 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="size-8 rounded-lg bg-[#f4f6fb] flex items-center justify-center">
+                  {selectedManageChannel.platform === "Instagram" ? (
+                    <img src="/assets/platform-instagram.svg" alt="" className="size-5" />
+                  ) : (
+                    <img src="/assets/platform-youtube.svg" alt="" className="size-5" />
+                  )}
+                </div>
+                <div>
+                  <h3 className="text-[16px] font-semibold text-[#0d0d10]">
+                    Manage {selectedManageChannel.platform}
+                  </h3>
+                  <p className="text-[12px] text-[#71717a]">{selectedManageChannel.handle}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedManageChannel(null)}
+                className="size-8 rounded-md flex items-center justify-center text-[#71717a] hover:bg-[#f4f6fb]"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-2.5 bg-[#f8f9fb] p-3.5 rounded-lg border border-[#e3e5ec] text-[13px]">
+              <div className="flex justify-between items-center">
+                <span className="text-[#71717a]">Connection status</span>
+                <span className="font-medium text-[#16a34a] inline-flex items-center gap-1.5">
+                  <span className="size-1.5 rounded-full bg-[#16a34a]" />
+                  Connected
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[#71717a]">Sync frequency</span>
+                <span className="text-[#0d0d10] font-medium">Every 24 hours</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[#71717a]">Data shared with brands</span>
+                <span className="text-[#0d0d10] font-medium">Followers, Reach, Views</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedManageChannel(null);
+                  showToast(`Refreshed ${selectedManageChannel.platform} metrics.`);
+                }}
+                className="w-full h-9 rounded-lg bg-[#0d0d10] text-[13px] font-medium text-white hover:bg-black inline-flex items-center justify-center gap-1.5"
+              >
+                <RefreshCw className="size-3.5" />
+                <span>Refresh stats now</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedManageChannel(null);
+                  showToast(`${selectedManageChannel.platform} disconnected.`);
+                }}
+                className="w-full h-9 rounded-lg border border-[#e3e5ec] text-[13px] font-medium text-[#dc2626] hover:bg-[#fee2e2]/40 transition"
+              >
+                Disconnect account
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 8: Connect Channel Modal */}
+      {selectedConnectChannel && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-[12px] border border-[#e3e5ec] shadow-xl max-w-md w-full p-6 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="size-8 rounded-lg bg-[#f3f5f7] flex items-center justify-center">
+                  {selectedConnectChannel === "Pinterest" ? (
+                    <img src="/assets/platform-pinterest.svg" alt="" className="size-5" />
+                  ) : (
+                    <img src="/assets/platform-snapchat.svg" alt="" className="size-5" />
+                  )}
+                </div>
+                <div>
+                  <h3 className="text-[16px] font-semibold text-[#0d0d10]">
+                    Connect {selectedConnectChannel}
+                  </h3>
+                  <p className="text-[12px] text-[#71717a]">Verify your stats and pin activity</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedConnectChannel(null)}
+                className="size-8 rounded-md flex items-center justify-center text-[#71717a] hover:bg-[#f4f6fb]"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-3 text-[13px]">
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">
+                  {selectedConnectChannel} profile handle or link
+                </label>
+                <input
+                  type="text"
+                  placeholder={`e.g. @ishitarao or ${selectedConnectChannel.toLowerCase()}.com/ishita`}
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+              <p className="text-[12px] text-[#71717a] leading-4">
+                You will be redirected to {selectedConnectChannel} to grant read-only permissions for views, reach, and follower count.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setSelectedConnectChannel(null)}
+                className="px-4 h-9 rounded-lg border border-[#e3e5ec] text-[13px] font-medium text-[#4a4a55] hover:bg-[#f8f9fb]"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedConnectChannel(null);
+                  showToast(`Connected ${selectedConnectChannel} successfully.`);
+                }}
+                className="px-4 h-9 rounded-lg bg-[#0d0d10] text-[13px] font-medium text-white hover:bg-black inline-flex items-center gap-1.5"
+              >
+                <ExternalLink className="size-3.5" />
+                <span>Authorize &amp; Connect</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 9: Add Tool Modal */}
+      {isAddToolModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-[12px] border border-[#e3e5ec] shadow-xl max-w-md w-full p-6 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-[16px] font-semibold text-[#0d0d10]">Add Tool Integration</h3>
+                <p className="text-[12px] text-[#71717a]">Connect workflow tools, cloud storage, or API webhook</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddToolModalOpen(false)}
+                className="size-8 rounded-md flex items-center justify-center text-[#71717a] hover:bg-[#f4f6fb]"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              {[
+                { name: "Google Drive", desc: "Auto-sync raw footage and export deliverables" },
+                { name: "Dropbox", desc: "Deliver high-res footage to brands seamlessly" },
+                { name: "Notion", desc: "Sync campaign deliverables to your personal kanban" },
+                { name: "Custom Webhook", desc: "Send real-time campaign milestone payloads" },
+              ].map((tool) => (
+                <div key={tool.name} className="p-3 border border-[#e3e5ec] rounded-lg flex items-center justify-between hover:bg-[#f8f9fb] transition">
+                  <div>
+                    <p className="text-[13px] font-medium text-[#0d0d10]">{tool.name}</p>
+                    <p className="text-[11px] text-[#71717a]">{tool.desc}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsAddToolModalOpen(false);
+                      showToast(`Integrated ${tool.name} with your creator account.`);
+                    }}
+                    className="h-7 px-2.5 rounded border border-[#e3e5ec] text-[12px] font-medium text-[#0d0d10] hover:border-[#0d0d10]"
+                  >
+                    Install
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-end pt-1">
+              <button
+                type="button"
+                onClick={() => setIsAddToolModalOpen(false)}
+                className="px-4 h-9 rounded-lg border border-[#e3e5ec] text-[13px] font-medium text-[#4a4a55] hover:bg-[#f8f9fb]"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Chatbot Launcher (Node 795:13700) */}
+      <button
+        type="button"
+        onClick={() => showToast("Assistant chat is ready to help.")}
+        className="fixed bottom-6 right-6 size-14 rounded-full bg-[#0d0d10] text-white flex items-center justify-center shadow-[0px_16px_40px_-8px_rgba(8,10,20,0.18)] hover:scale-105 active:scale-95 transition cursor-pointer z-40"
+        aria-label="Assistant chat"
+      >
+        <MessageCircle className="size-6 text-white" />
+      </button>
     </CreatorShell>
   );
 }
