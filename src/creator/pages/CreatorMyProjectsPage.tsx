@@ -54,6 +54,15 @@ const imgIcon18Applied = "https://www.figma.com/api/mcp/asset/9d4d95fc-c15f-4843
 const imgIcon19Applied = "https://www.figma.com/api/mcp/asset/9d049cfb-e958-4df2-9c40-2fee5debb1d6.svg";
 const imgIcon20Applied = "https://www.figma.com/api/mcp/asset/ac1488f0-f2fc-48bd-89c5-2c426cc18b86.svg";
 
+// Assets for Live tab
+const imgRectangleLive0 = "https://www.figma.com/api/mcp/asset/e82e94c0-5808-4bd5-9a2b-0d493a956ad9.png";
+const imgRectangleLive1 = "https://www.figma.com/api/mcp/asset/a55b5ab7-f6eb-497f-885d-a762347efc5e.png";
+const imgIcon17Live = "https://www.figma.com/api/mcp/asset/335273c6-46c7-4113-948f-5bb48d3c0a7e.svg";
+const imgIcon18Live = "https://www.figma.com/api/mcp/asset/bebd8619-e8c4-41e6-a118-abff620140df.svg";
+const imgIconWalletLive = "https://www.figma.com/api/mcp/asset/cb8241a2-92d1-4a4d-a759-cac0a0058abb.svg";
+const imgIcon19Live = "https://www.figma.com/api/mcp/asset/d7c142c3-4333-4f2a-8745-702a2ad8eff8.svg";
+const imgIcon20Live = "https://www.figma.com/api/mcp/asset/9a33ee05-8aa0-4b72-85d2-0e749f675970.svg";
+
 type BadgeTone = "Warning" | "Info" | "Neutral" | "Success";
 
 type BadgeProps = {
@@ -207,7 +216,7 @@ type ProjectRowData = {
   status: string;
   badgeTone: BadgeTone;
   posts: number | string;
-  match: number;
+  match: number | string;
   fee: string;
   feeNote: string;
   replyBy: string;
@@ -216,6 +225,7 @@ type ProjectRowData = {
   received: string;
   image: string;
   tab: TabKey;
+  progressPercent?: number;
 };
 
 const ALL_PROJECTS: ProjectRowData[] = [
@@ -367,44 +377,45 @@ const ALL_PROJECTS: ProjectRowData[] = [
 
   // Live (2)
   {
-    id: "clean-beauty",
-    name: "Clean Beauty Collective",
-    brand: "Petal & Pine",
+    id: "vitamin-c-serum-live",
+    name: "Vitamin-C Serum",
+    brand: "Minimalist",
+    type: "Influencer",
+    partnership: "Paid",
+    duration: "One-time",
+    platform: "Instagram",
+    status: "On track",
+    badgeTone: "Success",
+    posts: "3 of 4",
+    match: 2,
+    fee: "₹17,000",
+    feeNote: "₹4,250 in escrow",
+    progressPercent: 75,
+    replyBy: "75%",
+    replyNote: "2 of 4 approved · 1 waiting",
+    received: "Last-day Story · 30 Oct",
+    image: imgRectangleLive0,
+    tab: "live",
+  },
+  {
+    id: "glow-squad-live",
+    name: "Glow Squad",
+    brand: "Minimalist",
     type: "Influencer",
     partnership: "Paid",
     duration: "Long-term",
     platform: "Instagram",
-    status: "Live · Cycle 1",
+    status: "On track",
     badgeTone: "Success",
-    posts: 6,
-    match: 86,
-    fee: "₹20K / mo",
-    feeNote: "escrow funded",
-    replyBy: "14 Nov",
-    replyNote: "Video 1 due",
-    replyNoteRed: true,
-    received: "1 Oct",
-    image: "/assets/creator/projects/clean-beauty-ambassadors.png",
-    tab: "live",
-  },
-  {
-    id: "hydration-bundle",
-    name: "Hydration Bundle",
-    brand: "Minimalist",
-    type: "Influencer",
-    partnership: "Gift exchange",
-    duration: "One-time",
-    platform: "Instagram",
-    status: "Kit in transit",
-    badgeTone: "Info",
-    posts: 2,
-    match: 77,
-    fee: "Gift exchange",
-    feeNote: "kit worth ₹6,500",
-    replyBy: "14 Nov",
-    replyNote: "Post within 7 d of kit",
-    received: "20 Oct",
-    image: "/assets/creator/projects/hydration-bundle.png",
+    posts: "1 of 6",
+    match: 3,
+    fee: "₹27,000 / mo",
+    feeNote: "cycle 2 from 2 Nov",
+    progressPercent: 17,
+    replyBy: "17%",
+    replyNote: "cycle 1 approved",
+    received: "Payout ₹27,000 · 2 Nov",
+    image: imgRectangleLive1,
     tab: "live",
   },
 
@@ -756,32 +767,32 @@ export function CreatorMyProjectsPage() {
       case "live":
         return [
           {
-            title: "Active projects",
+            title: "Live projects",
             value: "2",
-            sub: "on schedule",
+            sub: "1 ends 7 Nov",
             bg: "bg-[#3b5bff]",
-            icon: imgIcon17,
+            icon: imgIcon17Live,
           },
           {
-            title: "Escrow locked",
-            value: "₹36,000",
-            sub: "secured on platform",
+            title: "In escrow",
+            value: "₹3,000",
+            sub: "Vitamin-C Serum · Story",
             bg: "bg-[var(--bg-inverse,#0d0d10)]",
-            icon: imgIcon18,
+            icon: imgIcon18Live,
           },
           {
-            title: "Deliverables due",
-            value: "2",
-            sub: "next due 14 Nov",
+            title: "Next payout",
+            value: "₹12,750",
+            sub: "2 Nov · HDFC ···· 4821",
             bg: "bg-[var(--status-success-fg,#16a34a)]",
-            icon: imgIcon19,
+            icon: imgIconWalletLive,
           },
           {
-            title: "On-time record",
-            value: "100%",
-            sub: "12 of 12 on time",
-            bg: "bg-[#3b5bff]",
-            icon: imgIcon20,
+            title: "On-time score",
+            value: "98%",
+            sub: "90%+ unlocks gift projects",
+            bg: "bg-[var(--status-success-fg,#16a34a)]",
+            icon: imgIcon19Live,
           },
         ];
       case "completed":
@@ -1211,7 +1222,7 @@ export function CreatorMyProjectsPage() {
                   : activeTab === "invitations"
                     ? `Ishita Rao · 19 projects · ${tabCounts.invitations} offers waiting for your reply`
                     : activeTab === "live"
-                      ? `Ishita Rao · ${tabCounts.live} active projects · all on schedule`
+                      ? "Ishita Rao · 2 live projects · next payout ₹27,000 on 2 Nov"
                       : activeTab === "completed"
                         ? `Ishita Rao · ${tabCounts.completed} completed collaborations · 100% on time`
                         : `Ishita Rao · ${tabCounts.declined} declined offers · no standing impact`}
@@ -1484,12 +1495,12 @@ export function CreatorMyProjectsPage() {
               </div>
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[44px]" data-name="Cell">
                 <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] tracking-[0.72px] whitespace-nowrap">
-                  POSTS
+                  {activeTab === "live" ? "DELIVERED" : "POSTS"}
                 </p>
               </div>
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[74px]" data-name="Cell">
                 <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] tracking-[0.72px] whitespace-nowrap">
-                  MATCH
+                  {activeTab === "live" ? "LIVE" : "MATCH"}
                 </p>
               </div>
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[130px]" data-name="Cell">
@@ -1499,12 +1510,18 @@ export function CreatorMyProjectsPage() {
               </div>
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[136px]" data-name="Cell">
                 <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] tracking-[0.72px] whitespace-nowrap">
-                  {activeTab === "applied" ? "BRAND DECIDES" : activeTab === "completed" ? "COMPLETED" : activeTab === "live" ? "DUE DATE" : "REPLY BY"}
+                  {activeTab === "live"
+                    ? "PROGRESS"
+                    : activeTab === "applied"
+                    ? "BRAND DECIDES"
+                    : activeTab === "completed"
+                    ? "COMPLETED"
+                    : "REPLY BY"}
                 </p>
               </div>
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[72px]" data-name="Cell">
                 <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] tracking-[0.72px] whitespace-nowrap">
-                  {activeTab === "applied" ? "APPLIED" : "RECEIVED"}
+                  {activeTab === "live" ? "NEXT STEP" : activeTab === "applied" ? "APPLIED" : "RECEIVED"}
                 </p>
               </div>
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[96px]" data-name="Cell">
@@ -1586,7 +1603,7 @@ export function CreatorMyProjectsPage() {
                   {/* Match cell */}
                   <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[74px]" data-name="Cell">
                     <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
-                      {row.match}%
+                      {row.match}{activeTab === "live" ? "" : "%"}
                     </p>
                   </div>
 
@@ -1600,16 +1617,37 @@ export function CreatorMyProjectsPage() {
                     </p>
                   </div>
 
-                  {/* Reply By / Deadline */}
-                  <div className="content-stretch flex flex-col gap-[4px] items-start overflow-clip relative shrink-0 w-[136px]" data-name="Cell">
-                    <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap">
-                      {row.replyBy}
-                    </p>
-                    <p className={`[word-break:break-word] font-['Inter:Regular'] font-normal leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${row.replyNoteRed ? "text-[#db231f]" : "text-[#8491a3]"
-                      }`}>
-                      {row.replyNote}
-                    </p>
-                  </div>
+                  {/* Reply By / Progress / Deadline */}
+                  {activeTab === "live" ? (
+                    <div className="content-stretch flex flex-col gap-[4px] items-start overflow-clip relative shrink-0 w-[136px]" data-name="Cell">
+                      <div className="content-stretch flex gap-[8px] items-center overflow-clip relative shrink-0" data-name="pp">
+                        <div className="h-[6px] overflow-clip relative rounded-[3px] shrink-0 w-[72px]" data-name="Bar">
+                          <div className="absolute bg-[var(--bg-muted,#edeff3)] h-[6px] left-0 rounded-[3px] top-0 w-[72px]" data-name="Rectangle" />
+                          <div
+                            className="absolute bg-[#3b5bff] h-[6px] left-0 rounded-[3px] top-0"
+                            style={{ width: `${Math.round(72 * ((row.progressPercent || 0) / 100))}px` }}
+                            data-name="Rectangle"
+                          />
+                        </div>
+                        <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap">
+                          {row.progressPercent}%
+                        </p>
+                      </div>
+                      <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[16px] not-italic relative shrink-0 text-[#8491a3] text-[12px] whitespace-nowrap">
+                        {row.replyNote}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="content-stretch flex flex-col gap-[4px] items-start overflow-clip relative shrink-0 w-[136px]" data-name="Cell">
+                      <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap">
+                        {row.replyBy}
+                      </p>
+                      <p className={`[word-break:break-word] font-['Inter:Regular'] font-normal leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${row.replyNoteRed ? "text-[#db231f]" : "text-[#8491a3]"
+                        }`}>
+                        {row.replyNote}
+                      </p>
+                    </div>
+                  )}
 
                   {/* Received cell */}
                   <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[72px]" data-name="Cell">
@@ -1627,7 +1665,7 @@ export function CreatorMyProjectsPage() {
                         data-name="Button"
                       >
                         <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[18px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
-                          View
+                          {activeTab === "live" ? "Open" : "View"}
                         </p>
                       </Link>
                       <div className="relative">
@@ -1735,3 +1773,4 @@ export function CreatorMyProjectsPage() {
 export default CreatorMyProjectsPage;
 export { CreatorMyProjectsPage as Cr04MyProjectsInvitationsOffers };
 export { CreatorMyProjectsPage as Cr04MyProjectsApplied };
+export { CreatorMyProjectsPage as Cr04MyProjectsLive };
