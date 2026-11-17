@@ -684,7 +684,7 @@ function ContentDropdown({
   isOpen,
   onToggle,
   onSelect,
-  minWidth = "min-w-[170px]",
+  minWidth = "w-[175px]",
 }: ContentDropdownProps) {
   const isCustomSelected = value !== defaultVal;
   const displayLabel = isCustomSelected
@@ -699,7 +699,7 @@ function ContentDropdown({
       <button
         type="button"
         onClick={onToggle}
-        className={`bg-white content-stretch flex items-center justify-between gap-[8px] h-[38px] px-[12px] py-[8px] rounded-[8px] cursor-pointer transition select-none w-full ${
+        className={`bg-white content-stretch flex items-center justify-between gap-[8px] h-[40px] px-[12px] py-[8px] rounded-[8px] cursor-pointer transition select-none w-full ${
           isOpen
             ? "border-2 border-[#0d0d10]"
             : isCustomSelected
@@ -725,7 +725,7 @@ function ContentDropdown({
       {isOpen && (
         <div
           role="listbox"
-          className="absolute left-0 top-[calc(100%+6px)] z-50 w-full min-w-[190px] bg-white border border-[#e3e5ec] rounded-[8px] p-[6px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)] flex flex-col gap-[2px] animate-in fade-in zoom-in-95 duration-100"
+          className="absolute left-0 top-[calc(100%+6px)] z-50 w-full bg-white border border-[#e3e5ec] rounded-[8px] p-[6px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)] flex flex-col gap-[2px] animate-in fade-in zoom-in-95 duration-100 max-h-[350px] overflow-y-auto"
         >
           {options.map((option) => {
             const isSelected = value === option;
@@ -1486,7 +1486,7 @@ export default function CreatorContentPage() {
                     setFilterProject(p);
                     setOpenDropdown(null);
                   }}
-                  minWidth="min-w-[160px]"
+                  minWidth="w-[180px]"
                 />
 
                 {/* 2. Dropdown · Content brand */}
@@ -1501,7 +1501,7 @@ export default function CreatorContentPage() {
                     setFilterBrand(b);
                     setOpenDropdown(null);
                   }}
-                  minWidth="min-w-[160px]"
+                  minWidth="w-[180px]"
                 />
 
                 {/* 3. Dropdown · Content format */}
@@ -1516,7 +1516,7 @@ export default function CreatorContentPage() {
                     setFilterFormat(f);
                     setOpenDropdown(null);
                   }}
-                  minWidth="min-w-[150px]"
+                  minWidth="w-[160px]"
                 />
 
                 {/* 4. Dropdown · Usage rights */}
@@ -1531,7 +1531,7 @@ export default function CreatorContentPage() {
                     setFilterUsageRights(u);
                     setOpenDropdown(null);
                   }}
-                  minWidth="min-w-[160px]"
+                  minWidth="w-[165px]"
                 />
 
                 {/* Reset Filters action pill */}
@@ -1559,7 +1559,7 @@ export default function CreatorContentPage() {
                     setSortOption(s);
                     setOpenDropdown(null);
                   }}
-                  minWidth="min-w-[165px]"
+                  minWidth="w-[165px]"
                 />
 
                 {/* View Mode Toggle (Grid / List) */}

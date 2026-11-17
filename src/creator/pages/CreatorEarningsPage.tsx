@@ -74,7 +74,7 @@ function PeriodDropdown({
       {isOpen && (
         <div
           role="listbox"
-          className="absolute left-0 top-[calc(100%+6px)] z-50 w-full min-w-[190px] bg-white border border-[#e3e5ec] rounded-[8px] p-[6px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)] flex flex-col gap-[2px] animate-in fade-in zoom-in-95 duration-100"
+          className="absolute left-0 top-[calc(100%+6px)] z-50 w-full min-w-full bg-white border border-[#e3e5ec] rounded-[8px] p-[6px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)] flex flex-col gap-[2px] animate-in fade-in zoom-in-95 duration-100"
         >
           {PERIOD_OPTIONS.map((option) => {
             const isSelected = value === option;
@@ -147,7 +147,7 @@ function DownloadStatementDropdown({
       {isOpen && (
         <div
           role="menu"
-          className="absolute right-0 top-[calc(100%+6px)] z-50 w-[230px] bg-white border border-[#e3e5ec] rounded-[8px] p-[6px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)] flex flex-col gap-[2px] animate-in fade-in zoom-in-95 duration-100"
+          className="absolute right-0 top-[calc(100%+6px)] z-50 w-full min-w-full bg-white border border-[#e3e5ec] rounded-[8px] p-[6px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)] flex flex-col gap-[2px] animate-in fade-in zoom-in-95 duration-100"
         >
           <button
             type="button"

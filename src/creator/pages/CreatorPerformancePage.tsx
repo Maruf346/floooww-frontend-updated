@@ -132,7 +132,7 @@ function PerformanceDropdown({
       {isOpen && (
         <div
           role="listbox"
-          className="absolute left-0 top-[calc(100%+6px)] z-50 w-full min-w-[230px] bg-white border border-[#e3e5ec] rounded-[8px] p-[6px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)] flex flex-col gap-[2px] animate-in fade-in zoom-in-95 duration-100 max-h-[350px] overflow-y-auto"
+          className="absolute left-0 top-[calc(100%+6px)] z-50 w-full min-w-full bg-white border border-[#e3e5ec] rounded-[8px] p-[6px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)] flex flex-col gap-[2px] animate-in fade-in zoom-in-95 duration-100 max-h-[350px] overflow-y-auto"
         >
           {options.map((option) => {
             const isSelected = selectedOption === option;
