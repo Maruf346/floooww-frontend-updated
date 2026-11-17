@@ -50,6 +50,7 @@ export const ROUTES = {
   brandCreatorDeliverables: "/brand/projects/:projectId/invited/:creatorId/deliverables",
   agency: "/agency",
   creator: "/creator",
+  creatorProjects: "/creator/projects",
 } as const;
 
 export const brandProjectRoute = (projectId: number | string) => `/brand/projects/${projectId}`;

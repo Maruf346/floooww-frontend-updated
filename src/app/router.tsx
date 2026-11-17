@@ -282,6 +282,13 @@ export const router = createBrowserRouter(
             Component: (await import("@/creator/pages/CreatorDashboardPage")).CreatorDashboardPage,
           }),
         },
+        {
+          path: ROUTES.creatorProjects,
+          lazy: async () => ({
+            Component: (await import("@/creator/pages/CreatorProjectDiscoveryPage"))
+              .CreatorProjectDiscoveryPage,
+          }),
+        },
       ],
     },
   ],
