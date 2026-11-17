@@ -133,8 +133,11 @@ function CreatorSidebar({ close }: { close?: () => void }) {
 
 export function CreatorShell({ children }: CreatorShellProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { pathname } = useLocation();
+  const isWhiteBg = pathname === ROUTES.creator || pathname === ROUTES.creatorPerformance;
+
   return (
-    <div className="min-h-dvh bg-page">
+    <div className={`min-h-dvh ${isWhiteBg ? "bg-white" : "bg-page"}`}>
       <div className="flex min-h-dvh">
         <div className="sticky top-0 hidden h-dvh shrink-0 self-start lg:block"><CreatorSidebar /></div>
         {menuOpen && <div className="fixed inset-0 z-50 bg-ink/30 lg:hidden"><CreatorSidebar close={() => setMenuOpen(false)} /></div>}
@@ -147,7 +150,7 @@ export function CreatorShell({ children }: CreatorShellProps) {
             <span className="grid size-8 place-items-center rounded-full bg-primary-muted text-[12px] font-medium text-primary">IR</span>
             <div className="hidden sm:block"><p className="text-[14px] font-semibold leading-5 text-ink">Ishita Rao</p><p className="text-[12px] leading-4 text-tertiary">Creator</p></div><ChevronDown size={14} className="hidden text-secondary sm:block" />
           </header>
-          <main className="min-h-[calc(100dvh-64px)] p-5 sm:p-8">{children}</main>
+          <main className={`min-h-[calc(100dvh-64px)] ${pathname === ROUTES.creatorPerformance ? "p-0 bg-white" : isWhiteBg ? "p-5 sm:p-8 bg-white" : "p-5 sm:p-8"}`}>{children}</main>
         </div>
       </div>
     </div>

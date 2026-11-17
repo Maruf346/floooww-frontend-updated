@@ -1168,8 +1168,8 @@ export default function CreatorPerformancePage() {
 
   return (
     <CreatorShell>
-      <div className="min-h-screen bg-[#f8fafc] text-[#0d0d10]" ref={containerRef}>
-        <div className="w-full px-5 py-6 sm:px-8 space-y-6 max-w-[1340px] mx-auto pb-16">
+      <div className="min-h-screen bg-white text-[#0d0d10]" ref={containerRef}>
+        <div className="w-full px-[20px] sm:px-[32px] pt-[28px] pb-[48px] flex flex-col gap-[24px]">
           {/* Page Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
