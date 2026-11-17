@@ -5,6 +5,9 @@ import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import CounterOfferModal from "../components/CounterOfferModal";
 import { CreatorProjectDeliverablesView } from "../components/CreatorProjectDeliverablesView";
 import { CreatorUploadDeliverableModal } from "../components/CreatorUploadDeliverableModal";
+import { CreatorProjectPaymentsView } from "../components/CreatorProjectPaymentsView";
+import { CreatorProjectReviewView } from "../components/CreatorProjectReviewView";
+import { CreatorProjectPerformanceView } from "../components/CreatorProjectPerformanceView";
 import { Upload, FileVideo, X, Check } from "lucide-react";
 
 const imgDot = "https://www.figma.com/api/mcp/asset/fb6bd003-1496-4762-b97a-541e1bc8599d.svg";
@@ -511,25 +514,12 @@ export function CreatorLiveProjectDetailPage() {
               onConfirmProduct={() => setProductReceived(true)}
               onCounterOfferTime={(_deliverableTitle) => setIsCounterOfferOpen(true)}
             />
-          ) : activeTab !== "overview" ? (
-            <div className="flex flex-col items-center justify-center p-16 rounded-[12px] border border-[#e5e7eb] bg-white w-full text-center">
-              <div className="size-12 rounded-full bg-[#f1f4ff] flex items-center justify-center text-[#3b5bff] text-xl font-bold mb-3">
-                {activeTab.charAt(0).toUpperCase()}
-              </div>
-              <h3 className="font-['Inter:Semi_Bold'] text-[18px] font-semibold text-[#0d0d10] capitalize">
-                {activeTab} tab
-              </h3>
-              <p className="text-[13px] text-[#6b7280] max-w-[420px] mt-1">
-                We are implementing each tab step-by-step. Deliverables, Payments, Review, and Performance tabs will be added next.
-              </p>
-              <button
-                type="button"
-                onClick={() => handleTabChange("overview")}
-                className="mt-4 px-4 py-2 bg-[#3b5bff] text-white text-[13px] font-medium rounded-[8px] hover:bg-[#2f4acc] transition cursor-pointer"
-              >
-                Back to Overview
-              </button>
-            </div>
+          ) : activeTab === "payments" ? (
+            <CreatorProjectPaymentsView />
+          ) : activeTab === "review" ? (
+            <CreatorProjectReviewView />
+          ) : activeTab === "performance" ? (
+            <CreatorProjectPerformanceView />
           ) : (
             <>
           <div className="bg-white border border-[#e5e7eb] border-solid content-stretch flex gap-[12px] items-start overflow-clip p-[20px] relative rounded-[12px] shrink-0 w-full" data-node-id="551:949" data-name="KPI tiles">
