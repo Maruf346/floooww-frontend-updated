@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   Bell,
   ChevronDown,
@@ -39,7 +39,10 @@ function NavCount({ children }: { children: string }) {
 
 function CreatorSidebar({ close }: { close?: () => void }) {
   const [projectsOpen, setProjectsOpen] = useState(true);
+  const { pathname } = useLocation();
   const navClass = "flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-[14px] transition-colors";
+  const overviewActive = pathname === ROUTES.creator;
+  const discoveryActive = pathname === ROUTES.creatorProjects || pathname.startsWith(`${ROUTES.creatorProjects}/`);
 
   return (
     <aside className="flex h-full w-[260px] flex-col overflow-y-auto border-r border-line bg-white px-4 pb-4 pt-5">
@@ -55,8 +58,8 @@ function CreatorSidebar({ close }: { close?: () => void }) {
       </button>
       <nav className="mt-4 flex flex-col">
         <p className="px-3 pb-1.5 text-[12px] font-semibold leading-4 tracking-[.06em] text-tertiary">MAIN</p>
-        <button type="button" className={`${navClass} bg-primary-subtle font-semibold text-primary`}><Home size={18} />Overview</button>
-        <Link to={ROUTES.creatorProjects} className={`${navClass} mt-0.5 text-ink hover:bg-subtle`}><Search size={18} />Project discovery</Link>
+        <Link to={ROUTES.creator} className={`${navClass} ${overviewActive ? "bg-primary-subtle font-semibold text-primary" : "text-ink hover:bg-subtle"}`}><Home size={18} />Overview</Link>
+        <Link to={ROUTES.creatorProjects} className={`${navClass} mt-0.5 ${discoveryActive ? "bg-primary-subtle font-semibold text-primary" : "text-ink hover:bg-subtle"}`}><Search size={18} />Project discovery</Link>
         <div className="mt-0.5">
           <button type="button" onClick={() => setProjectsOpen((value) => !value)} className={`${navClass} text-ink hover:bg-subtle`} aria-expanded={projectsOpen}><FolderKanban size={18} /><span className="flex-1 text-left">My projects</span><ChevronDown size={14} className={`transition-transform duration-200 ${projectsOpen ? "" : "-rotate-90"}`} /></button>
           {projectsOpen && <div>{projectLinks.map(([label, count]) => <button key={label} type="button" className="flex h-8 w-full items-center gap-2.5 rounded-md px-3 pl-10 text-[13px] text-secondary transition-colors hover:bg-subtle"><span className="size-1 rounded-full bg-current" /><span className="flex-1 text-left">{label}</span><NavCount>{count}</NavCount></button>)}</div>}
