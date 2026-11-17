@@ -89,7 +89,7 @@ export function CreatorProjectDeliverablesView({
 }: Props) {
   const [selectedId, setSelectedId] = useState<number>(3);
   const [isPanelOpen, setIsPanelOpen] = useState(true);
-  const [panelTab, setPanelTab] = useState<"content" | "comments" | "history">("comments");
+  const [panelTab, setPanelTab] = useState<"content" | "comments" | "history">("history");
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState<Array<{ author: string; initials: string; time: string; text: string; isBrand?: boolean }>>([
     {
@@ -912,37 +912,221 @@ export function CreatorProjectDeliverablesView({
               </div>
             )}
 
-            {/* Panel Tab: History */}
+            {/* Panel Tab: History (matches Figma node 715:4304) */}
             {panelTab === "history" && (
-              <div className="flex flex-col gap-3 w-full py-2 text-[12px]">
-                <div className="flex gap-3 items-start">
-                  <div className="size-2 rounded-full bg-[#16a34a] mt-1 shrink-0" />
-                  <div>
-                    <p className="font-medium text-[#070b13]">Version 1 submitted</p>
-                    <p className="text-[11px] text-[#8491a3]">27 Oct, 21:10 · ishita_story_v1.mp4 (18.6 MB)</p>
-                  </div>
+              <div className="content-stretch flex flex-col gap-[6px] items-start relative shrink-0 w-full" data-node-id="715:4901_wrapper">
+                {/* Title and subtitle */}
+                <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] not-italic overflow-clip relative shrink-0 w-full whitespace-nowrap mb-1" data-node-id="715:4901" data-name="t">
+                  <p className="font-['Inter:Semi_Bold'] font-semibold relative shrink-0 text-[#070b13] text-[14px]" data-node-id="715:4902">
+                    History
+                  </p>
+                  <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] text-[12px]" data-node-id="715:4903">
+                    Every change to this deliverable, newest first
+                  </p>
                 </div>
-                <div className="flex gap-3 items-start">
-                  <div className="size-2 rounded-full bg-[#f59e0b] mt-1 shrink-0" />
-                  <div>
-                    <p className="font-medium text-[#070b13]">Changes requested by Ananya Mehta</p>
-                    <p className="text-[11px] text-[#8491a3]">28 Oct, 09:15 · Coupon code on screen required</p>
-                  </div>
-                </div>
-                {storyV2Uploaded && (
-                  <div className="flex gap-3 items-start">
-                    <div className="size-2 rounded-full bg-[#3b5bff] mt-1 shrink-0" />
-                    <div>
-                      <p className="font-medium text-[#070b13]">Version 2 submitted</p>
-                      <p className="text-[11px] text-[#8491a3]">Just now · {uploadedFileName} (14.2 MB)</p>
+
+                {/* Event timeline */}
+                <div className="content-stretch flex flex-col items-start relative shrink-0 w-full divide-y divide-transparent">
+                  {/* Dynamic: Version 2 submitted if uploaded */}
+                  {storyV2Uploaded && (
+                    <div className="content-stretch flex gap-[12px] items-start overflow-clip py-[8px] relative shrink-0 w-full">
+                      <div className="bg-[#f3f5f7] content-stretch flex items-center justify-center overflow-clip relative rounded-[13px] shrink-0 size-[26px]">
+                        <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#149d46] text-[12px] whitespace-nowrap">
+                          ✓
+                        </p>
+                      </div>
+                      <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start leading-[normal] min-w-px not-italic overflow-clip relative">
+                        <p className="font-['Inter:Medium'] font-medium relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap">
+                          Version 2 submitted
+                        </p>
+                        <p className="font-['Inter:Regular'] font-normal min-w-full relative shrink-0 text-[#8491a3] text-[12px] w-[min-content]">
+                          {uploadedFileName || "ishita_story_v2.mp4"} · 14.2 MB · v2
+                        </p>
+                      </div>
+                      <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] whitespace-nowrap">
+                        Just now
+                      </p>
                     </div>
+                  )}
+
+                  {/* Event 1: Send version 2 */}
+                  <div className="content-stretch flex gap-[12px] items-start overflow-clip py-[8px] relative shrink-0 w-full" data-node-id="715:4904" data-name="Event">
+                    <div className="bg-[#f3f5f7] content-stretch flex items-center justify-center overflow-clip relative rounded-[13px] shrink-0 size-[26px]" data-node-id="715:4905" data-name="Frame">
+                      <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#c2410c] text-[12px] whitespace-nowrap" data-node-id="715:4906">
+                        !
+                      </p>
+                    </div>
+                    <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start leading-[normal] min-w-px not-italic overflow-clip relative" data-node-id="715:4907" data-name="t">
+                      <p className="font-['Inter:Medium'] font-medium relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap" data-node-id="715:4908">
+                        Send version 2
+                      </p>
+                      <p className="font-['Inter:Regular'] font-normal min-w-full relative shrink-0 text-[#8491a3] text-[12px] w-[min-content]" data-node-id="715:4909">
+                        Due 30 Oct · goes live by 5 Nov
+                      </p>
+                    </div>
+                    <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] whitespace-nowrap" data-node-id="715:4910">
+                      Now
+                    </p>
                   </div>
-                )}
+
+                  {/* Event 2: Changes asked */}
+                  <div className="content-stretch flex gap-[12px] items-start overflow-clip py-[8px] relative shrink-0 w-full" data-node-id="715:4911" data-name="Event">
+                    <div className="bg-[#f3f5f7] content-stretch flex items-center justify-center overflow-clip relative rounded-[13px] shrink-0 size-[26px]" data-node-id="715:4912" data-name="Frame">
+                      <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#c2410c] text-[12px] whitespace-nowrap" data-node-id="715:4913">
+                        ↺
+                      </p>
+                    </div>
+                    <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start leading-[normal] min-w-px not-italic overflow-clip relative" data-node-id="715:4914" data-name="t">
+                      <p className="font-['Inter:Medium'] font-medium relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap" data-node-id="715:4915">
+                        Changes asked by Ananya Mehta
+                      </p>
+                      <p className="font-['Inter:Regular'] font-normal min-w-full relative shrink-0 text-[#8491a3] text-[12px] w-[min-content]" data-node-id="715:4916">
+                        “Please add ISHITA15 on screen for the last 3 seconds.”
+                      </p>
+                    </div>
+                    <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] whitespace-nowrap" data-node-id="715:4917">
+                      28 Oct, 09:15
+                    </p>
+                  </div>
+
+                  {/* Event 3: Draft sent */}
+                  <div className="content-stretch flex gap-[12px] items-start overflow-clip py-[8px] relative shrink-0 w-full" data-node-id="715:4918" data-name="Event">
+                    <div className="bg-[#f3f5f7] content-stretch flex items-center justify-center overflow-clip relative rounded-[13px] shrink-0 size-[26px]" data-node-id="715:4919" data-name="Frame">
+                      <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#3b5bff] text-[12px] whitespace-nowrap" data-node-id="715:4920">
+                        ↑
+                      </p>
+                    </div>
+                    <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start leading-[normal] min-w-px not-italic overflow-clip relative" data-node-id="715:4921" data-name="t">
+                      <p className="font-['Inter:Medium'] font-medium relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap" data-node-id="715:4922">
+                        Draft sent for review
+                      </p>
+                      <p className="font-['Inter:Regular'] font-normal min-w-full relative shrink-0 text-[#8491a3] text-[12px] w-[min-content]" data-node-id="715:4923">
+                        ishita_story_v1.mp4 · 18.6 MB · v1
+                      </p>
+                    </div>
+                    <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] whitespace-nowrap" data-node-id="715:4924">
+                      27 Oct, 21:10
+                    </p>
+                  </div>
+
+                  {/* Event 4: Lip Tint Duo delivered */}
+                  <div className="content-stretch flex gap-[12px] items-start overflow-clip py-[8px] relative shrink-0 w-full" data-node-id="715:4925" data-name="Event">
+                    <div className="bg-[#f3f5f7] content-stretch flex items-center justify-center overflow-clip relative rounded-[13px] shrink-0 size-[26px]" data-node-id="715:4926" data-name="Frame">
+                      <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#149d46] text-[12px] whitespace-nowrap" data-node-id="715:4927">
+                        ✓
+                      </p>
+                    </div>
+                    <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start leading-[normal] min-w-px not-italic overflow-clip relative" data-node-id="715:4928" data-name="t">
+                      <p className="font-['Inter:Medium'] font-medium relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap" data-node-id="715:4929">
+                        Lip Tint Duo delivered
+                      </p>
+                      <p className="font-['Inter:Regular'] font-normal min-w-full relative shrink-0 text-[#8491a3] text-[12px] w-[min-content]" data-node-id="715:4930">
+                        Delhivery · confirm by 28 Oct, 11:40 or it confirms itself
+                      </p>
+                    </div>
+                    <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] whitespace-nowrap" data-node-id="715:4931">
+                      26 Oct, 11:40
+                    </p>
+                  </div>
+
+                  {/* Event 5: Product shipped */}
+                  <div className="content-stretch flex gap-[12px] items-start overflow-clip py-[8px] relative shrink-0 w-full" data-node-id="715:4932" data-name="Event">
+                    <div className="bg-[#f3f5f7] content-stretch flex items-center justify-center overflow-clip relative rounded-[13px] shrink-0 size-[26px]" data-node-id="715:4933" data-name="Frame">
+                      <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#3b5bff] text-[12px] whitespace-nowrap" data-node-id="715:4934">
+                        →
+                      </p>
+                    </div>
+                    <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start leading-[normal] min-w-px not-italic overflow-clip relative" data-node-id="715:4935" data-name="t">
+                      <p className="font-['Inter:Medium'] font-medium relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap" data-node-id="715:4936">
+                        Product shipped
+                      </p>
+                      <p className="font-['Inter:Regular'] font-normal min-w-full relative shrink-0 text-[#8491a3] text-[12px] w-[min-content]" data-node-id="715:4937">
+                        Delhivery · 1490 2283 7710 58
+                      </p>
+                    </div>
+                    <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] whitespace-nowrap" data-node-id="715:4938">
+                      24 Oct, 16:30
+                    </p>
+                  </div>
+
+                  {/* Event 6: Tracking link & coupon created */}
+                  <div className="content-stretch flex gap-[12px] items-start overflow-clip py-[8px] relative shrink-0 w-full" data-node-id="715:4939" data-name="Event">
+                    <div className="bg-[#f3f5f7] content-stretch flex items-center justify-center overflow-clip relative rounded-[13px] shrink-0 size-[26px]" data-node-id="715:4940" data-name="Frame">
+                      <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#3b5bff] text-[12px] whitespace-nowrap" data-node-id="715:4941">
+                        ∞
+                      </p>
+                    </div>
+                    <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start leading-[normal] min-w-px not-italic overflow-clip relative" data-node-id="715:4942" data-name="t">
+                      <p className="font-['Inter:Medium'] font-medium relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap" data-node-id="715:4943">
+                        Tracking link and coupon created
+                      </p>
+                      <p className="font-['Inter:Regular'] font-normal min-w-full relative shrink-0 text-[#8491a3] text-[12px] w-[min-content]" data-node-id="715:4944">
+                        flw.to/ishita-vcs · ISHITA15
+                      </p>
+                    </div>
+                    <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] whitespace-nowrap" data-node-id="715:4945">
+                      8 Oct, 09:40
+                    </p>
+                  </div>
+
+                  {/* Event 7: Escrow held */}
+                  <div className="content-stretch flex gap-[12px] items-start overflow-clip py-[8px] relative shrink-0 w-full" data-node-id="715:4946" data-name="Event">
+                    <div className="bg-[#f3f5f7] content-stretch flex items-center justify-center overflow-clip relative rounded-[13px] shrink-0 size-[26px]" data-node-id="715:4947" data-name="Frame">
+                      <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#149d46] text-[12px] whitespace-nowrap" data-node-id="715:4948">
+                        ₹
+                      </p>
+                    </div>
+                    <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start leading-[normal] min-w-px not-italic overflow-clip relative" data-node-id="715:4949" data-name="t">
+                      <p className="font-['Inter:Medium'] font-medium relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap" data-node-id="715:4950">
+                        ₹3,000 held in escrow
+                      </p>
+                      <p className="font-['Inter:Regular'] font-normal min-w-full relative shrink-0 text-[#8491a3] text-[12px] w-[min-content]" data-node-id="715:4951">
+                        Part of ₹17,000 Minimalist paid when inviting you
+                      </p>
+                    </div>
+                    <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] whitespace-nowrap" data-node-id="715:4952">
+                      7 Oct, 10:12
+                    </p>
+                  </div>
+
+                  {/* Event 8: Deliverable set */}
+                  <div className="content-stretch flex gap-[12px] items-start overflow-clip py-[8px] relative shrink-0 w-full" data-node-id="715:4953" data-name="Event">
+                    <div className="bg-[#f3f5f7] content-stretch flex items-center justify-center overflow-clip relative rounded-[13px] shrink-0 size-[26px]" data-node-id="715:4954" data-name="Frame">
+                      <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#394357] text-[12px] whitespace-nowrap" data-node-id="715:4955">
+                        +
+                      </p>
+                    </div>
+                    <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start leading-[normal] min-w-px not-italic overflow-clip relative" data-node-id="715:4956" data-name="t">
+                      <p className="font-['Inter:Medium'] font-medium relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap" data-node-id="715:4957">
+                        Deliverable set by Ananya Mehta
+                      </p>
+                      <p className="font-['Inter:Regular'] font-normal min-w-full relative shrink-0 text-[#8491a3] text-[12px] w-[min-content]" data-node-id="715:4958">
+                        1 Story · goes live by 5 Nov · ₹3,000 · 30 days organic
+                      </p>
+                    </div>
+                    <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] whitespace-nowrap" data-node-id="715:4959">
+                      7 Oct, 10:12
+                    </p>
+                  </div>
+                </div>
+
+                {/* Bottom Full-Width Action Button for History (Figma node 715:4960) */}
+                <button
+                  type="button"
+                  onClick={onOpenUploadModal}
+                  className="bg-[var(--prim-gray-900,#0d0d10)] content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 w-full hover:bg-[#1a1a24] transition mt-2"
+                  data-node-id="715:4960"
+                  data-name="Button"
+                >
+                  <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-on-primary,white)] text-left whitespace-nowrap" data-node-id="I715:4960;5:9">
+                    {storyV2Uploaded ? "Upload new version" : "Upload version 2"}
+                  </p>
+                </button>
               </div>
             )}
 
-            {/* Panel Actions (shown only when Content or History tab is active) */}
-            {panelTab !== "comments" && (
+            {/* Panel Actions (shown only when Content tab is active) */}
+            {panelTab === "content" && (
               <div className="content-stretch flex gap-[8px] items-start overflow-clip relative shrink-0 w-full pt-1" data-node-id="715:3632" data-name="Actions">
                 <button
                   type="button"
