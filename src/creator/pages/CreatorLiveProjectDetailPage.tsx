@@ -4,6 +4,7 @@ import { ROUTES } from "@/common/constants/routes";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import CounterOfferModal from "../components/CounterOfferModal";
 import { CreatorProjectDeliverablesView } from "../components/CreatorProjectDeliverablesView";
+import { CreatorUploadDeliverableModal } from "../components/CreatorUploadDeliverableModal";
 import { Upload, FileVideo, X, Check } from "lucide-react";
 
 const imgDot = "https://www.figma.com/api/mcp/asset/fb6bd003-1496-4762-b97a-541e1bc8599d.svg";
@@ -1280,133 +1281,19 @@ export function CreatorLiveProjectDetailPage() {
         }}
       />
 
-      {/* Upload Story Modal */}
-      {isUploadOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-          <div className="w-full max-w-[460px] rounded-[16px] bg-white p-6 shadow-2xl border border-[#e5e7eb] animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="font-['Inter:Semi_Bold'] text-[18px] font-semibold text-[#0d0d10]">
-                  Upload Story v2
-                </h3>
-                <p className="mt-1 text-[13px] text-[#6b7280]">
-                  Minimalist requested: &quot;Can you add the coupon on screen in the Story? Rest looks great.&quot;
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsUploadOpen(false)}
-                className="text-[#9ca3af] hover:text-[#111827] p-1 rounded-md transition cursor-pointer"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            {/* Hidden file input */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="video/mp4,video/quicktime,video/webm,image/*"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-
-            {!selectedFile ? (
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                className={`mt-4 flex flex-col items-center justify-center rounded-[12px] border-2 border-dashed p-6 text-center cursor-pointer transition ${
-                  isDragging
-                    ? "border-[#3b5bff] bg-[#f1f4ff]"
-                    : "border-[#e3e5ec] hover:border-[#3b5bff] hover:bg-[#f9fafb]"
-                }`}
-              >
-                <div className="size-10 rounded-full bg-[#f1f4ff] flex items-center justify-center text-[#3b5bff] mb-2.5">
-                  <Upload size={20} />
-                </div>
-                <p className="text-[13px] font-medium text-[#0d0d10]">
-                  Click to select file or drag &amp; drop
-                </p>
-                <p className="text-[11px] text-[#9ca3af] mt-1">MP4, MOV, or 9:16 vertical video up to 250MB</p>
-              </div>
-            ) : (
-              <div className="mt-4 rounded-[12px] border border-[#e3e5ec] bg-[#f9fafb] p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="size-10 rounded-lg bg-[#e3e9ff] flex items-center justify-center text-[#3b5bff] shrink-0">
-                      <FileVideo size={20} />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-[13px] font-medium text-[#0d0d10] truncate">
-                        {selectedFile.name}
-                      </p>
-                      <p className="text-[11px] text-[#6b7280]">
-                        {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB · Ready to upload
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedFile(null)}
-                    className="p-1.5 text-[#9ca3af] hover:text-[#ef4444] rounded-md transition cursor-pointer"
-                    title="Remove file"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="mt-3 text-[12px] font-medium text-[#3b5bff] hover:underline cursor-pointer"
-                >
-                  Change file
-                </button>
-              </div>
-            )}
-
-            <div className="mt-4">
-              <label className="block text-[12px] font-medium text-[#374151] mb-1">
-                Note for Minimalist (optional)
-              </label>
-              <textarea
-                value={uploadNote}
-                onChange={(e) => setUploadNote(e.target.value)}
-                placeholder="e.g. Added coupon ISHITA15 centered on frame from 0:02 to 0:08."
-                rows={2}
-                className="w-full rounded-[8px] border border-[#e3e5ec] p-2.5 text-[13px] text-[#0d0d10] placeholder:text-[#9ca3af] focus:border-[#3b5bff] focus:outline-none resize-none"
-              />
-            </div>
-
-            <div className="mt-5 flex items-center justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => setIsUploadOpen(false)}
-                className="px-4 py-2 text-[13px] font-medium text-[#4b5563] hover:text-[#111827] transition cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                disabled={!selectedFile}
-                onClick={handleSubmitStory}
-                className={`rounded-[8px] px-4 py-2 text-[13px] font-medium transition cursor-pointer ${
-                  selectedFile
-                    ? "bg-[#0d0d10] text-white hover:bg-[#1a1a24]"
-                    : "bg-[#e5e7eb] text-[#9ca3af] cursor-not-allowed"
-                }`}
-              >
-                Submit Story v2
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Upload Deliverable Modal (Figma node 716:3499 empty, 716:3863 file added) */}
+      <CreatorUploadDeliverableModal
+        isOpen={isUploadOpen}
+        onClose={() => setIsUploadOpen(false)}
+        initialDeliverableId={3}
+        onSubmit={({ fileName }) => {
+          setStoryV2Uploaded(true);
+          setUploadedFileName(fileName);
+          setIsUploadOpen(false);
+        }}
+      />
     </div>
   );
 }
-
 
 export default CreatorLiveProjectDetailPage;
