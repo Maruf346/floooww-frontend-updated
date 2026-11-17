@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, type ReactNode } from "react";
 import { motion } from "motion/react";
-import { Download, ChevronDown, Check, Calendar, ArrowUp, ArrowDown } from "lucide-react";
+import { Download, ChevronDown, ChevronUp, Check } from "lucide-react";
 import { CreatorShell } from "@/creator/components/CreatorShell";
 
 // Assets for project breakdown thumbnails
@@ -26,57 +26,135 @@ function Reveal({ children, delay = 0 }: { children: ReactNode; delay?: number }
   );
 }
 
-// Filter Dropdown helper component
-function FilterPill({
-  label,
-  value,
+// Dropdown options matching the user's uploaded spec screenshot exactly
+const PERFORMANCE_PROJECT_OPTIONS = [
+  "All projects · 19",
+  "Vitamin-C Serum · Minimalist",
+  "Glow Squad · Minimalist",
+  "Mist launch · Dewdrop",
+  "Lip Liner Collab · Velvet",
+  "Summer Glow Edit · Minimalist",
+  "Sunscreen Stories · Minimalist",
+  "Ubtan Glow Reel · Kumkum",
+  "Rose Toner · Petal Theory",
+  "Hair Oil UGC · Strand Studio",
+] as const;
+
+const PERFORMANCE_DATE_OPTIONS = [
+  "Last 7 days",
+  "Last 30 days",
+  "This month",
+  "Last 90 days",
+  "This year",
+  "Custom range",
+] as const;
+
+const DATE_RANGE_LABELS: Record<string, string> = {
+  "Last 7 days": "1 Oct – 28 Oct 2026",
+  "Last 30 days": "29 Sep – 28 Oct 2026",
+  "This month": "1 Oct – 31 Oct 2026",
+  "Last 90 days": "1 Aug – 28 Oct 2026",
+  "This year": "1 Jan – 28 Oct 2026",
+  "Custom range": "Custom range",
+};
+
+const PERFORMANCE_BRAND_OPTIONS = [
+  "All brands",
+  "Minimalist",
+  "Velvet Lip Co.",
+  "Dewdrop Naturals",
+  "Kumkum Naturals",
+  "Petal Theory",
+  "Strand Studio",
+] as const;
+
+const PERFORMANCE_PLATFORM_OPTIONS = [
+  "All platforms",
+  "Instagram",
+  "YouTube",
+  "TikTok",
+] as const;
+
+const PERFORMANCE_FORMAT_OPTIONS = [
+  "All formats",
+  "Reel",
+  "Story",
+  "Short",
+  "Video",
+  "UGC file",
+] as const;
+
+// Dropdown component matching the exact Figma styling in the user screenshot
+function PerformanceDropdown({
+  displayLabel,
   options,
+  selectedOption,
   onSelect,
   isOpen,
   onToggle,
+  minWidth = "min-w-[190px]",
 }: {
-  label: string;
-  value: string;
+  displayLabel: string;
   options: readonly string[];
-  onSelect: (val: string) => void;
+  selectedOption: string;
+  onSelect: (option: string) => void;
   isOpen: boolean;
   onToggle: () => void;
+  minWidth?: string;
 }) {
-  const isCustom = value !== options[0];
   return (
-    <div className="relative inline-block text-left">
+    <div className={`relative inline-block text-left ${minWidth}`}>
+      {/* Trigger Button */}
       <button
         type="button"
         onClick={onToggle}
-        className={`h-9 px-3.5 bg-white flex items-center gap-2 rounded-lg text-[13px] transition select-none cursor-pointer ${
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        className={`bg-white flex items-center justify-between gap-2 h-[40px] px-[12px] py-[8px] rounded-[8px] cursor-pointer transition select-none w-full ${
           isOpen
-            ? "border-2 border-[#0d0d10] font-medium text-[#0d0d10]"
-            : isCustom
-            ? "border border-[#0d0d10] font-medium text-[#0d0d10] bg-[#f8f9fb]"
-            : "border border-[#e3e5ec] text-[#0d0d10] hover:border-[#0d0d10]"
+            ? "border-2 border-[#0d0d10]"
+            : "border border-[#e3e5ec] hover:border-[#0d0d10]"
         }`}
       >
-        <span className="truncate">{value}</span>
-        <ChevronDown className="size-3 text-[#8491a3]" />
+        <span className="truncate font-['Inter:Regular'] font-normal text-[13px] text-[#0d0d10] leading-[20px] text-left">
+          {displayLabel}
+        </span>
+        <div className="shrink-0 size-[14px] flex items-center justify-center text-[#0d0d10]">
+          {isOpen ? (
+            <ChevronUp className="size-3.5 stroke-[2.2]" />
+          ) : (
+            <ChevronDown className="size-3.5 stroke-[2.2]" />
+          )}
+        </div>
       </button>
 
+      {/* Popover Menu */}
       {isOpen && (
-        <div className="absolute left-0 top-[calc(100%+6px)] z-50 min-w-[180px] bg-white border border-[#e3e5ec] rounded-lg p-1.5 shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)] flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-100">
+        <div
+          role="listbox"
+          className="absolute left-0 top-[calc(100%+6px)] z-50 w-full min-w-[230px] bg-white border border-[#e3e5ec] rounded-[8px] p-[6px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)] flex flex-col gap-[2px] animate-in fade-in zoom-in-95 duration-100 max-h-[350px] overflow-y-auto"
+        >
           {options.map((option) => {
-            const isSelected = value === option;
+            const isSelected = selectedOption === option;
             return (
               <button
                 key={option}
                 type="button"
+                role="option"
+                aria-selected={isSelected}
                 onClick={() => onSelect(option)}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-[13px] text-left transition cursor-pointer ${
+                className={`w-full flex items-center justify-between px-[10px] py-[8px] rounded-[6px] transition cursor-pointer text-left ${
                   isSelected
                     ? "bg-[#f1f4ff] text-[#0d0d10] font-medium"
                     : "text-[#0d0d10] hover:bg-[#f8f9fb]"
                 }`}
               >
-                <span>{option}</span>
-                {isSelected && <Check className="size-3.5 text-[#0d0d10] shrink-0" />}
+                <span className="font-['Inter:Regular'] font-normal text-[13px] leading-[20px] truncate">
+                  {option}
+                </span>
+                {isSelected && (
+                  <Check className="size-3.5 text-[#0d0d10] shrink-0 stroke-[2.2]" />
+                )}
               </button>
             );
           })}
@@ -369,7 +447,13 @@ function RevenueSection() {
 }
 
 // 5. Project Breakdown Table matching Figma node 1683:10708
-function ProjectBreakdownTable() {
+function ProjectBreakdownTable({
+  selectedProject = "All projects · 19",
+  selectedBrand = "All brands",
+}: {
+  selectedProject?: string;
+  selectedBrand?: string;
+}) {
   const projects = [
     {
       name: "Glow Squad",
@@ -457,6 +541,21 @@ function ProjectBreakdownTable() {
     },
   ];
 
+  const filteredProjects = projects.filter((item) => {
+    if (selectedProject !== "All projects · 19") {
+      const projBase = selectedProject.split("·")[0].trim().toLowerCase();
+      if (!item.name.toLowerCase().includes(projBase)) {
+        return false;
+      }
+    }
+    if (selectedBrand !== "All brands") {
+      if (!item.type.toLowerCase().includes(selectedBrand.toLowerCase())) {
+        return false;
+      }
+    }
+    return true;
+  });
+
   const headers = [
     "PROJECT",
     "BRAND · TYPE",
@@ -494,8 +593,15 @@ function ProjectBreakdownTable() {
             </tr>
           </thead>
           <tbody>
-            {projects.map((p) => (
-              <tr key={p.name} className="h-[80px] border-b border-[#f1f4f8] last:border-0 hover:bg-[#fafbfe] transition">
+            {filteredProjects.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="px-5 py-8 text-center text-[13px] text-[#8491a3]">
+                  No project results matching the selected filters.
+                </td>
+              </tr>
+            ) : (
+              filteredProjects.map((p) => (
+                <tr key={p.name} className="h-[80px] border-b border-[#f1f4f8] last:border-0 hover:bg-[#fafbfe] transition">
                 {/* Project */}
                 <td className="px-5">
                   <div className="flex items-center gap-3">
@@ -569,7 +675,8 @@ function ProjectBreakdownTable() {
                   )}
                 </td>
               </tr>
-            ))}
+            ))
+          )}
           </tbody>
         </table>
       </div>
@@ -1100,8 +1207,8 @@ function DeliveryAndBudgetSection() {
 }
 
 export default function CreatorPerformancePage() {
-  const [selectedDateRange, setSelectedDateRange] = useState("1 Oct – 28 Oct 2026");
-  const [selectedProject, setSelectedProject] = useState("All projects");
+  const [selectedDateRange, setSelectedDateRange] = useState("Last 7 days");
+  const [selectedProject, setSelectedProject] = useState("All projects · 19");
   const [selectedBrand, setSelectedBrand] = useState("All brands");
   const [selectedPlatform, setSelectedPlatform] = useState("All platforms");
   const [selectedFormat, setSelectedFormat] = useState("All formats");
@@ -1109,66 +1216,36 @@ export default function CreatorPerformancePage() {
   const [activeScorecard, setActiveScorecard] = useState("Net sales");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const toolbarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (toolbarRef.current && !toolbarRef.current.contains(event.target as Node)) {
+        setOpenDropdown(null);
+      }
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
         setOpenDropdown(null);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
-
-  const dateRangeOptions = [
-    "1 Oct – 28 Oct 2026",
-    "Last 7 days",
-    "Last 30 days",
-    "Last 90 days",
-    "All time",
-  ] as const;
-
-  const projectOptions = [
-    "All projects",
-    "Glow Squad",
-    "Vitamin-C Serum",
-    "Summer Glow Edit",
-    "Lip Liner Collab",
-    "Mist launch",
-    "Matte Lip Launch",
-  ] as const;
-
-  const brandOptions = [
-    "All brands",
-    "Minimalist",
-    "Velvet Lip Co.",
-    "Dewdrop Naturals",
-  ] as const;
-
-  const platformOptions = [
-    "All platforms",
-    "Instagram",
-    "YouTube",
-    "TikTok",
-  ] as const;
-
-  const formatOptions = [
-    "All formats",
-    "Reels",
-    "Stories",
-    "Shorts",
-    "Videos",
-    "UGC files",
-  ] as const;
 
   const handleDownloadReport = () => {
     alert("Generating & downloading Creator Performance Report (PDF)...");
   };
 
+  const formattedDateRange = DATE_RANGE_LABELS[selectedDateRange] || selectedDateRange;
+
   return (
     <CreatorShell>
-      <div className="min-h-screen bg-white text-[#0d0d10]" ref={containerRef}>
+      <div className="min-h-screen bg-white text-[#0d0d10]">
         <div className="w-full px-[20px] sm:px-[32px] pt-[28px] pb-[48px] flex flex-col gap-[24px]">
           {/* Page Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -1177,7 +1254,7 @@ export default function CreatorPerformancePage() {
                 Performance
               </h1>
               <p className="mt-1 text-[13px] text-[#8491a3] leading-5">
-                Your results across every brand · 1 Oct – 28 Oct 2026
+                Your results across every brand · {formattedDateRange}
               </p>
             </div>
 
@@ -1194,77 +1271,87 @@ export default function CreatorPerformancePage() {
           </div>
 
           {/* Filter Bar */}
-          <div className="flex flex-wrap items-center gap-2.5 z-30 relative">
-            <FilterPill
-              label="Date range"
-              value={selectedDateRange}
-              options={dateRangeOptions}
+          <div ref={toolbarRef} className="flex flex-wrap items-center gap-2.5 z-30 relative" data-name="Toolbar">
+            {/* 1. Date range */}
+            <PerformanceDropdown
+              displayLabel={formattedDateRange}
+              options={PERFORMANCE_DATE_OPTIONS}
+              selectedOption={selectedDateRange}
               onSelect={(val) => {
                 setSelectedDateRange(val);
                 setOpenDropdown(null);
               }}
               isOpen={openDropdown === "date"}
               onToggle={() => setOpenDropdown(openDropdown === "date" ? null : "date")}
+              minWidth="min-w-[190px]"
             />
 
-            <FilterPill
-              label="Project"
-              value={selectedProject}
-              options={projectOptions}
+            {/* 2. Project */}
+            <PerformanceDropdown
+              displayLabel={selectedProject}
+              options={PERFORMANCE_PROJECT_OPTIONS}
+              selectedOption={selectedProject}
               onSelect={(val) => {
                 setSelectedProject(val);
                 setOpenDropdown(null);
               }}
               isOpen={openDropdown === "project"}
               onToggle={() => setOpenDropdown(openDropdown === "project" ? null : "project")}
+              minWidth="min-w-[180px]"
             />
 
-            <FilterPill
-              label="Brand"
-              value={selectedBrand}
-              options={brandOptions}
+            {/* 3. Brand */}
+            <PerformanceDropdown
+              displayLabel={selectedBrand}
+              options={PERFORMANCE_BRAND_OPTIONS}
+              selectedOption={selectedBrand}
               onSelect={(val) => {
                 setSelectedBrand(val);
                 setOpenDropdown(null);
               }}
               isOpen={openDropdown === "brand"}
               onToggle={() => setOpenDropdown(openDropdown === "brand" ? null : "brand")}
+              minWidth="min-w-[150px]"
             />
 
-            <FilterPill
-              label="Platform"
-              value={selectedPlatform}
-              options={platformOptions}
+            {/* 4. Platform */}
+            <PerformanceDropdown
+              displayLabel={selectedPlatform}
+              options={PERFORMANCE_PLATFORM_OPTIONS}
+              selectedOption={selectedPlatform}
               onSelect={(val) => {
                 setSelectedPlatform(val);
                 setOpenDropdown(null);
               }}
               isOpen={openDropdown === "platform"}
               onToggle={() => setOpenDropdown(openDropdown === "platform" ? null : "platform")}
+              minWidth="min-w-[150px]"
             />
 
-            <FilterPill
-              label="Format"
-              value={selectedFormat}
-              options={formatOptions}
+            {/* 5. Format */}
+            <PerformanceDropdown
+              displayLabel={selectedFormat}
+              options={PERFORMANCE_FORMAT_OPTIONS}
+              selectedOption={selectedFormat}
               onSelect={(val) => {
                 setSelectedFormat(val);
                 setOpenDropdown(null);
               }}
               isOpen={openDropdown === "format"}
               onToggle={() => setOpenDropdown(openDropdown === "format" ? null : "format")}
+              minWidth="min-w-[150px]"
             />
 
-            {(selectedProject !== "All projects" ||
+            {(selectedProject !== "All projects · 19" ||
               selectedBrand !== "All brands" ||
               selectedPlatform !== "All platforms" ||
               selectedFormat !== "All formats" ||
-              selectedDateRange !== "1 Oct – 28 Oct 2026") && (
+              selectedDateRange !== "Last 7 days") && (
               <button
                 type="button"
                 onClick={() => {
-                  setSelectedDateRange("1 Oct – 28 Oct 2026");
-                  setSelectedProject("All projects");
+                  setSelectedDateRange("Last 7 days");
+                  setSelectedProject("All projects · 19");
                   setSelectedBrand("All brands");
                   setSelectedPlatform("All platforms");
                   setSelectedFormat("All formats");
@@ -1299,7 +1386,10 @@ export default function CreatorPerformancePage() {
 
           {/* 4. Project Breakdown Table */}
           <Reveal delay={0.2}>
-            <ProjectBreakdownTable />
+            <ProjectBreakdownTable
+              selectedProject={selectedProject}
+              selectedBrand={selectedBrand}
+            />
           </Reveal>
 
           {/* 5. Views Donut, Engagement Breakdown, Non-Follower Reach */}
