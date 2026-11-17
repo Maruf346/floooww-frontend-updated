@@ -3,11 +3,24 @@ import CreatorProjectPageInfluencerPaidLongTerm from "./CreatorProjectPageInflue
 import CreatorProjectPageInfluencerPaidOneTime from "./CreatorProjectPageInfluencerPaidOneTime";
 import CreatorProjectPageInfluencerGiftOneTime from "./CreatorProjectPageInfluencerGiftOneTime";
 import CreatorProjectPageUgcPaidOneTime from "./CreatorProjectPageUgcPaidOneTime";
+import CreatorLiveProjectDetailPage from "./CreatorLiveProjectDetailPage";
 
 export function CreatorProjectDetailPage() {
   const { projectId } = useParams<{ projectId: string }>();
   const [searchParams] = useSearchParams();
   const type = searchParams.get("type");
+
+  if (
+    type === "live" ||
+    type === "active" ||
+    projectId === "vitamin-c-serum-live" ||
+    projectId === "vitamin-c-serum" ||
+    projectId === "live" ||
+    projectId === "cr-05" ||
+    projectId === "glow-squad-live"
+  ) {
+    return <CreatorLiveProjectDetailPage />;
+  }
 
   if (
     type === "gift-one-time" ||

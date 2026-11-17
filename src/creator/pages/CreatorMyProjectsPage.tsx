@@ -929,9 +929,9 @@ export function CreatorMyProjectsPage() {
   }, [activeTab]);
 
   return (
-    <div className="bg-[var(--bg-page,white)] content-stretch flex items-start relative size-full min-h-screen" data-name="Creator · My projects">
+    <div className="bg-[var(--bg-page,white)] flex min-h-screen items-start relative w-full" data-name="Creator · My projects">
       {/* Sidebar */}
-      <div className="bg-[var(--bg-surface,white)] border-[var(--border-default,#e3e5ec)] border-r border-solid content-stretch flex flex-col gap-[2px] h-full items-start overflow-clip pb-[16px] pt-[20px] px-[16px] relative shrink-0 w-[260px] min-h-screen" data-name="Sidebar / Creator">
+      <aside className="sticky top-0 h-screen shrink-0 w-[260px] flex flex-col gap-[2px] items-start overflow-y-auto border-r border-[#e3e5ec] bg-white px-[16px] pt-[20px] pb-[16px] z-30 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden" data-name="Sidebar / Creator">
         <Logo className="content-stretch flex items-center overflow-clip relative rounded-[9.778px] shrink-0" />
         <div className="h-[16px] relative shrink-0 w-[10px]" data-name="gap" />
 
@@ -1177,8 +1177,8 @@ export function CreatorMyProjectsPage() {
           </p>
         </div>
 
-        <div className="mt-auto h-[32px] relative shrink-0 w-px" />
-        <div className="bg-[var(--border-default,#e3e5ec)] h-px relative shrink-0 w-[228px]" data-name="Divider" />
+        <div className="flex-1 min-h-[16px] w-full" data-name="Spacer" />
+        <div className="bg-[var(--border-default,#e3e5ec)] h-px relative shrink-0 w-full" data-name="Divider" />
         <div className="h-[8px] relative shrink-0 w-[10px]" data-name="gap" />
 
         <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-name="Help Center">
@@ -1197,12 +1197,12 @@ export function CreatorMyProjectsPage() {
             Logout
           </p>
         </div>
-      </div>
+      </aside>
 
       {/* Main Content Area */}
-      <div className="bg-[var(--bg-page,white)] content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip relative min-h-screen" data-name="Main">
+      <div className="bg-[var(--bg-page,white)] flex-1 min-w-0 flex flex-col items-start relative min-h-screen" data-name="Main">
         {/* Top bar */}
-        <div className="bg-[var(--bg-surface,white)] border-[var(--border-default,#e3e5ec)] border-b border-solid content-stretch flex gap-[12px] h-[64px] items-center overflow-clip px-[32px] relative shrink-0 w-full" data-name="Top bar">
+        <div className="bg-[var(--bg-surface,white)]/95 backdrop-blur-xs border-[var(--border-default,#e3e5ec)] border-b border-solid content-stretch flex gap-[12px] h-[64px] items-center px-[32px] sticky top-0 z-20 w-full" data-name="Top bar">
           <div className="bg-[var(--bg-subtle,#f4f6fb)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[8px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[380px]" data-name="Search">
             <div className="relative shrink-0 size-[16px]" data-name="Icon">
               <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon13} />
