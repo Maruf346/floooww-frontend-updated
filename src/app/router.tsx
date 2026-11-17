@@ -292,14 +292,14 @@ export const router = createBrowserRouter(
         {
           path: ROUTES.creatorProject,
           lazy: async () => ({
-            Component: (await import("@/creator/pages/Cr03ProjectPageInfluencerPaidLongTerm"))
+            Component: (await import("@/creator/pages/CreatorProjectDetailPage"))
               .default,
           }),
         },
         {
           path: ROUTES.creatorProjectDetail,
           lazy: async () => ({
-            Component: (await import("@/creator/pages/Cr03ProjectPageInfluencerPaidLongTerm"))
+            Component: (await import("@/creator/pages/CreatorProjectDetailPage"))
               .default,
           }),
         },
