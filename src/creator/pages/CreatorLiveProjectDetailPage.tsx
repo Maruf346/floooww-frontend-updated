@@ -326,7 +326,12 @@ export function CreatorLiveProjectDetailPage() {
             </p>
           </div>
         </div>
-        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-node-id="I551:748;9:559" data-name="Content">
+        <Link
+          to={ROUTES.creatorContent}
+          className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition"
+          data-node-id="I551:748;9:559"
+          data-name="Content"
+        >
           <div className="relative shrink-0 size-[18px]" data-node-id="I551:748;9:559;9:8" data-name="Icon">
             <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon6} />
           </div>
@@ -335,10 +340,10 @@ export function CreatorLiveProjectDetailPage() {
           </p>
           <div className="bg-[var(--bg-muted,#edeff3)] content-stretch flex h-[18px] items-center overflow-clip px-[6px] relative rounded-[var(--radius-full,999px)] shrink-0" data-node-id="I551:748;9:559;9:12" data-name="Count">
             <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap" data-node-id="I551:748;9:559;9:13">
-              2
+              18
             </p>
           </div>
-        </div>
+        </Link>
         <div className="content-stretch flex items-start overflow-clip pb-[6px] pt-[16px] px-[12px] relative shrink-0" data-node-id="I551:748;9:571" data-name="Section · CONTENT & DATA">
           <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] tracking-[0.72px] whitespace-nowrap" data-node-id="I551:748;9:572">{`CONTENT & DATA`}</p>
         </div>

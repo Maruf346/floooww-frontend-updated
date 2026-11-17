@@ -1,0 +1,1609 @@
+import { useState, useMemo, useRef, useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Check, ChevronDown, ChevronUp, Image as ImageIcon } from "lucide-react";
+import { ROUTES } from "@/common/constants/routes";
+
+// Assets extracted from Figma designs (552:277 and 793:13612)
+const imgDot = "https://www.figma.com/api/mcp/asset/9ebb528a-1588-4521-b6ac-d077bc640ff9.svg";
+const imgDot1 = "https://www.figma.com/api/mcp/asset/91e1a14d-9974-404e-9a6a-b54ec2d2a318.svg";
+const imgDot2 = "https://www.figma.com/api/mcp/asset/2d3b438f-eaa6-489f-9c10-32bfd72f9c95.svg";
+const imgDot3 = "https://www.figma.com/api/mcp/asset/c259a990-4b4b-4c15-af42-225e0c058e2c.svg";
+const imgKreyioWordmark = "https://www.figma.com/api/mcp/asset/a5cb72f4-e4c0-48e3-af74-4b6f0a737491.svg";
+
+const imgMedia = "https://www.figma.com/api/mcp/asset/68cedca7-52b0-416c-95de-53535f43429b.png";
+const imgMedia1 = "https://www.figma.com/api/mcp/asset/0033c0aa-89d5-4d44-819c-96d7ac983e8b.png";
+const imgMedia2 = "https://www.figma.com/api/mcp/asset/bdce2aee-2a5e-48c9-9175-14fba945ec9e.png";
+const imgMedia3 = "https://www.figma.com/api/mcp/asset/fcbf70d9-1775-4b75-b886-8aa86c7aa11e.png";
+const imgMedia4 = "https://www.figma.com/api/mcp/asset/6b6bfc90-1140-44a4-8587-9c2325aadbc2.png";
+const imgMedia5 = "https://www.figma.com/api/mcp/asset/27c407d1-946f-4521-a355-cede27115cca.png";
+const imgMedia6 = "https://www.figma.com/api/mcp/asset/d4aeeab2-b085-4de4-b2a9-432cb0d5d860.png";
+const imgMedia7 = "https://www.figma.com/api/mcp/asset/2db90e42-6aed-4c08-8d4f-658e66696684.png";
+const imgMedia8 = "https://www.figma.com/api/mcp/asset/44ed61b6-1cbf-496c-8ba9-03bb6247c151.png";
+
+const imgIconWorkspace = "https://www.figma.com/api/mcp/asset/aec913aa-9983-4bf4-bd76-43c8fde3ada5.svg";
+const imgIconOverview = "https://www.figma.com/api/mcp/asset/9acbc294-a65a-4aa0-83b7-7b1e67394361.svg";
+const imgIconFind = "https://www.figma.com/api/mcp/asset/624fd790-3395-483e-8917-83f7a8d5187c.svg";
+const imgIconProjects = "https://www.figma.com/api/mcp/asset/0498a943-8397-438f-94df-e37c33408bb3.svg";
+const imgChevron = "https://www.figma.com/api/mcp/asset/8c4db136-728b-45bb-8671-825e498e8cd1.svg";
+const imgBullet = "https://www.figma.com/api/mcp/asset/fdb69197-ae81-4fd3-b118-218768bbcd29.svg";
+const imgIconContent = "https://www.figma.com/api/mcp/asset/971be24f-6f49-46c1-a3fd-46cb3a2f593b.svg";
+const imgIconPerformance = "https://www.figma.com/api/mcp/asset/8b2b6b5a-5f18-41c6-977c-c62a2e64439b.svg";
+const imgIconEarnings = "https://www.figma.com/api/mcp/asset/9b0e9e29-3a4e-4c11-a175-40374e899a86.svg";
+const imgIconMessages = "https://www.figma.com/api/mcp/asset/53f5d3ee-c57a-41de-b7ac-728b1fe79d4c.svg";
+const imgIconSettings = "https://www.figma.com/api/mcp/asset/0539eac9-280d-4579-b03e-7f9afacd5138.svg";
+const imgIconHelp = "https://www.figma.com/api/mcp/asset/7f125c2f-1131-44f8-94f7-556fa5904a71.svg";
+const imgIconLogout = "https://www.figma.com/api/mcp/asset/54e43bb3-1918-4d06-89eb-5c15e8d8e2dc.svg";
+
+const imgIconSearch = "https://www.figma.com/api/mcp/asset/8b343dec-5a5e-42bc-81a5-6082b5036623.svg";
+const imgIconNotifications = "https://www.figma.com/api/mcp/asset/a6ab6fe3-a873-4f44-a1d7-2371b01e7eb2.svg";
+const imgIconDownload = "https://www.figma.com/api/mcp/asset/153a5cd0-abc0-47b9-9f97-2bb5867cd2db.svg";
+const imgIconDropdownArrow = "https://www.figma.com/api/mcp/asset/b62b693f-4950-4e6b-b9c3-3edf6d598b5f.svg";
+const imgIconGridView = "https://www.figma.com/api/mcp/asset/9060fba3-509b-4b40-bfd4-f0ed5884eb9b.svg";
+const imgIconListView = "https://www.figma.com/api/mcp/asset/4e849046-068d-43b8-947b-d8493e479001.svg";
+const imgPlatformLogo = "https://www.figma.com/api/mcp/asset/ef3e1679-93fa-4b73-87ea-6fc5bc4403a8.svg";
+const imgIconUsageRights = "https://www.figma.com/api/mcp/asset/5756f26b-0409-4814-ada1-003350673816.svg";
+const imgEmptyMediaIcon = "https://www.figma.com/api/mcp/asset/374ee941-780f-4c23-aa80-4a353b5c9aeb.svg";
+
+const imgEllipse = "https://www.figma.com/api/mcp/asset/9479446d-6cb7-44cc-bb1c-cca598774b9b.svg";
+const imgEllipse1 = "https://www.figma.com/api/mcp/asset/1c5a8310-8637-47ce-9042-77b4151c7ac5.svg";
+const imgEllipse2 = "https://www.figma.com/api/mcp/asset/a3d4896b-7f3f-4d49-b468-54691b731af8.svg";
+const imgEllipse3 = "https://www.figma.com/api/mcp/asset/a2447806-6ec7-44f8-8445-7d5e5c3bfddb.svg";
+const imgEllipse4 = "https://www.figma.com/api/mcp/asset/481c9e77-5dab-48b7-a5b7-eb3807e05eb3.svg";
+const imgEllipse5 = "https://www.figma.com/api/mcp/asset/55d1b66f-18fd-47ec-9c9e-a48dc36f2cde.svg";
+
+type ContentStatus =
+  | "all"
+  | "waiting"
+  | "changes_requested"
+  | "approved"
+  | "live"
+  | "used_in_ads";
+
+interface ContentItem {
+  id: string;
+  title: string;
+  brand: string;
+  project: string;
+  campaign: string;
+  platform: "Instagram" | "YouTube" | "TikTok";
+  format: "Reel" | "Story" | "Video" | "Post";
+  mediaUrl: string;
+  avatarUrl: string;
+  duration?: string;
+  status: "Live" | "Changes requested" | "Approved" | "Used in ads" | "Waiting for approval";
+  statusCode: ContentStatus;
+  statsText: string;
+  usageRightsText: string;
+  usageRightsType: "organic_active" | "organic_ended" | "paid_ads";
+  views?: string;
+  er?: string;
+  orders?: number;
+}
+
+const ALL_CONTENT_ITEMS: ContentItem[] = [
+  {
+    id: "cnt-1",
+    title: "Reel · Festive GRWM",
+    brand: "Minimalist",
+    project: "Vitamin-C Serum",
+    campaign: "Vitamin-C Serum",
+    platform: "Instagram",
+    format: "Reel",
+    mediaUrl: imgMedia,
+    avatarUrl: imgEllipse,
+    duration: "0:41",
+    status: "Live",
+    statusCode: "live",
+    statsText: "3.0 L views · 6.9% ER · 214 orders",
+    usageRightsText: "Organic · until 7 Dec",
+    usageRightsType: "organic_active",
+    views: "3.0 L",
+    er: "6.9%",
+    orders: 214,
+  },
+  {
+    id: "cnt-2",
+    title: "Story · Launch day",
+    brand: "Minimalist",
+    project: "Vitamin-C Serum",
+    campaign: "Vitamin-C Serum",
+    platform: "Instagram",
+    format: "Story",
+    mediaUrl: imgMedia1,
+    avatarUrl: imgEllipse,
+    duration: "0:38",
+    status: "Live",
+    statusCode: "live",
+    statsText: "2.6 L views · 7.4% ER · 178 orders",
+    usageRightsText: "Organic · until 7 Dec",
+    usageRightsType: "organic_active",
+    views: "2.6 L",
+    er: "7.4%",
+    orders: 178,
+  },
+  {
+    id: "cnt-3",
+    title: "Results after 7 days · Reel",
+    brand: "Minimalist",
+    project: "Vitamin-C Serum",
+    campaign: "Vitamin-C Serum",
+    platform: "Instagram",
+    format: "Reel",
+    mediaUrl: imgMedia2,
+    avatarUrl: imgEllipse,
+    duration: "0:15",
+    status: "Changes requested",
+    statusCode: "changes_requested",
+    statsText: "“Add ISHITA15 on screen” · v2 approved 21 Oct",
+    usageRightsText: "Organic · 30 days",
+    usageRightsType: "organic_active",
+  },
+  {
+    id: "cnt-4",
+    title: "Reel · Glow Squad month 1",
+    brand: "Minimalist",
+    project: "Glow Squad",
+    campaign: "Glow Squad",
+    platform: "Instagram",
+    format: "Reel",
+    mediaUrl: imgMedia3,
+    avatarUrl: imgEllipse,
+    duration: "0:44",
+    status: "Approved",
+    statusCode: "approved",
+    statsText: "Approved · goes live 1 Nov",
+    usageRightsText: "Organic · until 31 Jan",
+    usageRightsType: "organic_active",
+  },
+  {
+    id: "cnt-5",
+    title: "Reel · serum layering",
+    brand: "Minimalist",
+    project: "Glow Squad",
+    campaign: "Glow Squad",
+    platform: "Instagram",
+    format: "Reel",
+    mediaUrl: imgMedia4,
+    avatarUrl: imgEllipse,
+    status: "Live",
+    statusCode: "live",
+    statsText: "1.2 L views · 6.1% ER · 88 orders",
+    usageRightsText: "Organic · until 31 Jan",
+    usageRightsType: "organic_active",
+    views: "1.2 L",
+    er: "6.1%",
+    orders: 88,
+  },
+  {
+    id: "cnt-6",
+    title: "Story · night routine",
+    brand: "Minimalist",
+    project: "Glow Squad",
+    campaign: "Glow Squad",
+    platform: "Instagram",
+    format: "Story",
+    mediaUrl: imgMedia5,
+    avatarUrl: imgEllipse,
+    duration: "0:15",
+    status: "Live",
+    statusCode: "live",
+    statsText: "42K views · 5.2% ER",
+    usageRightsText: "Organic · until 31 Jan",
+    usageRightsType: "organic_active",
+    views: "42K",
+    er: "5.2%",
+  },
+  {
+    id: "cnt-7",
+    title: "Reel · lip liner looks",
+    brand: "Velvet Lip Co.",
+    project: "Lip Liner Collab",
+    campaign: "Lip Liner Collab",
+    platform: "Instagram",
+    format: "Reel",
+    mediaUrl: imgMedia6,
+    avatarUrl: imgEllipse1,
+    status: "Live",
+    statusCode: "live",
+    statsText: "1.8 L views · 58 orders",
+    usageRightsText: "Organic · ended 27 Sep",
+    usageRightsType: "organic_ended",
+    views: "1.8 L",
+    orders: 58,
+  },
+  {
+    id: "cnt-8",
+    title: "Reel · mist routine",
+    brand: "Dewdrop Naturals",
+    project: "Mist launch",
+    campaign: "Mist launch",
+    platform: "Instagram",
+    format: "Reel",
+    mediaUrl: imgMedia7,
+    avatarUrl: imgEllipse2,
+    duration: "0:33",
+    status: "Live",
+    statusCode: "live",
+    statsText: "96K views · 6.9% ER",
+    usageRightsText: "Organic · until 12 Dec",
+    usageRightsType: "organic_active",
+    views: "96K",
+    er: "6.9%",
+  },
+  {
+    id: "cnt-9",
+    title: "Video · hair oil demo",
+    brand: "Strand Studio",
+    project: "Hair Oil UGC",
+    campaign: "Hair Oil UGC",
+    platform: "Instagram",
+    format: "Video",
+    mediaUrl: imgMedia8,
+    avatarUrl: imgEllipse3,
+    duration: "0:24",
+    status: "Used in ads",
+    statusCode: "used_in_ads",
+    statsText: "UGC file · 1080 × 1920 · in their ads",
+    usageRightsText: "Paid ads · until 2 Nov",
+    usageRightsType: "paid_ads",
+  },
+  {
+    id: "cnt-10",
+    title: "Reel · summer glow",
+    brand: "Minimalist",
+    project: "Summer Glow Edit",
+    campaign: "Summer Glow Edit",
+    platform: "Instagram",
+    format: "Reel",
+    mediaUrl: imgMedia,
+    avatarUrl: imgEllipse,
+    duration: "0:31",
+    status: "Live",
+    statusCode: "live",
+    statsText: "1.1 L views · 140 orders",
+    usageRightsText: "Organic · ended 29 Aug",
+    usageRightsType: "organic_ended",
+    views: "1.1 L",
+    orders: 140,
+  },
+  {
+    id: "cnt-11",
+    title: "Reel · ubtan glow",
+    brand: "Kumkum Naturals",
+    project: "Ubtan Glow Reel",
+    campaign: "Ubtan Glow Reel",
+    platform: "Instagram",
+    format: "Reel",
+    mediaUrl: imgMedia3,
+    avatarUrl: imgEllipse4,
+    duration: "0:27",
+    status: "Live",
+    statusCode: "live",
+    statsText: "92K views · 64 orders",
+    usageRightsText: "Organic · ended 21 Jun",
+    usageRightsType: "organic_ended",
+    views: "92K",
+    orders: 64,
+  },
+  {
+    id: "cnt-12",
+    title: "Reel · rose toner",
+    brand: "Petal Theory",
+    project: "Rose Toner gift",
+    campaign: "Rose Toner (gift)",
+    platform: "Instagram",
+    format: "Reel",
+    mediaUrl: imgMedia1,
+    avatarUrl: imgEllipse5,
+    duration: "0:22",
+    status: "Live",
+    statusCode: "live",
+    statsText: "41K views · 7.2% ER",
+    usageRightsText: "Organic · until 10 Nov",
+    usageRightsType: "organic_active",
+    views: "41K",
+    er: "7.2%",
+  },
+  // Additional items loaded when clicking "Load more" to complete 18 items
+  {
+    id: "cnt-13",
+    title: "Story · Unboxing & First Look",
+    brand: "Minimalist",
+    project: "Vitamin-C Serum",
+    campaign: "Vitamin-C Serum",
+    platform: "Instagram",
+    format: "Story",
+    mediaUrl: imgMedia5,
+    avatarUrl: imgEllipse,
+    duration: "0:15",
+    status: "Waiting for approval",
+    statusCode: "waiting",
+    statsText: "Submitted 28 Oct · Brand reviewing",
+    usageRightsText: "Organic · 30 days",
+    usageRightsType: "organic_active",
+  },
+  {
+    id: "cnt-14",
+    title: "Reel · Texture comparison",
+    brand: "Minimalist",
+    project: "Vitamin-C Serum",
+    campaign: "Vitamin-C Serum",
+    platform: "Instagram",
+    format: "Reel",
+    mediaUrl: imgMedia2,
+    avatarUrl: imgEllipse,
+    duration: "0:30",
+    status: "Live",
+    statusCode: "live",
+    statsText: "1.4 L views · 5.8% ER · 72 orders",
+    usageRightsText: "Organic · until 15 Dec",
+    usageRightsType: "organic_active",
+    views: "1.4 L",
+    er: "5.8%",
+    orders: 72,
+  },
+  {
+    id: "cnt-15",
+    title: "Video · Routine breakdown",
+    brand: "Dewdrop Naturals",
+    project: "Mist launch",
+    campaign: "Mist launch",
+    platform: "Instagram",
+    format: "Video",
+    mediaUrl: imgMedia7,
+    avatarUrl: imgEllipse2,
+    duration: "0:52",
+    status: "Live",
+    statusCode: "live",
+    statsText: "88K views · 6.1% ER",
+    usageRightsText: "Organic · until 20 Dec",
+    usageRightsType: "organic_active",
+    views: "88K",
+    er: "6.1%",
+  },
+  {
+    id: "cnt-16",
+    title: "Story · Swatch test",
+    brand: "Velvet Lip Co.",
+    project: "Lip Liner Collab",
+    campaign: "Lip Liner Collab",
+    platform: "Instagram",
+    format: "Story",
+    mediaUrl: imgMedia6,
+    avatarUrl: imgEllipse1,
+    duration: "0:15",
+    status: "Live",
+    statusCode: "live",
+    statsText: "64K views · 42 orders",
+    usageRightsText: "Organic · ended 27 Sep",
+    usageRightsType: "organic_ended",
+    views: "64K",
+    orders: 42,
+  },
+  {
+    id: "cnt-17",
+    title: "Reel · Morning glow routine",
+    brand: "Kumkum Naturals",
+    project: "Ubtan Glow Reel",
+    campaign: "Ubtan Glow Reel",
+    platform: "Instagram",
+    format: "Reel",
+    mediaUrl: imgMedia4,
+    avatarUrl: imgEllipse4,
+    duration: "0:35",
+    status: "Live",
+    statusCode: "live",
+    statsText: "1.1 L views · 68 orders",
+    usageRightsText: "Organic · ended 21 Jun",
+    usageRightsType: "organic_ended",
+    views: "1.1 L",
+    orders: 68,
+  },
+  {
+    id: "cnt-18",
+    title: "Reel · Floral toner test",
+    brand: "Petal Theory",
+    project: "Rose Toner gift",
+    campaign: "Rose Toner (gift)",
+    platform: "Instagram",
+    format: "Reel",
+    mediaUrl: imgMedia,
+    avatarUrl: imgEllipse5,
+    duration: "0:25",
+    status: "Live",
+    statusCode: "live",
+    statsText: "53K views · 6.8% ER",
+    usageRightsText: "Organic · until 10 Nov",
+    usageRightsType: "organic_active",
+    views: "53K",
+    er: "6.8%",
+  },
+];
+
+export default function CreatorContentPage() {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Mode: "content" (552:277) or "empty" (793:13612)
+  const isInitiallyEmpty = searchParams.get("view") === "empty";
+  const [isEmptyMode, setIsEmptyMode] = useState(isInitiallyEmpty);
+
+  // Active Tab
+  const [activeTab, setActiveTab] = useState<ContentStatus>("all");
+
+  // Selection state
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  // Pagination / Load more
+  const [itemsLimit, setItemsLimit] = useState(12);
+
+  // View mode: "grid" or "list"
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  // Dropdown states
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  // Filters
+  const [filterProject, setFilterProject] = useState<string>("All");
+  const [filterBrand, setFilterBrand] = useState<string>("All");
+  const [filterPlatform, setFilterPlatform] = useState<string>("All");
+  const [filterFormat, setFilterFormat] = useState<string>("All");
+  const [filterUsageRights, setFilterUsageRights] = useState<string>("All");
+  const [sortOption, setSortOption] = useState<string>("Newest");
+
+  // Toast feedback
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  // Close dropdown on outside click
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpenDropdown(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Filtered Items
+  const displayedItems = useMemo(() => {
+    if (isEmptyMode) return [];
+
+    let list = ALL_CONTENT_ITEMS.filter((item) => {
+      // Tab filter
+      if (activeTab === "waiting" && item.statusCode !== "waiting") return false;
+      if (activeTab === "changes_requested" && item.statusCode !== "changes_requested") return false;
+      if (activeTab === "approved" && item.statusCode !== "approved") return false;
+      if (activeTab === "live" && item.statusCode !== "live") return false;
+      if (activeTab === "used_in_ads" && item.statusCode !== "used_in_ads") return false;
+
+      // Project filter
+      if (filterProject !== "All" && item.project !== filterProject) return false;
+
+      // Brand filter
+      if (filterBrand !== "All" && item.brand !== filterBrand) return false;
+
+      // Platform filter
+      if (filterPlatform !== "All" && item.platform !== filterPlatform) return false;
+
+      // Format filter
+      if (filterFormat !== "All" && item.format !== filterFormat) return false;
+
+      // Usage rights filter
+      if (filterUsageRights === "Organic" && !item.usageRightsText.startsWith("Organic")) return false;
+      if (filterUsageRights === "Paid ads" && !item.usageRightsText.startsWith("Paid ads")) return false;
+      if (filterUsageRights === "Ended" && item.usageRightsType !== "organic_ended") return false;
+
+      return true;
+    });
+
+    // Sort
+    if (sortOption === "Oldest") {
+      list = [...list].reverse();
+    } else if (sortOption === "Most orders") {
+      list = [...list].sort((a, b) => (b.orders || 0) - (a.orders || 0));
+    }
+
+    return list;
+  }, [
+    isEmptyMode,
+    activeTab,
+    filterProject,
+    filterBrand,
+    filterPlatform,
+    filterFormat,
+    filterUsageRights,
+    sortOption,
+  ]);
+
+  // Tab Counts
+  const tabCounts = useMemo(() => {
+    if (isEmptyMode) {
+      return { all: 0, waiting: 0, changes_requested: 0, approved: 0, live: 0, used_in_ads: 0 };
+    }
+    return {
+      all: ALL_CONTENT_ITEMS.length, // 18
+      waiting: ALL_CONTENT_ITEMS.filter((i) => i.statusCode === "waiting").length, // 1
+      changes_requested: ALL_CONTENT_ITEMS.filter((i) => i.statusCode === "changes_requested").length, // 1
+      approved: ALL_CONTENT_ITEMS.filter((i) => i.statusCode === "approved").length, // 1
+      live: ALL_CONTENT_ITEMS.filter((i) => i.statusCode === "live").length, // 14
+      used_in_ads: ALL_CONTENT_ITEMS.filter((i) => i.statusCode === "used_in_ads").length, // 1
+    };
+  }, [isEmptyMode]);
+
+  // Toggle Selection
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleDownloadSelected = () => {
+    if (selectedIds.size === 0) {
+      showToast("Select one or more items to download deliverable files.");
+      return;
+    }
+    showToast(`Downloading ${selectedIds.size} file${selectedIds.size > 1 ? "s" : ""}...`);
+  };
+
+  const handleToggleEmptyMode = () => {
+    const nextState = !isEmptyMode;
+    setIsEmptyMode(nextState);
+    if (nextState) {
+      setSearchParams({ view: "empty" });
+    } else {
+      setSearchParams({});
+    }
+  };
+
+  const visibleCards = displayedItems.slice(0, itemsLimit);
+
+  return (
+    <div className="bg-[var(--bg-page,white)] flex min-h-screen items-start relative w-full" data-name="Creator · Content">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-6 right-6 z-50 bg-[#0d0d10] text-white px-4 py-3 rounded-lg shadow-xl text-sm font-medium flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
+          <Check size={16} className="text-emerald-400" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className="sticky top-0 h-screen shrink-0 w-[260px] flex flex-col gap-[2px] items-start overflow-y-auto border-r border-[#e3e5ec] bg-white px-[16px] pt-[20px] pb-[16px] z-30 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        data-name="Sidebar / Creator"
+      >
+        <Link to={ROUTES.creator} className="content-stretch flex items-center overflow-clip relative rounded-[9.778px] shrink-0" data-name="Kreyio wordmark">
+          <img alt="Kreyio" className="h-[36px] w-[99.09px]" src={imgKreyioWordmark} />
+        </Link>
+        <div className="h-[16px] relative shrink-0 w-[10px]" data-name="gap" />
+
+        {/* Workspace Switcher */}
+        <div
+          className="border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[10px] items-center overflow-clip p-[10px] relative rounded-[var(--radius-lg,12px)] shrink-0 w-[228px]"
+          data-name="Workspace switcher"
+        >
+          <div
+            className="bg-[var(--primary-default,#0d0d10)] content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-md,8px)] shrink-0 size-[32px]"
+            data-name="Initials"
+          >
+            <p className="font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] text-white whitespace-nowrap">
+              IR
+            </p>
+          </div>
+          <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-px not-italic overflow-clip relative whitespace-nowrap">
+            <p className="font-['Inter:Semi_Bold'] font-semibold leading-[20px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)]">
+              Ishita Rao
+            </p>
+            <p className="font-['Inter:Regular'] font-normal leading-[16px] relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)]">
+              Creator · @ishitarao
+            </p>
+          </div>
+          <div className="relative shrink-0 size-[16px]" data-name="Icon">
+            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconWorkspace} />
+          </div>
+        </div>
+
+        {/* Section MAIN */}
+        <div className="content-stretch flex items-start overflow-clip pb-[6px] pt-[16px] px-[12px] relative shrink-0">
+          <p className="font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] tracking-[0.72px] whitespace-nowrap">
+            MAIN
+          </p>
+        </div>
+
+        {/* Overview */}
+        <Link
+          to={ROUTES.creator}
+          className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
+        >
+          <div className="relative shrink-0 size-[18px]">
+            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconOverview} />
+          </div>
+          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px text-[14px]">
+            Overview
+          </p>
+        </Link>
+
+        {/* Project Discovery */}
+        <Link
+          to={ROUTES.creatorProjects}
+          className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
+        >
+          <div className="relative shrink-0 size-[18px]">
+            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconFind} />
+          </div>
+          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px text-[14px]">
+            Project discovery
+          </p>
+        </Link>
+
+        {/* My Projects */}
+        <Link
+          to={ROUTES.creatorMyProjects}
+          className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
+        >
+          <div className="relative shrink-0 size-[18px]">
+            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconProjects} />
+          </div>
+          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px text-[14px]">
+            My projects
+          </p>
+          <div className="relative shrink-0 size-[14px]">
+            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgChevron} />
+          </div>
+        </Link>
+
+        {/* Sub-item: Invitations & offers */}
+        <Link
+          to={`${ROUTES.creatorMyProjects}?tab=invitations`}
+          className="content-stretch flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
+        >
+          <div className="relative shrink-0 size-[4px]">
+            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgBullet} />
+          </div>
+          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px text-[13px] text-left text-[color:var(--text-secondary,#0d0d10)]">
+            Invitations &amp; offers
+          </p>
+          <div className="bg-[var(--bg-muted,#edeff3)] flex h-[18px] items-center px-[6px] rounded-[var(--radius-full,999px)] shrink-0">
+            <p className="font-['Inter:Medium'] font-medium text-[12px] text-[color:var(--text-secondary,#0d0d10)]">4</p>
+          </div>
+        </Link>
+
+        {/* Sub-item: Applied */}
+        <Link
+          to={`${ROUTES.creatorMyProjects}?tab=applied`}
+          className="content-stretch flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
+        >
+          <div className="relative shrink-0 size-[4px]">
+            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgBullet} />
+          </div>
+          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px text-[13px] text-left text-[color:var(--text-secondary,#0d0d10)]">
+            Applied
+          </p>
+          <div className="bg-[var(--bg-muted,#edeff3)] flex h-[18px] items-center px-[6px] rounded-[var(--radius-full,999px)] shrink-0">
+            <p className="font-['Inter:Medium'] font-medium text-[12px] text-[color:var(--text-secondary,#0d0d10)]">3</p>
+          </div>
+        </Link>
+
+        {/* Sub-item: Live */}
+        <Link
+          to={`${ROUTES.creatorMyProjects}?tab=live`}
+          className="content-stretch flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
+        >
+          <div className="relative shrink-0 size-[4px]">
+            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgBullet} />
+          </div>
+          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px text-[13px] text-left text-[color:var(--text-secondary,#0d0d10)]">
+            Live
+          </p>
+          <div className="bg-[var(--bg-muted,#edeff3)] flex h-[18px] items-center px-[6px] rounded-[var(--radius-full,999px)] shrink-0">
+            <p className="font-['Inter:Medium'] font-medium text-[12px] text-[color:var(--text-secondary,#0d0d10)]">2</p>
+          </div>
+        </Link>
+
+        {/* Sub-item: Completed */}
+        <Link
+          to={`${ROUTES.creatorMyProjects}?tab=completed`}
+          className="content-stretch flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
+        >
+          <div className="relative shrink-0 size-[4px]">
+            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgBullet} />
+          </div>
+          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px text-[13px] text-left text-[color:var(--text-secondary,#0d0d10)]">
+            Completed
+          </p>
+          <div className="bg-[var(--bg-muted,#edeff3)] flex h-[18px] items-center px-[6px] rounded-[var(--radius-full,999px)] shrink-0">
+            <p className="font-['Inter:Medium'] font-medium text-[12px] text-[color:var(--text-secondary,#0d0d10)]">7</p>
+          </div>
+        </Link>
+
+        {/* Sub-item: Declined */}
+        <Link
+          to={`${ROUTES.creatorMyProjects}?tab=declined`}
+          className="content-stretch flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
+        >
+          <div className="relative shrink-0 size-[4px]">
+            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgBullet} />
+          </div>
+          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px text-[13px] text-left text-[color:var(--text-secondary,#0d0d10)]">
+            Declined
+          </p>
+          <div className="bg-[var(--bg-muted,#edeff3)] flex h-[18px] items-center px-[6px] rounded-[var(--radius-full,999px)] shrink-0">
+            <p className="font-['Inter:Medium'] font-medium text-[12px] text-[color:var(--text-secondary,#0d0d10)]">3</p>
+          </div>
+        </Link>
+
+        {/* Content (Active Page) */}
+        <div
+          className="bg-[var(--primary-subtle,#f1f4ff)] content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]"
+          data-name="Content"
+        >
+          <div className="relative shrink-0 size-[18px]">
+            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconContent} />
+          </div>
+          <p className="flex-[1_0_0] font-['Inter:Semi_Bold'] font-semibold leading-[20px] min-w-px text-[14px] text-[color:var(--primary-default,#0d0d10)]">
+            Content
+          </p>
+          <div className="bg-[var(--primary-muted,#e3e9ff)] content-stretch flex h-[18px] items-center overflow-clip px-[6px] relative rounded-[var(--radius-full,999px)] shrink-0">
+            <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[color:var(--primary-default,#0d0d10)] whitespace-nowrap">
+              {isEmptyMode ? "0" : "18"}
+            </p>
+          </div>
+        </div>
+
+        {/* CONTENT & DATA */}
+        <div className="content-stretch flex items-start overflow-clip pb-[6px] pt-[16px] px-[12px] relative shrink-0">
+          <p className="font-['Inter:Semi_Bold'] font-semibold leading-[16px] text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] tracking-[0.72px] whitespace-nowrap">
+            CONTENT &amp; DATA
+          </p>
+        </div>
+        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] text-[#0d0d10] hover:bg-[#f4f6fb] transition cursor-pointer">
+          <div className="relative shrink-0 size-[18px]">
+            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconPerformance} />
+          </div>
+          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px text-[14px]">
+            Performance
+          </p>
+        </div>
+        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] text-[#0d0d10] hover:bg-[#f4f6fb] transition cursor-pointer">
+          <div className="relative shrink-0 size-[18px]">
+            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconEarnings} />
+          </div>
+          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px text-[14px]">
+            Earnings
+          </p>
+        </div>
+
+        {/* ACCOUNT */}
+        <div className="content-stretch flex items-start overflow-clip pb-[6px] pt-[16px] px-[12px] relative shrink-0">
+          <p className="font-['Inter:Semi_Bold'] font-semibold leading-[16px] text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] tracking-[0.72px] whitespace-nowrap">
+            ACCOUNT
+          </p>
+        </div>
+        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] text-[#0d0d10] hover:bg-[#f4f6fb] transition cursor-pointer">
+          <div className="relative shrink-0 size-[18px]">
+            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconMessages} />
+          </div>
+          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px text-[14px]">
+            Messages
+          </p>
+          <div className="bg-[var(--bg-muted,#edeff3)] content-stretch flex h-[18px] items-center overflow-clip px-[6px] relative rounded-[var(--radius-full,999px)] shrink-0">
+            <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap">
+              3
+            </p>
+          </div>
+        </div>
+        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] text-[#0d0d10] hover:bg-[#f4f6fb] transition cursor-pointer">
+          <div className="relative shrink-0 size-[18px]">
+            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconSettings} />
+          </div>
+          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px text-[14px]">
+            Settings
+          </p>
+        </div>
+
+        <div className="flex-[1_0_0] h-[50px] min-h-[20px] w-full" />
+        <div className="bg-[var(--border-default,#e3e5ec)] h-px shrink-0 w-[228px] my-1" />
+
+        {/* Help Center */}
+        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] text-[#0d0d10] hover:bg-[#f4f6fb] transition cursor-pointer">
+          <div className="relative shrink-0 size-[18px]">
+            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconHelp} />
+          </div>
+          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px text-[14px]">
+            Help Center
+          </p>
+        </div>
+
+        {/* Logout */}
+        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] text-[#0d0d10] hover:bg-[#f4f6fb] transition cursor-pointer">
+          <div className="relative shrink-0 size-[18px]">
+            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconLogout} />
+          </div>
+          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px text-[14px]">
+            Logout
+          </p>
+        </div>
+      </aside>
+
+      {/* Main Container */}
+      <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-0 min-h-screen overflow-x-hidden relative" data-name="Main">
+        {/* Top bar */}
+        <header
+          className="sticky top-0 bg-[var(--bg-surface,white)] border-[var(--border-default,#e3e5ec)] border-b border-solid content-stretch flex gap-[12px] h-[64px] items-center overflow-clip px-[32px] relative shrink-0 w-full z-20"
+          data-name="Top bar"
+        >
+          {/* Search */}
+          <div
+            className="bg-[var(--bg-subtle,#f4f6fb)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[8px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[380px]"
+            data-name="Search"
+          >
+            <div className="relative shrink-0 size-[16px]">
+              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconSearch} />
+            </div>
+            <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px text-[13px] text-[color:var(--text-tertiary,#a3a3ac)] truncate">
+              Search projects, creators, content…
+            </p>
+            <div className="border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex items-start overflow-clip px-[6px] py-px relative rounded-[4px] shrink-0">
+              <p className="font-['Inter:Regular'] font-normal leading-[16px] text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] whitespace-nowrap">
+                ⌘K
+              </p>
+            </div>
+          </div>
+
+          <div className="flex-[1_0_0] h-px min-w-px relative" />
+
+          {/* Notifications */}
+          <button
+            type="button"
+            className="border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-md,8px)] shrink-0 size-[36px] hover:bg-[#f4f6fb] transition cursor-pointer"
+            data-name="Notifications"
+            aria-label="Notifications"
+          >
+            <div className="relative shrink-0 size-[18px]">
+              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconNotifications} />
+            </div>
+          </button>
+
+          {/* Account */}
+          <div className="content-stretch flex gap-[10px] items-center overflow-clip relative shrink-0" data-name="Account">
+            <div
+              className="bg-[var(--primary-muted,#e3e9ff)] content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-full,999px)] shrink-0 size-[32px]"
+              data-name="Avatar"
+            >
+              <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[color:var(--primary-default,#0d0d10)] whitespace-nowrap">
+                IR
+              </p>
+            </div>
+            <div className="content-stretch flex flex-col items-start not-italic overflow-clip relative shrink-0 whitespace-nowrap">
+              <p className="font-['Inter:Semi_Bold'] font-semibold leading-[20px] text-[14px] text-[color:var(--text-primary,#0d0d10)]">
+                Ishita Rao
+              </p>
+              <p className="font-['Inter:Regular'] font-normal leading-[16px] text-[12px] text-[color:var(--text-tertiary,#a3a3ac)]">
+                Creator
+              </p>
+            </div>
+          </div>
+        </header>
+
+        {/* Content Body Area */}
+        <div className="content-stretch flex flex-col gap-[20px] items-start p-[32px] relative shrink-0 w-full max-w-[1400px]">
+          {/* Page header */}
+          <div className="content-stretch flex items-center justify-between overflow-clip relative shrink-0 w-full" data-name="Page header">
+            <div className="content-stretch flex flex-[1_0_0] flex-col gap-[4px] items-start min-w-px overflow-clip relative" data-name="Left">
+              <div className="content-stretch flex items-center overflow-clip relative shrink-0" data-name="Title row">
+                <h1 className="font-['Inter:Bold'] font-bold leading-[34px] not-italic relative shrink-0 text-[26px] text-[color:var(--text-primary,#0d0d10)] tracking-[-0.13px] whitespace-nowrap">
+                  Content
+                </h1>
+              </div>
+              <p className="font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap">
+                Every post and file you made for brands · with usage rights and results
+              </p>
+            </div>
+
+            {/* Actions: View Mode Switcher Pill & Download selected */}
+            <div className="content-stretch flex items-center gap-[12px] overflow-clip relative shrink-0" data-name="Actions">
+              {/* Interactive View State Switcher for checking both states */}
+              <div className="flex items-center bg-[#f4f6fb] border border-[#e3e5ec] rounded-[8px] p-[2px] text-[12px] font-medium">
+                <button
+                  type="button"
+                  onClick={() => setIsEmptyMode(false)}
+                  className={`px-[10px] py-[6px] rounded-[6px] transition cursor-pointer ${
+                    !isEmptyMode ? "bg-white text-[#0d0d10] shadow-xs font-semibold" : "text-[#71717a] hover:text-[#0d0d10]"
+                  }`}
+                  title="View with 18 items (Figma 552:277)"
+                >
+                  Content view (18)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsEmptyMode(true)}
+                  className={`px-[10px] py-[6px] rounded-[6px] transition cursor-pointer ${
+                    isEmptyMode ? "bg-white text-[#0d0d10] shadow-xs font-semibold" : "text-[#71717a] hover:text-[#0d0d10]"
+                  }`}
+                  title="View empty state (Figma 793:13612)"
+                >
+                  Empty state (0)
+                </button>
+              </div>
+
+              {/* Download selected Button (visible in content state or when items exist) */}
+              {!isEmptyMode && (
+                <button
+                  type="button"
+                  onClick={handleDownloadSelected}
+                  className={`border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 transition cursor-pointer ${
+                    selectedIds.size > 0
+                      ? "bg-[#0d0d10] text-white hover:bg-[#202024]"
+                      : "bg-[var(--bg-surface,white)] text-[color:var(--text-primary,#0d0d10)] hover:bg-[#f4f6fb]"
+                  }`}
+                  data-name="Button"
+                >
+                  <div className="relative shrink-0 size-[16px]">
+                    <img
+                      alt=""
+                      className={`absolute block inset-0 max-w-none size-full ${selectedIds.size > 0 ? "brightness-0 invert" : ""}`}
+                      src={imgIconDownload}
+                    />
+                  </div>
+                  <p className="font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] whitespace-nowrap">
+                    Download selected {selectedIds.size > 0 ? `(${selectedIds.size})` : ""}
+                  </p>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Status Tabs */}
+          <div
+            className="border-[var(--border-default,#e3e5ec)] border-b border-solid content-stretch flex gap-[24px] items-start overflow-x-auto relative shrink-0 w-full [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            data-name="Tabs"
+          >
+            {[
+              { id: "all", label: "All", count: tabCounts.all },
+              { id: "waiting", label: "Waiting for approval", count: tabCounts.waiting },
+              { id: "changes_requested", label: "Changes requested", count: tabCounts.changes_requested },
+              { id: "approved", label: "Approved", count: tabCounts.approved },
+              { id: "live", label: "Live", count: tabCounts.live },
+              { id: "used_in_ads", label: "Used in ads", count: tabCounts.used_in_ads },
+            ].map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id as ContentStatus)}
+                  className={`content-stretch flex gap-[6px] items-center overflow-clip pb-[12px] relative shrink-0 cursor-pointer transition border-b-2 ${
+                    isActive
+                      ? "border-[var(--primary-default,#0d0d10)] text-[color:var(--primary-default,#0d0d10)] font-medium"
+                      : "border-transparent text-[color:var(--text-secondary,#0d0d10)] hover:text-[#0d0d10]"
+                  }`}
+                  data-name={`Tab · ${tab.label}`}
+                >
+                  <p className="font-['Inter:Medium'] text-[14px] leading-[22px] whitespace-nowrap">
+                    {tab.label}
+                  </p>
+                  <div
+                    className={`content-stretch flex items-start overflow-clip px-[7px] py-px relative rounded-[var(--radius-full,999px)] shrink-0 ${
+                      isActive ? "bg-[var(--primary-subtle,#f1f4ff)]" : "bg-[var(--bg-muted,#edeff3)]"
+                    }`}
+                    data-name="count"
+                  >
+                    <p
+                      className={`font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${
+                        isActive ? "text-[color:var(--primary-default,#0d0d10)]" : "text-[color:var(--text-secondary,#0d0d10)]"
+                      }`}
+                    >
+                      {tab.count}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* VIEW: EMPTY STATE (Figma Node 793:13612) */}
+          {(isEmptyMode || displayedItems.length === 0) ? (
+            <div
+              className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-col gap-[12px] items-center overflow-clip px-[20px] py-[64px] relative rounded-[var(--radius-lg,12px)] shrink-0 w-full"
+              data-node-id="793:14070"
+              data-name="Card"
+            >
+              {/* Media Icon Circle */}
+              <div
+                className="bg-[var(--bg-muted,#edeff3)] content-stretch flex items-start overflow-clip p-[16px] relative rounded-[var(--radius-full,999px)] shrink-0"
+                data-node-id="793:14071"
+                data-name="ic"
+              >
+                <div className="relative shrink-0 size-[28px]" data-node-id="793:14072" data-name="Icon">
+                  <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgEmptyMediaIcon} />
+                </div>
+              </div>
+
+              {/* Title */}
+              <p
+                className="font-['Inter:Semi_Bold'] font-semibold leading-[24px] not-italic relative shrink-0 text-[16px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap"
+                data-node-id="793:14073"
+              >
+                No content yet
+              </p>
+
+              {/* Description */}
+              <p
+                className="font-['Inter:Regular'] font-normal leading-[22px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-secondary,#0d0d10)] text-center max-w-[520px]"
+                data-node-id="793:14074"
+              >
+                When you upload a post or file in a project, it shows up here with its status, results and how long the brand may use it.
+              </p>
+
+              {/* Buttons */}
+              <div className="content-stretch flex gap-[8px] items-start overflow-clip relative shrink-0 pt-2" data-node-id="793:14075" data-name="b">
+                <Link
+                  to={ROUTES.creatorMyProjects}
+                  className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#f4f6fb] transition"
+                  data-node-id="793:14076"
+                  data-name="Button"
+                >
+                  <p className="font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                    Open My projects
+                  </p>
+                </Link>
+
+                <Link
+                  to={ROUTES.creatorProjects}
+                  className="bg-[#0d0d10] content-stretch flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#202024] transition text-white"
+                  data-node-id="793:14077"
+                  data-name="Button"
+                >
+                  <p className="font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-white whitespace-nowrap">
+                    + Find projects
+                  </p>
+                </Link>
+              </div>
+            </div>
+          ) : (
+            /* VIEW: ACTIVE CONTENT STATE (Figma Node 552:277) */
+            <div className="w-full flex flex-col gap-[16px]" ref={dropdownRef}>
+              {/* Toolbar */}
+              <div className="content-stretch flex gap-[8px] items-center overflow-visible relative shrink-0 w-full" data-name="Toolbar">
+                {/* Filter: Project */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setOpenDropdown(openDropdown === "project" ? null : "project")}
+                    className={`bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] items-center overflow-clip px-[12px] py-[7px] relative rounded-[var(--radius-md,8px)] shrink-0 cursor-pointer hover:bg-[#f4f6fb] transition ${
+                      filterProject !== "All" ? "border-[#0d0d10] bg-[#f4f6fb]" : ""
+                    }`}
+                    data-name="Filter · Project"
+                  >
+                    <p className="font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                      {filterProject === "All" ? "Project" : `Project: ${filterProject}`}
+                    </p>
+                    <div className="relative shrink-0 size-[14px]">
+                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconDropdownArrow} />
+                    </div>
+                  </button>
+                  {openDropdown === "project" && (
+                    <div className="absolute left-0 top-[42px] z-50 min-w-[200px] bg-white border border-[#e3e5ec] rounded-[8px] shadow-lg py-1.5 animate-in fade-in zoom-in-95 duration-150">
+                      {["All", "Vitamin-C Serum", "Glow Squad", "Lip Liner Collab", "Mist launch", "Hair Oil UGC", "Summer Glow Edit", "Ubtan Glow Reel", "Rose Toner gift"].map((p) => (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => {
+                            setFilterProject(p);
+                            setOpenDropdown(null);
+                          }}
+                          className={`w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#f4f6fb] flex items-center justify-between cursor-pointer ${
+                            filterProject === p ? "font-semibold text-primary" : "text-[#0d0d10]"
+                          }`}
+                        >
+                          <span>{p === "All" ? "All projects" : p}</span>
+                          {filterProject === p && <Check size={14} className="text-[#3b5bff]" />}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Filter: Brand */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setOpenDropdown(openDropdown === "brand" ? null : "brand")}
+                    className={`bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] items-center overflow-clip px-[12px] py-[7px] relative rounded-[var(--radius-md,8px)] shrink-0 cursor-pointer hover:bg-[#f4f6fb] transition ${
+                      filterBrand !== "All" ? "border-[#0d0d10] bg-[#f4f6fb]" : ""
+                    }`}
+                    data-name="Filter · Brand"
+                  >
+                    <p className="font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                      {filterBrand === "All" ? "Brand" : `Brand: ${filterBrand}`}
+                    </p>
+                    <div className="relative shrink-0 size-[14px]">
+                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconDropdownArrow} />
+                    </div>
+                  </button>
+                  {openDropdown === "brand" && (
+                    <div className="absolute left-0 top-[42px] z-50 min-w-[190px] bg-white border border-[#e3e5ec] rounded-[8px] shadow-lg py-1.5 animate-in fade-in zoom-in-95 duration-150">
+                      {["All", "Minimalist", "Velvet Lip Co.", "Dewdrop Naturals", "Strand Studio", "Kumkum Naturals", "Petal Theory"].map((b) => (
+                        <button
+                          key={b}
+                          type="button"
+                          onClick={() => {
+                            setFilterBrand(b);
+                            setOpenDropdown(null);
+                          }}
+                          className={`w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#f4f6fb] flex items-center justify-between cursor-pointer ${
+                            filterBrand === b ? "font-semibold text-primary" : "text-[#0d0d10]"
+                          }`}
+                        >
+                          <span>{b === "All" ? "All brands" : b}</span>
+                          {filterBrand === b && <Check size={14} className="text-[#3b5bff]" />}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Filter: Platform */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setOpenDropdown(openDropdown === "platform" ? null : "platform")}
+                    className={`bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] items-center overflow-clip px-[12px] py-[7px] relative rounded-[var(--radius-md,8px)] shrink-0 cursor-pointer hover:bg-[#f4f6fb] transition ${
+                      filterPlatform !== "All" ? "border-[#0d0d10] bg-[#f4f6fb]" : ""
+                    }`}
+                    data-name="Filter · Platform"
+                  >
+                    <p className="font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                      {filterPlatform === "All" ? "Platform" : `Platform: ${filterPlatform}`}
+                    </p>
+                    <div className="relative shrink-0 size-[14px]">
+                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconDropdownArrow} />
+                    </div>
+                  </button>
+                  {openDropdown === "platform" && (
+                    <div className="absolute left-0 top-[42px] z-50 min-w-[170px] bg-white border border-[#e3e5ec] rounded-[8px] shadow-lg py-1.5 animate-in fade-in zoom-in-95 duration-150">
+                      {["All", "Instagram", "YouTube", "TikTok"].map((pl) => (
+                        <button
+                          key={pl}
+                          type="button"
+                          onClick={() => {
+                            setFilterPlatform(pl);
+                            setOpenDropdown(null);
+                          }}
+                          className={`w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#f4f6fb] flex items-center justify-between cursor-pointer ${
+                            filterPlatform === pl ? "font-semibold text-primary" : "text-[#0d0d10]"
+                          }`}
+                        >
+                          <span>{pl === "All" ? "All platforms" : pl}</span>
+                          {filterPlatform === pl && <Check size={14} className="text-[#3b5bff]" />}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Filter: Format */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setOpenDropdown(openDropdown === "format" ? null : "format")}
+                    className={`bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] items-center overflow-clip px-[12px] py-[7px] relative rounded-[var(--radius-md,8px)] shrink-0 cursor-pointer hover:bg-[#f4f6fb] transition ${
+                      filterFormat !== "All" ? "border-[#0d0d10] bg-[#f4f6fb]" : ""
+                    }`}
+                    data-name="Filter · Format"
+                  >
+                    <p className="font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                      {filterFormat === "All" ? "Format" : `Format: ${filterFormat}`}
+                    </p>
+                    <div className="relative shrink-0 size-[14px]">
+                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconDropdownArrow} />
+                    </div>
+                  </button>
+                  {openDropdown === "format" && (
+                    <div className="absolute left-0 top-[42px] z-50 min-w-[160px] bg-white border border-[#e3e5ec] rounded-[8px] shadow-lg py-1.5 animate-in fade-in zoom-in-95 duration-150">
+                      {["All", "Reel", "Story", "Video", "Post"].map((f) => (
+                        <button
+                          key={f}
+                          type="button"
+                          onClick={() => {
+                            setFilterFormat(f);
+                            setOpenDropdown(null);
+                          }}
+                          className={`w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#f4f6fb] flex items-center justify-between cursor-pointer ${
+                            filterFormat === f ? "font-semibold text-primary" : "text-[#0d0d10]"
+                          }`}
+                        >
+                          <span>{f === "All" ? "All formats" : f}</span>
+                          {filterFormat === f && <Check size={14} className="text-[#3b5bff]" />}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Filter: Usage Rights */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setOpenDropdown(openDropdown === "usageRights" ? null : "usageRights")}
+                    className={`bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] items-center overflow-clip px-[12px] py-[7px] relative rounded-[var(--radius-md,8px)] shrink-0 cursor-pointer hover:bg-[#f4f6fb] transition ${
+                      filterUsageRights !== "All" ? "border-[#0d0d10] bg-[#f4f6fb]" : ""
+                    }`}
+                    data-name="Filter · Usage rights"
+                  >
+                    <p className="font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                      {filterUsageRights === "All" ? "Usage rights" : `Usage: ${filterUsageRights}`}
+                    </p>
+                    <div className="relative shrink-0 size-[14px]">
+                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconDropdownArrow} />
+                    </div>
+                  </button>
+                  {openDropdown === "usageRights" && (
+                    <div className="absolute left-0 top-[42px] z-50 min-w-[190px] bg-white border border-[#e3e5ec] rounded-[8px] shadow-lg py-1.5 animate-in fade-in zoom-in-95 duration-150">
+                      {["All", "Organic", "Paid ads", "Ended"].map((u) => (
+                        <button
+                          key={u}
+                          type="button"
+                          onClick={() => {
+                            setFilterUsageRights(u);
+                            setOpenDropdown(null);
+                          }}
+                          className={`w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#f4f6fb] flex items-center justify-between cursor-pointer ${
+                            filterUsageRights === u ? "font-semibold text-primary" : "text-[#0d0d10]"
+                          }`}
+                        >
+                          <span>{u === "All" ? "All usage rights" : u}</span>
+                          {filterUsageRights === u && <Check size={14} className="text-[#3b5bff]" />}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Clear all filters if any active */}
+                {(filterProject !== "All" || filterBrand !== "All" || filterPlatform !== "All" || filterFormat !== "All" || filterUsageRights !== "All") && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFilterProject("All");
+                      setFilterBrand("All");
+                      setFilterPlatform("All");
+                      setFilterFormat("All");
+                      setFilterUsageRights("All");
+                    }}
+                    className="text-[12px] font-medium text-[#71717a] hover:text-[#0d0d10] underline px-1 cursor-pointer"
+                  >
+                    Reset filters
+                  </button>
+                )}
+
+                <div className="flex-[1_0_0] h-[36px] min-w-px" />
+
+                {/* Sort: Newest */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setOpenDropdown(openDropdown === "sort" ? null : "sort")}
+                    className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] items-center overflow-clip px-[12px] py-[7px] relative rounded-[var(--radius-md,8px)] shrink-0 cursor-pointer hover:bg-[#f4f6fb] transition"
+                    data-name="Filter · Sort: Newest"
+                  >
+                    <p className="font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                      Sort: {sortOption}
+                    </p>
+                    <div className="relative shrink-0 size-[14px]">
+                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconDropdownArrow} />
+                    </div>
+                  </button>
+                  {openDropdown === "sort" && (
+                    <div className="absolute right-0 top-[42px] z-50 min-w-[170px] bg-white border border-[#e3e5ec] rounded-[8px] shadow-lg py-1.5 animate-in fade-in zoom-in-95 duration-150">
+                      {["Newest", "Oldest", "Most orders"].map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => {
+                            setSortOption(s);
+                            setOpenDropdown(null);
+                          }}
+                          className={`w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#f4f6fb] flex items-center justify-between cursor-pointer ${
+                            sortOption === s ? "font-semibold text-primary" : "text-[#0d0d10]"
+                          }`}
+                        >
+                          <span>{s}</span>
+                          {sortOption === s && <Check size={14} className="text-[#3b5bff]" />}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* View Mode Toggle (Grid / List) */}
+                <div className="bg-[var(--bg-muted,#edeff3)] content-stretch flex gap-[2px] items-start overflow-clip p-[3px] relative rounded-[var(--radius-md,8px)] shrink-0" data-name="View">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("grid")}
+                    className={`content-stretch flex items-start overflow-clip p-[6px] relative rounded-[var(--radius-sm,6px)] shrink-0 cursor-pointer transition ${
+                      viewMode === "grid" ? "bg-[var(--bg-surface,white)] shadow-xs" : "hover:bg-black/5"
+                    }`}
+                    aria-label="Grid view"
+                  >
+                    <div className="relative shrink-0 size-[14px]">
+                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconGridView} />
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("list")}
+                    className={`content-stretch flex items-start overflow-clip p-[6px] relative rounded-[var(--radius-sm,6px)] shrink-0 cursor-pointer transition ${
+                      viewMode === "list" ? "bg-[var(--bg-surface,white)] shadow-xs" : "hover:bg-black/5"
+                    }`}
+                    aria-label="List view"
+                  >
+                    <div className="relative shrink-0 size-[14px]">
+                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconListView} />
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* CARD GRID LAYOUT (4 Columns matching Figma 552:277) */}
+              {viewMode === "grid" ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[16px] w-full" data-name="Grid">
+                  {visibleCards.map((item) => {
+                    const isSelected = selectedIds.has(item.id);
+                    return (
+                      <div
+                        key={item.id}
+                        onClick={() => toggleSelect(item.id)}
+                        className={`bg-[var(--bg-surface,white)] border border-solid content-stretch flex flex-col gap-[10px] items-start overflow-clip pb-[12px] relative rounded-[var(--radius-lg,12px)] transition cursor-pointer group hover:shadow-md ${
+                          isSelected ? "border-[#0d0d10] ring-2 ring-[#0d0d10]" : "border-[var(--border-default,#e3e5ec)]"
+                        }`}
+                        data-name={`Tile · ${item.title}`}
+                      >
+                        {/* Media Container */}
+                        <div className="h-[300px] overflow-clip relative shrink-0 w-full bg-slate-100" data-name="Media">
+                          <img
+                            alt={item.title}
+                            className="absolute inset-0 max-w-none object-cover pointer-events-none size-full group-hover:scale-102 transition duration-300"
+                            src={item.mediaUrl}
+                          />
+
+                          {/* Platform Logo */}
+                          <div className="absolute bg-[var(--bg-surface,white)] content-stretch flex items-start left-[10px] overflow-clip p-[5px] rounded-[var(--radius-sm,6px)] top-[10px] shadow-xs" data-name="lg">
+                            <div className="relative shrink-0 size-[14px]">
+                              <img alt={item.platform} className="absolute block inset-0 max-w-none size-full" src={imgPlatformLogo} />
+                            </div>
+                          </div>
+
+                          {/* Status Badge */}
+                          {item.statusCode === "live" && (
+                            <div className="absolute bg-[var(--status-success-bg,#e1fce3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] right-[10px] rounded-[var(--radius-full,999px)] top-[10px]">
+                              <div className="relative shrink-0 size-[6px]">
+                                <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgDot} />
+                              </div>
+                              <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[color:var(--status-success-fg,#16a34a)] whitespace-nowrap">
+                                Live
+                              </p>
+                            </div>
+                          )}
+
+                          {item.statusCode === "changes_requested" && (
+                            <div className="absolute bg-[var(--status-danger-bg,#fde4e3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] right-[10px] rounded-[var(--radius-full,999px)] top-[10px]">
+                              <div className="relative shrink-0 size-[6px]">
+                                <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgDot1} />
+                              </div>
+                              <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[#dc2626] whitespace-nowrap">
+                                Changes requested
+                              </p>
+                            </div>
+                          )}
+
+                          {item.statusCode === "approved" && (
+                            <div className="absolute bg-[var(--status-info-bg,#f1f4ff)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] right-[10px] rounded-[var(--radius-full,999px)] top-[10px]">
+                              <div className="relative shrink-0 size-[6px]">
+                                <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgDot2} />
+                              </div>
+                              <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[color:var(--status-info-fg,#3b5bff)] whitespace-nowrap">
+                                Approved
+                              </p>
+                            </div>
+                          )}
+
+                          {item.statusCode === "used_in_ads" && (
+                            <div className="absolute bg-[var(--primary-muted,#e3e9ff)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] right-[10px] rounded-[var(--radius-full,999px)] top-[10px]">
+                              <div className="relative shrink-0 size-[6px]">
+                                <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgDot3} />
+                              </div>
+                              <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[#3b5bff] whitespace-nowrap">
+                                Used in ads
+                              </p>
+                            </div>
+                          )}
+
+                          {item.statusCode === "waiting" && (
+                            <div className="absolute bg-[#feefce] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] right-[10px] rounded-[var(--radius-full,999px)] top-[10px]">
+                              <div className="relative shrink-0 size-[6px] rounded-full bg-[#f59e0b]" />
+                              <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[#b45309] whitespace-nowrap">
+                                Waiting for approval
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Duration timestamp */}
+                          {item.duration && (
+                            <div className="absolute bg-[rgba(0,0,0,0.6)] bottom-[10px] content-stretch flex items-start overflow-clip px-[6px] py-[2px] right-[10px] rounded-[4px]" data-name="dur">
+                              <p className="font-['Inter:Regular'] font-normal leading-[16px] text-[12px] text-white whitespace-nowrap">
+                                {item.duration}
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Checkbox */}
+                          <div
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleSelect(item.id);
+                            }}
+                            className={`absolute left-[10px] top-[272px] rounded-[4px] size-[18px] flex items-center justify-center transition cursor-pointer border ${
+                              isSelected
+                                ? "bg-[#0d0d10] border-[#0d0d10] text-white"
+                                : "bg-[var(--bg-surface,white)] border-[var(--border-default,#e3e5ec)] hover:border-[#0d0d10]"
+                            }`}
+                            data-name="chk"
+                          >
+                            {isSelected && <Check size={12} strokeWidth={3} className="text-white" />}
+                          </div>
+                        </div>
+
+                        {/* Card Body */}
+                        <div className="content-stretch flex flex-col gap-[6px] items-start overflow-clip px-[12px] relative shrink-0 w-full" data-name="Body">
+                          <p className="font-['Inter:Medium'] font-medium leading-[22px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap truncate w-full">
+                            {item.title}
+                          </p>
+
+                          {/* Brand Info with Avatar */}
+                          <div className="content-stretch flex gap-[6px] items-center overflow-clip relative shrink-0 w-full" data-name="cr">
+                            <div className="relative shrink-0 size-[18px]">
+                              <img alt="" className="absolute block inset-0 max-w-none size-full rounded-full" src={item.avatarUrl} />
+                            </div>
+                            <p className="font-['Inter:Regular'] font-normal leading-[16px] text-[12px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap truncate flex-1">
+                              {item.brand} · {item.campaign}
+                            </p>
+                          </div>
+
+                          {/* Stats text */}
+                          <p className="font-['Inter:Regular'] font-normal leading-[16px] text-[12px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap truncate w-full">
+                            {item.statsText}
+                          </p>
+
+                          {/* Usage Rights Badge */}
+                          <div
+                            className={`content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[3px] relative rounded-[var(--radius-full,999px)] shrink-0 ${
+                              item.usageRightsType === "paid_ads" ? "bg-[#f1f4ff]" : "bg-[var(--bg-muted,#edeff3)]"
+                            }`}
+                            data-name="ur"
+                          >
+                            <div className="relative shrink-0 size-[12px]">
+                              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconUsageRights} />
+                            </div>
+                            <p className="font-['Inter:Regular'] font-normal leading-[16px] text-[12px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap">
+                              {item.usageRightsText}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                /* LIST VIEW ALTERNATIVE */
+                <div className="w-full bg-white border border-[#e3e5ec] rounded-[12px] overflow-hidden divide-y divide-[#e3e5ec]">
+                  <div className="bg-[#f4f6fb] px-4 py-3 flex items-center text-[12px] font-semibold text-[#71717a] uppercase tracking-wider">
+                    <span className="w-8"></span>
+                    <span className="w-16">Media</span>
+                    <span className="flex-1">Title & Brand</span>
+                    <span className="w-32">Format</span>
+                    <span className="w-48">Stats</span>
+                    <span className="w-44">Usage Rights</span>
+                    <span className="w-32 text-right">Status</span>
+                  </div>
+                  {visibleCards.map((item) => {
+                    const isSelected = selectedIds.has(item.id);
+                    return (
+                      <div
+                        key={item.id}
+                        onClick={() => toggleSelect(item.id)}
+                        className={`px-4 py-3 flex items-center gap-3 transition cursor-pointer hover:bg-[#f9fafb] ${
+                          isSelected ? "bg-blue-50/40" : ""
+                        }`}
+                      >
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleSelect(item.id);
+                          }}
+                          className={`rounded-[4px] size-[18px] flex items-center justify-center transition cursor-pointer border ${
+                            isSelected
+                              ? "bg-[#0d0d10] border-[#0d0d10] text-white"
+                              : "bg-white border-[#e3e5ec]"
+                          }`}
+                        >
+                          {isSelected && <Check size={12} strokeWidth={3} className="text-white" />}
+                        </div>
+                        <div className="size-12 rounded-lg overflow-hidden bg-slate-100 shrink-0 relative">
+                          <img src={item.mediaUrl} alt={item.title} className="size-full object-cover" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[14px] font-medium text-[#0d0d10] truncate">{item.title}</p>
+                          <p className="text-[12px] text-[#71717a] truncate">{item.brand} · {item.campaign}</p>
+                        </div>
+                        <div className="w-32 text-[13px] text-[#0d0d10]">{item.format} {item.duration ? `(${item.duration})` : ""}</div>
+                        <div className="w-48 text-[12px] text-[#0d0d10] truncate">{item.statsText}</div>
+                        <div className="w-44 text-[12px] text-[#71717a] truncate flex items-center gap-1.5">
+                          <img src={imgIconUsageRights} alt="" className="size-3" />
+                          <span>{item.usageRightsText}</span>
+                        </div>
+                        <div className="w-32 text-right">
+                          <span
+                            className={`inline-block text-[12px] font-medium px-2.5 py-0.5 rounded-full ${
+                              item.statusCode === "live"
+                                ? "bg-emerald-100 text-emerald-700"
+                                : item.statusCode === "changes_requested"
+                                ? "bg-rose-100 text-rose-700"
+                                : item.statusCode === "approved"
+                                ? "bg-blue-100 text-blue-700"
+                                : item.statusCode === "used_in_ads"
+                                ? "bg-indigo-100 text-indigo-700"
+                                : "bg-amber-100 text-amber-700"
+                            }`}
+                          >
+                            {item.status}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Footer: Showing 12 of 18 + Load more */}
+              <div className="content-stretch flex items-center justify-between overflow-clip pt-[12px] pb-[40px] relative shrink-0 w-full" data-name="Footer">
+                <p className="font-['Inter:Regular'] font-normal leading-[16px] text-[12px] text-[color:var(--text-secondary,#0d0d10)]">
+                  Showing {visibleCards.length} of {displayedItems.length} · 2 usage rights end in the next 30 days
+                </p>
+
+                {visibleCards.length < displayedItems.length ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setItemsLimit(displayedItems.length);
+                      showToast(`Loaded all ${displayedItems.length} items.`);
+                    }}
+                    className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] h-[32px] items-center justify-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#f4f6fb] transition cursor-pointer"
+                    data-name="Button"
+                  >
+                    <p className="font-['Inter:Medium'] font-medium leading-[18px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                      Load more
+                    </p>
+                  </button>
+                ) : (
+                  <div className="text-[12px] font-medium text-[#71717a]">
+                    All {displayedItems.length} items loaded
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

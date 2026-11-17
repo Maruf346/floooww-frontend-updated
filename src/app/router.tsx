@@ -297,6 +297,13 @@ export const router = createBrowserRouter(
           }),
         },
         {
+          path: ROUTES.creatorContent,
+          lazy: async () => ({
+            Component: (await import("@/creator/pages/CreatorContentPage"))
+              .default,
+          }),
+        },
+        {
           path: ROUTES.creatorProject,
           lazy: async () => ({
             Component: (await import("@/creator/pages/CreatorProjectDetailPage"))

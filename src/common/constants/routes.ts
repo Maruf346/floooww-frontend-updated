@@ -52,6 +52,7 @@ export const ROUTES = {
   creator: "/creator",
   creatorProjects: "/creator/projects",
   creatorMyProjects: "/creator/my-projects",
+  creatorContent: "/creator/content",
   creatorProject: "/creator/projects/:projectId",
   creatorProjectDetail: "/creator/project",
 } as const;
