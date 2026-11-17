@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { ROUTES } from "@/common/constants/routes";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import CounterOfferModal from "../components/CounterOfferModal";
+import { CreatorProjectDeliverablesView } from "../components/CreatorProjectDeliverablesView";
 import { Upload, FileVideo, X, Check } from "lucide-react";
 
 const imgDot = "https://www.figma.com/api/mcp/asset/fb6bd003-1496-4762-b97a-541e1bc8599d.svg";
@@ -123,7 +124,28 @@ function Logo({ className, theme = "On light" }: LogoProps) {
 }
 
 export function CreatorLiveProjectDetailPage() {
-  const [activeTab, setActiveTab] = useState<"overview" | "deliverables" | "payments" | "review" | "performance">("overview");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const [activeTab, setActiveTab] = useState<"overview" | "deliverables" | "payments" | "review" | "performance">(() => {
+    if (tabParam === "deliverables" || tabParam === "payments" || tabParam === "review" || tabParam === "performance") {
+      return tabParam;
+    }
+    return "overview";
+  });
+
+  const handleTabChange = (tab: "overview" | "deliverables" | "payments" | "review" | "performance") => {
+    setActiveTab(tab);
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (tab === "overview") {
+        next.delete("tab");
+      } else {
+        next.set("tab", tab);
+      }
+      return next;
+    });
+  };
+
   const [isCounterOfferOpen, setIsCounterOfferOpen] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -180,7 +202,7 @@ export function CreatorLiveProjectDetailPage() {
   };
 
   return (
-    <div className="bg-[var(--bg-page,white)] flex min-h-screen items-start relative w-full" data-node-id="551:747" data-name="CR-05 · Vitamin-C Serum: 1 Overview">
+    <div className="bg-[var(--bg-page,white)] flex min-h-screen items-start relative w-full" data-node-id="551:747" data-name="Creator · Vitamin-C Serum: 1 Overview">
       <aside className="sticky top-0 h-screen shrink-0 w-[260px] flex flex-col gap-[2px] items-start overflow-y-auto border-r border-[#e3e5ec] bg-white px-[16px] pt-[20px] pb-[16px] z-30 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden" data-node-id="551:748" data-name="Sidebar / Creator">
         <Logo className="content-stretch flex items-center overflow-clip relative rounded-[9.778px] shrink-0" />
         <div className="h-[16px] relative shrink-0 w-[10px]" data-node-id="I551:748;9:488" data-name="gap" />
@@ -415,7 +437,7 @@ export function CreatorLiveProjectDetailPage() {
             </div>
           </div>
         </div>
-        <div className="content-stretch flex flex-col gap-[24px] items-start overflow-clip pb-[40px] pt-[28px] px-[32px] relative shrink-0 w-full" data-node-id="551:913" data-name="Content">
+        <div className="content-stretch flex flex-col gap-[24px] items-start pb-[40px] pt-[28px] px-[32px] relative shrink-0 w-full" data-node-id="551:913" data-name="Content">
           <div className="content-stretch flex gap-[16px] items-end overflow-clip relative shrink-0 w-full" data-node-id="551:914" data-name="Page header">
             <div className="content-stretch flex flex-[1_0_0] flex-col gap-[4px] items-start min-w-px overflow-clip relative" data-node-id="551:915" data-name="Left">
               <Link to="/creator/my-projects?tab=live" className="[word-break:break-word] block cursor-pointer font-['Inter:Regular'] font-normal leading-[0] not-italic relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] hover:text-[#3b5bff] transition whitespace-nowrap" data-node-id="551:916">
@@ -445,31 +467,31 @@ export function CreatorLiveProjectDetailPage() {
           <div className="content-stretch flex gap-[16px] items-end overflow-clip relative shrink-0 w-full" data-node-id="789:11646" data-name="Tab row">
             <div className="flex flex-[1_0_0] flex-row items-end self-stretch" data-node-id="714:2957">
               <div className="border-[#e5e7eb] border-b border-solid content-stretch flex flex-[1_0_0] gap-[28px] h-full items-start min-w-px overflow-clip relative" data-name="Tabs">
-                <button type="button" onClick={() => setActiveTab("overview")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2958" data-name="Tab · Overview">
+                <button type="button" onClick={() => handleTabChange("overview")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2958" data-name="Tab · Overview">
                   <p className={`[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[14px] whitespace-nowrap transition ${activeTab === "overview" ? "text-[#3b5bff]" : "text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2959">
                     Overview
                   </p>
                   <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "overview" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2960" data-name="Rectangle" />
                 </button>
-                <button type="button" onClick={() => setActiveTab("deliverables")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2961" data-name="Tab · Deliverables">
+                <button type="button" onClick={() => handleTabChange("deliverables")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2961" data-name="Tab · Deliverables">
                   <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[14px] text-left whitespace-nowrap transition ${activeTab === "deliverables" ? "text-[#3b5bff] font-semibold" : "text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2962">
                     Deliverables
                   </p>
                   <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "deliverables" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2963" data-name="Rectangle" />
                 </button>
-                <button type="button" onClick={() => setActiveTab("payments")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2964" data-name="Tab · Payments">
+                <button type="button" onClick={() => handleTabChange("payments")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2964" data-name="Tab · Payments">
                   <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[14px] text-left whitespace-nowrap transition ${activeTab === "payments" ? "text-[#3b5bff] font-semibold" : "text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2965">
                     Payments
                   </p>
                   <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "payments" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2966" data-name="Rectangle" />
                 </button>
-                <button type="button" onClick={() => setActiveTab("review")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2967" data-name="Tab · Review">
+                <button type="button" onClick={() => handleTabChange("review")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2967" data-name="Tab · Review">
                   <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[14px] text-left whitespace-nowrap transition ${activeTab === "review" ? "text-[#3b5bff] font-semibold" : "text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2968">
                     Review
                   </p>
                   <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "review" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2969" data-name="Rectangle" />
                 </button>
-                <button type="button" onClick={() => setActiveTab("performance")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2970" data-name="Tab · Performance">
+                <button type="button" onClick={() => handleTabChange("performance")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2970" data-name="Tab · Performance">
                   <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[14px] whitespace-nowrap transition ${activeTab === "performance" ? "text-[#3b5bff] font-semibold" : "text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2971">
                     Performance
                   </p>
@@ -479,7 +501,15 @@ export function CreatorLiveProjectDetailPage() {
             </div>
             <DateRange className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[8px] h-[40px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0" range="7 Oct – 7 Nov 2026" showCompare={false} />
           </div>
-          {activeTab !== "overview" ? (
+          {activeTab === "deliverables" ? (
+            <CreatorProjectDeliverablesView
+              onOpenUploadModal={() => setIsUploadOpen(true)}
+              storyV2Uploaded={storyV2Uploaded}
+              uploadedFileName={uploadedFileName}
+              productReceived={productReceived}
+              onConfirmProduct={() => setProductReceived(true)}
+            />
+          ) : activeTab !== "overview" ? (
             <div className="flex flex-col items-center justify-center p-16 rounded-[12px] border border-[#e5e7eb] bg-white w-full text-center">
               <div className="size-12 rounded-full bg-[#f1f4ff] flex items-center justify-center text-[#3b5bff] text-xl font-bold mb-3">
                 {activeTab.charAt(0).toUpperCase()}
@@ -492,7 +522,7 @@ export function CreatorLiveProjectDetailPage() {
               </p>
               <button
                 type="button"
-                onClick={() => setActiveTab("overview")}
+                onClick={() => handleTabChange("overview")}
                 className="mt-4 px-4 py-2 bg-[#3b5bff] text-white text-[13px] font-medium rounded-[8px] hover:bg-[#2f4acc] transition cursor-pointer"
               >
                 Back to Overview
@@ -1378,5 +1408,4 @@ export function CreatorLiveProjectDetailPage() {
 }
 
 
-export { CreatorLiveProjectDetailPage as Cr05VitaminCSerum1Overview };
 export default CreatorLiveProjectDetailPage;
