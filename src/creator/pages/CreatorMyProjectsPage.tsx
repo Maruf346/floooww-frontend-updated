@@ -76,6 +76,15 @@ const imgIcon18Completed = "https://www.figma.com/api/mcp/asset/21f984ec-4f08-43
 const imgIcon19Completed = "https://www.figma.com/api/mcp/asset/12671620-a77a-4faa-844e-4dcc48525674.svg";
 const imgIcon20Completed = "https://www.figma.com/api/mcp/asset/dfac32fc-788f-49af-827b-f5aa074be992.svg";
 
+// Assets for Declined tab
+const imgRectangleDeclined0 = "https://www.figma.com/api/mcp/asset/4f8a1e0a-8cdc-481d-9afc-bff5e9a6c876.png";
+const imgRectangleDeclined1 = "https://www.figma.com/api/mcp/asset/6ed3dfd3-176f-4a4c-83d5-666a78ec1c18.png";
+const imgRectangleDeclined2 = "https://www.figma.com/api/mcp/asset/32f0d62f-0adf-49be-8c3c-6aac9841267b.png";
+const imgIcon17Declined = "https://www.figma.com/api/mcp/asset/70359681-17a0-4f1b-aeb8-9db79e7988d9.svg";
+const imgIcon18Declined = "https://www.figma.com/api/mcp/asset/179817c1-ebcc-4fc1-90bc-f8c5bd0574d7.svg";
+const imgIcon19Declined = "https://www.figma.com/api/mcp/asset/3af1581b-4158-4ed6-b034-852f514c6a69.svg";
+const imgIcon20Declined = "https://www.figma.com/api/mcp/asset/5eac6a11-3733-4a61-8e81-899326776c49.svg";
+
 type BadgeTone = "Warning" | "Info" | "Neutral" | "Success";
 
 type BadgeProps = {
@@ -576,63 +585,63 @@ const ALL_PROJECTS: ProjectRowData[] = [
 
   // Declined (3)
   {
-    id: "chemical-peel",
-    name: "Chemical Peel Launch",
-    brand: "Acid Glow",
+    id: "protein-hair-mask",
+    name: "Protein Hair Mask",
+    brand: "Strand Studio",
     type: "Influencer",
     partnership: "Paid",
     duration: "One-time",
     platform: "Instagram",
-    status: "Declined",
-    badgeTone: "Warning",
-    posts: 1,
-    match: 62,
-    fee: "₹6,000",
-    feeNote: "fee too low",
-    replyBy: "22 Oct",
-    replyNote: "Declined by you",
-    received: "20 Oct",
-    image: imgRectangle,
+    status: "You declined",
+    badgeTone: "Neutral",
+    posts: 2,
+    match: 72,
+    fee: "₹5,000",
+    feeNote: "below your usual fee",
+    replyBy: "Fee too low",
+    replyNote: "you said no",
+    received: "21 Oct",
+    image: imgRectangleDeclined0,
     tab: "declined",
   },
   {
-    id: "hair-growth-oil",
-    name: "Hair Growth Oil",
-    brand: "Root Revival",
-    type: "UGC",
-    partnership: "Gift exchange",
+    id: "detox-tea-reels",
+    name: "Detox Tea Reels",
+    brand: "FitSip",
+    type: "Influencer",
+    partnership: "Paid",
     duration: "One-time",
     platform: "Instagram",
-    status: "Declined",
+    status: "You declined",
+    badgeTone: "Neutral",
+    posts: 3,
+    match: 41,
+    fee: "₹12,000",
+    feeNote: "",
+    replyBy: "Not my niche",
+    replyNote: "you said no",
+    received: "14 Oct",
+    image: imgRectangleDeclined1,
+    tab: "declined",
+  },
+  {
+    id: "vitamin-c-serum-drop",
+    name: "Vitamin C Serum Drop",
+    brand: "Sundew Labs",
+    type: "Influencer",
+    partnership: "Paid",
+    duration: "One-time",
+    platform: "Instagram",
+    status: "Not picked",
     badgeTone: "Warning",
     posts: 2,
-    match: 58,
-    fee: "Gift exchange",
-    feeNote: "product only",
-    replyBy: "18 Oct",
-    replyNote: "Declined by you",
-    received: "16 Oct",
-    image: imgRectangle2,
-    tab: "declined",
-  },
-  {
-    id: "quick-lash",
-    name: "Quick Lash Kit",
-    brand: "Blink Beauty",
-    type: "Influencer",
-    partnership: "Paid",
-    duration: "One-time",
-    platform: "Snapchat",
-    status: "Declined",
-    badgeTone: "Warning",
-    posts: 1,
-    match: 54,
-    fee: "₹5,000",
-    feeNote: "outside niche",
-    replyBy: "10 Oct",
-    replyNote: "Declined by you",
-    received: "8 Oct",
-    image: imgRectangle3,
+    match: 79,
+    fee: "₹16,000",
+    feeNote: "you applied in range",
+    replyBy: "Brand picked 8",
+    replyNote: "feedback shared",
+    received: "9 Oct",
+    image: imgRectangleDeclined2,
     tab: "declined",
   },
 ];
@@ -842,32 +851,32 @@ export function CreatorMyProjectsPage() {
       case "declined":
         return [
           {
-            title: "Declined offers",
+            title: "Declined",
             value: "3",
-            sub: "in last 30 days",
+            sub: "2 by you · 1 not picked",
             bg: "bg-[#3b5bff]",
-            icon: imgIcon17,
+            icon: imgIcon17Declined,
           },
           {
-            title: "Declined value",
-            value: "₹11,000",
-            sub: "below minimum floor",
+            title: "Declined by you",
+            value: "2",
+            sub: "brands get a polite note",
             bg: "bg-[var(--bg-inverse,#0d0d10)]",
-            icon: imgIcon18,
+            icon: imgIcon18Declined,
           },
           {
-            title: "Primary reason",
-            value: "Fee rate",
-            sub: "counter offers preferred",
+            title: "Not picked",
+            value: "1",
+            sub: "feedback shared",
+            bg: "bg-[var(--primary-default,#0d0d10)]",
+            icon: imgIcon19Declined,
+          },
+          {
+            title: "Offer acceptance",
+            value: "86%",
+            sub: "of offers you got this year",
             bg: "bg-[var(--status-success-fg,#16a34a)]",
-            icon: imgIcon19,
-          },
-          {
-            title: "Profile standing",
-            value: "Good",
-            sub: "0% penalty for declines",
-            bg: "bg-[#3b5bff]",
-            icon: imgIcon20,
+            icon: imgIcon20Declined,
           },
         ];
       case "invitations":
@@ -1238,7 +1247,7 @@ export function CreatorMyProjectsPage() {
                       ? "Ishita Rao · 2 live projects · next payout ₹27,000 on 2 Nov"
                       : activeTab === "completed"
                         ? "Ishita Rao · 7 projects finished this year · rated 4.9 by brands"
-                        : `Ishita Rao · ${tabCounts.declined} declined offers · no standing impact`}
+                        : "Ishita Rao · 3 projects you declined or weren’t picked for"}
               </p>
             </div>
 
@@ -1529,12 +1538,22 @@ export function CreatorMyProjectsPage() {
                     ? "BRAND DECIDES"
                     : activeTab === "completed"
                     ? "RESULT"
+                    : activeTab === "declined"
+                    ? "REASON"
                     : "REPLY BY"}
                 </p>
               </div>
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[72px]" data-name="Cell">
                 <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] tracking-[0.72px] whitespace-nowrap">
-                  {activeTab === "live" ? "NEXT STEP" : activeTab === "applied" ? "APPLIED" : activeTab === "completed" ? "FINISHED" : "RECEIVED"}
+                  {activeTab === "live"
+                    ? "NEXT STEP"
+                    : activeTab === "applied"
+                    ? "APPLIED"
+                    : activeTab === "completed"
+                    ? "FINISHED"
+                    : activeTab === "declined"
+                    ? "DATE"
+                    : "RECEIVED"}
                 </p>
               </div>
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[96px]" data-name="Cell">
@@ -1788,3 +1807,4 @@ export { CreatorMyProjectsPage as Cr04MyProjectsInvitationsOffers };
 export { CreatorMyProjectsPage as Cr04MyProjectsApplied };
 export { CreatorMyProjectsPage as Cr04MyProjectsLive };
 export { CreatorMyProjectsPage as Cr04MyProjectsCompleted };
+export { CreatorMyProjectsPage as Cr04MyProjectsDeclined };
