@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { motion } from "motion/react";
 import {
   Bookmark,
@@ -53,6 +53,10 @@ const projects: Project[] = [
 
 const selectedFilters = ["Type: Paid or gift", "Platform: Instagram", "Fee: ₹10K+", "Niche: Beauty, Skincare", "Apply by: next 14 days", "Location: India"];
 const availableFilters = ["Long-term", "Language", "Verified brands"];
+const paidGiftOptions = ["Any", "Paid", "Gift (product only)", "Gift + fee"];
+const sortOptions = ["Best fit", "Newest first", "Fee, high to low", "Apply by, soonest", "Closest to you"];
+const nicheOptions = ["Beauty", "Skincare", "Fashion", "Wellness", "Food and drink", "Other"];
+type DiscoveryDropdown = "paidGift" | "sort" | "niche" | null;
 
 function MatchRing({ match }: { match: number }) {
   return <motion.div className="grid size-14 shrink-0 place-items-center rounded-full" initial={{ opacity: 0, rotate: -70, scale: 0.78 }} whileInView={{ opacity: 1, rotate: 0, scale: 1 }} viewport={{ once: true, amount: 0.45 }} transition={{ duration: 0.66, ease: EASE_OUT }} style={{ background: `conic-gradient(#0d0d10 ${match}%, #e9ecf1 0)` }}><span className="grid size-[46px] place-items-center rounded-full bg-white text-[14px] font-medium leading-[22px] text-ink">{match}%</span></motion.div>;
@@ -83,6 +87,27 @@ function FilterChip({ label, selected, onClick }: { label: string; selected?: bo
   return <button type="button" onClick={onClick} className={`inline-flex h-7 items-center gap-1.5 rounded-full border px-3 text-[12px] font-medium leading-4 transition ${selected ? "border-ink bg-primary-subtle text-ink" : "border-line bg-white text-ink hover:bg-subtle"}`}>{label}{selected ? <X size={14} /> : <Plus size={14} />}</button>;
 }
 
+function DiscoveryFilterDropdown({ label, open, onToggle, children }: { label: string; open: boolean; onToggle: () => void; children: ReactNode }) {
+  return (
+    <div className="relative z-40">
+      <button type="button" aria-haspopup="listbox" aria-expanded={open} onClick={onToggle} className="inline-flex h-7 items-center gap-1.5 rounded-full border border-ink bg-primary-subtle px-3 text-[12px] font-medium leading-4 text-ink transition hover:bg-primary-muted">
+        {label}
+        <ChevronDown size={14} className={open ? "rotate-180 transition" : "transition"} />
+      </button>
+      {open && <div className="absolute left-0 top-9 z-[100] w-[216px] rounded-md border border-line bg-white p-1.5 shadow-[0_12px_28px_rgba(13,13,16,0.14)]">{children}</div>}
+    </div>
+  );
+}
+
+function DropdownOption({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
+  return (
+    <button type="button" role="option" aria-selected={selected} onClick={onClick} className={selected ? "flex min-h-8 w-full items-center gap-2 rounded bg-primary-subtle px-2 py-1.5 text-left text-[13px] leading-5 text-ink transition" : "flex min-h-8 w-full items-center gap-2 rounded px-2 py-1.5 text-left text-[13px] leading-5 text-ink transition hover:bg-subtle"}>
+      <span className="flex-1">{label}</span>
+      {selected && <Check size={15} className="text-ink" />}
+    </button>
+  );
+}
+
 function MatchSettings() {
   const metrics = [["Niche match", 95], ["Audience match", 88], ["Fee in your range", 80], ["Platform match", 100], ["Brand rating", 90]] as const;
   return <section className="rounded-xl border border-line bg-white p-5"><h2 className="text-[16px] font-semibold leading-6 text-ink">Why projects match you</h2><p className="mt-0.5 text-[12px] leading-4 text-secondary">How your match is worked out</p><div className="mt-4 space-y-3.5">{metrics.map(([label, value]) => <div key={label}><div className="flex items-center justify-between gap-3 text-[13px] leading-5 text-ink"><span>{label}</span><span className="text-[14px] font-medium leading-[22px]">{value}%</span></div><div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted"><motion.div className="h-full rounded-full bg-ink" initial={{ width: 0 }} whileInView={{ width: `${value}%` }} viewport={{ once: true }} transition={{ duration: DURATION.slow, ease: EASE_OUT }} /></div></div>)}</div></section>;
@@ -101,20 +126,43 @@ function RecentSearches() {
 export function CreatorProjectDiscoveryContent() {
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState(selectedFilters);
+  const [openDropdown, setOpenDropdown] = useState<DiscoveryDropdown>(null);
+  const [paidGift, setPaidGift] = useState("Any");
+  const [sort, setSort] = useState("Best fit");
+  const [niches, setNiches] = useState<string[]>(["Beauty", "Skincare"]);
   const [saved, setSaved] = useState<string[]>(["matte-lip-launch"]);
   const [applied, setApplied] = useState<string[]>([]);
   const [notice, setNotice] = useState("");
   const [matchMenuOpen, setMatchMenuOpen] = useState(false);
   const [matchAccount, setMatchAccount] = useState("Instagram · @ishitarao");
-  const visibleProjects = useMemo(() => projects.filter((project) => `${project.name} ${project.brand} ${project.descriptor}`.toLowerCase().includes(query.toLowerCase())), [query]);
+  const visibleProjects = useMemo(() => {
+    const matching = projects.filter((project) => `${project.name} ${project.brand} ${project.descriptor}`.toLowerCase().includes(query.toLowerCase()));
+    if (sort === "Newest first") return [...matching].reverse();
+    if (sort === "Fee, high to low") return [...matching].sort((a, b) => b.match - a.match);
+    if (sort === "Apply by, soonest") return [...matching].sort((a, b) => Number.parseInt(a.deadline, 10) - Number.parseInt(b.deadline, 10));
+    return matching;
+  }, [query, sort]);
   const toggleFilter = (label: string) => setFilters((current) => current.includes(label) ? current.filter((value) => value !== label) : [...current, label]);
   const toggleSaved = (id: string) => setSaved((current) => current.includes(id) ? current.filter((value) => value !== id) : [...current, id]);
+  const toggleNiche = (niche: string) => setNiches((current) => current.includes(niche) ? current.filter((value) => value !== niche) : [...current, niche]);
   const apply = (project: Project) => { if (!applied.includes(project.id)) { setApplied((current) => [...current, project.id]); setNotice(`Application sent to ${project.brand} for ${project.name}.`); } };
   return <div className="mx-auto w-full max-w-[1440px] pb-10">
     <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="text-[26px] font-bold leading-[34px] tracking-[-.13px] text-ink">Project discovery</h1><p className="mt-1 text-[13px] leading-5 text-secondary">214 open projects · match is based on your profile</p></div><button type="button" className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-line bg-white px-4 text-[14px] font-medium leading-5 text-ink transition hover:bg-subtle"><Bookmark size={16} />Saved projects (6)</button></section>
     <section className="mt-6 flex flex-col gap-2 sm:flex-row"><label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-md border border-line bg-white px-3 focus-within:border-ink"><Search size={16} className="shrink-0 text-secondary" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search brands, products or niches…" className="min-w-0 flex-1 bg-transparent text-[13px] leading-5 text-ink outline-none placeholder:text-secondary" /></label><div className="relative sm:w-80"><button type="button" onClick={() => setMatchMenuOpen((open) => !open)} className="flex h-10 w-full items-center gap-2 rounded-md border border-line bg-white px-3 text-left text-[13px] leading-5 text-ink transition hover:bg-subtle"><span className="flex-1 truncate">Match for: {matchAccount}</span><ChevronDown size={16} className="text-secondary" /></button>{matchMenuOpen && <div className="absolute right-0 z-30 mt-1 w-full overflow-hidden rounded-md border border-line bg-white p-1 shadow-lg"><button type="button" onClick={() => { setMatchAccount("Instagram · @ishitarao"); setMatchMenuOpen(false); }} className="flex w-full rounded px-2 py-2 text-left text-[13px] hover:bg-subtle">Instagram · @ishitarao</button><button type="button" onClick={() => { setMatchAccount("YouTube · @ishitarao"); setMatchMenuOpen(false); }} className="flex w-full rounded px-2 py-2 text-left text-[13px] hover:bg-subtle">YouTube · @ishitarao</button></div>}</div></section>
-    <div className="mt-4 flex flex-wrap gap-2">{selectedFilters.map((filter) => <FilterChip key={filter} label={filter} selected={filters.includes(filter)} onClick={() => toggleFilter(filter)} />)}{availableFilters.map((filter) => <FilterChip key={filter} label={filter} selected={filters.includes(filter)} onClick={() => toggleFilter(filter)} />)}</div>
+    <div className="mt-4 flex flex-wrap gap-2">
+      <DiscoveryFilterDropdown label={`Type: ${paidGift === "Any" ? "Paid or gift" : paidGift}`} open={openDropdown === "paidGift"} onToggle={() => setOpenDropdown((current) => current === "paidGift" ? null : "paidGift")}>
+        {paidGiftOptions.map((option) => <DropdownOption key={option} label={option} selected={paidGift === option} onClick={() => { setPaidGift(option); setOpenDropdown(null); }} />)}
+      </DiscoveryFilterDropdown>
+      <FilterChip label="Platform: Instagram" selected={filters.includes("Platform: Instagram")} onClick={() => toggleFilter("Platform: Instagram")} />
+      <FilterChip label="Fee: ₹10K+" selected={filters.includes("Fee: ₹10K+")} onClick={() => toggleFilter("Fee: ₹10K+")} />
+      <DiscoveryFilterDropdown label={`Niche: ${niches.length ? niches.join(", ") : "Any"}`} open={openDropdown === "niche"} onToggle={() => setOpenDropdown((current) => current === "niche" ? null : "niche")}>
+        {nicheOptions.map((option) => <DropdownOption key={option} label={option} selected={niches.includes(option)} onClick={() => toggleNiche(option)} />)}
+      </DiscoveryFilterDropdown>
+      <FilterChip label="Apply by: next 14 days" selected={filters.includes("Apply by: next 14 days")} onClick={() => toggleFilter("Apply by: next 14 days")} />
+      <FilterChip label="Location: India" selected={filters.includes("Location: India")} onClick={() => toggleFilter("Location: India")} />
+      {availableFilters.map((filter) => <FilterChip key={filter} label={filter} selected={filters.includes(filter)} onClick={() => toggleFilter(filter)} />)}
+    </div>
     {notice && <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} className="mt-4 flex items-center gap-2 rounded-md border border-success/25 bg-success-bg px-3 py-2 text-[13px] leading-5 text-success"><Check size={15} />{notice}</motion.div>}
-    <div className="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start"><div><div className="mb-4 flex items-center gap-2"><h2 className="text-[16px] font-semibold leading-6 text-ink">214 projects match</h2><span className="flex-1" /><button type="button" className="text-[14px] font-medium leading-[22px] text-secondary transition hover:text-ink">Sort: Best match</button></div>{visibleProjects.length ? <RevealGroup className="grid gap-4 md:grid-cols-2" stagger={0.055}>{visibleProjects.map((project) => <RevealItem key={project.id}><ProjectCard project={project} saved={saved.includes(project.id)} applied={applied.includes(project.id)} onSave={() => toggleSaved(project.id)} onApply={() => apply(project)} onMessage={() => setNotice(`Message composer opened for ${project.brand}.`)} /></RevealItem>)}</RevealGroup> : <div className="rounded-xl border border-line bg-white px-6 py-16 text-center"><Search className="mx-auto text-secondary" size={28} /><h2 className="mt-3 text-[14px] font-semibold leading-5 text-ink">No projects match your search</h2><p className="mt-1 text-[13px] leading-5 text-secondary">Try a brand, product, or niche instead.</p></div>}<div className="mt-5 flex flex-wrap items-center gap-2 text-[12px] leading-4 text-secondary"><span>Showing 1–8 of 214</span><span className="flex-1" /><button type="button" className="grid size-7 place-items-center rounded-md hover:bg-subtle"><ChevronLeft size={16} /></button><button type="button" className="grid size-7 place-items-center rounded-md bg-ink font-medium text-white">1</button><button type="button" className="grid size-7 place-items-center rounded-md hover:bg-subtle">2</button><button type="button" className="grid size-7 place-items-center rounded-md hover:bg-subtle">3</button><span className="grid size-7 place-items-center">…</span><button type="button" className="grid size-7 place-items-center rounded-md hover:bg-subtle">6</button><button type="button" className="grid size-7 place-items-center rounded-md hover:bg-subtle"><ChevronRight size={16} /></button><span className="ml-2">Rows</span><button type="button" className="inline-flex h-7 items-center gap-1 rounded-md border border-line px-2 font-medium text-ink">8<ChevronDown size={12} /></button></div></div><aside className="space-y-4 xl:sticky xl:top-6"><MatchSettings /><SavedProjects /><RecentSearches /></aside></div>
+    <div className="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start"><div><div className="mb-4 flex items-center gap-2"><h2 className="text-[16px] font-semibold leading-6 text-ink">214 projects match</h2><span className="flex-1" /><DiscoveryFilterDropdown label={`Sort: ${sort === "Best fit" ? "Best match" : sort}`} open={openDropdown === "sort"} onToggle={() => setOpenDropdown((current) => current === "sort" ? null : "sort")}>{sortOptions.map((option) => <DropdownOption key={option} label={option} selected={sort === option} onClick={() => { setSort(option); setOpenDropdown(null); }} />)}</DiscoveryFilterDropdown></div>{visibleProjects.length ? <RevealGroup className="grid gap-4 md:grid-cols-2" stagger={0.055}>{visibleProjects.map((project) => <RevealItem key={project.id}><ProjectCard project={project} saved={saved.includes(project.id)} applied={applied.includes(project.id)} onSave={() => toggleSaved(project.id)} onApply={() => apply(project)} onMessage={() => setNotice(`Message composer opened for ${project.brand}.`)} /></RevealItem>)}</RevealGroup> : <div className="rounded-xl border border-line bg-white px-6 py-16 text-center"><Search className="mx-auto text-secondary" size={28} /><h2 className="mt-3 text-[14px] font-semibold leading-5 text-ink">No projects match your search</h2><p className="mt-1 text-[13px] leading-5 text-secondary">Try a brand, product, or niche instead.</p></div>}<div className="mt-5 flex flex-wrap items-center gap-2 text-[12px] leading-4 text-secondary"><span>Showing 1–8 of 214</span><span className="flex-1" /><button type="button" className="grid size-7 place-items-center rounded-md hover:bg-subtle"><ChevronLeft size={16} /></button><button type="button" className="grid size-7 place-items-center rounded-md bg-ink font-medium text-white">1</button><button type="button" className="grid size-7 place-items-center rounded-md hover:bg-subtle">2</button><button type="button" className="grid size-7 place-items-center rounded-md hover:bg-subtle">3</button><span className="grid size-7 place-items-center">…</span><button type="button" className="grid size-7 place-items-center rounded-md hover:bg-subtle">6</button><button type="button" className="grid size-7 place-items-center rounded-md hover:bg-subtle"><ChevronRight size={16} /></button><span className="ml-2">Rows</span><button type="button" className="inline-flex h-7 items-center gap-1 rounded-md border border-line px-2 font-medium text-ink">8<ChevronDown size={12} /></button></div></div><aside className="space-y-4 xl:sticky xl:top-6"><MatchSettings /><SavedProjects /><RecentSearches /></aside></div>
   </div>;
 }
