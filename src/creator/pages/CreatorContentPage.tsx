@@ -1194,14 +1194,17 @@ export default function CreatorContentPage() {
             </p>
           </div>
         </div>
-        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] text-[#0d0d10] hover:bg-[#f4f6fb] transition cursor-pointer">
+        <Link
+          to={ROUTES.creatorSettings}
+          className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] text-[#0d0d10] hover:bg-[#f4f6fb] transition cursor-pointer"
+        >
           <div className="relative shrink-0 size-[18px]">
             <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconSettings} />
           </div>
           <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px text-[14px]">
             Settings
           </p>
-        </div>
+        </Link>
 
         <div className="flex-[1_0_0] h-[50px] min-h-[20px] w-full" />
         <div className="bg-[var(--border-default,#e3e5ec)] h-px shrink-0 w-[228px] my-1" />

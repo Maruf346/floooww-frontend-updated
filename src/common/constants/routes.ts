@@ -56,6 +56,7 @@ export const ROUTES = {
   creatorPerformance: "/creator/performance",
   creatorEarnings: "/creator/earnings",
   creatorMessages: "/creator/messages",
+  creatorSettings: "/creator/settings",
   creatorProject: "/creator/projects/:projectId",
   creatorProjectDetail: "/creator/project",
 } as const;

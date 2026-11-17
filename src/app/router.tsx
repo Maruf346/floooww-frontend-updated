@@ -325,6 +325,13 @@ export const router = createBrowserRouter(
           }),
         },
         {
+          path: ROUTES.creatorSettings,
+          lazy: async () => ({
+            Component: (await import("@/creator/pages/CreatorSettingsPage"))
+              .default,
+          }),
+        },
+        {
           path: ROUTES.creatorProject,
           lazy: async () => ({
             Component: (await import("@/creator/pages/CreatorProjectDetailPage"))

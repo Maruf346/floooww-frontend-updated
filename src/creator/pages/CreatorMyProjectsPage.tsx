@@ -1172,14 +1172,18 @@ export function CreatorMyProjectsPage() {
             </p>
           </div>
         </div>
-        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-name="Settings">
+        <Link
+          to={ROUTES.creatorSettings}
+          className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] text-[#0d0d10] hover:bg-[#f4f6fb] transition cursor-pointer"
+          data-name="Settings"
+        >
           <div className="relative shrink-0 size-[18px]" data-name="Icon">
             <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon10} />
           </div>
           <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]">
             Settings
           </p>
-        </div>
+        </Link>
 
         <div className="flex-1 min-h-[16px] w-full" data-name="Spacer" />
         <div className="bg-[var(--border-default,#e3e5ec)] h-px relative shrink-0 w-full" data-name="Divider" />

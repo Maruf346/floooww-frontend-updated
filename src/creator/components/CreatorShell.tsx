@@ -48,6 +48,7 @@ function CreatorSidebar({ close }: { close?: () => void }) {
   const performanceActive = pathname === ROUTES.creatorPerformance;
   const earningsActive = pathname === ROUTES.creatorEarnings;
   const messagesActive = pathname === ROUTES.creatorMessages;
+  const settingsActive = pathname === ROUTES.creatorSettings;
 
   return (
     <aside className="flex h-full w-[260px] flex-col overflow-y-auto border-r border-line bg-white px-4 pb-4 pt-5">
@@ -138,7 +139,14 @@ function CreatorSidebar({ close }: { close?: () => void }) {
           <span className="flex-1 text-left">Messages</span>
           <NavCount>1</NavCount>
         </Link>
-        <button type="button" className={`${navClass} text-ink hover:bg-subtle`}><Settings size={18} />Settings</button>
+        <Link
+          to={ROUTES.creatorSettings}
+          onClick={close}
+          className={`${navClass} mt-0.5 ${settingsActive ? "bg-primary-subtle font-semibold text-primary" : "text-ink hover:bg-subtle"}`}
+        >
+          <Settings size={18} />
+          <span className="flex-1 text-left">Settings</span>
+        </Link>
       </nav>
       <div className="mt-auto border-t border-line pt-2">
         <button type="button" className={`${navClass} text-ink hover:bg-subtle`}><CircleHelp size={18} />Help centre</button>
@@ -155,7 +163,8 @@ export function CreatorShell({ children }: CreatorShellProps) {
     pathname === ROUTES.creator ||
     pathname === ROUTES.creatorPerformance ||
     pathname === ROUTES.creatorEarnings ||
-    pathname === ROUTES.creatorMessages;
+    pathname === ROUTES.creatorMessages ||
+    pathname === ROUTES.creatorSettings;
 
   return (
     <div className={`min-h-dvh ${isWhiteBg ? "bg-white" : "bg-page"}`}>
