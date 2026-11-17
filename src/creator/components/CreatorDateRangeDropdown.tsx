@@ -270,7 +270,7 @@ export function CreatorDateRangeDropdown({
             data-node-id="747:9990"
             data-name="Legend"
           >
-            <p className="text-[#0d0d10] font-medium">
+            <p className="text-[#0d0d10] font-medium whitespace-nowrap">
               {selectedDate.day} {selectedDate.month} · inside the project (7 Oct – 7 Nov)
             </p>
             <p className="text-[#4a4a55] text-[11px] leading-[15px]">

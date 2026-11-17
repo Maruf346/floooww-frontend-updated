@@ -58,7 +58,7 @@ export function CreatorDeliverableFilterDropdown({
   return (
     <div
       ref={containerRef}
-      className={`relative inline-block text-left ${className}`}
+      className={`relative inline-block text-left w-[240px] sm:w-[280px] ${className}`}
       data-node-id="747:9573"
       data-name="Dropdown · Deliverable filter"
     >
@@ -68,7 +68,7 @@ export function CreatorDeliverableFilterDropdown({
         onClick={() => setIsOpen((prev) => !prev)}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        className={`bg-white content-stretch flex gap-[8px] h-[40px] items-center overflow-hidden px-[12px] py-[8px] rounded-[8px] cursor-pointer transition select-none w-full min-w-[200px] justify-between ${
+        className={`bg-white content-stretch flex gap-[6px] h-[40px] items-center overflow-clip px-[12px] py-[8px] rounded-[8px] cursor-pointer transition select-none w-full justify-between ${
           isOpen
             ? "border-2 border-[#0d0d10]"
             : "border border-[#e3e5ec] hover:border-[#0d0d10]"
@@ -76,11 +76,11 @@ export function CreatorDeliverableFilterDropdown({
         data-node-id="747:9574"
         data-name="Trigger"
       >
-        <span className="truncate font-['Inter:Regular'] font-normal text-[13px] text-[#0d0d10] leading-[20px]">
+        <span className="truncate font-['Inter:Regular'] font-normal text-[13px] text-[#0d0d10] leading-[20px] text-left flex-1">
           {value}
         </span>
         <div className="shrink-0 size-[14px] flex items-center justify-center text-[#0d0d10]">
-          {isOpen ? <ChevronUp className="size-3.5 stroke-[2.2]" /> : <ChevronDown className="size-3.5 stroke-[2.2]" />}
+          {isOpen ? <ChevronUp className="size-3.5 stroke-[2]" /> : <ChevronDown className="size-3.5 stroke-[2]" />}
         </div>
       </button>
 
@@ -89,7 +89,7 @@ export function CreatorDeliverableFilterDropdown({
         <div
           role="listbox"
           aria-label="Filter deliverables"
-          className="absolute left-0 top-[calc(100%+6px)] z-50 w-full min-w-[240px] bg-white border border-[#e3e5ec] rounded-[8px] p-[6px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)] flex flex-col gap-[2px] animate-in fade-in zoom-in-95 duration-100"
+          className="absolute left-0 top-[calc(100%+6px)] z-50 w-full min-w-[240px] sm:min-w-[280px] bg-white border border-[#e3e5ec] rounded-[8px] p-[6px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)] flex flex-col gap-[2px] animate-in fade-in zoom-in-95 duration-100"
           data-node-id="747:9577"
           data-name="Menu"
         >
@@ -112,7 +112,7 @@ export function CreatorDeliverableFilterDropdown({
                   {option}
                 </span>
                 {isSelected && (
-                  <Check className="size-3.5 text-[#0d0d10] shrink-0 stroke-[2.4]" />
+                  <Check className="size-3.5 text-[#0d0d10] shrink-0 stroke-[2.2]" />
                 )}
               </button>
             );

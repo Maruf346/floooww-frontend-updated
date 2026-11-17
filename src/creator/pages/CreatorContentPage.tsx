@@ -37,7 +37,6 @@ const imgIconLogout = "https://www.figma.com/api/mcp/asset/54e43bb3-1918-4d06-89
 const imgIconSearch = "https://www.figma.com/api/mcp/asset/8b343dec-5a5e-42bc-81a5-6082b5036623.svg";
 const imgIconNotifications = "https://www.figma.com/api/mcp/asset/a6ab6fe3-a873-4f44-a1d7-2371b01e7eb2.svg";
 const imgIconDownload = "https://www.figma.com/api/mcp/asset/153a5cd0-abc0-47b9-9f97-2bb5867cd2db.svg";
-const imgIconDropdownArrow = "https://www.figma.com/api/mcp/asset/b62b693f-4950-4e6b-b9c3-3edf6d598b5f.svg";
 const imgIconGridView = "https://www.figma.com/api/mcp/asset/9060fba3-509b-4b40-bfd4-f0ed5884eb9b.svg";
 const imgIconListView = "https://www.figma.com/api/mcp/asset/4e849046-068d-43b8-947b-d8493e479001.svg";
 const imgPlatformLogo = "https://www.figma.com/api/mcp/asset/ef3e1679-93fa-4b73-87ea-6fc5bc4403a8.svg";
@@ -58,6 +57,52 @@ const imgEllipse2 = "https://www.figma.com/api/mcp/asset/a3d4896b-7f3f-4d49-b468
 const imgEllipse3 = "https://www.figma.com/api/mcp/asset/a2447806-6ec7-44f8-8445-7d5e5c3bfddb.svg";
 const imgEllipse4 = "https://www.figma.com/api/mcp/asset/481c9e77-5dab-48b7-a5b7-eb3807e05eb3.svg";
 const imgEllipse5 = "https://www.figma.com/api/mcp/asset/55d1b66f-18fd-47ec-9c9e-a48dc36f2cde.svg";
+
+// Dropdown options directly matching the user's uploaded spec image
+const PROJECT_OPTIONS = [
+  "All projects",
+  "Vitamin-C Serum",
+  "Glow Squad",
+  "Lip Liner Collab",
+  "Mist launch",
+  "Summer Glow Edit",
+  "Hair Oil UGC",
+] as const;
+
+const BRAND_OPTIONS = [
+  "All brands",
+  "Minimalist",
+  "Velvet Lip Co.",
+  "Dewdrop Naturals",
+  "Strand Studio",
+  "Kumkum Naturals",
+  "Petal Theory",
+] as const;
+
+const FORMAT_OPTIONS = [
+  "Any format",
+  "Reel",
+  "Story",
+  "Short",
+  "Long video",
+  "UGC file",
+  "Other",
+] as const;
+
+const USAGE_RIGHTS_OPTIONS = [
+  "Any",
+  "Organic only",
+  "Paid ads",
+  "Ending in 30 days",
+  "Ended",
+] as const;
+
+const SORT_OPTIONS = [
+  "Newest",
+  "Most views",
+  "Most orders",
+  "Rights ending soon",
+] as const;
 
 type ContentStatus =
   | "all"
@@ -84,6 +129,7 @@ interface ContentItem {
   usageRightsText: string;
   usageRightsType: "organic_active" | "organic_ended" | "paid_ads";
   views?: string;
+  viewsNumeric?: number;
   er?: string;
   orders?: number;
   liveDate?: string;
@@ -114,6 +160,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsText: "Organic · until 7 Dec",
     usageRightsType: "organic_active",
     views: "3.0 L",
+    viewsNumeric: 300000,
     er: "6.9%",
     orders: 214,
     liveDate: "14 Oct",
@@ -142,6 +189,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsText: "Organic · until 7 Dec",
     usageRightsType: "organic_active",
     views: "2.6 L",
+    viewsNumeric: 260000,
     er: "7.4%",
     orders: 178,
     liveDate: "15 Oct",
@@ -170,6 +218,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsText: "Organic · 30 days",
     usageRightsType: "organic_active",
     views: "—",
+    viewsNumeric: 0,
     er: "—",
     orders: 0,
     liveDate: "Pending v2 review",
@@ -198,6 +247,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsText: "Organic · until 31 Jan",
     usageRightsType: "organic_active",
     views: "Scheduled",
+    viewsNumeric: 0,
     er: "—",
     orders: 0,
     liveDate: "1 Nov",
@@ -225,6 +275,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsText: "Organic · until 31 Jan",
     usageRightsType: "organic_active",
     views: "1.2 L",
+    viewsNumeric: 120000,
     er: "6.1%",
     orders: 88,
     liveDate: "18 Sep",
@@ -253,6 +304,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsText: "Organic · until 31 Jan",
     usageRightsType: "organic_active",
     views: "42K",
+    viewsNumeric: 42000,
     er: "5.2%",
     orders: 34,
     liveDate: "20 Sep",
@@ -280,6 +332,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsText: "Organic · ended 27 Sep",
     usageRightsType: "organic_ended",
     views: "1.8 L",
+    viewsNumeric: 180000,
     orders: 58,
     liveDate: "12 Aug",
     linkClicks: "1,890",
@@ -307,6 +360,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsText: "Organic · until 12 Dec",
     usageRightsType: "organic_active",
     views: "96K",
+    viewsNumeric: 96000,
     er: "6.9%",
     orders: 45,
     liveDate: "5 Oct",
@@ -335,6 +389,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsText: "Paid ads · until 2 Nov",
     usageRightsType: "paid_ads",
     views: "4.2 L (in ads)",
+    viewsNumeric: 420000,
     er: "8.1%",
     orders: 310,
     liveDate: "20 Sep",
@@ -363,6 +418,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsText: "Organic · ended 29 Aug",
     usageRightsType: "organic_ended",
     views: "1.1 L",
+    viewsNumeric: 110000,
     orders: 140,
     liveDate: "2 Jul",
     linkClicks: "3,100",
@@ -390,6 +446,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsText: "Organic · ended 21 Jun",
     usageRightsType: "organic_ended",
     views: "92K",
+    viewsNumeric: 92000,
     orders: 64,
     liveDate: "15 May",
     linkClicks: "1,520",
@@ -417,6 +474,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsText: "Organic · until 10 Nov",
     usageRightsType: "organic_active",
     views: "41K",
+    viewsNumeric: 41000,
     er: "7.2%",
     orders: 28,
     liveDate: "10 Oct",
@@ -447,6 +505,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsType: "organic_active",
     liveDate: "Pending approval",
     views: "—",
+    viewsNumeric: 0,
     er: "—",
     orders: 0,
     salesDrove: "₹0",
@@ -473,6 +532,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsText: "Organic · until 15 Dec",
     usageRightsType: "organic_active",
     views: "1.4 L",
+    viewsNumeric: 140000,
     er: "5.8%",
     orders: 72,
     liveDate: "18 Oct",
@@ -501,6 +561,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsText: "Organic · until 20 Dec",
     usageRightsType: "organic_active",
     views: "88K",
+    viewsNumeric: 88000,
     er: "6.1%",
     orders: 38,
     liveDate: "14 Oct",
@@ -529,6 +590,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsText: "Organic · ended 27 Sep",
     usageRightsType: "organic_ended",
     views: "64K",
+    viewsNumeric: 64000,
     orders: 42,
     liveDate: "15 Aug",
     linkClicks: "1,150",
@@ -556,6 +618,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsText: "Organic · ended 21 Jun",
     usageRightsType: "organic_ended",
     views: "1.1 L",
+    viewsNumeric: 110000,
     orders: 68,
     liveDate: "28 May",
     linkClicks: "2,200",
@@ -583,6 +646,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     usageRightsText: "Organic · until 10 Nov",
     usageRightsType: "organic_active",
     views: "53K",
+    viewsNumeric: 53000,
     er: "6.8%",
     orders: 31,
     liveDate: "12 Oct",
@@ -595,6 +659,103 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     fileName: "floral_toner_test.mp4 · 34 MB",
   },
 ];
+
+/**
+ * Reusable dropdown component matching the exact styling of the user-provided spec image:
+ * Trigger has crisp dark border and chevron up/down.
+ * Selected item has blue background (#f1f4ff) and checkmark on the right.
+ */
+interface ContentDropdownProps {
+  label: string;
+  value: string;
+  defaultVal: string;
+  options: readonly string[];
+  isOpen: boolean;
+  onToggle: () => void;
+  onSelect: (option: string) => void;
+  minWidth?: string;
+}
+
+function ContentDropdown({
+  label,
+  value,
+  defaultVal,
+  options,
+  isOpen,
+  onToggle,
+  onSelect,
+  minWidth = "min-w-[170px]",
+}: ContentDropdownProps) {
+  const isCustomSelected = value !== defaultVal;
+  const displayLabel = isCustomSelected
+    ? label.startsWith("Sort")
+      ? `Sort: ${value}`
+      : value
+    : label;
+
+  return (
+    <div className={`relative inline-block text-left ${minWidth}`}>
+      {/* Trigger Button */}
+      <button
+        type="button"
+        onClick={onToggle}
+        className={`bg-white content-stretch flex items-center justify-between gap-[8px] h-[38px] px-[12px] py-[8px] rounded-[8px] cursor-pointer transition select-none w-full ${
+          isOpen
+            ? "border-2 border-[#0d0d10]"
+            : isCustomSelected
+            ? "border border-[#0d0d10] bg-[#f8f9fb]"
+            : "border border-[#e3e5ec] hover:border-[#0d0d10]"
+        }`}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+      >
+        <span className="truncate font-['Inter:Regular'] font-normal text-[13px] text-[#0d0d10] leading-[20px]">
+          {displayLabel}
+        </span>
+        <div className="shrink-0 size-[14px] flex items-center justify-center text-[#0d0d10]">
+          {isOpen ? (
+            <ChevronUp className="size-3.5 stroke-[2.2]" />
+          ) : (
+            <ChevronDown className="size-3.5 stroke-[2.2]" />
+          )}
+        </div>
+      </button>
+
+      {/* Popover Menu */}
+      {isOpen && (
+        <div
+          role="listbox"
+          className="absolute left-0 top-[calc(100%+6px)] z-50 w-full min-w-[190px] bg-white border border-[#e3e5ec] rounded-[8px] p-[6px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)] flex flex-col gap-[2px] animate-in fade-in zoom-in-95 duration-100"
+        >
+          {options.map((option) => {
+            const isSelected = value === option;
+            return (
+              <button
+                key={option}
+                type="button"
+                role="option"
+                aria-selected={isSelected}
+                onClick={() => onSelect(option)}
+                className={`w-full content-stretch flex items-center justify-between px-[12px] py-[8px] rounded-[6px] transition cursor-pointer text-left ${
+                  isSelected
+                    ? "bg-[#f1f4ff] text-[#0d0d10] font-['Inter:Medium'] font-medium"
+                    : "text-[#0d0d10] font-['Inter:Regular'] font-normal hover:bg-[#f8f9fb]"
+                }`}
+              >
+                <span className="text-[13px] leading-[20px] truncate">
+                  {option}
+                </span>
+                {isSelected && (
+                  <Check className="size-3.5 text-[#0d0d10] shrink-0 stroke-[2.2]" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function CreatorContentPage() {
   const navigate = useNavigate();
@@ -616,7 +777,6 @@ export default function CreatorContentPage() {
     if (initialDetailId) {
       return ALL_CONTENT_ITEMS.find((i) => i.id === initialDetailId) || null;
     }
-    // Default open on "cnt-1" if requested or null
     return null;
   }, [initialDetailId]);
 
@@ -628,15 +788,14 @@ export default function CreatorContentPage() {
   // View mode: "grid" or "list"
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  // Dropdown states
+  // Dropdown states: "project" | "brand" | "format" | "usageRights" | "sort" | null
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  // Filters
-  const [filterProject, setFilterProject] = useState<string>("All");
-  const [filterBrand, setFilterBrand] = useState<string>("All");
-  const [filterPlatform, setFilterPlatform] = useState<string>("All");
-  const [filterFormat, setFilterFormat] = useState<string>("All");
-  const [filterUsageRights, setFilterUsageRights] = useState<string>("All");
+  // Dropdown filter values matching user spec image:
+  const [filterProject, setFilterProject] = useState<string>("All projects");
+  const [filterBrand, setFilterBrand] = useState<string>("All brands");
+  const [filterFormat, setFilterFormat] = useState<string>("Any format");
+  const [filterUsageRights, setFilterUsageRights] = useState<string>("Any");
   const [sortOption, setSortOption] = useState<string>("Newest");
 
   // Toast feedback
@@ -647,10 +806,13 @@ export default function CreatorContentPage() {
   };
 
   // Close dropdown on outside click
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownContainerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownContainerRef.current &&
+        !dropdownContainerRef.current.contains(event.target as Node)
+      ) {
         setOpenDropdown(null);
       }
     }
@@ -658,55 +820,75 @@ export default function CreatorContentPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Keyboard shortcut to close detail panel with Escape
+  // Keyboard shortcut: Escape closes dropdown and detail drawer
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") {
-        setActiveDetailItem(null);
-        setOpenDropdown(null);
+        if (openDropdown) {
+          setOpenDropdown(null);
+        } else if (activeDetailItem) {
+          setActiveDetailItem(null);
+        }
       }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [openDropdown, activeDetailItem]);
 
-  // Filtered Items
+  // Filtered & Sorted Items
   const displayedItems = useMemo(() => {
     if (isEmptyMode) return [];
 
     let list = ALL_CONTENT_ITEMS.filter((item) => {
-      // Tab filter
+      // Status Tab filter
       if (activeTab === "waiting" && item.statusCode !== "waiting") return false;
       if (activeTab === "changes_requested" && item.statusCode !== "changes_requested") return false;
       if (activeTab === "approved" && item.statusCode !== "approved") return false;
       if (activeTab === "live" && item.statusCode !== "live") return false;
       if (activeTab === "used_in_ads" && item.statusCode !== "used_in_ads") return false;
 
-      // Project filter
-      if (filterProject !== "All" && item.project !== filterProject) return false;
+      // Project filter: ["All projects", "Vitamin-C Serum", "Glow Squad", "Lip Liner Collab", "Mist launch", "Summer Glow Edit", "Hair Oil UGC"]
+      if (filterProject !== "All projects") {
+        if (item.project !== filterProject && item.campaign !== filterProject) return false;
+      }
 
-      // Brand filter
-      if (filterBrand !== "All" && item.brand !== filterBrand) return false;
+      // Brand filter: ["All brands", "Minimalist", "Velvet Lip Co.", "Dewdrop Naturals", "Strand Studio", "Kumkum Naturals", "Petal Theory"]
+      if (filterBrand !== "All brands") {
+        if (item.brand !== filterBrand) return false;
+      }
 
-      // Platform filter
-      if (filterPlatform !== "All" && item.platform !== filterPlatform) return false;
+      // Format filter: ["Any format", "Reel", "Story", "Short", "Long video", "UGC file", "Other"]
+      if (filterFormat !== "Any format") {
+        if (filterFormat === "Reel" && item.format !== "Reel") return false;
+        if (filterFormat === "Story" && item.format !== "Story") return false;
+        if (filterFormat === "Short" && (item.format !== "Reel" || !item.duration)) return false;
+        if (filterFormat === "Long video" && item.format !== "Video") return false;
+        if (filterFormat === "UGC file" && !item.statsText.includes("UGC") && item.format !== "Video") return false;
+        if (filterFormat === "Other" && item.format !== "Post") return false;
+      }
 
-      // Format filter
-      if (filterFormat !== "All" && item.format !== filterFormat) return false;
-
-      // Usage rights filter
-      if (filterUsageRights === "Organic" && !item.usageRightsText.startsWith("Organic")) return false;
-      if (filterUsageRights === "Paid ads" && !item.usageRightsText.startsWith("Paid ads")) return false;
-      if (filterUsageRights === "Ended" && item.usageRightsType !== "organic_ended") return false;
+      // Usage rights filter: ["Any", "Organic only", "Paid ads", "Ending in 30 days", "Ended"]
+      if (filterUsageRights !== "Any") {
+        if (filterUsageRights === "Organic only" && !item.usageRightsText.startsWith("Organic")) return false;
+        if (filterUsageRights === "Paid ads" && !item.usageRightsText.startsWith("Paid ads") && item.usageRightsType !== "paid_ads") return false;
+        if (filterUsageRights === "Ending in 30 days" && !item.usageRightsText.includes("until") && !item.usageRightsText.includes("days")) return false;
+        if (filterUsageRights === "Ended" && item.usageRightsType !== "organic_ended" && !item.usageRightsText.includes("ended")) return false;
+      }
 
       return true;
     });
 
-    // Sort
-    if (sortOption === "Oldest") {
-      list = [...list].reverse();
+    // Sorting: ["Newest", "Most views", "Most orders", "Rights ending soon"]
+    if (sortOption === "Most views") {
+      list = [...list].sort((a, b) => (b.viewsNumeric || 0) - (a.viewsNumeric || 0));
     } else if (sortOption === "Most orders") {
       list = [...list].sort((a, b) => (b.orders || 0) - (a.orders || 0));
+    } else if (sortOption === "Rights ending soon") {
+      list = [...list].sort((a, b) => {
+        const aSoon = a.usageRightsText.includes("until") || a.usageRightsText.includes("days") ? 0 : 1;
+        const bSoon = b.usageRightsText.includes("until") || b.usageRightsText.includes("days") ? 0 : 1;
+        return aSoon - bSoon;
+      });
     }
 
     return list;
@@ -715,7 +897,6 @@ export default function CreatorContentPage() {
     activeTab,
     filterProject,
     filterBrand,
-    filterPlatform,
     filterFormat,
     filterUsageRights,
     sortOption,
@@ -752,6 +933,22 @@ export default function CreatorContentPage() {
       return;
     }
     showToast(`Downloading ${selectedIds.size} file${selectedIds.size > 1 ? "s" : ""}...`);
+  };
+
+  const hasActiveFilters =
+    filterProject !== "All projects" ||
+    filterBrand !== "All brands" ||
+    filterFormat !== "Any format" ||
+    filterUsageRights !== "Any" ||
+    sortOption !== "Newest";
+
+  const handleResetFilters = () => {
+    setFilterProject("All projects");
+    setFilterBrand("All brands");
+    setFilterFormat("Any format");
+    setFilterUsageRights("Any");
+    setSortOption("Newest");
+    setOpenDropdown(null);
   };
 
   const visibleCards = displayedItems.slice(0, itemsLimit);
@@ -1106,8 +1303,9 @@ export default function CreatorContentPage() {
                 <button
                   type="button"
                   onClick={() => setIsEmptyMode(false)}
-                  className={`px-[10px] py-[6px] rounded-[6px] transition cursor-pointer ${!isEmptyMode ? "bg-white text-[#0d0d10] shadow-xs font-semibold" : "text-[#71717a] hover:text-[#0d0d10]"
-                    }`}
+                  className={`px-[10px] py-[6px] rounded-[6px] transition cursor-pointer ${
+                    !isEmptyMode ? "bg-white text-[#0d0d10] shadow-xs font-semibold" : "text-[#71717a] hover:text-[#0d0d10]"
+                  }`}
                   title="View with 18 items (Figma 552:277)"
                 >
                   Content view (18)
@@ -1118,8 +1316,9 @@ export default function CreatorContentPage() {
                     setIsEmptyMode(true);
                     setActiveDetailItem(null);
                   }}
-                  className={`px-[10px] py-[6px] rounded-[6px] transition cursor-pointer ${isEmptyMode ? "bg-white text-[#0d0d10] shadow-xs font-semibold" : "text-[#71717a] hover:text-[#0d0d10]"
-                    }`}
+                  className={`px-[10px] py-[6px] rounded-[6px] transition cursor-pointer ${
+                    isEmptyMode ? "bg-white text-[#0d0d10] shadow-xs font-semibold" : "text-[#71717a] hover:text-[#0d0d10]"
+                  }`}
                   title="View empty state (Figma 793:13612)"
                 >
                   Empty state (0)
@@ -1131,10 +1330,11 @@ export default function CreatorContentPage() {
                 <button
                   type="button"
                   onClick={handleDownloadSelected}
-                  className={`border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 transition cursor-pointer ${selectedIds.size > 0
+                  className={`border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 transition cursor-pointer ${
+                    selectedIds.size > 0
                       ? "bg-[#0d0d10] text-white hover:bg-[#202024]"
                       : "bg-[var(--bg-surface,white)] text-[color:var(--text-primary,#0d0d10)] hover:bg-[#f4f6fb]"
-                    }`}
+                  }`}
                   data-name="Button"
                 >
                   <div className="relative shrink-0 size-[16px]">
@@ -1171,23 +1371,26 @@ export default function CreatorContentPage() {
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id as ContentStatus)}
-                  className={`content-stretch flex gap-[6px] items-center overflow-clip pb-[12px] relative shrink-0 cursor-pointer transition border-b-2 ${isActive
+                  className={`content-stretch flex gap-[6px] items-center overflow-clip pb-[12px] relative shrink-0 cursor-pointer transition border-b-2 ${
+                    isActive
                       ? "border-[var(--primary-default,#0d0d10)] text-[color:var(--primary-default,#0d0d10)] font-medium"
                       : "border-transparent text-[color:var(--text-secondary,#0d0d10)] hover:text-[#0d0d10]"
-                    }`}
+                  }`}
                   data-name={`Tab · ${tab.label}`}
                 >
                   <p className="font-['Inter:Medium'] text-[14px] leading-[22px] whitespace-nowrap">
                     {tab.label}
                   </p>
                   <div
-                    className={`content-stretch flex items-start overflow-clip px-[7px] py-px relative rounded-[var(--radius-full,999px)] shrink-0 ${isActive ? "bg-[var(--primary-subtle,#f1f4ff)]" : "bg-[var(--bg-muted,#edeff3)]"
-                      }`}
+                    className={`content-stretch flex items-start overflow-clip px-[7px] py-px relative rounded-[var(--radius-full,999px)] shrink-0 ${
+                      isActive ? "bg-[var(--primary-subtle,#f1f4ff)]" : "bg-[var(--bg-muted,#edeff3)]"
+                    }`}
                     data-name="count"
                   >
                     <p
-                      className={`font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${isActive ? "text-[color:var(--primary-default,#0d0d10)]" : "text-[color:var(--text-secondary,#0d0d10)]"
-                        }`}
+                      className={`font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${
+                        isActive ? "text-[color:var(--primary-default,#0d0d10)]" : "text-[color:var(--text-secondary,#0d0d10)]"
+                      }`}
                     >
                       {tab.count}
                     </p>
@@ -1258,259 +1461,100 @@ export default function CreatorContentPage() {
             </div>
           ) : (
             /* VIEW: ACTIVE CONTENT STATE (Figma Node 552:277 & 793:13021) */
-            <div className="w-full flex flex-col gap-[16px]" ref={dropdownRef}>
-              {/* Toolbar */}
-              <div className="content-stretch flex gap-[8px] items-center overflow-visible relative shrink-0 w-full" data-name="Toolbar">
-                {/* Filter: Project */}
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setOpenDropdown(openDropdown === "project" ? null : "project")}
-                    className={`bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] items-center overflow-clip px-[12px] py-[7px] relative rounded-[var(--radius-md,8px)] shrink-0 cursor-pointer hover:bg-[#f4f6fb] transition ${
-                      filterProject !== "All" ? "border-[#0d0d10] bg-[#f4f6fb]" : ""
-                    }`}
-                    data-name="Filter · Project"
-                  >
-                    <p className="font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
-                      {filterProject === "All" ? "Project" : `Project: ${filterProject}`}
-                    </p>
-                    <div className="relative shrink-0 size-[14px]">
-                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconDropdownArrow} />
-                    </div>
-                  </button>
-                  {openDropdown === "project" && (
-                    <div className="absolute left-0 top-[42px] z-50 min-w-[200px] bg-white border border-[#e3e5ec] rounded-[8px] shadow-lg py-1.5 animate-in fade-in zoom-in-95 duration-150">
-                      {["All", "Vitamin-C Serum", "Glow Squad", "Lip Liner Collab", "Mist launch", "Hair Oil UGC", "Summer Glow Edit", "Ubtan Glow Reel", "Rose Toner gift"].map((p) => (
-                        <button
-                          key={p}
-                          type="button"
-                          onClick={() => {
-                            setFilterProject(p);
-                            setOpenDropdown(null);
-                          }}
-                          className={`w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#f4f6fb] flex items-center justify-between cursor-pointer ${
-                            filterProject === p ? "font-semibold text-primary" : "text-[#0d0d10]"
-                          }`}
-                        >
-                          <span>{p === "All" ? "All projects" : p}</span>
-                          {filterProject === p && <Check size={14} className="text-[#3b5bff]" />}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+            <div className="w-full flex flex-col gap-[16px]">
+              {/* Toolbar with 5 Dropdowns matching the user-uploaded spec image */}
+              <div
+                ref={dropdownContainerRef}
+                className="content-stretch flex flex-wrap gap-[10px] items-center overflow-visible relative shrink-0 w-full z-30"
+                data-name="Toolbar"
+              >
+                {/* 1. Dropdown · Content project */}
+                <ContentDropdown
+                  label="Project"
+                  value={filterProject}
+                  defaultVal="All projects"
+                  options={PROJECT_OPTIONS}
+                  isOpen={openDropdown === "project"}
+                  onToggle={() => setOpenDropdown(openDropdown === "project" ? null : "project")}
+                  onSelect={(p) => {
+                    setFilterProject(p);
+                    setOpenDropdown(null);
+                  }}
+                  minWidth="min-w-[160px]"
+                />
 
-                {/* Filter: Brand */}
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setOpenDropdown(openDropdown === "brand" ? null : "brand")}
-                    className={`bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] items-center overflow-clip px-[12px] py-[7px] relative rounded-[var(--radius-md,8px)] shrink-0 cursor-pointer hover:bg-[#f4f6fb] transition ${
-                      filterBrand !== "All" ? "border-[#0d0d10] bg-[#f4f6fb]" : ""
-                    }`}
-                    data-name="Filter · Brand"
-                  >
-                    <p className="font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
-                      {filterBrand === "All" ? "Brand" : `Brand: ${filterBrand}`}
-                    </p>
-                    <div className="relative shrink-0 size-[14px]">
-                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconDropdownArrow} />
-                    </div>
-                  </button>
-                  {openDropdown === "brand" && (
-                    <div className="absolute left-0 top-[42px] z-50 min-w-[190px] bg-white border border-[#e3e5ec] rounded-[8px] shadow-lg py-1.5 animate-in fade-in zoom-in-95 duration-150">
-                      {["All", "Minimalist", "Velvet Lip Co.", "Dewdrop Naturals", "Strand Studio", "Kumkum Naturals", "Petal Theory"].map((b) => (
-                        <button
-                          key={b}
-                          type="button"
-                          onClick={() => {
-                            setFilterBrand(b);
-                            setOpenDropdown(null);
-                          }}
-                          className={`w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#f4f6fb] flex items-center justify-between cursor-pointer ${
-                            filterBrand === b ? "font-semibold text-primary" : "text-[#0d0d10]"
-                          }`}
-                        >
-                          <span>{b === "All" ? "All brands" : b}</span>
-                          {filterBrand === b && <Check size={14} className="text-[#3b5bff]" />}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                {/* 2. Dropdown · Content brand */}
+                <ContentDropdown
+                  label="Brand"
+                  value={filterBrand}
+                  defaultVal="All brands"
+                  options={BRAND_OPTIONS}
+                  isOpen={openDropdown === "brand"}
+                  onToggle={() => setOpenDropdown(openDropdown === "brand" ? null : "brand")}
+                  onSelect={(b) => {
+                    setFilterBrand(b);
+                    setOpenDropdown(null);
+                  }}
+                  minWidth="min-w-[160px]"
+                />
 
-                {/* Filter: Platform */}
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setOpenDropdown(openDropdown === "platform" ? null : "platform")}
-                    className={`bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] items-center overflow-clip px-[12px] py-[7px] relative rounded-[var(--radius-md,8px)] shrink-0 cursor-pointer hover:bg-[#f4f6fb] transition ${
-                      filterPlatform !== "All" ? "border-[#0d0d10] bg-[#f4f6fb]" : ""
-                    }`}
-                    data-name="Filter · Platform"
-                  >
-                    <p className="font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
-                      {filterPlatform === "All" ? "Platform" : `Platform: ${filterPlatform}`}
-                    </p>
-                    <div className="relative shrink-0 size-[14px]">
-                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconDropdownArrow} />
-                    </div>
-                  </button>
-                  {openDropdown === "platform" && (
-                    <div className="absolute left-0 top-[42px] z-50 min-w-[170px] bg-white border border-[#e3e5ec] rounded-[8px] shadow-lg py-1.5 animate-in fade-in zoom-in-95 duration-150">
-                      {["All", "Instagram", "YouTube", "TikTok"].map((pl) => (
-                        <button
-                          key={pl}
-                          type="button"
-                          onClick={() => {
-                            setFilterPlatform(pl);
-                            setOpenDropdown(null);
-                          }}
-                          className={`w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#f4f6fb] flex items-center justify-between cursor-pointer ${
-                            filterPlatform === pl ? "font-semibold text-primary" : "text-[#0d0d10]"
-                          }`}
-                        >
-                          <span>{pl === "All" ? "All platforms" : pl}</span>
-                          {filterPlatform === pl && <Check size={14} className="text-[#3b5bff]" />}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                {/* 3. Dropdown · Content format */}
+                <ContentDropdown
+                  label="Format"
+                  value={filterFormat}
+                  defaultVal="Any format"
+                  options={FORMAT_OPTIONS}
+                  isOpen={openDropdown === "format"}
+                  onToggle={() => setOpenDropdown(openDropdown === "format" ? null : "format")}
+                  onSelect={(f) => {
+                    setFilterFormat(f);
+                    setOpenDropdown(null);
+                  }}
+                  minWidth="min-w-[150px]"
+                />
 
-                {/* Filter: Format */}
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setOpenDropdown(openDropdown === "format" ? null : "format")}
-                    className={`bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] items-center overflow-clip px-[12px] py-[7px] relative rounded-[var(--radius-md,8px)] shrink-0 cursor-pointer hover:bg-[#f4f6fb] transition ${
-                      filterFormat !== "All" ? "border-[#0d0d10] bg-[#f4f6fb]" : ""
-                    }`}
-                    data-name="Filter · Format"
-                  >
-                    <p className="font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
-                      {filterFormat === "All" ? "Format" : `Format: ${filterFormat}`}
-                    </p>
-                    <div className="relative shrink-0 size-[14px]">
-                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconDropdownArrow} />
-                    </div>
-                  </button>
-                  {openDropdown === "format" && (
-                    <div className="absolute left-0 top-[42px] z-50 min-w-[160px] bg-white border border-[#e3e5ec] rounded-[8px] shadow-lg py-1.5 animate-in fade-in zoom-in-95 duration-150">
-                      {["All", "Reel", "Story", "Video", "Post"].map((f) => (
-                        <button
-                          key={f}
-                          type="button"
-                          onClick={() => {
-                            setFilterFormat(f);
-                            setOpenDropdown(null);
-                          }}
-                          className={`w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#f4f6fb] flex items-center justify-between cursor-pointer ${
-                            filterFormat === f ? "font-semibold text-primary" : "text-[#0d0d10]"
-                          }`}
-                        >
-                          <span>{f === "All" ? "All formats" : f}</span>
-                          {filterFormat === f && <Check size={14} className="text-[#3b5bff]" />}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                {/* 4. Dropdown · Usage rights */}
+                <ContentDropdown
+                  label="Usage rights"
+                  value={filterUsageRights}
+                  defaultVal="Any"
+                  options={USAGE_RIGHTS_OPTIONS}
+                  isOpen={openDropdown === "usageRights"}
+                  onToggle={() => setOpenDropdown(openDropdown === "usageRights" ? null : "usageRights")}
+                  onSelect={(u) => {
+                    setFilterUsageRights(u);
+                    setOpenDropdown(null);
+                  }}
+                  minWidth="min-w-[160px]"
+                />
 
-                {/* Filter: Usage Rights */}
-                <div className="relative">
+                {/* Reset Filters action pill */}
+                {hasActiveFilters && (
                   <button
                     type="button"
-                    onClick={() => setOpenDropdown(openDropdown === "usageRights" ? null : "usageRights")}
-                    className={`bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] items-center overflow-clip px-[12px] py-[7px] relative rounded-[var(--radius-md,8px)] shrink-0 cursor-pointer hover:bg-[#f4f6fb] transition ${
-                      filterUsageRights !== "All" ? "border-[#0d0d10] bg-[#f4f6fb]" : ""
-                    }`}
-                    data-name="Filter · Usage rights"
-                  >
-                    <p className="font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
-                      {filterUsageRights === "All" ? "Usage rights" : `Usage: ${filterUsageRights}`}
-                    </p>
-                    <div className="relative shrink-0 size-[14px]">
-                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconDropdownArrow} />
-                    </div>
-                  </button>
-                  {openDropdown === "usageRights" && (
-                    <div className="absolute left-0 top-[42px] z-50 min-w-[190px] bg-white border border-[#e3e5ec] rounded-[8px] shadow-lg py-1.5 animate-in fade-in zoom-in-95 duration-150">
-                      {["All", "Organic", "Paid ads", "Ended"].map((u) => (
-                        <button
-                          key={u}
-                          type="button"
-                          onClick={() => {
-                            setFilterUsageRights(u);
-                            setOpenDropdown(null);
-                          }}
-                          className={`w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#f4f6fb] flex items-center justify-between cursor-pointer ${
-                            filterUsageRights === u ? "font-semibold text-primary" : "text-[#0d0d10]"
-                          }`}
-                        >
-                          <span>{u === "All" ? "All usage rights" : u}</span>
-                          {filterUsageRights === u && <Check size={14} className="text-[#3b5bff]" />}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Clear all filters if any active */}
-                {(filterProject !== "All" || filterBrand !== "All" || filterPlatform !== "All" || filterFormat !== "All" || filterUsageRights !== "All") && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFilterProject("All");
-                      setFilterBrand("All");
-                      setFilterPlatform("All");
-                      setFilterFormat("All");
-                      setFilterUsageRights("All");
-                    }}
-                    className="text-[12px] font-medium text-[#71717a] hover:text-[#0d0d10] underline px-1 cursor-pointer"
+                    onClick={handleResetFilters}
+                    className="text-[12px] font-medium text-[#71717a] hover:text-[#0d0d10] underline px-2 cursor-pointer transition"
                   >
                     Reset filters
                   </button>
                 )}
 
-                <div className="flex-[1_0_0] h-[36px] min-w-px" />
+                <div className="flex-[1_0_0] h-[38px] min-w-px" />
 
-                {/* Sort: Newest */}
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setOpenDropdown(openDropdown === "sort" ? null : "sort")}
-                    className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[6px] items-center overflow-clip px-[12px] py-[7px] relative rounded-[var(--radius-md,8px)] shrink-0 cursor-pointer hover:bg-[#f4f6fb] transition"
-                    data-name="Filter · Sort: Newest"
-                  >
-                    <p className="font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
-                      Sort: {sortOption}
-                    </p>
-                    <div className="relative shrink-0 size-[14px]">
-                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconDropdownArrow} />
-                    </div>
-                  </button>
-                  {openDropdown === "sort" && (
-                    <div className="absolute right-0 top-[42px] z-50 min-w-[170px] bg-white border border-[#e3e5ec] rounded-[8px] shadow-lg py-1.5 animate-in fade-in zoom-in-95 duration-150">
-                      {["Newest", "Oldest", "Most orders"].map((s) => (
-                        <button
-                          key={s}
-                          type="button"
-                          onClick={() => {
-                            setSortOption(s);
-                            setOpenDropdown(null);
-                          }}
-                          className={`w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#f4f6fb] flex items-center justify-between cursor-pointer ${
-                            sortOption === s ? "font-semibold text-primary" : "text-[#0d0d10]"
-                          }`}
-                        >
-                          <span>{s}</span>
-                          {sortOption === s && <Check size={14} className="text-[#3b5bff]" />}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                {/* 5. Dropdown · Content sort */}
+                <ContentDropdown
+                  label="Sort: Newest"
+                  value={sortOption}
+                  defaultVal="Newest"
+                  options={SORT_OPTIONS}
+                  isOpen={openDropdown === "sort"}
+                  onToggle={() => setOpenDropdown(openDropdown === "sort" ? null : "sort")}
+                  onSelect={(s) => {
+                    setSortOption(s);
+                    setOpenDropdown(null);
+                  }}
+                  minWidth="min-w-[165px]"
+                />
 
                 {/* View Mode Toggle (Grid / List) */}
                 <div className="bg-[var(--bg-muted,#edeff3)] content-stretch flex gap-[2px] items-start overflow-clip p-[3px] relative rounded-[var(--radius-md,8px)] shrink-0" data-name="View">
@@ -2053,38 +2097,37 @@ export default function CreatorContentPage() {
               </div>
             </div>
 
-        {/* Bottom Action Buttons: Download & Open Project */}
-        <div className="content-stretch flex gap-[8px] items-start overflow-clip relative shrink-0 w-full mt-auto pt-2" data-node-id="793:13353" data-name="btns">
-          <button
-            type="button"
-            onClick={() => showToast(`Downloading ${activeDetailItem.fileName || "original deliverable file"}...`)}
-            className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-[1_0_0] gap-[8px] h-[40px] items-center justify-center min-w-px overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] hover:bg-[#f4f6fb] transition cursor-pointer"
-            data-name="Button"
-          >
-            <div className="relative shrink-0 size-[16px]">
-              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconDownload} />
+            {/* Bottom Action Buttons: Download & Open Project */}
+            <div className="content-stretch flex gap-[8px] items-start overflow-clip relative shrink-0 w-full mt-auto pt-2" data-node-id="793:13353" data-name="btns">
+              <button
+                type="button"
+                onClick={() => showToast(`Downloading ${activeDetailItem.fileName || "original deliverable file"}...`)}
+                className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-[1_0_0] gap-[8px] h-[40px] items-center justify-center min-w-px overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] hover:bg-[#f4f6fb] transition cursor-pointer"
+                data-name="Button"
+              >
+                <div className="relative shrink-0 size-[16px]">
+                  <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconDownload} />
+                </div>
+                <p className="font-['Inter:Medium'] font-medium leading-[20px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                  Download
+                </p>
+              </button>
+              <Link
+                to="/creator/project"
+                className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-[1_0_0] gap-[8px] h-[40px] items-center justify-center min-w-px overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
+                data-name="Button"
+              >
+                <div className="relative shrink-0 size-[16px]">
+                  <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconExternalLink} />
+                </div>
+                <p className="font-['Inter:Medium'] font-medium leading-[20px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
+                  Open project
+                </p>
+              </Link>
             </div>
-            <p className="font-['Inter:Medium'] font-medium leading-[20px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
-              Download
-            </p>
-          </button>
-          <Link
-            to="/creator/project"
-            className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-[1_0_0] gap-[8px] h-[40px] items-center justify-center min-w-px overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
-            data-name="Button"
-          >
-            <div className="relative shrink-0 size-[16px]">
-              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconExternalLink} />
-            </div>
-            <p className="font-['Inter:Medium'] font-medium leading-[20px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
-              Open project
-            </p>
-          </Link>
-        </div>
-      </div>
-    </>
-  )
-}
-    </div >
+          </div>
+        </>
+      )}
+    </div>
   );
 }
