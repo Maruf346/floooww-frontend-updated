@@ -35,6 +35,37 @@ const media5 = "/assets/creator/settings/media-5.png";
 
 type TabKey = "account" | "connected" | "payouts" | "notifications" | "security";
 
+function ToggleSwitch({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean;
+  onChange: () => void;
+  label?: string;
+}) {
+  return (
+    <label className="flex items-center gap-2.5 cursor-pointer select-none">
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        onClick={onChange}
+        className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer shrink-0 ${
+          checked ? "bg-[#0d0d10]" : "bg-[#e3e5ec]"
+        }`}
+      >
+        <span
+          className={`size-4 rounded-full bg-white shadow-xs block transition-transform duration-200 ease-in-out absolute top-0.5 ${
+            checked ? "left-[18px]" : "left-0.5"
+          }`}
+        />
+      </button>
+      {label && <span className="text-[13px] text-[#0d0d10] font-normal leading-5">{label}</span>}
+    </label>
+  );
+}
+
 export default function CreatorSettingsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = (searchParams.get("tab") as TabKey) || "account";
@@ -314,6 +345,59 @@ export default function CreatorSettingsPage() {
     );
     showToast("Notification preferences updated.");
   };
+
+  // Security tab states (CR-10 · Settings: Security, Figma node 795:13274)
+  const [securityEmail, setSecurityEmail] = useState("ishita@ishitarao.in");
+  const [passwordLastChanged, setPasswordLastChanged] = useState("Last changed 14 Aug 2026");
+  const [googleConnected, setGoogleConnected] = useState(true);
+  const [twoFactorEnabled] = useState(true);
+  const [twoFactorMethod, setTwoFactorMethod] = useState("Authenticator app · set up 12 Mar 2026");
+  const [backupCodesCount] = useState("8 of 10 left");
+  const [requireTwoFactorWorkspace, setRequireTwoFactorWorkspace] = useState(true);
+  const [emailSignInAlerts, setEmailSignInAlerts] = useState(true);
+
+  const [activeSessions, setActiveSessions] = useState([
+    {
+      id: "s1",
+      device: "MacBook Pro · Chrome",
+      subtitle: "This device",
+      location: "Chennai, IN",
+      lastActive: "Now",
+      isCurrent: true,
+    },
+    {
+      id: "s2",
+      device: "iPhone 15 · Kreyio app",
+      subtitle: "",
+      location: "Chennai, IN",
+      lastActive: "2 h ago",
+      isCurrent: false,
+    },
+    {
+      id: "s3",
+      device: "iPad · Kreyio app",
+      subtitle: "",
+      location: "Chennai, IN",
+      lastActive: "3 days ago",
+      isCurrent: false,
+    },
+  ]);
+
+  const [recentActivities] = useState([
+    { time: "28 Oct, 10:12", text: "You changed your profile photo" },
+    { time: "27 Oct, 18:40", text: "You connected YouTube" },
+    { time: "26 Oct, 09:05", text: "New sign-in · iPhone 15 · Chennai" },
+    { time: "24 Oct, 14:20", text: "Password changed successfully" },
+    { time: "21 Oct, 11:30", text: "Payout FLW-P-2110-1043 approved" },
+    { time: "18 Oct, 09:15", text: "Two-step verification confirmed" },
+  ]);
+
+  // Security Modals
+  const [isChangeEmailModalOpen, setIsChangeEmailModalOpen] = useState(false);
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
+  const [isChange2FAModalOpen, setIsChange2FAModalOpen] = useState(false);
+  const [isBackupCodesModalOpen, setIsBackupCodesModalOpen] = useState(false);
+  const [isRecentActivityModalOpen, setIsRecentActivityModalOpen] = useState(false);
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -1469,39 +1553,276 @@ export default function CreatorSettingsPage() {
             </div>
           )}
 
-          {/* 7. Tab Content: Security */}
+          {/* 7. Tab Content: Security (Figma node 795:13274) */}
           {activeTab === "security" && (
-            <div className="bg-white border border-[#e3e5ec] rounded-[12px] p-6 max-w-3xl flex flex-col gap-6 shadow-2xs">
-              <div>
-                <h2 className="text-[16px] font-semibold text-[#0d0d10]">Login &amp; Security</h2>
-                <p className="text-[13px] text-[#71717a] mt-1">
-                  Manage password, two-factor authentication, and active sessions.
-                </p>
-              </div>
-
-              <div className="flex flex-col divide-y divide-[#edeff3]">
-                <div className="py-4 flex items-center justify-between">
-                  <div>
-                    <p className="text-[14px] font-medium text-[#0d0d10]">Password</p>
-                    <p className="text-[12px] text-[#71717a]">Last changed 3 months ago</p>
+            <div className="flex flex-col lg:flex-row gap-5 items-start w-full">
+              {/* Left Column (flex-1) */}
+              <div className="flex-1 min-w-0 flex flex-col gap-5 w-full">
+                {/* 1. Sign in Card */}
+                <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5 flex flex-col gap-3.5 w-full">
+                  <div className="flex flex-col gap-0.5">
+                    <h2 className="text-[16px] font-semibold text-[#070b13] leading-5">
+                      Sign in
+                    </h2>
+                    <p className="text-[12px] text-[#8491a3] leading-4">
+                      How you get into Kreyio
+                    </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => showToast("Password reset link sent to your registered email.")}
-                    className="h-8 px-3 rounded-[8px] border border-[#e3e5ec] bg-white text-[13px] font-medium text-[#0d0d10] hover:bg-[#f8f9fb] transition cursor-pointer"
-                  >
-                    Change password
-                  </button>
+
+                  <div className="flex flex-col text-[13px]">
+                    {/* Email */}
+                    <div className="border-t border-[#edeff3] py-2.5 flex items-center">
+                      <span className="text-[#8491a3] w-[150px] shrink-0">Email</span>
+                      <span className="font-medium text-[#070b13] flex-1 truncate">{securityEmail}</span>
+                      <button
+                        type="button"
+                        onClick={() => setIsChangeEmailModalOpen(true)}
+                        className="text-[13px] font-medium text-[#3b5bff] hover:underline cursor-pointer shrink-0"
+                      >
+                        Change
+                      </button>
+                    </div>
+
+                    {/* Password */}
+                    <div className="border-t border-[#edeff3] py-2.5 flex items-center">
+                      <span className="text-[#8491a3] w-[150px] shrink-0">Password</span>
+                      <span className="font-medium text-[#070b13] flex-1">{passwordLastChanged}</span>
+                      <button
+                        type="button"
+                        onClick={() => setIsChangePasswordModalOpen(true)}
+                        className="text-[13px] font-medium text-[#3b5bff] hover:underline cursor-pointer shrink-0"
+                      >
+                        Change
+                      </button>
+                    </div>
+
+                    {/* Google sign-in */}
+                    <div className="border-t border-[#edeff3] py-2.5 flex items-center">
+                      <span className="text-[#8491a3] w-[150px] shrink-0">Google sign-in</span>
+                      <span className="font-medium text-[#070b13] flex-1">
+                        {googleConnected ? `Connected · ${securityEmail}` : "Not connected"}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setGoogleConnected(!googleConnected);
+                          showToast(googleConnected ? "Google sign-in removed." : "Google sign-in connected.");
+                        }}
+                        className="text-[13px] font-medium text-[#3b5bff] hover:underline cursor-pointer shrink-0"
+                      >
+                        {googleConnected ? "Remove" : "Connect"}
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="py-4 flex items-center justify-between">
-                  <div>
-                    <p className="text-[14px] font-medium text-[#0d0d10]">Two-factor authentication (2FA)</p>
-                    <p className="text-[12px] text-[#71717a]">SMS code verification enabled for +91 98••••••21</p>
+                {/* 2. Two-step verification Card */}
+                <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5 flex flex-col gap-3.5 w-full">
+                  <div className="flex items-center justify-between gap-2 w-full">
+                    <div className="flex flex-col gap-0.5">
+                      <h2 className="text-[16px] font-semibold text-[#070b13] leading-5">
+                        Two-step verification
+                      </h2>
+                      <p className="text-[12px] text-[#8491a3] leading-4">
+                        A code from your phone each time you sign in
+                      </p>
+                    </div>
+                    {twoFactorEnabled && (
+                      <span className="bg-[#e1fce3] text-[#149d46] text-[12px] font-medium px-2 py-0.5 rounded-full shrink-0">
+                        ● On
+                      </span>
+                    )}
                   </div>
-                  <span className="text-[12px] font-medium text-[#16a34a] bg-[#e1fce3] px-2.5 py-0.5 rounded-full">
-                    Enabled
-                  </span>
+
+                  <div className="flex flex-col text-[13px]">
+                    {/* Method */}
+                    <div className="border-t border-[#edeff3] py-2.5 flex items-center">
+                      <span className="text-[#8491a3] w-[150px] shrink-0">Method</span>
+                      <span className="font-medium text-[#070b13] flex-1">{twoFactorMethod}</span>
+                      <button
+                        type="button"
+                        onClick={() => setIsChange2FAModalOpen(true)}
+                        className="text-[13px] font-medium text-[#3b5bff] hover:underline cursor-pointer shrink-0"
+                      >
+                        Change
+                      </button>
+                    </div>
+
+                    {/* Backup codes */}
+                    <div className="border-t border-[#edeff3] py-2.5 flex items-center">
+                      <span className="text-[#8491a3] w-[150px] shrink-0">Backup codes</span>
+                      <span className="font-medium text-[#070b13] flex-1">{backupCodesCount}</span>
+                      <button
+                        type="button"
+                        onClick={() => setIsBackupCodesModalOpen(true)}
+                        className="text-[13px] font-medium text-[#3b5bff] hover:underline cursor-pointer shrink-0"
+                      >
+                        View codes
+                      </button>
+                    </div>
+
+                    {/* Require toggle */}
+                    <div className="pt-2">
+                      <ToggleSwitch
+                        checked={requireTwoFactorWorkspace}
+                        onChange={() => {
+                          setRequireTwoFactorWorkspace(!requireTwoFactorWorkspace);
+                          showToast(
+                            `Workspace two-step enforcement ${
+                              !requireTwoFactorWorkspace ? "enabled" : "disabled"
+                            }.`
+                          );
+                        }}
+                        label="Require two-step for everyone in this workspace"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Where you’re signed in Card */}
+                <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5 flex flex-col gap-3.5 w-full">
+                  <div className="flex items-center justify-between gap-2 w-full">
+                    <div className="flex flex-col gap-0.5">
+                      <h2 className="text-[16px] font-semibold text-[#070b13] leading-5">
+                        Where you’re signed in
+                      </h2>
+                      <p className="text-[12px] text-[#8491a3] leading-4">
+                        Sign out anything you don’t recognise
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveSessions(activeSessions.filter((s) => s.isCurrent));
+                        showToast("Signed out from all other sessions.");
+                      }}
+                      className="h-8 px-3 rounded-[8px] border border-[#e3e5ec] bg-white text-[13px] font-medium text-[#0d0d10] hover:bg-[#f8f9fb] transition cursor-pointer shrink-0"
+                    >
+                      Sign out all others
+                    </button>
+                  </div>
+
+                  {/* Sessions Table */}
+                  <div className="border border-[#e5e7eb] rounded-[10px] overflow-hidden w-full">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse min-w-[550px]">
+                        <thead>
+                          <tr className="bg-[#f3f5f7] text-[12px] font-medium text-[#8491a3] border-b border-[#e5e7eb]">
+                            <th className="py-2.5 px-3.5">DEVICE</th>
+                            <th className="py-2.5 px-3.5 w-[140px]">LOCATION</th>
+                            <th className="py-2.5 px-3.5 w-[120px]">LAST ACTIVE</th>
+                            <th className="py-2.5 px-3.5 w-[80px] text-right"></th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#edeff3] text-[13px]">
+                          {activeSessions.map((session) => (
+                            <tr key={session.id} className="hover:bg-[#fafafa] transition">
+                              <td className="py-3 px-3.5">
+                                <div className="flex flex-col">
+                                  <span className="text-[#070b13] font-normal">
+                                    {session.device}
+                                  </span>
+                                  {session.subtitle && (
+                                    <span className="text-[12px] text-[#8491a3]">
+                                      {session.subtitle}
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="py-3 px-3.5 text-[#070b13] whitespace-nowrap">
+                                {session.location}
+                              </td>
+                              <td className="py-3 px-3.5 text-[#070b13] whitespace-nowrap">
+                                {session.lastActive}
+                              </td>
+                              <td className="py-3 px-3.5 text-right whitespace-nowrap">
+                                {!session.isCurrent ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setActiveSessions(
+                                        activeSessions.filter((s) => s.id !== session.id)
+                                      );
+                                      showToast(`Signed out of ${session.device}`);
+                                    }}
+                                    className="text-[13px] font-medium text-[#3b5bff] hover:underline cursor-pointer"
+                                  >
+                                    Sign out
+                                  </button>
+                                ) : null}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column (w-[380px] shrink-0) */}
+              <div className="w-full lg:w-[380px] shrink-0 flex flex-col gap-5">
+                {/* 1. Sign-in alerts Card */}
+                <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5 flex flex-col gap-3.5 w-full">
+                  <div className="flex flex-col gap-0.5">
+                    <h2 className="text-[16px] font-semibold text-[#070b13] leading-5">
+                      Sign-in alerts
+                    </h2>
+                    <p className="text-[12px] text-[#8491a3] leading-4">
+                      Know when someone signs in
+                    </p>
+                  </div>
+                  <div>
+                    <ToggleSwitch
+                      checked={emailSignInAlerts}
+                      onChange={() => {
+                        setEmailSignInAlerts(!emailSignInAlerts);
+                        showToast(
+                          `New device sign-in alerts ${
+                            !emailSignInAlerts ? "enabled" : "disabled"
+                          }.`
+                        );
+                      }}
+                      label="Email me about sign-ins from a new device"
+                    />
+                  </div>
+                </div>
+
+                {/* 2. Recent activity Card */}
+                <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5 flex flex-col gap-3.5 w-full">
+                  <div className="flex items-center justify-between gap-2 w-full">
+                    <div className="flex flex-col gap-0.5">
+                      <h2 className="text-[16px] font-semibold text-[#070b13] leading-5">
+                        Recent activity
+                      </h2>
+                      <p className="text-[12px] text-[#8491a3] leading-4">
+                        Last 7 days on your account
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsRecentActivityModalOpen(true)}
+                      className="text-[12px] font-medium text-[#3b5bff] hover:underline cursor-pointer shrink-0"
+                    >
+                      View all
+                    </button>
+                  </div>
+
+                  <div className="flex flex-col text-[13px]">
+                    {recentActivities.slice(0, 3).map((act, i) => (
+                      <div
+                        key={i}
+                        className="border-t border-[#edeff3] py-2.5 flex items-center gap-3"
+                      >
+                        <span className="text-[#8491a3] w-[100px] shrink-0 text-[12px]">
+                          {act.time}
+                        </span>
+                        <span className="font-medium text-[#070b13] flex-1 truncate">
+                          {act.text}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -2417,6 +2738,295 @@ export default function CreatorSettingsPage() {
               >
                 <Check className="size-4" />
                 <span>Save tax details</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 14: Change Email */}
+      {isChangeEmailModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-[12px] border border-[#e3e5ec] shadow-xl max-w-md w-full p-6 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-[16px] font-semibold text-[#0d0d10]">Change sign-in email</h3>
+                <p className="text-[12px] text-[#71717a]">We will send a verification code to confirm</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsChangeEmailModalOpen(false)}
+                className="size-8 rounded-md flex items-center justify-center text-[#71717a] hover:bg-[#f4f6fb]"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-3 text-[13px]">
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">Current email</label>
+                <input
+                  type="email"
+                  disabled
+                  value={securityEmail}
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] bg-[#f8f9fb] text-[13px] text-[#71717a]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">New email address</label>
+                <input
+                  type="email"
+                  id="new-security-email-input"
+                  defaultValue="ishita.creative@gmail.com"
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsChangeEmailModalOpen(false)}
+                className="px-4 h-9 rounded-lg border border-[#e3e5ec] text-[13px] font-medium text-[#4a4a55] hover:bg-[#f8f9fb]"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const val = (document.getElementById("new-security-email-input") as HTMLInputElement)?.value;
+                  if (val) setSecurityEmail(val);
+                  setIsChangeEmailModalOpen(false);
+                  showToast("Sign-in email updated successfully.");
+                }}
+                className="px-4 h-9 rounded-lg bg-[#0d0d10] text-[13px] font-medium text-white hover:bg-black inline-flex items-center gap-1.5"
+              >
+                <Check className="size-4" />
+                <span>Save email</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 15: Change Password */}
+      {isChangePasswordModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-[12px] border border-[#e3e5ec] shadow-xl max-w-md w-full p-6 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-[16px] font-semibold text-[#0d0d10]">Change password</h3>
+                <p className="text-[12px] text-[#71717a]">Ensure it is at least 8 characters</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsChangePasswordModalOpen(false)}
+                className="size-8 rounded-md flex items-center justify-center text-[#71717a] hover:bg-[#f4f6fb]"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-3 text-[13px]">
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">Current password</label>
+                <input
+                  type="password"
+                  placeholder="••••••••••••"
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">New password</label>
+                <input
+                  type="password"
+                  placeholder="••••••••••••"
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">Confirm new password</label>
+                <input
+                  type="password"
+                  placeholder="••••••••••••"
+                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsChangePasswordModalOpen(false)}
+                className="px-4 h-9 rounded-lg border border-[#e3e5ec] text-[13px] font-medium text-[#4a4a55] hover:bg-[#f8f9fb]"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPasswordLastChanged("Last changed today");
+                  setIsChangePasswordModalOpen(false);
+                  showToast("Password updated successfully.");
+                }}
+                className="px-4 h-9 rounded-lg bg-[#0d0d10] text-[13px] font-medium text-white hover:bg-black inline-flex items-center gap-1.5"
+              >
+                <Check className="size-4" />
+                <span>Save password</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 16: Change 2FA Method */}
+      {isChange2FAModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-[12px] border border-[#e3e5ec] shadow-xl max-w-md w-full p-6 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-[16px] font-semibold text-[#0d0d10]">Two-step verification method</h3>
+                <p className="text-[12px] text-[#71717a]">Choose your primary verification factor</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsChange2FAModalOpen(false)}
+                className="size-8 rounded-md flex items-center justify-center text-[#71717a] hover:bg-[#f4f6fb]"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-2.5">
+              {[
+                { id: "app", title: "Authenticator app (Recommended)", desc: "Google Authenticator, 1Password, or Authy", badge: "Active" },
+                { id: "sms", title: "SMS verification code", desc: "Codes delivered via SMS to +91 98••••••21" },
+                { id: "key", title: "Hardware security key", desc: "FIDO2 / WebAuthn physical security keys" },
+              ].map((m) => (
+                <div
+                  key={m.id}
+                  onClick={() => {
+                    setTwoFactorMethod(`${m.title.split("(")[0].trim()} · updated now`);
+                    setIsChange2FAModalOpen(false);
+                    showToast(`Updated 2FA method to ${m.title.split("(")[0].trim()}`);
+                  }}
+                  className="p-3.5 rounded-lg border border-[#e3e5ec] hover:border-[#0d0d10] cursor-pointer transition flex items-center justify-between"
+                >
+                  <div>
+                    <p className="text-[13px] font-medium text-[#070b13]">{m.title}</p>
+                    <p className="text-[12px] text-[#8491a3]">{m.desc}</p>
+                  </div>
+                  {m.badge && (
+                    <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#e1fce3] text-[#149d46]">
+                      {m.badge}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => setIsChange2FAModalOpen(false)}
+                className="px-4 h-9 rounded-lg border border-[#e3e5ec] text-[13px] font-medium text-[#4a4a55] hover:bg-[#f8f9fb]"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 17: View Backup Codes */}
+      {isBackupCodesModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-[12px] border border-[#e3e5ec] shadow-xl max-w-md w-full p-6 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-[16px] font-semibold text-[#0d0d10]">2FA Backup Codes</h3>
+                <p className="text-[12px] text-[#71717a]">Each single-use code allows emergency account recovery</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsBackupCodesModalOpen(false)}
+                className="size-8 rounded-md flex items-center justify-center text-[#71717a] hover:bg-[#f4f6fb]"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 bg-[#f8f9fb] p-4 rounded-lg font-mono text-[13px] text-[#0d0d10]">
+              <span className="p-1.5 bg-white border border-[#e5e7eb] rounded text-center">8492-1049</span>
+              <span className="p-1.5 bg-white border border-[#e5e7eb] rounded text-center">3910-8472</span>
+              <span className="p-1.5 bg-white border border-[#e5e7eb] rounded text-center">9402-1748</span>
+              <span className="p-1.5 bg-white border border-[#e5e7eb] rounded text-center">2048-5921</span>
+              <span className="p-1.5 bg-white border border-[#e5e7eb] rounded text-center">5910-4820</span>
+              <span className="p-1.5 bg-white border border-[#e5e7eb] rounded text-center">1948-3019</span>
+              <span className="p-1.5 bg-white border border-[#e5e7eb] rounded text-center line-through text-[#a3a3ac]">7391-4920</span>
+              <span className="p-1.5 bg-white border border-[#e5e7eb] rounded text-center line-through text-[#a3a3ac]">4820-1948</span>
+            </div>
+
+            <div className="flex items-center justify-between pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard?.writeText("8492-1049\n3910-8472\n9402-1748\n2048-5921\n5910-4820\n1948-3019");
+                  showToast("Backup codes copied to clipboard.");
+                }}
+                className="h-9 px-3 rounded-lg border border-[#e3e5ec] text-[13px] font-medium text-[#0d0d10] hover:bg-[#f8f9fb]"
+              >
+                Copy unused codes
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsBackupCodesModalOpen(false)}
+                className="h-9 px-4 rounded-lg bg-[#0d0d10] text-[13px] font-medium text-white hover:bg-black"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 18: Recent Activity Modal */}
+      {isRecentActivityModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-[12px] border border-[#e3e5ec] shadow-xl max-w-md w-full p-6 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-[16px] font-semibold text-[#0d0d10]">All recent activity</h3>
+                <p className="text-[12px] text-[#71717a]">Audit log of security events on your account</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsRecentActivityModalOpen(false)}
+                className="size-8 rounded-md flex items-center justify-center text-[#71717a] hover:bg-[#f4f6fb]"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="flex flex-col divide-y divide-[#edeff3] max-h-[380px] overflow-y-auto pr-1 text-[13px]">
+              {recentActivities.map((act, i) => (
+                <div key={i} className="py-2.5 flex items-center gap-3">
+                  <span className="text-[#8491a3] w-[100px] shrink-0 text-[12px]">{act.time}</span>
+                  <span className="font-medium text-[#070b13] flex-1">{act.text}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => setIsRecentActivityModalOpen(false)}
+                className="px-4 h-9 rounded-lg bg-[#0d0d10] text-[13px] font-medium text-white hover:bg-black"
+              >
+                Close
               </button>
             </div>
           </div>
