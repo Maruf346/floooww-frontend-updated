@@ -201,6 +201,120 @@ export default function CreatorSettingsPage() {
     showToast("Downloaded all payouts statement.");
   };
 
+  // Notifications matrix state (CR-10 · Settings: Notifications)
+  const [notifications, setNotifications] = useState([
+    // Group: Offers and applications
+    {
+      id: "new_offer",
+      group: "Offers and applications",
+      title: "New offer or invite",
+      subtitle: "A brand invites you or sends an offer",
+      email: false,
+      inApp: true,
+    },
+    {
+      id: "application_update",
+      group: "Offers and applications",
+      title: "Application update",
+      subtitle: "Shortlisted, accepted or not picked · replies to your ask",
+      email: true,
+      inApp: true,
+    },
+    // Group: Content
+    {
+      id: "content_approved",
+      group: "Content",
+      title: "Content approved",
+      subtitle: "Or changes asked on a draft",
+      email: true,
+      inApp: true,
+    },
+    {
+      id: "post_live",
+      group: "Content",
+      title: "Post went live",
+      subtitle: "We checked the link works",
+      email: false,
+      inApp: true,
+    },
+    {
+      id: "deadline_coming",
+      group: "Content",
+      title: "Deadline coming up",
+      subtitle: "2 days before each post is due",
+      email: true,
+      inApp: true,
+    },
+    // Group: Shipping
+    {
+      id: "product_shipped",
+      group: "Shipping",
+      title: "Product shipped",
+      subtitle: "Tracking number from the brand",
+      email: false,
+      inApp: true,
+    },
+    {
+      id: "delivery_problem",
+      group: "Shipping",
+      title: "Delivery problem",
+      subtitle: "Returned, damaged or wrong item",
+      email: true,
+      inApp: true,
+    },
+    // Group: Payments
+    {
+      id: "fee_held_escrow",
+      group: "Payments",
+      title: "Fee held in escrow",
+      subtitle: "When a brand funds your fee",
+      email: false,
+      inApp: true,
+    },
+    {
+      id: "payout_sent",
+      group: "Payments",
+      title: "Payout sent",
+      subtitle: "To your bank, 2 days after approval",
+      email: false,
+      inApp: true,
+    },
+    {
+      id: "refund_or_dispute",
+      group: "Payments",
+      title: "Refund or dispute",
+      subtitle: "Any change to your money",
+      email: true,
+      inApp: true,
+    },
+    // Group: Reports and rights
+    {
+      id: "weekly_results",
+      group: "Reports and rights",
+      title: "Weekly results",
+      subtitle: "Every Monday at 9 am",
+      email: false,
+      inApp: false,
+    },
+    {
+      id: "usage_rights_ending",
+      group: "Reports and rights",
+      title: "Usage rights ending",
+      subtitle: "7 days before",
+      email: false,
+      inApp: true,
+    },
+  ]);
+
+  const toggleNotification = (id: string, channel: "email" | "inApp") => {
+    setNotifications((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, [channel]: !item[channel] } : item
+      )
+    );
+    showToast("Notification preferences updated.");
+  };
+
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -1260,35 +1374,97 @@ export default function CreatorSettingsPage() {
             </div>
           )}
 
-          {/* 6. Tab Content: Notifications */}
+          {/* 6. Tab Content: Notifications (Figma node 795:12833) */}
           {activeTab === "notifications" && (
-            <div className="bg-white border border-[#e3e5ec] rounded-[12px] p-6 max-w-3xl flex flex-col gap-6 shadow-2xs">
-              <div>
-                <h2 className="text-[16px] font-semibold text-[#0d0d10]">Notification preferences</h2>
-                <p className="text-[13px] text-[#71717a] mt-1">
-                  Choose what alerts reach you via email, WhatsApp, and in-app bell.
+            <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5 flex flex-col gap-3.5 w-full">
+              <div className="flex flex-col gap-0.5">
+                <h2 className="text-[16px] font-semibold text-[#070b13] leading-5">
+                  Notifications
+                </h2>
+                <p className="text-[12px] text-[#8491a3] leading-4">
+                  Choose how you hear about each event
                 </p>
               </div>
 
-              <div className="flex flex-col gap-4">
+              <div className="border border-[#e5e7eb] rounded-[10px] overflow-hidden w-full">
+                {/* Header */}
+                <div className="bg-[#f3f5f7] px-3.5 py-2.5 flex items-center text-[12px] font-medium text-[#8491a3]">
+                  <p className="flex-1 min-w-0">EVENT</p>
+                  <p className="w-[90px] text-center shrink-0">EMAIL</p>
+                  <p className="w-[90px] text-center shrink-0">IN APP</p>
+                </div>
+
+                {/* Groups */}
                 {[
-                  { title: "Direct brand invitations & offers", desc: "Get notified when a brand invites you to a paid campaign", defaultChecked: true },
-                  { title: "Deliverable reviews & approvals", desc: "When a brand requests changes or approves your submitted drafts", defaultChecked: true },
-                  { title: "Payment released to escrow", desc: "Instant updates when milestone funds are credited to your account", defaultChecked: true },
-                  { title: "Weekly performance digest", desc: "Summary of your Reel views, link clicks, and creator rank", defaultChecked: false },
-                ].map((item, idx) => (
-                  <label key={idx} className="flex items-start gap-3 cursor-pointer py-1">
-                    <input
-                      type="checkbox"
-                      defaultChecked={item.defaultChecked}
-                      className="size-4 mt-0.5 rounded border-[#e3e5ec] text-[#0d0d10] focus:ring-0 cursor-pointer"
-                    />
-                    <div>
-                      <p className="text-[14px] font-medium text-[#0d0d10] leading-5">{item.title}</p>
-                      <p className="text-[12px] text-[#71717a] leading-4">{item.desc}</p>
+                  "Offers and applications",
+                  "Content",
+                  "Shipping",
+                  "Payments",
+                  "Reports and rights",
+                ].map((groupName) => {
+                  const groupItems = notifications.filter(
+                    (item) => item.group === groupName
+                  );
+                  return (
+                    <div key={groupName} className="flex flex-col w-full">
+                      {/* Group Header */}
+                      <div className="border-t border-[#edeff3] pt-2.5 pb-1 px-3.5 bg-white">
+                        <p className="font-['Inter:Semi_Bold'] font-semibold text-[#070b13] text-[13px] leading-tight">
+                          {groupName}
+                        </p>
+                      </div>
+
+                      {/* Items */}
+                      {groupItems.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-center gap-3 px-3.5 py-2 hover:bg-[#fafafa] transition w-full"
+                        >
+                          <div className="flex-1 min-w-0 flex flex-col gap-0.5">
+                            <p className="font-['Inter:Medium'] font-medium text-[#070b13] text-[13px] leading-tight">
+                              {item.title}
+                            </p>
+                            <p className="font-['Inter:Regular'] font-normal text-[#8491a3] text-[12px] leading-tight">
+                              {item.subtitle}
+                            </p>
+                          </div>
+                          <div className="w-[90px] flex justify-center shrink-0">
+                            <button
+                              type="button"
+                              role="checkbox"
+                              aria-checked={item.email}
+                              aria-label={`${item.title} email notification`}
+                              onClick={() => toggleNotification(item.id, "email")}
+                              className={`size-[18px] rounded-[4px] flex items-center justify-center transition cursor-pointer shrink-0 ${
+                                item.email
+                                  ? "bg-[#0d0d10] text-white"
+                                  : "bg-white border border-[#d4d7df] hover:border-[#0d0d10]"
+                              }`}
+                            >
+                              {item.email && <Check className="size-3.5 stroke-[2.5]" />}
+                            </button>
+                          </div>
+                          <div className="w-[90px] flex justify-center shrink-0">
+                            <button
+                              type="button"
+                              role="checkbox"
+                              aria-checked={item.inApp}
+                              aria-label={`${item.title} in-app notification`}
+                              onClick={() => toggleNotification(item.id, "inApp")}
+                              className={`size-[18px] rounded-[4px] flex items-center justify-center transition cursor-pointer shrink-0 ${
+                                item.inApp
+                                  ? "bg-[#0d0d10] text-white"
+                                  : "bg-white border border-[#d4d7df] hover:border-[#0d0d10]"
+                              }`}
+                            >
+                              {item.inApp && <Check className="size-3.5 stroke-[2.5]" />}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </label>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
