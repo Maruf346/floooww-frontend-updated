@@ -359,6 +359,10 @@ export default function CreatorEarningsPage() {
     };
   }, []);
 
+  const handleDownloadStatement = () => {
+    setIsStatementModalOpen(true);
+  };
+
   const handleDownloadAction = (actionKey: "pdf" | "csv" | "itr") => {
     setOpenDropdown(null);
     if (actionKey === "pdf") {
