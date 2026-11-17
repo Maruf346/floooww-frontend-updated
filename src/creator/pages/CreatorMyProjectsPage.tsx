@@ -40,10 +40,19 @@ const imgIcon20 = "https://www.figma.com/api/mcp/asset/4b35d801-8990-4ac2-982c-8
 const imgIconSearch = "https://www.figma.com/api/mcp/asset/6382e7a5-4e91-4df4-9366-35195b98ab63.svg";
 const imgPlatformLogo = "https://www.figma.com/api/mcp/asset/89f4dbf5-095f-4e31-9092-45ebe27e3f89.svg";
 const imgIcon21 = "https://www.figma.com/api/mcp/asset/696f425d-358a-4083-9ee0-6a8b2dc934c0.svg";
-const imgDot2 = "https://www.figma.com/api/mcp/asset/994adccb-77a0-4c17-b21c-4ed43648380b.svg";
+const imgDot2 = "https://www.figma.com/api/mcp/asset/4bd7f02e-ccff-4aed-97e1-b24d790d4ab9.svg";
 const imgIcon22 = "https://www.figma.com/api/mcp/asset/a5520739-0017-4709-a668-4605c1b1fce6.svg";
 const imgIcon23 = "https://www.figma.com/api/mcp/asset/032d3f22-ee99-4de8-bbcf-c72da46bb62b.svg";
 const imgIcon24 = "https://www.figma.com/api/mcp/asset/b0aafd01-3198-4d80-aa87-f5b82bec9c21.svg";
+
+// Assets for Applied tab
+const imgRectangleApplied0 = "https://www.figma.com/api/mcp/asset/a30cba33-e15f-493c-90bf-b5595dd01cc2.png";
+const imgRectangleApplied1 = "https://www.figma.com/api/mcp/asset/c358d3f9-98f3-4ddd-a43e-809bc6c17cff.png";
+const imgRectangleApplied2 = "https://www.figma.com/api/mcp/asset/32e4973d-ebac-4193-9625-885e96c48c8b.png";
+const imgIcon17Applied = "https://www.figma.com/api/mcp/asset/2d97a2a3-5c5a-4528-8dff-42f0b9160a41.svg";
+const imgIcon18Applied = "https://www.figma.com/api/mcp/asset/9d4d95fc-c15f-4843-82bc-54c6de8545b5.svg";
+const imgIcon19Applied = "https://www.figma.com/api/mcp/asset/9d049cfb-e958-4df2-9c40-2fee5debb1d6.svg";
+const imgIcon20Applied = "https://www.figma.com/api/mcp/asset/ac1488f0-f2fc-48bd-89c5-2c426cc18b86.svg";
 
 type BadgeTone = "Warning" | "Info" | "Neutral" | "Success";
 
@@ -69,8 +78,8 @@ function Badge({ className, label = "Live", showDot = true, tone = "Warning" }: 
     textClass = "text-[color:var(--status-info-fg,#3b5bff)]";
     dotSrc = imgDot1;
   } else if (isNeutral) {
-    bgClass = "bg-[var(--primary-muted,#e3e9ff)]";
-    textClass = "text-[color:var(--primary-hover,#1a1a20)]";
+    bgClass = "bg-[var(--status-neutral-bg,#f4f6fb)]";
+    textClass = "text-[color:var(--status-neutral-fg,#4a4a55)]";
     dotSrc = imgDot2;
   } else if (isSuccess) {
     bgClass = "bg-[#e1fce3]";
@@ -140,11 +149,10 @@ function FilterDropdown({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className={`content-stretch flex gap-[6px] items-center overflow-clip px-[12px] py-[6px] relative rounded-[var(--radius-full,999px)] border transition cursor-pointer ${
-          isSelected
+        className={`content-stretch flex gap-[6px] items-center overflow-clip px-[12px] py-[6px] relative rounded-[var(--radius-full,999px)] border transition cursor-pointer ${isSelected
             ? "bg-[#eff4ff] border-[#3b5bff] text-[#3b5bff] font-semibold"
             : "bg-[var(--bg-surface,white)] border-[var(--border-default,#e3e5ec)] text-[color:var(--text-primary,#0d0d10)] hover:bg-[#f9fafb]"
-        }`}
+          }`}
       >
         <span className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic text-[12px] whitespace-nowrap">
           {isSelected ? `${label}: ${value}` : label}
@@ -170,11 +178,10 @@ function FilterDropdown({
                   onChange(opt);
                   setOpen(false);
                 }}
-                className={`flex w-full items-center justify-between rounded-[6px] px-[12px] py-[7px] text-left text-[13px] transition cursor-pointer ${
-                  active
+                className={`flex w-full items-center justify-between rounded-[6px] px-[12px] py-[7px] text-left text-[13px] transition cursor-pointer ${active
                     ? "bg-[#eff4ff] font-medium text-[#0d0d10]"
                     : "text-[#374151] hover:bg-[#f9fafb]"
-                }`}
+                  }`}
               >
                 <span>{opt}</span>
                 {active && <Check size={15} className="text-[#0d0d10]" />}
@@ -298,63 +305,63 @@ const ALL_PROJECTS: ProjectRowData[] = [
 
   // Applied (3)
   {
-    id: "festive-haircare",
+    id: "clean-beauty-collective",
+    name: "Clean Beauty Collective",
+    brand: "Petal & Pine",
+    type: "Influencer",
+    partnership: "Paid",
+    duration: "Long-term",
+    platform: "Instagram",
+    status: "Shortlisted",
+    badgeTone: "Success",
+    posts: "6/mo",
+    match: 86,
+    fee: "₹20,000 / mo",
+    feeNote: "in range",
+    replyBy: "by 15 Nov",
+    replyNote: "brand is reviewing",
+    received: "29 Oct",
+    image: imgRectangleApplied0,
+    tab: "applied",
+  },
+  {
+    id: "festive-haircare-tutorials",
     name: "Festive Haircare Tutorials",
     brand: "Strand Studio",
     type: "UGC",
     partnership: "Paid",
     duration: "One-time",
-    platform: "YouTube",
-    status: "Under review",
+    platform: "Instagram",
+    status: "In review",
     badgeTone: "Info",
     posts: 3,
     match: 84,
-    fee: "₹8K / video",
-    feeNote: "within your fee",
-    replyBy: "6 Nov",
-    replyNote: "Decision pending",
+    fee: "₹8,000 / video",
+    feeNote: "in range",
+    replyBy: "by 8 Nov",
+    replyNote: "opened your profile",
     received: "28 Oct",
-    image: "/assets/creator/projects/festive-haircare-tutorials.png",
+    image: imgRectangleApplied1,
     tab: "applied",
   },
   {
-    id: "rose-lip-oil",
-    name: "Rose Lip Oil",
-    brand: "Petal & Pine",
+    id: "hydration-bundle",
+    name: "Hydration Bundle",
+    brand: "Minimalist",
     type: "Influencer",
-    partnership: "Paid",
+    partnership: "Gift exchange",
     duration: "One-time",
     platform: "Instagram",
-    status: "Shortlisted",
-    badgeTone: "Warning",
+    status: "Applied",
+    badgeTone: "Neutral",
     posts: 2,
-    match: 82,
-    fee: "₹12,000",
-    feeNote: "you get ₹10,584",
-    replyBy: "8 Nov",
-    replyNote: "Brand reviewing files",
+    match: 77,
+    fee: "Gift exchange",
+    feeNote: "kit worth ₹6,500",
+    replyBy: "by 4 Nov",
+    replyNote: "not opened yet",
     received: "27 Oct",
-    image: "/assets/creator/projects/rose-lip-oil.png",
-    tab: "applied",
-  },
-  {
-    id: "weekend-vlog",
-    name: "Weekend Skincare Vlog",
-    brand: "Dewdrop Naturals",
-    type: "Influencer",
-    partnership: "Paid",
-    duration: "One-time",
-    platform: "YouTube",
-    status: "Under review",
-    badgeTone: "Info",
-    posts: 1,
-    match: 78,
-    fee: "₹28,000",
-    feeNote: "video integration",
-    replyBy: "12 Nov",
-    replyNote: "Awaiting brand response",
-    received: "26 Oct",
-    image: "/assets/creator/projects/weekend-skincare-vlog.png",
+    image: imgRectangleApplied2,
     tab: "applied",
   },
 
@@ -616,12 +623,12 @@ export function CreatorMyProjectsPage() {
     rawTab === "applied"
       ? "applied"
       : rawTab === "live" || rawTab === "active"
-      ? "live"
-      : rawTab === "completed"
-      ? "completed"
-      : rawTab === "declined"
-      ? "declined"
-      : "invitations";
+        ? "live"
+        : rawTab === "completed"
+          ? "completed"
+          : rawTab === "declined"
+            ? "declined"
+            : "invitations";
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState("");
@@ -718,32 +725,32 @@ export function CreatorMyProjectsPage() {
       case "applied":
         return [
           {
-            title: "Applications sent",
+            title: "Applications",
             value: "3",
             sub: "1 shortlisted",
             bg: "bg-[#3b5bff]",
-            icon: imgIcon17,
+            icon: imgIcon17Applied,
           },
           {
-            title: "Potential value",
-            value: "₹48,000",
-            sub: "across 3 campaigns",
+            title: "Shortlisted",
+            value: "1",
+            sub: "Clean Beauty Collective",
+            bg: "bg-[#149d46]",
+            icon: imgIcon18Applied,
+          },
+          {
+            title: "Brand reply time",
+            value: "2 days",
+            sub: "average for these brands",
+            bg: "bg-[var(--primary-default,#0d0d10)]",
+            icon: imgIcon19Applied,
+          },
+          {
+            title: "Success rate",
+            value: "62%",
+            sub: "8 of 13 applications this year",
             bg: "bg-[var(--bg-inverse,#0d0d10)]",
-            icon: imgIcon18,
-          },
-          {
-            title: "Average match",
-            value: "81%",
-            sub: "profile compatibility",
-            bg: "bg-[var(--status-success-fg,#16a34a)]",
-            icon: imgIcon19,
-          },
-          {
-            title: "Reply expectation",
-            value: "≈ 48 h",
-            sub: "based on brand reply stats",
-            bg: "bg-[#3b5bff]",
-            icon: imgIcon20,
+            icon: imgIcon20Applied,
           },
         ];
       case "live":
@@ -880,7 +887,7 @@ export function CreatorMyProjectsPage() {
       <div className="bg-[var(--bg-surface,white)] border-[var(--border-default,#e3e5ec)] border-r border-solid content-stretch flex flex-col gap-[2px] h-full items-start overflow-clip pb-[16px] pt-[20px] px-[16px] relative shrink-0 w-[260px] min-h-screen" data-name="Sidebar / Creator">
         <Logo className="content-stretch flex items-center overflow-clip relative rounded-[9.778px] shrink-0" />
         <div className="h-[16px] relative shrink-0 w-[10px]" data-name="gap" />
-        
+
         {/* Workspace switcher */}
         <div className="border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[10px] items-center overflow-clip p-[10px] relative rounded-[var(--radius-lg,12px)] shrink-0 w-[228px]" data-name="Workspace switcher">
           <div className="bg-[var(--primary-default,#0d0d10)] content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-md,8px)] shrink-0 size-[32px]" data-name="Initials">
@@ -956,9 +963,8 @@ export function CreatorMyProjectsPage() {
         <button
           type="button"
           onClick={() => setTab("invitations")}
-          className={`content-stretch cursor-pointer flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] transition ${
-            activeTab === "invitations" ? "bg-[#f1f4ff]" : "hover:bg-[#f4f6fb]"
-          }`}
+          className={`content-stretch cursor-pointer flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] transition ${activeTab === "invitations" ? "bg-[#f1f4ff]" : "hover:bg-[#f4f6fb]"
+            }`}
           data-name="Invitations & offers"
         >
           <div className="relative shrink-0 size-[4px]" data-name="Bullet">
@@ -978,9 +984,8 @@ export function CreatorMyProjectsPage() {
         <button
           type="button"
           onClick={() => setTab("applied")}
-          className={`content-stretch cursor-pointer flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] transition ${
-            activeTab === "applied" ? "bg-[#f1f4ff]" : "hover:bg-[#f4f6fb]"
-          }`}
+          className={`content-stretch cursor-pointer flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] transition ${activeTab === "applied" ? "bg-[#f1f4ff]" : "hover:bg-[#f4f6fb]"
+            }`}
           data-name="Applied"
         >
           <div className="relative shrink-0 size-[4px]" data-name="Bullet">
@@ -1000,9 +1005,8 @@ export function CreatorMyProjectsPage() {
         <button
           type="button"
           onClick={() => setTab("live")}
-          className={`content-stretch cursor-pointer flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] transition ${
-            activeTab === "live" ? "bg-[#f1f4ff]" : "hover:bg-[#f4f6fb]"
-          }`}
+          className={`content-stretch cursor-pointer flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] transition ${activeTab === "live" ? "bg-[#f1f4ff]" : "hover:bg-[#f4f6fb]"
+            }`}
           data-name="Active"
         >
           <div className="relative shrink-0 size-[4px]" data-name="Bullet">
@@ -1022,9 +1026,8 @@ export function CreatorMyProjectsPage() {
         <button
           type="button"
           onClick={() => setTab("completed")}
-          className={`content-stretch cursor-pointer flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] transition ${
-            activeTab === "completed" ? "bg-[#f1f4ff]" : "hover:bg-[#f4f6fb]"
-          }`}
+          className={`content-stretch cursor-pointer flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] transition ${activeTab === "completed" ? "bg-[#f1f4ff]" : "hover:bg-[#f4f6fb]"
+            }`}
           data-name="Completed"
         >
           <div className="relative shrink-0 size-[4px]" data-name="Bullet">
@@ -1044,9 +1047,8 @@ export function CreatorMyProjectsPage() {
         <button
           type="button"
           onClick={() => setTab("declined")}
-          className={`content-stretch cursor-pointer flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] transition ${
-            activeTab === "declined" ? "bg-[#f1f4ff]" : "hover:bg-[#f4f6fb]"
-          }`}
+          className={`content-stretch cursor-pointer flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] transition ${activeTab === "declined" ? "bg-[#f1f4ff]" : "hover:bg-[#f4f6fb]"
+            }`}
           data-name="Declined"
         >
           <div className="relative shrink-0 size-[4px]" data-name="Bullet">
@@ -1131,7 +1133,7 @@ export function CreatorMyProjectsPage() {
         <div className="mt-auto h-[32px] relative shrink-0 w-px" />
         <div className="bg-[var(--border-default,#e3e5ec)] h-px relative shrink-0 w-[228px]" data-name="Divider" />
         <div className="h-[8px] relative shrink-0 w-[10px]" data-name="gap" />
-        
+
         <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-name="Help Center">
           <div className="relative shrink-0 size-[18px]" data-name="Icon">
             <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon11} />
@@ -1204,7 +1206,15 @@ export function CreatorMyProjectsPage() {
                 </p>
               </div>
               <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap">
-                Ishita Rao · 19 projects · {tabCounts.invitations} offers waiting for your reply
+                {activeTab === "applied"
+                  ? "Ishita Rao · 3 applications · brands usually reply in 2 days"
+                  : activeTab === "invitations"
+                    ? `Ishita Rao · 19 projects · ${tabCounts.invitations} offers waiting for your reply`
+                    : activeTab === "live"
+                      ? `Ishita Rao · ${tabCounts.live} active projects · all on schedule`
+                      : activeTab === "completed"
+                        ? `Ishita Rao · ${tabCounts.completed} completed collaborations · 100% on time`
+                        : `Ishita Rao · ${tabCounts.declined} declined offers · no standing impact`}
               </p>
             </div>
 
@@ -1232,25 +1242,22 @@ export function CreatorMyProjectsPage() {
             <button
               type="button"
               onClick={() => setTab("invitations")}
-              className={`content-stretch flex gap-[6px] items-center overflow-clip pb-[12px] relative shrink-0 transition cursor-pointer ${
-                activeTab === "invitations"
+              className={`content-stretch flex gap-[6px] items-center overflow-clip pb-[12px] relative shrink-0 transition cursor-pointer ${activeTab === "invitations"
                   ? "border-[var(--primary-default,#0d0d10)] border-b-2 border-solid"
                   : "border-b-2 border-transparent hover:opacity-80"
-              }`}
+                }`}
             >
-              <p className={`[word-break:break-word] font-['Inter:Medium'] leading-[22px] not-italic relative shrink-0 text-[14px] whitespace-nowrap ${
-                activeTab === "invitations"
+              <p className={`[word-break:break-word] font-['Inter:Medium'] leading-[22px] not-italic relative shrink-0 text-[14px] whitespace-nowrap ${activeTab === "invitations"
                   ? "font-medium text-[color:var(--primary-default,#0d0d10)]"
                   : "font-normal text-[color:var(--text-secondary,#0d0d10)]"
-              }`}>
+                }`}>
                 Invitations &amp; offers
               </p>
               <div className={`${activeTab === "invitations" ? "bg-[var(--primary-subtle,#f1f4ff)]" : "bg-[var(--bg-muted,#edeff3)]"} content-stretch flex items-start overflow-clip px-[7px] py-px relative rounded-[var(--radius-full,999px)] shrink-0`}>
-                <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${
-                  activeTab === "invitations"
+                <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${activeTab === "invitations"
                     ? "text-[color:var(--primary-default,#0d0d10)]"
                     : "text-[color:var(--text-secondary,#0d0d10)]"
-                }`}>
+                  }`}>
                   {tabCounts.invitations}
                 </p>
               </div>
@@ -1259,25 +1266,22 @@ export function CreatorMyProjectsPage() {
             <button
               type="button"
               onClick={() => setTab("applied")}
-              className={`content-stretch flex gap-[6px] items-center overflow-clip pb-[12px] relative shrink-0 transition cursor-pointer ${
-                activeTab === "applied"
+              className={`content-stretch flex gap-[6px] items-center overflow-clip pb-[12px] relative shrink-0 transition cursor-pointer ${activeTab === "applied"
                   ? "border-[var(--primary-default,#0d0d10)] border-b-2 border-solid"
                   : "border-b-2 border-transparent hover:opacity-80"
-              }`}
+                }`}
             >
-              <p className={`[word-break:break-word] font-['Inter:Regular'] leading-[22px] not-italic relative shrink-0 text-[14px] whitespace-nowrap ${
-                activeTab === "applied"
+              <p className={`[word-break:break-word] font-['Inter:Regular'] leading-[22px] not-italic relative shrink-0 text-[14px] whitespace-nowrap ${activeTab === "applied"
                   ? "font-medium text-[color:var(--primary-default,#0d0d10)]"
                   : "font-normal text-[color:var(--text-secondary,#0d0d10)]"
-              }`}>
+                }`}>
                 Applied
               </p>
               <div className={`${activeTab === "applied" ? "bg-[var(--primary-subtle,#f1f4ff)]" : "bg-[var(--bg-muted,#edeff3)]"} content-stretch flex items-start overflow-clip px-[7px] py-px relative rounded-[var(--radius-full,999px)] shrink-0`}>
-                <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${
-                  activeTab === "applied"
+                <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${activeTab === "applied"
                     ? "text-[color:var(--primary-default,#0d0d10)]"
                     : "text-[color:var(--text-secondary,#0d0d10)]"
-                }`}>
+                  }`}>
                   {tabCounts.applied}
                 </p>
               </div>
@@ -1286,25 +1290,22 @@ export function CreatorMyProjectsPage() {
             <button
               type="button"
               onClick={() => setTab("live")}
-              className={`content-stretch flex gap-[6px] items-center overflow-clip pb-[12px] relative shrink-0 transition cursor-pointer ${
-                activeTab === "live"
+              className={`content-stretch flex gap-[6px] items-center overflow-clip pb-[12px] relative shrink-0 transition cursor-pointer ${activeTab === "live"
                   ? "border-[var(--primary-default,#0d0d10)] border-b-2 border-solid"
                   : "border-b-2 border-transparent hover:opacity-80"
-              }`}
+                }`}
             >
-              <p className={`[word-break:break-word] font-['Inter:Regular'] leading-[22px] not-italic relative shrink-0 text-[14px] whitespace-nowrap ${
-                activeTab === "live"
+              <p className={`[word-break:break-word] font-['Inter:Regular'] leading-[22px] not-italic relative shrink-0 text-[14px] whitespace-nowrap ${activeTab === "live"
                   ? "font-medium text-[color:var(--primary-default,#0d0d10)]"
                   : "font-normal text-[color:var(--text-secondary,#0d0d10)]"
-              }`}>
+                }`}>
                 Live
               </p>
               <div className={`${activeTab === "live" ? "bg-[var(--primary-subtle,#f1f4ff)]" : "bg-[var(--bg-muted,#edeff3)]"} content-stretch flex items-start overflow-clip px-[7px] py-px relative rounded-[var(--radius-full,999px)] shrink-0`}>
-                <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${
-                  activeTab === "live"
+                <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${activeTab === "live"
                     ? "text-[color:var(--primary-default,#0d0d10)]"
                     : "text-[color:var(--text-secondary,#0d0d10)]"
-                }`}>
+                  }`}>
                   {tabCounts.live}
                 </p>
               </div>
@@ -1313,25 +1314,22 @@ export function CreatorMyProjectsPage() {
             <button
               type="button"
               onClick={() => setTab("completed")}
-              className={`content-stretch flex gap-[6px] items-center overflow-clip pb-[12px] relative shrink-0 transition cursor-pointer ${
-                activeTab === "completed"
+              className={`content-stretch flex gap-[6px] items-center overflow-clip pb-[12px] relative shrink-0 transition cursor-pointer ${activeTab === "completed"
                   ? "border-[var(--primary-default,#0d0d10)] border-b-2 border-solid"
                   : "border-b-2 border-transparent hover:opacity-80"
-              }`}
+                }`}
             >
-              <p className={`[word-break:break-word] font-['Inter:Regular'] leading-[22px] not-italic relative shrink-0 text-[14px] whitespace-nowrap ${
-                activeTab === "completed"
+              <p className={`[word-break:break-word] font-['Inter:Regular'] leading-[22px] not-italic relative shrink-0 text-[14px] whitespace-nowrap ${activeTab === "completed"
                   ? "font-medium text-[color:var(--primary-default,#0d0d10)]"
                   : "font-normal text-[color:var(--text-secondary,#0d0d10)]"
-              }`}>
+                }`}>
                 Completed
               </p>
               <div className={`${activeTab === "completed" ? "bg-[var(--primary-subtle,#f1f4ff)]" : "bg-[var(--bg-muted,#edeff3)]"} content-stretch flex items-start overflow-clip px-[7px] py-px relative rounded-[var(--radius-full,999px)] shrink-0`}>
-                <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${
-                  activeTab === "completed"
+                <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${activeTab === "completed"
                     ? "text-[color:var(--primary-default,#0d0d10)]"
                     : "text-[color:var(--text-secondary,#0d0d10)]"
-                }`}>
+                  }`}>
                   {tabCounts.completed}
                 </p>
               </div>
@@ -1340,25 +1338,22 @@ export function CreatorMyProjectsPage() {
             <button
               type="button"
               onClick={() => setTab("declined")}
-              className={`content-stretch flex gap-[6px] items-center overflow-clip pb-[12px] relative shrink-0 transition cursor-pointer ${
-                activeTab === "declined"
+              className={`content-stretch flex gap-[6px] items-center overflow-clip pb-[12px] relative shrink-0 transition cursor-pointer ${activeTab === "declined"
                   ? "border-[var(--primary-default,#0d0d10)] border-b-2 border-solid"
                   : "border-b-2 border-transparent hover:opacity-80"
-              }`}
+                }`}
             >
-              <p className={`[word-break:break-word] font-['Inter:Regular'] leading-[22px] not-italic relative shrink-0 text-[14px] whitespace-nowrap ${
-                activeTab === "declined"
+              <p className={`[word-break:break-word] font-['Inter:Regular'] leading-[22px] not-italic relative shrink-0 text-[14px] whitespace-nowrap ${activeTab === "declined"
                   ? "font-medium text-[color:var(--primary-default,#0d0d10)]"
                   : "font-normal text-[color:var(--text-secondary,#0d0d10)]"
-              }`}>
+                }`}>
                 Declined
               </p>
               <div className={`${activeTab === "declined" ? "bg-[var(--primary-subtle,#f1f4ff)]" : "bg-[var(--bg-muted,#edeff3)]"} content-stretch flex items-start overflow-clip px-[7px] py-px relative rounded-[var(--radius-full,999px)] shrink-0`}>
-                <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${
-                  activeTab === "declined"
+                <p className={`[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${activeTab === "declined"
                     ? "text-[color:var(--primary-default,#0d0d10)]"
                     : "text-[color:var(--text-secondary,#0d0d10)]"
-                }`}>
+                  }`}>
                   {tabCounts.declined}
                 </p>
               </div>
@@ -1452,20 +1447,20 @@ export function CreatorMyProjectsPage() {
               durationFilter !== "All" ||
               platformFilter !== "All" ||
               feeFilter !== "All") && (
-              <button
-                type="button"
-                onClick={() => {
-                  setTypeFilter("All");
-                  setPartnershipFilter("All");
-                  setDurationFilter("All");
-                  setPlatformFilter("All");
-                  setFeeFilter("All");
-                }}
-                className="text-[12px] font-medium text-[#3b5bff] hover:underline ml-2"
-              >
-                Reset filters
-              </button>
-            )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTypeFilter("All");
+                    setPartnershipFilter("All");
+                    setDurationFilter("All");
+                    setPlatformFilter("All");
+                    setFeeFilter("All");
+                  }}
+                  className="text-[12px] font-medium text-[#3b5bff] hover:underline ml-2"
+                >
+                  Reset filters
+                </button>
+              )}
           </div>
 
           {/* Table */}
@@ -1499,17 +1494,17 @@ export function CreatorMyProjectsPage() {
               </div>
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[130px]" data-name="Cell">
                 <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] tracking-[0.72px] whitespace-nowrap">
-                  FEE
+                  {activeTab === "applied" ? "YOUR FEE" : "FEE"}
                 </p>
               </div>
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[136px]" data-name="Cell">
                 <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] tracking-[0.72px] whitespace-nowrap">
-                  {activeTab === "completed" ? "COMPLETED" : activeTab === "live" ? "DUE DATE" : "REPLY BY"}
+                  {activeTab === "applied" ? "BRAND DECIDES" : activeTab === "completed" ? "COMPLETED" : activeTab === "live" ? "DUE DATE" : "REPLY BY"}
                 </p>
               </div>
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[72px]" data-name="Cell">
                 <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] tracking-[0.72px] whitespace-nowrap">
-                  RECEIVED
+                  {activeTab === "applied" ? "APPLIED" : "RECEIVED"}
                 </p>
               </div>
               <div className="content-stretch flex flex-col items-start overflow-clip relative shrink-0 w-[96px]" data-name="Cell">
@@ -1610,9 +1605,8 @@ export function CreatorMyProjectsPage() {
                     <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap">
                       {row.replyBy}
                     </p>
-                    <p className={`[word-break:break-word] font-['Inter:Regular'] font-normal leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${
-                      row.replyNoteRed ? "text-[#db231f]" : "text-[#8491a3]"
-                    }`}>
+                    <p className={`[word-break:break-word] font-['Inter:Regular'] font-normal leading-[16px] not-italic relative shrink-0 text-[12px] whitespace-nowrap ${row.replyNoteRed ? "text-[#db231f]" : "text-[#8491a3]"
+                      }`}>
                       {row.replyNote}
                     </p>
                   </div>
@@ -1740,3 +1734,4 @@ export function CreatorMyProjectsPage() {
 
 export default CreatorMyProjectsPage;
 export { CreatorMyProjectsPage as Cr04MyProjectsInvitationsOffers };
+export { CreatorMyProjectsPage as Cr04MyProjectsApplied };
