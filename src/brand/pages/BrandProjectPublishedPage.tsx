@@ -3,6 +3,7 @@ import {
   Archive,
   CalendarDays,
   Check,
+  ChevronDown,
   CircleCheck,
   CircleDollarSign,
   Download,
@@ -2035,6 +2036,13 @@ export function BrandProjectPublishedPage({
   const [more, setMore] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [confirm, setConfirm] = useState<Confirm>(null);
+  const [applicationStatus, setApplicationStatus] = useState("All");
+  const [applicationPlatform, setApplicationPlatform] = useState("Platform");
+  const [applicationFollowers, setApplicationFollowers] = useState("Followers");
+  const [applicationEngagement, setApplicationEngagement] = useState("Eng. rate");
+  const [applicationFee, setApplicationFee] = useState("Fee");
+  const [applicationCity, setApplicationCity] = useState("City");
+  const [applicationSort, setApplicationSort] = useState("Match");
   const isAgencyClient = shell === "agency-client";
   const projectHomeRoute = isAgencyClient ? `/agency/client/${clientId}` : ROUTES.brandProjects;
   const projectDiscoveryRoute = isAgencyClient
@@ -2108,12 +2116,12 @@ export function BrandProjectPublishedPage({
   // An empty API response continues to render the existing empty state.
   const creators = project.creatorCount > 0 ? invitedCreators : [];
   const creatorProgress =
-    project.creators > 0
+    project.creatorCount > 0
       ? (() => {
-          const allDelivered = Math.max(1, Math.round(project.creators * 0.19));
-          const inProgress = Math.max(1, Math.round(project.creators * 0.31));
-          const notStarted = Math.max(0, Math.round(project.creators * 0.38));
-          const behind = Math.max(0, project.creators - allDelivered - inProgress - notStarted);
+          const allDelivered = Math.max(1, Math.round(project.creatorCount * 0.19));
+          const inProgress = Math.max(1, Math.round(project.creatorCount * 0.31));
+          const notStarted = Math.max(0, Math.round(project.creatorCount * 0.38));
+          const behind = Math.max(0, project.creatorCount - allDelivered - inProgress - notStarted);
           const stages = [
             {
               label: `All ${deliveryVerb.toLowerCase()}`,
@@ -2565,10 +2573,10 @@ export function BrandProjectPublishedPage({
                 icon={Users}
                 iconBg="bg-[#1eb2fd]"
                 label="Creators"
-                value={String(project.creators)}
+                value={String(project.creatorCount)}
                 detail={
-                  project.creators
-                    ? `of ${project.creators} places · creator team active`
+                  project.creatorCount
+                    ? `of ${project.creatorCount} places · creator team active`
                     : "No creators invited yet"
                 }
               />
@@ -2586,9 +2594,9 @@ export function BrandProjectPublishedPage({
                 value={
                   project.status === "Draft" || project.status === "Upcoming"
                     ? "0"
-                    : String(Math.round(project.deliverables / 2))
+                    : String(Math.round(project.deliverableCount / 2))
                 }
-                detail={`of ${project.deliverables} deliverables · ${project.status === "Completed" ? "complete" : "in progress"}`}
+                detail={`of ${project.deliverableCount} deliverables · ${project.status === "Completed" ? "complete" : "in progress"}`}
               />
             </section>
             <section className="mt-6 rounded-xl border border-line bg-white p-5">
@@ -2722,7 +2730,7 @@ export function BrandProjectPublishedPage({
                       <div className="relative grid size-[56px] place-items-center rounded-full bg-white text-center">
                         <p className="text-[14px] font-medium leading-[22px] text-ink">
                           {creatorProgress
-                            ? `${creatorProgress.delivered} of ${project.creators}`
+                            ? `${creatorProgress.delivered} of ${project.creatorCount}`
                             : "0 of 16"}
                         </p>
                         <p className="text-[12px] leading-4 text-tertiary">
@@ -2735,7 +2743,7 @@ export function BrandProjectPublishedPage({
                         ? creatorProgress.stages.map((stage) => [
                             stage.label,
                             String(stage.count),
-                            `${Math.round((stage.count / project.creators) * 100)}%`,
+                            `${Math.round((stage.count / project.creatorCount) * 100)}%`,
                             stage.className,
                           ])
                         : [

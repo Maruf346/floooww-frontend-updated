@@ -24,6 +24,7 @@ import {
   ChevronRight,
   ChevronDown,
   Eye,
+  Folder,
 } from "lucide-react";
 import { AgencyClientShell } from "../components/AgencyClientShell";
 import { AGENCY_CLIENTS } from "../components/AgencyWorkspaceSwitcher";
@@ -161,6 +162,7 @@ const CONTENT_REVIEW = [
 ];
 
 export function AgencyClientOverviewPage() {
+  const navigate = useNavigate();
   const params = useParams<{ clientId?: string }>();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);

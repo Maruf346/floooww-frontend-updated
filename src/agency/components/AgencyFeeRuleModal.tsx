@@ -201,7 +201,7 @@ export function AgencyFeeRuleModal({
             <button
               type="button"
               onClick={() => {
-                onDelete(initialRule.id);
+                if (initialRule?.id) onDelete(initialRule.id);
                 onClose();
               }}
               className="inline-flex items-center gap-1.5 text-[13px] font-medium text-rose-600 hover:text-rose-700 transition cursor-pointer"
