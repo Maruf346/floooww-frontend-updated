@@ -42,6 +42,7 @@ import {
 import { ShareProjectModal } from "@/brand/components/ShareProjectModal";
 import { ProjectApplicationsView } from "@/brand/pages/project-applications/ProjectApplicationsPanel";
 import {
+  agencyClientNewProjectRoute,
   agencyClientProjectsRoute,
   brandCreatorDeliverablesRoute,
   brandInvitedCreatorRoute,
@@ -114,7 +115,10 @@ const meta: Record<Lifecycle, { tone: string; detail: string }> = {
   Live: { tone: "bg-success-bg text-success", detail: "7 Oct – 7 Nov 2026 · live now" },
   Paused: { tone: "bg-[#fff3da] text-[#c77900]", detail: "Paused · deadlines are on hold" },
   Completed: { tone: "bg-success-bg text-success", detail: "7 Oct – 7 Nov 2026 · completed" },
-  Archived: { tone: "bg-muted text-secondary", detail: "Archived · read-only" },
+  Archived: {
+    tone: "bg-[#f4f6fb] text-[#4a4a55]",
+    detail: "7 Oct – 7 Nov 2026 · archived 30 Nov · read-only",
+  },
   Deleted: { tone: "bg-[#fde4e3] text-[#db231f]", detail: "Deleted · kept for 30 days" },
 };
 type ProjectProfile = {
@@ -339,6 +343,59 @@ const invitedCreators: ProjectCreator[] = [
     delivered: "–",
     nextStep: "Invite pending · expires 3 Oct",
     stage: "Invited",
+  },
+];
+
+const archivedCreators = [
+  {
+    name: "Meera Iyer",
+    handle: "@meerabeauty",
+    avatar: "/assets/creators/meera-iyer.png",
+    delivered: "4 / 4",
+    nextStep: "Leave a review",
+    stage: "Completed",
+    isDisputed: false,
+    dots: [true, true, true, true, true, true, true, true],
+  },
+  {
+    name: "Ishita Rao",
+    handle: "@ishitarao",
+    avatar: "/assets/creators/ishita-rao.png",
+    delivered: "4 / 4",
+    nextStep: "Leave a review",
+    stage: "Completed",
+    isDisputed: false,
+    dots: [true, true, true, true, true, true, true, true],
+  },
+  {
+    name: "Emma Clarke",
+    handle: "@emmaclarke",
+    avatar: "/assets/creators/emma-clarke.png",
+    delivered: "4 / 4",
+    nextStep: "Leave a review",
+    stage: "Completed",
+    isDisputed: false,
+    dots: [true, true, true, true, true, true, true, true],
+  },
+  {
+    name: "Kavya Reddy",
+    handle: "@kavyareddy",
+    avatar: "/assets/creators/kavya-reddy.png",
+    delivered: "4 / 4",
+    nextStep: "Leave a review",
+    stage: "Completed",
+    isDisputed: false,
+    dots: [true, true, true, true, true, true, true, true],
+  },
+  {
+    name: "Tara Bose",
+    handle: "@tarabose",
+    avatar: "/assets/creators/tara-bose.png",
+    delivered: "3 / 4",
+    nextStep: "1 post disputed and refunded",
+    stage: "Disputed",
+    isDisputed: true,
+    dots: [true, true, true, true, true, true, true, false],
   },
 ];
 
@@ -2040,16 +2097,23 @@ export function BrandProjectPublishedPage({
     searchParams.get("justPublished") === "true" ||
     searchParams.get("state") === "empty";
 
+  const isArchivedParam =
+    projectId === "archived" ||
+    searchParams.get("status")?.toLowerCase() === "archived" ||
+    project.detailStatus === "Archived";
+
   const isNoCreators =
-    isJustPublished ||
-    project.creatorCount === 0 ||
-    project.detailStatus === "Upcoming" ||
-    (isAgencyClient &&
-      project.id === 1 &&
-      typeof window !== "undefined" &&
-      !window.sessionStorage.getItem(`floooww-project-${project.id}-invited`));
+    !isArchivedParam &&
+    (isJustPublished ||
+      project.creatorCount === 0 ||
+      project.detailStatus === "Upcoming" ||
+      (isAgencyClient &&
+        project.id === 1 &&
+        typeof window !== "undefined" &&
+        !window.sessionStorage.getItem(`floooww-project-${project.id}-invited`)));
 
   const [status, setStatus] = useState<Lifecycle>(() => {
+    if (isArchivedParam) return "Archived";
     if (isNoCreators) return "Upcoming";
     return project.detailStatus;
   });
@@ -2141,12 +2205,14 @@ export function BrandProjectPublishedPage({
       ? "Month 3: 0 / 3"
       : `0 / ${fileDelivery ? 2 : 4} ${contentUnit}`;
   useEffect(() => {
-    if (isNoCreators) {
+    if (isArchivedParam) {
+      setStatus("Archived");
+    } else if (isNoCreators) {
       setStatus("Upcoming");
     } else {
       setStatus(project.detailStatus);
     }
-  }, [project.id, project.detailStatus, isNoCreators]);
+  }, [project.id, project.detailStatus, isNoCreators, isArchivedParam]);
   // Replace this sample with the accepted/invited creator records from the project API.
   // An empty API response continues to render the existing empty state.
   const creators = isNoCreators ? [] : project.creatorCount > 0 ? invitedCreators : [];
@@ -2244,14 +2310,28 @@ export function BrandProjectPublishedPage({
             >
               Share
             </Button>
-            <Button
-              disabled={locked}
-              className="bg-[#0d0d10] text-white hover:bg-black font-medium"
-              leadingIcon={<Users size={16} />}
-              onClick={() => setTab("Applications")}
-            >
-              Invite creators
-            </Button>
+            {status === "Archived" ? (
+              <Button
+                className="bg-[#0d0d10] text-white hover:bg-black font-medium"
+                leadingIcon={<RotateCcw size={16} />}
+                onClick={() => {
+                  setStatus("Live");
+                  project.detailStatus = "Live";
+                  project.status = "Live";
+                }}
+              >
+                Restore project
+              </Button>
+            ) : (
+              <Button
+                disabled={locked}
+                className="bg-[#0d0d10] text-white hover:bg-black font-medium"
+                leadingIcon={<Users size={16} />}
+                onClick={() => setTab("Applications")}
+              >
+                Invite creators
+              </Button>
+            )}
             <div className="relative">
               <button
                 title="More project actions"
@@ -2369,7 +2449,7 @@ export function BrandProjectPublishedPage({
             </Button>
           </div>
         )}
-        {status === "Archived" && (
+        {status === "Archived" && !isAgencyClient && (
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-muted px-4 py-3 text-[13px] leading-5 text-secondary">
             <div className="flex items-center gap-2.5">
               <Archive size={16} className="shrink-0 text-secondary" />
@@ -2433,13 +2513,19 @@ export function BrandProjectPublishedPage({
               {item}
               {["Applications", "Invited creators", "Content"].includes(item) && (
                 <span className="ml-1.5 rounded-full bg-muted px-[7px] py-px text-[12px] leading-4 text-secondary">
-                  {isNoCreators
-                    ? 0
-                    : item === "Applications"
-                      ? project.apps
+                  {status === "Archived"
+                    ? item === "Applications"
+                      ? 12
                       : item === "Invited creators"
-                        ? invitedCreatorCount
-                        : contentCountForProject(project.id)}
+                        ? 16
+                        : 63
+                    : isNoCreators
+                      ? 0
+                      : item === "Applications"
+                        ? project.apps
+                        : item === "Invited creators"
+                          ? invitedCreatorCount
+                          : contentCountForProject(project.id)}
                 </span>
               )}
             </button>
@@ -2611,53 +2697,182 @@ export function BrandProjectPublishedPage({
                 icon={Megaphone}
                 iconBg="bg-[#0d0d10]"
                 label="Project type"
-                value={isNoCreators ? "Influencer" : project.type}
+                value={status === "Archived" ? "Influencer" : isNoCreators ? "Influencer" : project.type}
                 detail={
-                  isNoCreators
+                  status === "Archived"
                     ? "Paid · one-time · 7 Oct – 7 Nov"
-                    : `${project.partnership} · ${project.duration}`
+                    : isNoCreators
+                      ? "Paid · one-time · 7 Oct – 7 Nov"
+                      : `${project.partnership} · ${project.duration}`
                 }
                 dataNodeId="1473:597"
               />
               <KpiTile
                 icon={Users}
-                iconBg="bg-[#8ec5ff]"
+                iconBg={status === "Archived" ? "bg-[#0d0d10]" : "bg-[#8ec5ff]"}
                 label="Creators"
-                value={isNoCreators ? "0" : String(project.creatorCount)}
+                value={status === "Archived" ? "16" : isNoCreators ? "0" : String(project.creatorCount)}
                 detail={
-                  isNoCreators || !project.creatorCount
-                    ? "of 16 places · none invited yet"
-                    : `of ${project.creatorCount} places · creator team active`
+                  status === "Archived"
+                    ? "16 of 16 delivered · archived 15 Nov"
+                    : isNoCreators || !project.creatorCount
+                      ? "of 16 places · none invited yet"
+                      : `of ${project.creatorCount} places · creator team active`
                 }
               />
               <KpiTile
                 icon={WalletCards}
-                iconBg="bg-[#f59e0b]"
+                iconBg={status === "Archived" ? "bg-[#0d0d10]" : "bg-[#f59e0b]"}
                 label="Budget"
-                value={isNoCreators ? "₹6 L" : project.budget}
+                value={status === "Archived" ? "₹6 L" : isNoCreators ? "₹6 L" : project.budget}
                 detail={
-                  isNoCreators
-                    ? "₹2 L funded at publish · ₹0 released"
-                    : project.budgetNote
+                  status === "Archived"
+                    ? "₹2 L committed · ₹2 L released"
+                    : isNoCreators
+                      ? "₹2 L funded at publish · ₹0 released"
+                      : project.budgetNote
                 }
               />
               <KpiTile
                 icon={Video}
-                iconBg="bg-[#8ec5ff]"
+                iconBg={status === "Archived" ? "bg-[#0d0d10]" : "bg-[#8ec5ff]"}
                 label="Content"
                 value={
-                  isNoCreators || project.status === "Draft" || project.status === "Upcoming"
-                    ? "0"
-                    : String(Math.round(project.deliverableCount / 2))
+                  status === "Archived"
+                    ? "64"
+                    : isNoCreators || project.status === "Draft" || project.status === "Upcoming"
+                      ? "0"
+                      : String(Math.round(project.deliverableCount / 2))
                 }
                 detail={
-                  isNoCreators
-                    ? "of 64 deliverables · starts 7 Oct"
-                    : `of ${project.deliverableCount} deliverables · starts 7 Oct`
+                  status === "Archived"
+                    ? "of 64 deliverables · 58 live"
+                    : isNoCreators
+                      ? "of 64 deliverables · starts 7 Oct"
+                      : `of ${project.deliverableCount} deliverables · starts 7 Oct`
                 }
               />
             </section>
-            {isNoCreators ? (
+            {status === "Archived" ? (
+              <section className="mt-6 rounded-xl border border-line bg-white p-5">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h2 className="text-[16px] font-semibold text-ink">Project timeline</h2>
+                    <p className="mt-0.5 text-[12px] text-secondary">
+                      Showing 20 Sep – 7 Dec · archived 30 Nov · read-only
+                    </p>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f4f6fb] px-2.5 py-0.5 text-[12px] font-medium text-[#4a4a55]">
+                    <span className="size-1.5 rounded-full bg-[#4a4a55]" />
+                    Read-only
+                  </span>
+                </div>
+                <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-8">
+                  {/* Step 1: Project created */}
+                  <div className="min-w-0 pr-2">
+                    <div className="flex items-center">
+                      <span className="z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-[#16a34a] text-white">
+                        <Check size={14} strokeWidth={2.5} />
+                      </span>
+                      <span className="h-0.5 flex-1 bg-[#0d0d10]" />
+                    </div>
+                    <h3 className="mt-2 text-[14px] font-medium text-ink">Project created</h3>
+                    <p className="mt-1 text-[12px] text-[#8491a3]">Brief and deliverables added</p>
+                    <p className="mt-2 text-[12px] text-secondary">20 Sep</p>
+                  </div>
+
+                  {/* Step 2: Invited Sophie Martin */}
+                  <div className="min-w-0 pr-2">
+                    <div className="flex items-center">
+                      <span className="z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-[#16a34a] text-white">
+                        <Check size={14} strokeWidth={2.5} />
+                      </span>
+                      <span className="h-0.5 flex-1 bg-[#0d0d10]" />
+                    </div>
+                    <h3 className="mt-2 text-[14px] font-medium text-ink">Invited Sophie Martin</h3>
+                    <p className="mt-1 text-[12px] text-[#8491a3]">and 15 more creators</p>
+                    <p className="mt-2 text-[12px] text-secondary">24 Sep</p>
+                  </div>
+
+                  {/* Step 3: Launched */}
+                  <div className="min-w-0 pr-2">
+                    <div className="flex items-center">
+                      <span className="z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-[#16a34a] text-white">
+                        <Check size={14} strokeWidth={2.5} />
+                      </span>
+                      <span className="h-0.5 flex-1 bg-[#0d0d10]" />
+                    </div>
+                    <h3 className="mt-2 text-[14px] font-medium text-ink">Launched</h3>
+                    <p className="mt-1 text-[12px] text-[#8491a3]">₹2,00,000 funded to escrow</p>
+                    <p className="mt-2 text-[12px] text-secondary">7 Oct</p>
+                  </div>
+
+                  {/* Step 4: All places filled */}
+                  <div className="min-w-0 pr-2">
+                    <div className="flex items-center">
+                      <span className="z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-[#16a34a] text-white">
+                        <Check size={14} strokeWidth={2.5} />
+                      </span>
+                      <span className="h-0.5 flex-1 bg-[#0d0d10]" />
+                    </div>
+                    <h3 className="mt-2 text-[14px] font-medium text-ink">All places filled</h3>
+                    <p className="mt-1 text-[12px] text-[#8491a3]">16 of 16 accepted</p>
+                    <p className="mt-2 text-[12px] text-secondary">10 Oct</p>
+                  </div>
+
+                  {/* Step 5: Final deadline */}
+                  <div className="min-w-0 pr-2">
+                    <div className="flex items-center">
+                      <span className="z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-[#16a34a] text-white">
+                        <Check size={14} strokeWidth={2.5} />
+                      </span>
+                      <span className="h-0.5 flex-1 bg-[#0d0d10]" />
+                    </div>
+                    <h3 className="mt-2 text-[14px] font-medium text-ink">Final deadline</h3>
+                    <p className="mt-1 text-[12px] text-[#8491a3]">63 of 64 delivered</p>
+                    <p className="mt-2 text-[12px] text-secondary">3 Nov</p>
+                  </div>
+
+                  {/* Step 6: Project ended */}
+                  <div className="min-w-0 pr-2">
+                    <div className="flex items-center">
+                      <span className="z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-[#16a34a] text-white">
+                        <Check size={14} strokeWidth={2.5} />
+                      </span>
+                      <span className="h-0.5 flex-1 bg-[#0d0d10]" />
+                    </div>
+                    <h3 className="mt-2 text-[14px] font-medium text-ink">Project ended</h3>
+                    <p className="mt-1 text-[12px] text-[#8491a3]">1 disputed post refunded</p>
+                    <p className="mt-2 text-[12px] text-secondary">7 Nov</p>
+                  </div>
+
+                  {/* Step 7: Archived */}
+                  <div className="min-w-0 pr-2">
+                    <div className="flex items-center">
+                      <span className="z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-[#16a34a] text-white">
+                        <Check size={14} strokeWidth={2.5} />
+                      </span>
+                      <span className="h-0.5 flex-1 bg-[#0d0d10]" />
+                    </div>
+                    <h3 className="mt-2 text-[14px] font-medium text-ink">Archived</h3>
+                    <p className="mt-1 text-[12px] text-[#8491a3]">by Ananya Mehta · read-only</p>
+                    <p className="mt-2 text-[12px] text-secondary">30 Nov</p>
+                  </div>
+
+                  {/* Step 8: Usage rights end */}
+                  <div className="min-w-0 pr-2">
+                    <div className="flex items-center">
+                      <span className="z-10 flex size-6 shrink-0 items-center justify-center rounded-full border-2 border-[#0d0d10] bg-white">
+                        <span className="size-2 rounded-full bg-[#0d0d10]" />
+                      </span>
+                    </div>
+                    <h3 className="mt-2 text-[14px] font-medium text-ink">Usage rights end</h3>
+                    <p className="mt-1 text-[12px] text-[#8491a3]">Extend to keep running the Reels as ads</p>
+                    <p className="mt-2 text-[12px] text-secondary">7 Dec</p>
+                  </div>
+                </div>
+              </section>
+            ) : isNoCreators ? (
               <section className="mt-6 rounded-xl border border-line bg-white p-5">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
@@ -2805,9 +3020,11 @@ export function BrandProjectPublishedPage({
                 >
                   <h2 className="text-[16px] font-semibold leading-6 text-ink">Project progress</h2>
                   <p className="text-[12px] leading-4 text-secondary">
-                    {isNoCreators || !creators.length
-                      ? "16 places · no creators invited yet"
-                      : `${project.creatorCount} creators in this project`}
+                    {status === "Archived"
+                      ? "16 creators · project ended"
+                      : isNoCreators || !creators.length
+                        ? "16 places · no creators invited yet"
+                        : `${project.creatorCount} creators in this project`}
                   </p>
                   <div className="mt-4 flex flex-col items-center gap-5 sm:flex-row">
                     <motion.div
@@ -2829,7 +3046,34 @@ export function BrandProjectPublishedPage({
                           stroke="#edeff3"
                           strokeWidth="18"
                         />
-                        {!isNoCreators && creators.length > 0 && (
+                        {status === "Archived" ? (
+                          <>
+                            <circle
+                              cx="60"
+                              cy="60"
+                              r="50"
+                              fill="none"
+                              pathLength="100"
+                              stroke="#149D46"
+                              strokeWidth="18"
+                              strokeDasharray="94 6"
+                              strokeDashoffset="0"
+                              transform="rotate(-90 60 60)"
+                            />
+                            <circle
+                              cx="60"
+                              cy="60"
+                              r="50"
+                              fill="none"
+                              pathLength="100"
+                              stroke="#F29B07"
+                              strokeWidth="18"
+                              strokeDasharray="6 94"
+                              strokeDashoffset="-94"
+                              transform="rotate(-90 60 60)"
+                            />
+                          </>
+                        ) : !isNoCreators && creators.length > 0 ? (
                           <>
                             <circle
                               cx="60"
@@ -2879,31 +3123,40 @@ export function BrandProjectPublishedPage({
                               transform="rotate(-90 60 60)"
                             />
                           </>
-                        )}
+                        ) : null}
                       </svg>
                       <div className="relative grid size-[56px] place-items-center rounded-full bg-white text-center">
-                        <p className="text-[14px] font-medium leading-[22px] text-ink">
-                          {!isNoCreators && creators.length > 0 && creatorProgress
-                            ? `${creatorProgress.delivered} of ${project.creatorCount}`
-                            : "0 of 16"}
+                        <p className="text-[14px] font-semibold leading-[20px] text-ink">
+                          {status === "Archived"
+                            ? "15 of 16"
+                            : !isNoCreators && creators.length > 0 && creatorProgress
+                              ? `${creatorProgress.delivered} of ${project.creatorCount}`
+                              : "0 of 16"}
                         </p>
                         <p className="text-[12px] leading-4 text-tertiary">
-                          {!isNoCreators && creators.length ? deliveryVerb.toLowerCase() : "filled"}
+                          {status === "Archived"
+                            ? "completed"
+                            : !isNoCreators && creators.length ? deliveryVerb.toLowerCase() : "filled"}
                         </p>
                       </div>
                     </motion.div>
                     <div className="w-full space-y-2.5">
-                      {(!isNoCreators && creators.length > 0 && creatorProgress
-                        ? creatorProgress.stages.map((stage) => [
-                            stage.label,
-                            String(stage.count),
-                            `${Math.round((stage.count / project.creatorCount) * 100)}%`,
-                            stage.className,
-                          ])
-                        : [
-                            ["Accepted", "0", "0%", "bg-[#16a34a]"],
-                            ["Places open", "16", "100%", "bg-[#0d0d10]"],
+                      {(status === "Archived"
+                        ? [
+                            ["All delivered", "15", "94%", "bg-[#149d46]"],
+                            ["Disputed · 1 post refunded", "1", "6%", "bg-[#f29b07]"],
                           ]
+                        : !isNoCreators && creators.length > 0 && creatorProgress
+                          ? creatorProgress.stages.map((stage) => [
+                              stage.label,
+                              String(stage.count),
+                              `${Math.round((stage.count / project.creatorCount) * 100)}%`,
+                              stage.className,
+                            ])
+                          : [
+                              ["Accepted", "0", "0%", "bg-[#16a34a]"],
+                              ["Places open", "16", "100%", "bg-[#0d0d10]"],
+                            ]
                       ).map(([label, count, percent, color]) => (
                         <div
                           className="flex items-center gap-2 text-[13px] leading-5 text-ink"
@@ -2930,30 +3183,32 @@ export function BrandProjectPublishedPage({
                     <div>
                       <h2 className="text-[16px] font-semibold text-ink">Content pipeline</h2>
                       <p className="mt-0.5 text-[12px] text-secondary">
-                        Nothing submitted yet · deliverables start after launch on 7 Oct
+                        {status === "Archived"
+                          ? "63 deliverables live · 1 refunded after a dispute"
+                          : "Nothing submitted yet · deliverables start after launch on 7 Oct"}
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={() => setTab("Content")}
-                      className="text-[12px] font-medium text-[#3b5bff] hover:underline cursor-pointer"
+                      className="text-[12px] font-medium text-[#2563eb] hover:underline cursor-pointer"
                     >
                       View Content
                     </button>
                   </div>
                   <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     {[
-                      ["Awaiting approval", "bg-[#f59e0b]"],
-                      ["Changes requested", "bg-[#db231f]"],
-                      ["Approved · not live yet", "bg-[#3b5bff]"],
-                      ["Live", "bg-[#16a34a]"],
-                    ].map(([label, color]) => (
-                      <div className="rounded-lg border border-line p-3.5" key={label}>
+                      ["Awaiting approval", "bg-[#f59e0b]", status === "Archived" ? 0 : 0],
+                      ["Changes requested", "bg-[#db231f]", status === "Archived" ? 0 : 0],
+                      ["Approved · not live yet", "bg-[#0d0d10]", status === "Archived" ? 0 : 0],
+                      ["Live", "bg-[#16a34a]", status === "Archived" ? 63 : 0],
+                    ].map(([label, color, count]) => (
+                      <div className="rounded-lg border border-line p-3.5" key={label as string}>
                         <p className="flex items-center gap-1.5 text-[12px] text-secondary">
                           <span className={`size-2 rounded-full ${color}`} />
                           {label}
                         </p>
-                        <p className="mt-2 text-[16px] font-semibold text-ink">0</p>
+                        <p className="mt-2 text-[16px] font-semibold text-ink">{count}</p>
                       </div>
                     ))}
                   </div>
@@ -2968,9 +3223,77 @@ export function BrandProjectPublishedPage({
                 >
                   <h2 className="text-[16px] font-semibold text-ink">Creators</h2>
                   <p className="mt-0.5 text-[12px] text-secondary">
-                    {!isNoCreators && creators.length ? "Who has accepted · launch on 7 Oct" : "No creators yet"}
+                    {status === "Archived"
+                      ? "Final status for each creator"
+                      : !isNoCreators && creators.length
+                        ? "Who has accepted · launch on 7 Oct"
+                        : "No creators yet"}
                   </p>
-                  {!isNoCreators && creators.length ? (
+                  {status === "Archived" ? (
+                    <div className="mt-4 overflow-x-auto rounded-lg border border-line">
+                      <div className="min-w-[640px]">
+                        <div className="grid grid-cols-[minmax(0,1fr)_110px_190px_110px] gap-3 bg-subtle px-3.5 py-2.5 text-[12px] font-semibold tracking-[.06em] text-secondary">
+                          <span>CREATOR</span>
+                          <span>DELIVERED</span>
+                          <span>NEXT STEP</span>
+                          <span>STAGE</span>
+                        </div>
+                        {archivedCreators.map((creator) => (
+                          <div
+                            className="grid grid-cols-[minmax(0,1fr)_110px_190px_110px] items-center gap-3 border-t border-line-subtle px-3.5 py-[11px]"
+                            key={creator.handle}
+                          >
+                            <div className="flex min-w-0 items-center gap-2.5">
+                              <img
+                                src={creator.avatar}
+                                alt=""
+                                className="size-8 shrink-0 rounded-full object-cover"
+                              />
+                              <div className="min-w-0">
+                                <p className="truncate text-[14px] font-medium leading-[22px] text-ink">
+                                  {creator.name}
+                                </p>
+                                <p className="truncate text-[12px] leading-4 text-secondary">
+                                  {creator.handle}
+                                </p>
+                              </div>
+                            </div>
+                            <p className="text-[13px] font-medium leading-5 text-ink">
+                              {creator.delivered}
+                            </p>
+                            <p
+                              className={`text-[13px] font-medium leading-5 ${
+                                creator.isDisputed
+                                  ? "text-[#db231f]"
+                                  : "text-ink hover:underline cursor-pointer"
+                              }`}
+                            >
+                              {creator.nextStep}
+                            </p>
+                            <div className="space-y-[5px]">
+                              <div className="flex h-2 items-center gap-1">
+                                {creator.dots.map((active, dotIdx) => (
+                                  <span
+                                    key={dotIdx}
+                                    className={`size-2 rounded-full ${
+                                      active ? "bg-[#149d46]" : "bg-[#d1d5db]"
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                              <p
+                                className={`text-[12px] font-medium ${
+                                  creator.isDisputed ? "text-[#db231f]" : "text-[#149d46]"
+                                }`}
+                              >
+                                {creator.stage}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : !isNoCreators && creators.length ? (
                     <div className="mt-4 overflow-x-auto rounded-lg border border-line">
                       <div className="min-w-[640px]">
                         <div className="grid grid-cols-[minmax(0,1fr)_110px_190px_110px] gap-3 bg-subtle px-3.5 py-2.5 text-[12px] font-semibold tracking-[.06em] text-secondary">
@@ -3049,7 +3372,7 @@ export function BrandProjectPublishedPage({
                 </motion.section>
 
                 {/* Additional sections for active projects with creators */}
-                {!isNoCreators && creators.length > 0 && (
+                {status !== "Archived" && !isNoCreators && creators.length > 0 && (
                   <>
                     <section className="grid gap-5 lg:grid-cols-2">
                       <section className="rounded-xl border border-line bg-white p-5">
@@ -3157,16 +3480,85 @@ export function BrandProjectPublishedPage({
 
               {/* Right column: Next actions */}
               <aside className="rounded-xl border border-line bg-white p-5 xl:sticky xl:top-6 xl:self-start">
-                <h2 className="text-[16px] font-semibold text-ink">
-                  {isNoCreators ? "Next actions" : "What to do next"}
-                </h2>
+                <h2 className="text-[16px] font-semibold text-ink">Next actions</h2>
                 <p className="mt-0.5 text-[12px] text-[#8491a3]">
-                  {isNoCreators
-                    ? "3 things to do before launch on 7 Oct"
-                    : "Recommended actions for this project"}
+                  {status === "Archived"
+                    ? "Archived · read-only"
+                    : isNoCreators
+                      ? "3 things to do before launch on 7 Oct"
+                      : "Recommended actions for this project"}
                 </p>
                 <div className="mt-4 divide-y divide-line">
-                  {isNoCreators ? (
+                  {status === "Archived" ? (
+                    <>
+                      {/* Action 1 */}
+                      <div className="flex items-center justify-between gap-3 pt-3 first:pt-0">
+                        <div className="min-w-0 flex-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setStatus("Live");
+                              project.detailStatus = "Live";
+                              project.status = "Live";
+                            }}
+                            className="text-left text-[14px] font-medium text-ink hover:text-primary transition-colors cursor-pointer block"
+                          >
+                            Restore project
+                          </button>
+                          <p className="mt-0.5 text-[12px] text-[#8491a3] leading-4">
+                            Restore to edit, invite creators or duplicate
+                          </p>
+                        </div>
+                        <span className="shrink-0 rounded-[6px] bg-[rgba(219,35,31,0.12)] px-2 py-0.5 text-[12px] font-medium text-[#db231f]">
+                          Read-only
+                        </span>
+                      </div>
+
+                      {/* Action 2 */}
+                      <div className="flex items-center justify-between gap-3 pt-3">
+                        <div className="min-w-0 flex-1">
+                          <button
+                            type="button"
+                            onClick={() => window.print()}
+                            className="text-left text-[14px] font-medium text-ink hover:text-primary transition-colors cursor-pointer block"
+                          >
+                            Download the final report
+                          </button>
+                          <p className="mt-0.5 text-[12px] text-[#8491a3] leading-4">
+                            Results, content and invoices stay here
+                          </p>
+                        </div>
+                        <span className="shrink-0 rounded-[6px] bg-[rgba(219,35,31,0.12)] px-2 py-0.5 text-[12px] font-medium text-[#db231f]">
+                          Ready
+                        </span>
+                      </div>
+
+                      {/* Action 3 */}
+                      <div className="flex items-center justify-between gap-3 pt-3">
+                        <div className="min-w-0 flex-1">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              navigate(
+                                isAgencyClient
+                                  ? agencyClientNewProjectRoute(clientId)
+                                  : ROUTES.brandNewProject,
+                              )
+                            }
+                            className="text-left text-[14px] font-medium text-ink hover:text-primary transition-colors cursor-pointer block"
+                          >
+                            Duplicate project
+                          </button>
+                          <p className="mt-0.5 text-[12px] text-[#8491a3] leading-4">
+                            Start a new project with the same setup
+                          </p>
+                        </div>
+                        <span className="shrink-0 rounded-[6px] bg-[rgba(242,155,7,0.12)] px-2 py-0.5 text-[12px] font-medium text-[#f29b07]">
+                          Suggested
+                        </span>
+                      </div>
+                    </>
+                  ) : isNoCreators ? (
                     <>
                       {/* Action 1 */}
                       <div className="flex items-center justify-between gap-3 pt-3 first:pt-0">
