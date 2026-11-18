@@ -220,6 +220,174 @@ const SERVICE_INVOICES: ServiceInvoice[] = [
   },
 ];
 
+interface NotificationClientProject {
+  id: string;
+  title: string;
+  enabled: boolean;
+  disabled?: boolean;
+}
+
+interface NotificationClientGroup {
+  id: string;
+  name: string;
+  initials: string;
+  roleDesc: string;
+  projects: NotificationClientProject[];
+}
+
+const INITIAL_CLIENT_NOTIFICATIONS: NotificationClientGroup[] = [
+  {
+    id: "minimalist",
+    name: "Minimalist",
+    initials: "MI",
+    roleDesc: "Account manager · Approve & pay",
+    projects: [
+      { id: "p1", title: "Vitamin-C Serum · live", enabled: true },
+      { id: "p2", title: "Glow Squad · live · cycle 2 on 2 Nov", enabled: true },
+      { id: "p3", title: "Monsoon Sunscreen · live", enabled: true },
+      { id: "p4", title: "Skin Quiz Leads · upcoming", enabled: false },
+    ],
+  },
+  {
+    id: "dewdrop",
+    name: "Dewdrop Naturals",
+    initials: "DE",
+    roleDesc: "Account manager · Approve & pay",
+    projects: [
+      { id: "p5", title: "Hydration Bundle · live", enabled: true },
+      { id: "p6", title: "Night Repair Range · upcoming", enabled: false },
+    ],
+  },
+  {
+    id: "velvet",
+    name: "Velvet Lip Co.",
+    initials: "VE",
+    roleDesc: "Viewer · Priya Sharma owns this client",
+    projects: [
+      { id: "p7", title: "Lip Tint Drop · live", enabled: false, disabled: true },
+      { id: "p8", title: "Matte Lip Launch · offers", enabled: false, disabled: true },
+    ],
+  },
+];
+
+interface NotificationEventItem {
+  id: string;
+  title: string;
+  desc: string;
+  email: boolean;
+  inApp: boolean;
+}
+
+interface NotificationCategoryGroup {
+  category: string;
+  events: NotificationEventItem[];
+}
+
+const INITIAL_EVENT_CATEGORIES: NotificationCategoryGroup[] = [
+  {
+    category: "Applications and invites",
+    events: [
+      {
+        id: "e1",
+        title: "New application",
+        desc: "A creator applies to a client’s project",
+        email: false,
+        inApp: true,
+      },
+      {
+        id: "e2",
+        title: "Invite accepted or declined",
+        desc: "Including counter-offers on fee",
+        email: true,
+        inApp: true,
+      },
+    ],
+  },
+  {
+    category: "Content",
+    events: [
+      {
+        id: "e3",
+        title: "Content sent for approval",
+        desc: "Drafts and files waiting for approval on any client",
+        email: true,
+        inApp: true,
+      },
+      {
+        id: "e4",
+        title: "Post went live",
+        desc: "We checked the link works",
+        email: false,
+        inApp: true,
+      },
+      {
+        id: "e5",
+        title: "Deliverable is late",
+        desc: "Not posted by the date you set",
+        email: true,
+        inApp: true,
+      },
+    ],
+  },
+  {
+    category: "Shipping",
+    events: [
+      {
+        id: "e6",
+        title: "Product delivered",
+        desc: "Courier or creator confirmed it",
+        email: false,
+        inApp: true,
+      },
+      {
+        id: "e7",
+        title: "Delivery problem",
+        desc: "Returned, damaged or wrong item",
+        email: true,
+        inApp: true,
+      },
+    ],
+  },
+  {
+    category: "Payments",
+    events: [
+      {
+        id: "e8",
+        title: "Client funded escrow",
+        desc: "A client paid into escrow for a project",
+        email: false,
+        inApp: true,
+      },
+      {
+        id: "e9",
+        title: "Payment released to a creator",
+        desc: "After the client (or you, with Approve & pay) approves",
+        email: false,
+        inApp: true,
+      },
+      {
+        id: "e10",
+        title: "Refund, dispute or overdue client invoice",
+        desc: "Any change to client money or your service fees",
+        email: true,
+        inApp: true,
+      },
+    ],
+  },
+  {
+    category: "Reports",
+    events: [
+      {
+        id: "e11",
+        title: "Weekly results · all clients",
+        desc: "Every Monday at 9 am · one email per client plus the agency summary",
+        email: false,
+        inApp: false,
+      },
+    ],
+  },
+];
+
 const easeCurve = [0.22, 1, 0.36, 1] as const;
 
 export function AgencySettingsPage() {
@@ -249,6 +417,16 @@ export function AgencySettingsPage() {
   const [billingDetails, setBillingDetails] = useState<BillingDetailsData>(INITIAL_BILLING_DETAILS);
   const [isBillingModalOpen, setIsBillingModalOpen] = useState(false);
 
+  // Notifications state
+  const [clientNotifications, setClientNotifications] = useState<NotificationClientGroup[]>(
+    INITIAL_CLIENT_NOTIFICATIONS
+  );
+  const [eventCategories, setEventCategories] = useState<NotificationCategoryGroup[]>(
+    INITIAL_EVENT_CATEGORIES
+  );
+  const [clientFilter, setClientFilter] = useState<"only_my" | "all">("only_my");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
   // Form State for "Account" tab
   const [agencyName, setAgencyName] = useState("Brightside Agency");
   const [websiteUrl, setWebsiteUrl] = useState("https://brightside.agency");
@@ -270,6 +448,7 @@ export function AgencySettingsPage() {
 
   const servicesRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const filterDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (pathname === ROUTES.agencyTeam) {
@@ -286,6 +465,9 @@ export function AgencySettingsPage() {
     function handleClickOutside(event: MouseEvent) {
       if (servicesRef.current && !servicesRef.current.contains(event.target as Node)) {
         setIsServicesOpen(false);
+      }
+      if (filterDropdownRef.current && !filterDropdownRef.current.contains(event.target as Node)) {
+        setIsFilterOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -368,6 +550,34 @@ export function AgencySettingsPage() {
 
   const handleDownloadAllInvoices = () => {
     showToast("Downloading all service-fee invoices (ZIP)...");
+  };
+
+  // Notification toggles
+  const toggleProjectNotification = (groupId: string, projectId: string) => {
+    setClientNotifications((prev) =>
+      prev.map((g) => {
+        if (g.id !== groupId) return g;
+        return {
+          ...g,
+          projects: g.projects.map((p) => {
+            if (p.id !== projectId || p.disabled) return p;
+            return { ...p, enabled: !p.enabled };
+          }),
+        };
+      })
+    );
+  };
+
+  const toggleEventNotification = (eventId: string, channel: "email" | "inApp") => {
+    setEventCategories((prev) =>
+      prev.map((cat) => ({
+        ...cat,
+        events: cat.events.map((ev) => {
+          if (ev.id !== eventId) return ev;
+          return { ...ev, [channel]: !ev[channel] };
+        }),
+      }))
+    );
   };
 
   return (
@@ -1129,19 +1339,228 @@ export function AgencySettingsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.35, ease: easeCurve }}
-                  className="rounded-[12px] border border-[#e3e5ec] bg-white p-6 flex flex-col gap-4 shadow-xs"
+                  className="flex flex-col gap-6"
                 >
-                  <div className="border-b border-[#edeff3] pb-3">
-                    <h2 className="text-[16px] font-semibold text-[#0d0d10]">
-                      Notifications (AG-05c)
-                    </h2>
-                    <p className="text-[12px] text-[#71717a]">
-                      Email, WhatsApp, and in-app alerts per client & project scope
-                    </p>
+                  {/* Card 1: My clients and projects */}
+                  <div className="rounded-[12px] border border-[#e3e5ec] bg-white p-5 flex flex-col gap-4 shadow-xs">
+                    {/* Header */}
+                    <div className="flex items-start justify-between gap-4 pb-3 border-b border-[#edeff3]">
+                      <div className="flex flex-col gap-1 min-w-0">
+                        <h2 className="text-[16px] font-semibold text-[#0d0d10]">
+                          My clients and projects
+                        </h2>
+                        <p className="text-[12px] text-[#71717a] leading-tight">
+                          Rahul Verma · you manage 2 clients · 4 live projects · choose what notifies you; access itself is set in Team &amp; roles
+                        </p>
+                      </div>
+
+                      {/* Dropdown filter */}
+                      <div className="relative shrink-0" ref={filterDropdownRef}>
+                        <button
+                          type="button"
+                          onClick={() => setIsFilterOpen(!isFilterOpen)}
+                          className="inline-flex items-center gap-1 text-[13px] font-medium text-[#3b5bff] hover:underline cursor-pointer"
+                        >
+                          <span>
+                            {clientFilter === "only_my"
+                              ? "Only my clients ▾"
+                              : "All agency clients ▾"}
+                          </span>
+                        </button>
+
+                        {isFilterOpen && (
+                          <div className="absolute right-0 top-[calc(100%+6px)] z-30 w-44 rounded-[8px] border border-[#e5e7eb] bg-white p-1 shadow-lg animate-in fade-in duration-100 flex flex-col gap-0.5">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setClientFilter("only_my");
+                                setIsFilterOpen(false);
+                              }}
+                              className={`flex w-full items-center justify-between px-3 py-1.5 text-[12px] rounded text-left transition cursor-pointer ${
+                                clientFilter === "only_my"
+                                  ? "bg-[#f1f4ff] font-medium text-[#0d0d10]"
+                                  : "text-[#0d0d10] hover:bg-[#f8f9fb]"
+                              }`}
+                            >
+                              <span>Only my clients</span>
+                              {clientFilter === "only_my" && <Check className="size-3.5" />}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setClientFilter("all");
+                                setIsFilterOpen(false);
+                              }}
+                              className={`flex w-full items-center justify-between px-3 py-1.5 text-[12px] rounded text-left transition cursor-pointer ${
+                                clientFilter === "all"
+                                  ? "bg-[#f1f4ff] font-medium text-[#0d0d10]"
+                                  : "text-[#0d0d10] hover:bg-[#f8f9fb]"
+                              }`}
+                            >
+                              <span>All agency clients</span>
+                              {clientFilter === "all" && <Check className="size-3.5" />}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Client Project Groups */}
+                    <div className="flex flex-col gap-5 pt-1">
+                      {clientNotifications.map((group) => (
+                        <div key={group.id} className="flex flex-col gap-2.5">
+                          {/* Client Title Row */}
+                          <div className="flex items-center gap-2">
+                            <div className="size-6 rounded-full bg-[#f1f4ff] text-[#3b5bff] text-[11px] font-semibold flex items-center justify-center shrink-0">
+                              {group.initials}
+                            </div>
+                            <span className="text-[13px] font-semibold text-[#0d0d10]">
+                              {group.name}
+                            </span>
+                            <span className="text-[12px] text-[#71717a]">
+                              {group.roleDesc}
+                            </span>
+                          </div>
+
+                          {/* Projects Checklist */}
+                          <div className="flex flex-col gap-2 pl-8">
+                            {group.projects.map((project) => (
+                              <label
+                                key={project.id}
+                                className={`flex items-center gap-2.5 text-[13px] select-none ${
+                                  project.disabled
+                                    ? "opacity-50 cursor-not-allowed text-[#8c94a0]"
+                                    : "cursor-pointer text-[#0d0d10] hover:text-black"
+                                }`}
+                              >
+                                <button
+                                  type="button"
+                                  disabled={project.disabled}
+                                  onClick={() =>
+                                    toggleProjectNotification(group.id, project.id)
+                                  }
+                                  className={`size-4 rounded-[4px] flex items-center justify-center transition-colors shrink-0 ${
+                                    project.enabled
+                                      ? "bg-[#0d0d10] text-white"
+                                      : "border border-[#d1d5db] bg-white hover:border-[#0d0d10]"
+                                  }`}
+                                >
+                                  {project.enabled && (
+                                    <Check className="size-3 text-white stroke-[3]" />
+                                  )}
+                                </button>
+                                <span className={project.enabled ? "text-[#0d0d10]" : "text-[#71717a]"}>
+                                  {project.title}
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Bottom Explanatory Note */}
+                    <div className="border-t border-[#f0f2f5] pt-3 mt-1">
+                      <p className="text-[12px] text-[#8c94a0] leading-relaxed">
+                        New projects on a client you manage are added automatically. Members with access to one project only see that project everywhere, Overview, Clients, Custom reports and notifications.
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-[13px] text-[#71717a]">
-                    Notification scopes will be implemented in the AG-05c step.
-                  </p>
+
+                  {/* Card 2: Notifications Event Table */}
+                  <div className="rounded-[12px] border border-[#e3e5ec] bg-white p-5 flex flex-col gap-4 shadow-xs">
+                    {/* Header */}
+                    <div className="flex flex-col gap-0.5 pb-2 border-b border-[#edeff3]">
+                      <h3 className="text-[16px] font-semibold text-[#0d0d10]">
+                        Notifications
+                      </h3>
+                      <p className="text-[12px] text-[#71717a]">
+                        Per client or for all clients · account managers get their clients only
+                      </p>
+                    </div>
+
+                    {/* Table */}
+                    <div className="overflow-x-auto">
+                      <div className="min-w-[620px] flex flex-col">
+                        {/* Header Row */}
+                        <div className="grid grid-cols-[1fr_80px_80px] items-center rounded-[8px] bg-[#f8f9fc] px-4 py-2 text-[12px] font-semibold text-[#525866] uppercase tracking-wider">
+                          <span>EVENT</span>
+                          <span className="text-center">EMAIL</span>
+                          <span className="text-center">IN APP</span>
+                        </div>
+
+                        {/* Category Groups */}
+                        <div className="divide-y divide-[#f0f2f5]">
+                          {eventCategories.map((cat) => (
+                            <div key={cat.category} className="py-2.5 flex flex-col">
+                              {/* Category Title */}
+                              <div className="px-4 py-1 text-[13px] font-semibold text-[#0d0d10]">
+                                {cat.category}
+                              </div>
+
+                              {/* Category Event Rows */}
+                              <div className="flex flex-col">
+                                {cat.events.map((ev) => (
+                                  <div
+                                    key={ev.id}
+                                    className="grid grid-cols-[1fr_80px_80px] items-center px-4 py-2.5 hover:bg-[#fafbfd] transition-colors rounded-md"
+                                  >
+                                    {/* Event Title & Desc */}
+                                    <div className="flex flex-col min-w-0 pr-4">
+                                      <span className="text-[13px] font-medium text-[#0d0d10] leading-snug">
+                                        {ev.title}
+                                      </span>
+                                      <span className="text-[12px] text-[#71717a] leading-tight">
+                                        {ev.desc}
+                                      </span>
+                                    </div>
+
+                                    {/* Email Toggle */}
+                                    <div className="flex justify-center">
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          toggleEventNotification(ev.id, "email")
+                                        }
+                                        className={`size-4 rounded-[4px] flex items-center justify-center transition-colors cursor-pointer ${
+                                          ev.email
+                                            ? "bg-[#0d0d10] text-white"
+                                            : "border border-[#d1d5db] bg-white hover:border-[#0d0d10]"
+                                        }`}
+                                      >
+                                        {ev.email && (
+                                          <Check className="size-3 text-white stroke-[3]" />
+                                        )}
+                                      </button>
+                                    </div>
+
+                                    {/* In App Toggle */}
+                                    <div className="flex justify-center">
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          toggleEventNotification(ev.id, "inApp")
+                                        }
+                                        className={`size-4 rounded-[4px] flex items-center justify-center transition-colors cursor-pointer ${
+                                          ev.inApp
+                                            ? "bg-[#0d0d10] text-white"
+                                            : "border border-[#d1d5db] bg-white hover:border-[#0d0d10]"
+                                        }`}
+                                      >
+                                        {ev.inApp && (
+                                          <Check className="size-3 text-white stroke-[3]" />
+                                        )}
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
               )}
 
