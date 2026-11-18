@@ -101,8 +101,8 @@ function AgencySidebar({
           onClick={close}
           className={`${navClass} ${
             overviewActive
-              ? "bg-[#f1f4ff] font-semibold text-[#014ef6]"
-              : "text-[#0d0d10] hover:bg-[#f4f6fb]"
+              ? "bg-primary-subtle font-semibold text-primary"
+              : "text-ink hover:bg-subtle"
           }`}
         >
           <Home size={18} />
@@ -113,7 +113,7 @@ function AgencySidebar({
         <div className="mt-0.5">
           <div
             onClick={() => setClientsOpen((prev) => !prev)}
-            className="flex h-9 w-full items-center justify-between rounded-md px-3 text-[14px] transition-colors cursor-pointer text-[#0d0d10] hover:bg-[#f4f6fb]"
+            className="flex h-9 w-full items-center justify-between rounded-md px-3 text-[14px] transition-colors cursor-pointer text-ink hover:bg-subtle select-none"
           >
             <div className="flex items-center gap-2.5 min-w-0 flex-1">
               <Users size={18} className="shrink-0" />
@@ -125,7 +125,7 @@ function AgencySidebar({
                 e.stopPropagation();
                 setClientsOpen((prev) => !prev);
               }}
-              className="p-1 text-[#71717a] hover:text-[#0d0d10] cursor-pointer shrink-0 rounded"
+              className="p-1 text-[#71717a] hover:text-ink cursor-pointer shrink-0 rounded"
               aria-label="Toggle clients menu"
               aria-expanded={clientsOpen}
             >
@@ -149,12 +149,12 @@ function AgencySidebar({
                     // Opens Brand app in client mode for this client
                     navigate(`/brand?client=${client.id}`);
                   }}
-                  className="flex h-8 w-full items-center gap-2.5 rounded-md px-3 pl-9 text-[13px] text-[#0d0d10] hover:bg-[#f4f6fb] transition-colors text-left cursor-pointer"
+                  className="flex h-8 w-full items-center gap-2.5 rounded-md px-3 pl-9 text-[13px] text-ink hover:bg-subtle transition-colors text-left cursor-pointer"
                 >
                   <span className="size-1 rounded-full bg-[#a3a3ac] shrink-0" />
                   <span className="flex-1 truncate">{client.name}</span>
                   {client.count > 0 && (
-                    <span className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#edeff3] px-1.5 text-[12px] font-medium leading-4 text-[#0d0d10]">
+                    <span className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#edeff3] px-1.5 text-[12px] font-medium leading-4 text-ink">
                       {client.count}
                     </span>
                   )}
@@ -167,7 +167,7 @@ function AgencySidebar({
                   close?.();
                   navigate("/brand/projects/new");
                 }}
-                className="flex h-8 w-full items-center gap-2.5 rounded-md px-3 pl-9 text-[13px] text-[#0d0d10] hover:bg-[#f4f6fb] transition-colors text-left cursor-pointer"
+                className="flex h-8 w-full items-center gap-2.5 rounded-md px-3 pl-9 text-[13px] text-ink hover:bg-subtle transition-colors text-left cursor-pointer"
               >
                 <span className="size-1 rounded-full bg-[#a3a3ac] shrink-0" />
                 <span className="flex-1 truncate font-medium">+ Create new project</span>
@@ -179,7 +179,7 @@ function AgencySidebar({
                   close?.();
                   if (onAddClient) onAddClient();
                 }}
-                className="flex h-8 w-full items-center gap-2.5 rounded-md px-3 pl-9 text-[13px] text-[#0d0d10] hover:bg-[#f4f6fb] transition-colors text-left cursor-pointer"
+                className="flex h-8 w-full items-center gap-2.5 rounded-md px-3 pl-9 text-[13px] text-ink hover:bg-subtle transition-colors text-left cursor-pointer"
               >
                 <span className="size-1 rounded-full bg-[#a3a3ac] shrink-0" />
                 <span className="flex-1 truncate font-medium">+ Add client</span>
@@ -193,8 +193,8 @@ function AgencySidebar({
           onClick={close}
           className={`${navClass} mt-0.5 ${
             billingActive
-              ? "bg-[#f1f4ff] font-semibold text-[#014ef6]"
-              : "text-[#0d0d10] hover:bg-[#f4f6fb]"
+              ? "bg-primary-subtle font-semibold text-primary"
+              : "text-ink hover:bg-subtle"
           }`}
         >
           <WalletCards size={18} />
@@ -206,8 +206,8 @@ function AgencySidebar({
           onClick={close}
           className={`${navClass} mt-0.5 ${
             reportsActive
-              ? "bg-[#f1f4ff] font-semibold text-[#014ef6]"
-              : "text-[#0d0d10] hover:bg-[#f4f6fb]"
+              ? "bg-primary-subtle font-semibold text-primary"
+              : "text-ink hover:bg-subtle"
           }`}
         >
           <FileBarChart size={18} />
@@ -223,8 +223,8 @@ function AgencySidebar({
           onClick={close}
           className={`${navClass} mt-0.5 ${
             teamActive
-              ? "bg-[#f1f4ff] font-semibold text-[#014ef6]"
-              : "text-[#0d0d10] hover:bg-[#f4f6fb]"
+              ? "bg-primary-subtle font-semibold text-primary"
+              : "text-ink hover:bg-subtle"
           }`}
         >
           <Users size={18} />
@@ -236,13 +236,13 @@ function AgencySidebar({
           onClick={close}
           className={`${navClass} mt-0.5 ${
             messagesActive
-              ? "bg-[#f1f4ff] font-semibold text-[#014ef6]"
-              : "text-[#0d0d10] hover:bg-[#f4f6fb]"
+              ? "bg-primary-subtle font-semibold text-primary"
+              : "text-ink hover:bg-subtle"
           }`}
         >
           <MessageSquare size={18} />
           <span className="flex-1">Messages</span>
-          <span className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#edeff3] px-1.5 text-[12px] font-medium leading-4 text-[#0d0d10]">
+          <span className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#edeff3] px-1.5 text-[12px] font-medium leading-4 text-ink">
             4
           </span>
         </Link>
@@ -252,8 +252,8 @@ function AgencySidebar({
           onClick={close}
           className={`${navClass} mt-0.5 ${
             settingsActive
-              ? "bg-[#f1f4ff] font-semibold text-[#014ef6]"
-              : "text-[#0d0d10] hover:bg-[#f4f6fb]"
+              ? "bg-primary-subtle font-semibold text-primary"
+              : "text-ink hover:bg-subtle"
           }`}
         >
           <Settings size={18} />
@@ -267,8 +267,8 @@ function AgencySidebar({
           onClick={close}
           className={`${navClass} ${
             helpActive
-              ? "bg-[#f1f4ff] font-semibold text-[#014ef6]"
-              : "text-[#0d0d10] hover:bg-[#f4f6fb]"
+              ? "bg-primary-subtle font-semibold text-primary"
+              : "text-ink hover:bg-subtle"
           }`}
         >
           <CircleHelp size={18} />
@@ -281,7 +281,7 @@ function AgencySidebar({
             close?.();
             onLogout();
           }}
-          className={`${navClass} text-[#0d0d10] hover:bg-[#f4f6fb] cursor-pointer`}
+          className={`${navClass} text-ink hover:bg-subtle cursor-pointer`}
         >
           <LogOut size={18} />
           <span>Logout</span>
@@ -385,7 +385,9 @@ export function AgencyShell({ children, onAddClient }: AgencyShellProps) {
         </header>
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        <main className="flex-1 overflow-y-auto bg-subtle/50 px-4 py-6 sm:px-6 lg:px-8">
+          {children}
+        </main>
       </div>
 
       {/* Logout Modal */}

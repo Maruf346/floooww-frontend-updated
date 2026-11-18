@@ -6,7 +6,6 @@ import {
   ChevronRight,
   FileText,
   FolderKanban,
-  MessageCircle,
   MoreVertical,
   Package,
   Plus,
@@ -26,28 +25,28 @@ const kpiTiles = [
     label: "Total clients",
     value: "6",
     subtext: "5 active · 1 onboarding",
-    icon: FolderKanban,
+    icon: "/assets/agency/icons/total_clients.svg",
     iconBg: "bg-[#0d0d10]",
   },
   {
     label: "Projects",
     value: "11",
     subtext: "9 live · 2 upcoming",
-    icon: Sparkles,
-    iconBg: "bg-[#014ef6]",
+    icon: "/assets/agency/icons/projects.svg",
+    iconBg: "bg-[#3b5bff]",
   },
   {
     label: "Creators",
     value: "41",
     subtext: "in live projects · across clients",
-    icon: Users,
-    iconBg: "bg-[#0ea5e9]",
+    icon: "/assets/agency/icons/creators.svg",
+    iconBg: "bg-[#8ec5ff]",
   },
   {
     label: "Content",
     value: "63",
     subtext: "14 awaiting review · 49 live",
-    icon: Video,
+    icon: "/assets/agency/icons/content.svg",
     iconBg: "bg-[#3b5bff]",
   },
 ];
@@ -335,7 +334,7 @@ export function AgencyDashboardPage() {
 
   return (
     <AgencyShell onAddClient={() => setIsAddClientOpen(true)}>
-      <div className="mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-8 py-7 flex flex-col gap-6">
+      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 pb-10">
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
@@ -361,28 +360,37 @@ export function AgencyDashboardPage() {
         </div>
 
         {/* 1. Results KPI Tiles */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-white border border-[#e3e5ec] rounded-[12px] p-5 shadow-2xs">
-          {kpiTiles.map((tile) => {
-            const Icon = tile.icon;
-            return (
-              <div key={tile.label} className="flex flex-col">
+        <div
+          data-name="Results"
+          className="bg-white border border-[#e3e5ec] rounded-[12px] p-5 shadow-2xs"
+        >
+          <div
+            data-name="Tiles"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full"
+          >
+            {kpiTiles.map((tile) => (
+              <div
+                key={tile.label}
+                data-name="KPI tile"
+                className="bg-white border border-[#edeff3] rounded-[12px] p-4 flex flex-col items-start min-w-0"
+              >
                 <div
-                  className={`size-8 rounded-lg ${tile.iconBg} text-white flex items-center justify-center shrink-0 mb-3`}
+                  className={`size-[36px] rounded-[8px] ${tile.iconBg} flex items-center justify-center shrink-0`}
                 >
-                  <Icon size={16} />
+                  <img src={tile.icon} alt="" className="size-[18px]" />
                 </div>
-                <span className="text-[12px] font-medium text-[#71717a]">
+                <p className="text-[12px] font-normal leading-4 text-[#0d0d10] mt-3.5">
                   {tile.label}
-                </span>
-                <span className="text-[32px] font-bold text-[#0d0d10] tracking-tight leading-none mt-1.5">
+                </p>
+                <p className="text-[22px] font-semibold leading-7 tracking-[-0.33px] text-[#0d0d10] mt-0.5">
                   {tile.value}
-                </span>
-                <span className="text-[12px] text-[#71717a] mt-1.5">
+                </p>
+                <p className="text-[12px] font-medium leading-4 text-[#a3a3ac] mt-2.5 truncate w-full">
                   {tile.subtext}
-                </span>
+                </p>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
 
         {/* 2. Action Required + Upcoming deadlines */}
@@ -858,16 +866,6 @@ export function AgencyDashboardPage() {
           </div>
         </div>
       </div>
-
-      {/* Floating Chatbot Launcher */}
-      <button
-        type="button"
-        onClick={() => showToast("AI Agency Assistant: Ask anything about your clients or campaigns!")}
-        className="fixed bottom-6 right-6 z-40 size-14 rounded-full bg-[#0d0d10] text-white flex items-center justify-center shadow-lg hover:bg-black hover:scale-105 transition-all cursor-pointer"
-        aria-label="Open AI assistant"
-      >
-        <MessageCircle size={24} />
-      </button>
 
       {/* Add Client Modal */}
       <AgencyAddClientModal
