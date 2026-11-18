@@ -23,12 +23,19 @@ import {
   Trash2,
   UserRoundPlus,
 } from "lucide-react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { AgencyClientShell } from "@/agency/components/AgencyClientShell";
+import { AGENCY_CLIENTS } from "@/agency/components/AgencyWorkspaceSwitcher";
 import { Button } from "@/common/components/ui/Button";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { KpiTile } from "@/common/components/ui/KpiTile";
-import { brandProjectRoute, ROUTES } from "@/common/constants/routes";
+import {
+  brandProjectRoute,
+  agencyClientNewProjectRoute,
+  agencyClientProjectDetailRoute,
+  ROUTES,
+} from "@/common/constants/routes";
 import { asset } from "@/common/utils/asset";
 import { projects } from "@/brand/data/projects";
 import {
@@ -682,9 +689,22 @@ function ProjectActionsMenu({
   );
 }
 
-export function BrandProjectsPage() {
+export function BrandProjectsPage({
+  shell = "brand",
+  activeClientId,
+}: {
+  shell?: "brand" | "agency-client";
+  activeClientId?: string;
+} = {}) {
   const navigate = useNavigate();
   const [params] = useSearchParams();
+  const routeParams = useParams<{ clientId?: string }>();
+  const isAgencyClient = shell === "agency-client";
+  const clientId = activeClientId || routeParams.clientId || "minimalist";
+  const activeClientName = isAgencyClient
+    ? (AGENCY_CLIENTS.find((c) => c.id === clientId)?.name || "Minimalist")
+    : "Minimalist";
+
   const requestedStatus = params.get("status");
   const [active, setActive] = useState<Status | "All">(
     requestedStatus && tabs.includes(requestedStatus as Status)
@@ -778,7 +798,7 @@ export function BrandProjectsPage() {
   const isDeletedView = active === "Deleted";
   const pageSubtitle = isDeletedView
     ? `${tabCounts.Deleted} deleted project${tabCounts.Deleted === 1 ? "" : "s"} · kept for 30 days`
-    : `Minimalist · ${tabCounts.All} projects · plus ${tabCounts.Archived} archived`;
+    : `${activeClientName} · ${tabCounts.All} projects · plus ${tabCounts.Archived} archived`;
   const allSelected =
     visibleProjects.length > 0 && visibleProjects.every((project) => selected.includes(project.id));
   const toggle = (id: number) =>
@@ -794,8 +814,26 @@ export function BrandProjectsPage() {
     setPage(1);
   };
 
+  const ShellContainer = isAgencyClient ? AgencyClientShell : BrandShell;
+  const shellProps = isAgencyClient ? { activeClientId: clientId } : {};
+
+  const handleCreateNewProject = () => {
+    if (isAgencyClient) {
+      navigate(agencyClientNewProjectRoute(clientId));
+    } else {
+      navigate(ROUTES.brandNewProject);
+    }
+  };
+
+  const getProjectRoute = (projectId: number | string) => {
+    if (isAgencyClient) {
+      return agencyClientProjectDetailRoute(clientId, projectId);
+    }
+    return brandProjectRoute(projectId);
+  };
+
   return (
-    <BrandShell>
+    <ShellContainer {...shellProps}>
       <div className="-mt-1 mx-auto w-full max-w-[1440px]">
         <header className="flex h-[58px] items-end justify-between gap-4">
           <div>
@@ -808,7 +846,7 @@ export function BrandProjectsPage() {
             <DateRangePicker value="1 Oct - 28 Oct 2026" />
             <Button
               className="w-[184px]"
-              onClick={() => navigate(ROUTES.brandNewProject)}
+              onClick={handleCreateNewProject}
               leadingIcon={<Plus size={16} />}
             >
               Create new project
@@ -1074,7 +1112,7 @@ export function BrandProjectsPage() {
                               project={project}
                               anchor={actionMenuAnchor}
                               onView={() => {
-                                navigate(brandProjectRoute(project.id));
+                                navigate(getProjectRoute(project.id));
                                 setActionMenuId(null);
                               }}
                               onClose={() => setActionMenuId(null)}
@@ -1222,7 +1260,7 @@ export function BrandProjectsPage() {
                         <td>
                           <div className="flex items-center gap-[10px]">
                             <button
-                              onClick={() => navigate(brandProjectRoute(project.id))}
+                              onClick={() => navigate(getProjectRoute(project.id))}
                               type="button"
                               className="inline-flex h-8 items-center gap-1 rounded-md border border-line px-2.5 text-[12px] font-medium text-ink"
                             >
@@ -1246,7 +1284,7 @@ export function BrandProjectsPage() {
                                 project={project}
                                 anchor={actionMenuAnchor}
                                 onView={() => {
-                                  navigate(brandProjectRoute(project.id));
+                                  navigate(getProjectRoute(project.id));
                                   setActionMenuId(null);
                                 }}
                                 onClose={() => setActionMenuId(null)}
@@ -1332,6 +1370,6 @@ export function BrandProjectsPage() {
           }}
         />
       )}
-    </BrandShell>
+    </ShellContainer>
   );
 }

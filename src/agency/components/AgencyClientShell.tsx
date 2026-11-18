@@ -17,7 +17,11 @@ import {
 } from "lucide-react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Logo } from "@/common/components/brand/Logo";
-import { ROUTES, agencyClientNewProjectRoute } from "@/common/constants/routes";
+import {
+  ROUTES,
+  agencyClientNewProjectRoute,
+  agencyClientProjectsRoute,
+} from "@/common/constants/routes";
 import {
   AgencyWorkspaceSwitcher,
   AGENCY_CLIENTS,
@@ -73,6 +77,8 @@ export function AgencyClientShell({
       location.pathname === `${baseClientUrl}/` ||
       location.pathname === "/agency/client") &&
     !location.search.includes("tab=");
+  const isAllProjects = location.pathname === agencyClientProjectsRoute(clientId);
+  const statusParam = searchParams.get("status");
 
   const navClass = (active: boolean) =>
     `flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] transition-colors ${
@@ -171,46 +177,53 @@ export function AgencyClientShell({
                 </button>
 
                 {/* All projects with count 11 */}
-                <div
-                  onClick={() => setAllProjectsOpen((prev) => !prev)}
-                  className="flex h-8 items-center justify-between rounded-md pl-10 pr-3 text-[13px] text-[#0d0d10] hover:bg-subtle transition-colors cursor-pointer"
+                <Link
+                  to={agencyClientProjectsRoute(clientId)}
+                  onClick={() => {
+                    closeMenu?.();
+                    setAllProjectsOpen(true);
+                  }}
+                  className={`flex h-8 items-center justify-between rounded-md pl-10 pr-3 text-[13px] transition-colors cursor-pointer ${
+                    isAllProjects && !statusParam
+                      ? "bg-primary-subtle font-semibold text-primary"
+                      : "text-[#0d0d10] hover:bg-subtle"
+                  }`}
                 >
                   <div className="flex items-center gap-2.5">
                     <span className="size-1 rounded-full bg-current" />
                     <span>All projects</span>
                   </div>
-                  <CountBadge count={11} />
-                </div>
+                  <CountBadge count={11} active={isAllProjects && !statusParam} />
+                </Link>
 
                 {allProjectsOpen && (
                   <div className="flex flex-col space-y-0.5 pl-4">
-                    <div className="flex h-7 items-center justify-between rounded-md pl-10 pr-3 text-[12px] text-[#71717a] hover:bg-subtle transition-colors cursor-pointer">
-                      <div className="flex items-center gap-2.5">
-                        <span className="size-1 rounded-full bg-current" />
-                        <span>Live</span>
-                      </div>
-                      <CountBadge count={5} />
-                    </div>
-                    <div className="flex h-7 items-center justify-between rounded-md pl-10 pr-3 text-[12px] text-[#71717a] hover:bg-subtle transition-colors cursor-pointer">
-                      <div className="flex items-center gap-2.5">
-                        <span className="size-1 rounded-full bg-current" />
-                        <span>Upcoming</span>
-                      </div>
-                      <CountBadge count={1} />
-                    </div>
-                    <div className="flex h-7 items-center justify-between rounded-md pl-10 pr-3 text-[12px] text-[#71717a] hover:bg-subtle transition-colors cursor-pointer">
-                      <div className="flex items-center gap-2.5">
-                        <span className="size-1 rounded-full bg-current" />
-                        <span>Completed</span>
-                      </div>
-                      <CountBadge count={3} />
-                    </div>
-                    <div className="flex h-7 items-center justify-between rounded-md pl-10 pr-3 text-[12px] text-[#71717a] hover:bg-subtle transition-colors cursor-pointer">
-                      <div className="flex items-center gap-2.5">
-                        <span className="size-1 rounded-full bg-current" />
-                        <span>Deleted</span>
-                      </div>
-                    </div>
+                    {[
+                      { label: "Live", count: 5 },
+                      { label: "Upcoming", count: 1 },
+                      { label: "Completed", count: 3 },
+                      { label: "Deleted", count: undefined },
+                    ].map(({ label, count }) => {
+                      const active = isAllProjects && statusParam === label;
+                      return (
+                        <Link
+                          key={label}
+                          to={`${agencyClientProjectsRoute(clientId)}?status=${encodeURIComponent(label)}`}
+                          onClick={closeMenu}
+                          className={`flex h-7 items-center justify-between rounded-md pl-10 pr-3 text-[12px] transition-colors cursor-pointer ${
+                            active
+                              ? "font-semibold text-primary"
+                              : "text-[#71717a] hover:bg-subtle"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <span className="size-1 rounded-full bg-current" />
+                            <span>{label}</span>
+                          </div>
+                          {count !== undefined && <CountBadge count={count} active={active} />}
+                        </Link>
+                      );
+                    })}
                   </div>
                 )}
               </div>

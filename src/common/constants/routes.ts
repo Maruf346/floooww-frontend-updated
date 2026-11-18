@@ -53,6 +53,7 @@ export const ROUTES = {
   agencyClientNew: "/agency/clients/new",
   agencyClientOverview: "/agency/client",
   agencyClientDetail: "/agency/client/:clientId",
+  agencyClientProjects: "/agency/client/:clientId/projects",
   agencyClientNewProject: "/agency/client/:clientId/projects/new",
   agencyClientProjectPublished: "/agency/client/:clientId/projects/published",
   agencyClientProjectDetail: "/agency/client/:clientId/projects/:projectId",
@@ -95,6 +96,8 @@ export const brandPaymentDisputeRoute = (disputeId: string) =>
   `/brand/payments/disputes/${disputeId}`;
 export const agencyReportDetailRoute = (reportId: string) => `/agency/reports/${reportId}`;
 export const agencyClientRoute = (clientId: string) => `/agency/client/${clientId}`;
+export const agencyClientProjectsRoute = (clientId: string) =>
+  `/agency/client/${clientId}/projects`;
 export const agencyClientNewProjectRoute = (clientId: string) =>
   `/agency/client/${clientId}/projects/new`;
 export const agencyClientProjectPublishedRoute = (clientId: string) =>
