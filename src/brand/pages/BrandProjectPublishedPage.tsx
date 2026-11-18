@@ -42,6 +42,7 @@ import {
 import { ShareProjectModal } from "@/brand/components/ShareProjectModal";
 import { ProjectApplicationsView } from "@/brand/pages/project-applications/ProjectApplicationsPanel";
 import {
+  agencyClientProjectsRoute,
   brandCreatorDeliverablesRoute,
   brandInvitedCreatorRoute,
   brandProjectPerformanceRoute,
@@ -2019,7 +2020,39 @@ export function BrandProjectPublishedPage({
       // Ignore parse error
     }
   }
-  const [status, setStatus] = useState<Lifecycle>(project.detailStatus);
+  const isAgencyClient = shell === "agency-client";
+  const projectHomeRoute = isAgencyClient
+    ? agencyClientProjectsRoute(clientId)
+    : ROUTES.brandProjects;
+  const projectDiscoveryRoute = isAgencyClient
+    ? `/agency/client/${clientId}?tab=creators`
+    : ROUTES.brandCreatorDiscovery;
+
+  const isPublishedRoute =
+    typeof window !== "undefined" && window.location.pathname.endsWith("/published");
+  const searchParams =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search)
+      : new URLSearchParams();
+  const isJustPublished =
+    isPublishedRoute ||
+    searchParams.get("published") === "true" ||
+    searchParams.get("justPublished") === "true" ||
+    searchParams.get("state") === "empty";
+
+  const isNoCreators =
+    isJustPublished ||
+    project.creatorCount === 0 ||
+    project.detailStatus === "Upcoming" ||
+    (isAgencyClient &&
+      project.id === 1 &&
+      typeof window !== "undefined" &&
+      !window.sessionStorage.getItem(`floooww-project-${project.id}-invited`));
+
+  const [status, setStatus] = useState<Lifecycle>(() => {
+    if (isNoCreators) return "Upcoming";
+    return project.detailStatus;
+  });
   const [tab, setTab] = useState(() => {
     if (typeof window === "undefined") return "Overview";
     const key = `floooww-project-${project.id}-active-tab`;
@@ -2028,6 +2061,7 @@ export function BrandProjectPublishedPage({
     return requestedTab === "Invited creators" ? requestedTab : "Overview";
   });
   const [invitedCreatorCount] = useState(() => {
+    if (isNoCreators) return 0;
     const newlyInvited =
       typeof window !== "undefined" &&
       window.sessionStorage.getItem(`floooww-project-${project.id}-invited`) === "true";
@@ -2043,11 +2077,6 @@ export function BrandProjectPublishedPage({
   const [applicationFee, setApplicationFee] = useState("Fee");
   const [applicationCity, setApplicationCity] = useState("City");
   const [applicationSort, setApplicationSort] = useState("Match");
-  const isAgencyClient = shell === "agency-client";
-  const projectHomeRoute = isAgencyClient ? `/agency/client/${clientId}` : ROUTES.brandProjects;
-  const projectDiscoveryRoute = isAgencyClient
-    ? `/agency/client/${clientId}`
-    : ROUTES.brandCreatorDiscovery;
   const locked = status === "Archived" || status === "Deleted";
   const rules = getProjectRules(project);
   const objective = rules.objective;
@@ -2111,10 +2140,16 @@ export function BrandProjectPublishedPage({
     longTerm && /ambassador/i.test(project.projectType)
       ? "Month 3: 0 / 3"
       : `0 / ${fileDelivery ? 2 : 4} ${contentUnit}`;
-  useEffect(() => setStatus(project.detailStatus), [project.id, project.detailStatus]);
+  useEffect(() => {
+    if (isNoCreators) {
+      setStatus("Upcoming");
+    } else {
+      setStatus(project.detailStatus);
+    }
+  }, [project.id, project.detailStatus, isNoCreators]);
   // Replace this sample with the accepted/invited creator records from the project API.
   // An empty API response continues to render the existing empty state.
-  const creators = project.creatorCount > 0 ? invitedCreators : [];
+  const creators = isNoCreators ? [] : project.creatorCount > 0 ? invitedCreators : [];
   const creatorProgress =
     project.creatorCount > 0
       ? (() => {
@@ -2181,9 +2216,17 @@ export function BrandProjectPublishedPage({
       <main className="w-full pb-10">
         <header className="flex flex-col justify-between gap-4 lg:h-[122px] lg:flex-row">
           <div>
-            <p className="text-[12px] leading-4 text-tertiary">
-              Projects&nbsp;&nbsp;/&nbsp;&nbsp;{project.name}
-            </p>
+            <div className="flex items-center gap-2 text-[12px] leading-4 text-tertiary">
+              <button
+                type="button"
+                onClick={() => navigate(projectHomeRoute)}
+                className="hover:text-ink transition-colors cursor-pointer"
+              >
+                Projects
+              </button>
+              <span>/</span>
+              <span className="text-secondary">{project.name}</span>
+            </div>
             <h1 className="mt-1 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">
               {project.name}
             </h1>
@@ -2203,6 +2246,7 @@ export function BrandProjectPublishedPage({
             </Button>
             <Button
               disabled={locked}
+              className="bg-[#0d0d10] text-white hover:bg-black font-medium"
               leadingIcon={<Users size={16} />}
               onClick={() => setTab("Applications")}
             >
@@ -2388,12 +2432,14 @@ export function BrandProjectPublishedPage({
             >
               {item}
               {["Applications", "Invited creators", "Content"].includes(item) && (
-                <span className="ml-1.5 rounded-full bg-muted px-[7px] py-px text-[12px] leading-4">
-                  {item === "Applications"
-                    ? project.apps
-                    : item === "Invited creators"
-                      ? invitedCreatorCount
-                      : contentCountForProject(project.id)}
+                <span className="ml-1.5 rounded-full bg-muted px-[7px] py-px text-[12px] leading-4 text-secondary">
+                  {isNoCreators
+                    ? 0
+                    : item === "Applications"
+                      ? project.apps
+                      : item === "Invited creators"
+                        ? invitedCreatorCount
+                        : contentCountForProject(project.id)}
                 </span>
               )}
             </button>
@@ -2563,86 +2609,194 @@ export function BrandProjectPublishedPage({
             <section className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               <KpiTile
                 icon={Megaphone}
-                iconBg="bg-primary"
+                iconBg="bg-[#0d0d10]"
                 label="Project type"
-                value={project.type}
-                detail={`${project.partnership} · ${project.duration}`}
+                value={isNoCreators ? "Influencer" : project.type}
+                detail={
+                  isNoCreators
+                    ? "Paid · one-time · 7 Oct – 7 Nov"
+                    : `${project.partnership} · ${project.duration}`
+                }
                 dataNodeId="1473:597"
               />
               <KpiTile
                 icon={Users}
-                iconBg="bg-[#1eb2fd]"
+                iconBg="bg-[#8ec5ff]"
                 label="Creators"
-                value={String(project.creatorCount)}
+                value={isNoCreators ? "0" : String(project.creatorCount)}
                 detail={
-                  project.creatorCount
-                    ? `of ${project.creatorCount} places · creator team active`
-                    : "No creators invited yet"
+                  isNoCreators || !project.creatorCount
+                    ? "of 16 places · none invited yet"
+                    : `of ${project.creatorCount} places · creator team active`
                 }
               />
               <KpiTile
                 icon={WalletCards}
-                iconBg="bg-[#f29b07]"
+                iconBg="bg-[#f59e0b]"
                 label="Budget"
-                value={project.budget}
-                detail={project.budgetNote}
+                value={isNoCreators ? "₹6 L" : project.budget}
+                detail={
+                  isNoCreators
+                    ? "₹2 L funded at publish · ₹0 released"
+                    : project.budgetNote
+                }
               />
               <KpiTile
                 icon={Video}
-                iconBg="bg-[#1eb2fd]"
+                iconBg="bg-[#8ec5ff]"
                 label="Content"
                 value={
-                  project.status === "Draft" || project.status === "Upcoming"
+                  isNoCreators || project.status === "Draft" || project.status === "Upcoming"
                     ? "0"
                     : String(Math.round(project.deliverableCount / 2))
                 }
-                detail={`of ${project.deliverableCount} deliverables · ${project.status === "Completed" ? "complete" : "in progress"}`}
+                detail={
+                  isNoCreators
+                    ? "of 64 deliverables · starts 7 Oct"
+                    : `of ${project.deliverableCount} deliverables · starts 7 Oct`
+                }
               />
             </section>
-            <section className="mt-6 rounded-xl border border-line bg-white p-5">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="text-[16px] font-semibold leading-6 text-ink">
-                    Project milestones
-                  </h2>
-                  <p className="text-[12px] leading-4 text-secondary">
-                    Milestones update automatically as your project moves forward.
-                  </p>
-                </div>
-                <Badge status={status} />
-              </div>
-              <div className="mt-5 grid gap-5 sm:grid-cols-3 xl:grid-cols-6">
-                {milestoneItems.map(([title, detail, date], index) => (
-                  <div className="min-w-0" key={title}>
-                    <div className="mb-2 flex items-center">
-                      <span
-                        className={`z-10 flex size-6 shrink-0 items-center justify-center rounded-full ${index < 2 ? "bg-success text-white" : index === 2 ? "border-2 border-primary bg-white text-primary" : "border-2 border-line bg-white"}`}
-                      >
-                        {index < 2 && <Check size={14} strokeWidth={3} />}
-                      </span>
-                      {index < 5 && (
-                        <span
-                          className={`hidden h-0.5 flex-1 sm:block ${index < 2 ? "bg-primary" : "bg-line"}`}
-                        />
-                      )}
-                    </div>
-                    <h3
-                      className={`text-[14px] font-medium leading-[22px] ${index > 2 ? "text-secondary" : "text-ink"}`}
-                    >
-                      {title}
-                    </h3>
-                    <p className="mt-1 text-[12px] leading-4 text-secondary">{detail}</p>
-                    <p
-                      className={`mt-2 text-[12px] ${index === 2 ? "text-primary" : "text-secondary"}`}
-                    >
-                      {date}
+            {isNoCreators ? (
+              <section className="mt-6 rounded-xl border border-line bg-white p-5">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h2 className="text-[16px] font-semibold text-ink">Project timeline</h2>
+                    <p className="mt-0.5 text-[12px] text-secondary">
+                      Showing 20 Sep – 7 Nov · today 20 Sep · next: invite creators
                     </p>
                   </div>
-                ))}
-              </div>
-            </section>
-            <section className="mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f1f4ff] px-2.5 py-0.5 text-[12px] font-medium text-[#3b5bff]">
+                    <span className="size-1.5 rounded-full bg-[#3b5bff]" />
+                    Not started
+                  </span>
+                </div>
+                <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6">
+                  {/* Step 1: Project created */}
+                  <div className="min-w-0 pr-3">
+                    <div className="flex items-center">
+                      <span className="z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-[#16a34a] text-white">
+                        <Check size={14} strokeWidth={2.5} />
+                      </span>
+                      <span className="h-0.5 flex-1 bg-[#0d0d10]" />
+                    </div>
+                    <h3 className="mt-2 text-[14px] font-medium text-ink">Project created</h3>
+                    <p className="mt-1 text-[12px] text-[#8491a3]">Brief and deliverables added</p>
+                    <p className="mt-2 text-[12px] text-secondary">20 Sep</p>
+                  </div>
+
+                  {/* Step 2: Published */}
+                  <div className="min-w-0 pr-3">
+                    <div className="flex items-center">
+                      <span className="z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-[#16a34a] text-white">
+                        <Check size={14} strokeWidth={2.5} />
+                      </span>
+                      <span className="h-0.5 flex-1 bg-[#0d0d10]" />
+                    </div>
+                    <h3 className="mt-2 text-[14px] font-medium text-ink">Published</h3>
+                    <p className="mt-1 text-[12px] text-[#8491a3]">₹2,00,000 funded to escrow</p>
+                    <p className="mt-2 text-[12px] text-secondary">20 Sep</p>
+                  </div>
+
+                  {/* Step 3: Invite creators */}
+                  <div className="min-w-0 pr-3">
+                    <div className="flex items-center">
+                      <span className="z-10 flex size-6 shrink-0 items-center justify-center rounded-full border-2 border-[#0d0d10] bg-white">
+                        <span className="size-2 rounded-full bg-[#0d0d10]" />
+                      </span>
+                      <span className="h-0.5 flex-1 bg-[#e3e5ec]" />
+                    </div>
+                    <h3 className="mt-2 text-[14px] font-medium text-ink">Invite creators</h3>
+                    <p className="mt-1 text-[12px] text-[#8491a3]">{isNoCreators ? "16 places to fill" : `${project.creatorCount || 16} places to fill`}</p>
+                    <p className="mt-2 text-[12px] font-medium text-ink">Now</p>
+                  </div>
+
+                  {/* Step 4: Launch */}
+                  <div className="min-w-0 pr-3">
+                    <div className="flex items-center">
+                      <span className="z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-white">
+                        <span className="size-1.5 rounded-full bg-[#a3a3ac]" />
+                      </span>
+                      <span className="h-0.5 flex-1 bg-[#e3e5ec]" />
+                    </div>
+                    <h3 className="mt-2 text-[14px] font-medium text-secondary">Launch</h3>
+                    <p className="mt-1 text-[12px] text-[#8491a3]">Creators can start delivering</p>
+                    <p className="mt-2 text-[12px] text-secondary">7 Oct</p>
+                  </div>
+
+                  {/* Step 5: Final deadline */}
+                  <div className="min-w-0 pr-3">
+                    <div className="flex items-center">
+                      <span className="z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-white">
+                        <span className="size-1.5 rounded-full bg-[#a3a3ac]" />
+                      </span>
+                      <span className="h-0.5 flex-1 bg-[#e3e5ec]" />
+                    </div>
+                    <h3 className="mt-2 text-[14px] font-medium text-secondary">Final deadline</h3>
+                    <p className="mt-1 text-[12px] text-[#8491a3]">Last creator deadline</p>
+                    <p className="mt-2 text-[12px] text-secondary">3 Nov</p>
+                  </div>
+
+                  {/* Step 6: Project ends */}
+                  <div className="min-w-0 pr-3">
+                    <div className="flex items-center">
+                      <span className="z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-white">
+                        <span className="size-1.5 rounded-full bg-[#a3a3ac]" />
+                      </span>
+                    </div>
+                    <h3 className="mt-2 text-[14px] font-medium text-secondary">Project ends</h3>
+                    <p className="mt-1 text-[12px] text-[#8491a3]">Usage rights until 7 Dec</p>
+                    <p className="mt-2 text-[12px] text-secondary">7 Nov</p>
+                  </div>
+                </div>
+              </section>
+            ) : (
+              <section className="mt-6 rounded-xl border border-line bg-white p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h2 className="text-[16px] font-semibold leading-6 text-ink">
+                      Project milestones
+                    </h2>
+                    <p className="text-[12px] leading-4 text-secondary">
+                      Milestones update automatically as your project moves forward.
+                    </p>
+                  </div>
+                  <Badge status={status} />
+                </div>
+                <div className="mt-5 grid gap-5 sm:grid-cols-3 xl:grid-cols-6">
+                  {milestoneItems.map(([title, detail, date], index) => (
+                    <div className="min-w-0" key={title}>
+                      <div className="mb-2 flex items-center">
+                        <span
+                          className={`z-10 flex size-6 shrink-0 items-center justify-center rounded-full ${index < 2 ? "bg-success text-white" : index === 2 ? "border-2 border-primary bg-white text-primary" : "border-2 border-line bg-white"}`}
+                        >
+                          {index < 2 && <Check size={14} strokeWidth={3} />}
+                        </span>
+                        {index < 5 && (
+                          <span
+                            className={`hidden h-0.5 flex-1 sm:block ${index < 2 ? "bg-primary" : "bg-line"}`}
+                          />
+                        )}
+                      </div>
+                      <h3
+                        className={`text-[14px] font-medium leading-[22px] ${index > 2 ? "text-secondary" : "text-ink"}`}
+                      >
+                        {title}
+                      </h3>
+                      <p className="mt-1 text-[12px] leading-4 text-secondary">{detail}</p>
+                      <p
+                        className={`mt-2 text-[12px] ${index === 2 ? "text-primary" : "text-secondary"}`}
+                      >
+                        {date}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+            <section className="mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
               <div className="space-y-5">
+                {/* 1. Project progress */}
                 <motion.section
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -2651,9 +2805,9 @@ export function BrandProjectPublishedPage({
                 >
                   <h2 className="text-[16px] font-semibold leading-6 text-ink">Project progress</h2>
                   <p className="text-[12px] leading-4 text-secondary">
-                    {creators.length
-                      ? `${project.creators} creators in this project`
-                      : "No creators invited yet"}
+                    {isNoCreators || !creators.length
+                      ? "16 places · no creators invited yet"
+                      : `${project.creatorCount} creators in this project`}
                   </p>
                   <div className="mt-4 flex flex-col items-center gap-5 sm:flex-row">
                     <motion.div
@@ -2675,7 +2829,7 @@ export function BrandProjectPublishedPage({
                           stroke="#edeff3"
                           strokeWidth="18"
                         />
-                        {creators.length > 0 && (
+                        {!isNoCreators && creators.length > 0 && (
                           <>
                             <circle
                               cx="60"
@@ -2729,17 +2883,17 @@ export function BrandProjectPublishedPage({
                       </svg>
                       <div className="relative grid size-[56px] place-items-center rounded-full bg-white text-center">
                         <p className="text-[14px] font-medium leading-[22px] text-ink">
-                          {creatorProgress
+                          {!isNoCreators && creators.length > 0 && creatorProgress
                             ? `${creatorProgress.delivered} of ${project.creatorCount}`
                             : "0 of 16"}
                         </p>
                         <p className="text-[12px] leading-4 text-tertiary">
-                          {creators.length ? deliveryVerb.toLowerCase() : "filled"}
+                          {!isNoCreators && creators.length ? deliveryVerb.toLowerCase() : "filled"}
                         </p>
                       </div>
                     </motion.div>
                     <div className="w-full space-y-2.5">
-                      {(creatorProgress
+                      {(!isNoCreators && creators.length > 0 && creatorProgress
                         ? creatorProgress.stages.map((stage) => [
                             stage.label,
                             String(stage.count),
@@ -2747,8 +2901,8 @@ export function BrandProjectPublishedPage({
                             stage.className,
                           ])
                         : [
-                            ["Accepted", "0", "0%", "bg-success"],
-                            ["Places open", "16", "100%", "bg-primary"],
+                            ["Accepted", "0", "0%", "bg-[#16a34a]"],
+                            ["Places open", "16", "100%", "bg-[#0d0d10]"],
                           ]
                       ).map(([label, count, percent, color]) => (
                         <div
@@ -2758,139 +2912,54 @@ export function BrandProjectPublishedPage({
                           <span className={`size-2.5 rounded-full ${color}`} />
                           <span className="flex-1">{label}</span>
                           <span className="font-medium text-secondary">{count}</span>
-                          <span className="font-medium">{percent}</span>
+                          <span className="font-medium text-ink">{percent}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                 </motion.section>
-                <section className="grid gap-5 lg:grid-cols-2">
-                  <section className="rounded-xl border border-line bg-white p-5">
-                    <h2 className="text-[16px] font-semibold text-ink">Key dates</h2>
-                    <div className="mt-4 divide-y divide-line-subtle">
-                      {keyDates.map(([label, value]) => (
-                        <div
-                          className="flex items-center justify-between gap-3 py-2.5 text-[13px]"
-                          key={label}
-                        >
-                          <span className="text-secondary">{label}</span>
-                          <span
-                            className={
-                              label === "Payments"
-                                ? "rounded-full bg-success-bg px-2 py-0.5 text-[12px] font-medium text-success"
-                                : "font-medium text-ink"
-                            }
-                          >
-                            {value}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                  <section className="rounded-xl border border-line bg-white p-5">
-                    <h2 className="text-[16px] font-semibold text-ink">Results so far</h2>
-                    <p className="mt-0.5 text-[12px] text-secondary">
-                      {objective} performance to date
-                    </p>
-                    <div className="mt-4 grid grid-cols-2 gap-3">
-                      {resultMetrics.slice(0, 4).map((metric, index) => (
-                        <div className="rounded-lg bg-subtle px-3 py-2.5" key={metric}>
-                          <p className="text-[12px] text-secondary">{metric}</p>
-                          <p className="mt-1 text-[16px] font-semibold text-ink">
-                            {resultValues[objective][index]}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="mt-3 flex items-center justify-between border-t border-line pt-3 text-[13px]">
-                      <span className="text-secondary">{resultMetrics[4]}</span>
-                      <span className="font-semibold text-ink">{resultValues[objective][4]}</span>
-                    </div>
-                  </section>
-                </section>
-                <section className="grid gap-5 lg:grid-cols-2">
-                  <section className="rounded-xl border border-line bg-white p-5">
-                    <h2 className="text-[16px] font-semibold text-ink">Budget</h2>
-                    <div className="mt-4 space-y-3 text-[13px]">
-                      {(giftExchange
-                        ? [
-                            ["Shipped", "₹24,000"],
-                            ["Ships next", "₹16,000"],
-                            ["Still to ship", "₹12,000"],
-                          ]
-                        : [
-                            ["Paid to creators", "₹1,02,000"],
-                            ["Held in escrow", "₹58,000"],
-                            ["Not committed", "₹40,000"],
-                          ]
-                      ).map(([label, value]) => (
-                        <div className="flex items-center justify-between" key={label}>
-                          <span className="text-secondary">{label}</span>
-                          <span className="font-medium text-ink">{value}</span>
-                        </div>
-                      ))}
-                      {longTerm && (
-                        <p className="border-t border-line pt-3 text-[12px] text-secondary">
-                          {project.budget} · current cycle of 6
-                        </p>
-                      )}
-                    </div>
-                  </section>
-                  <section className="rounded-xl border border-line bg-white p-5">
-                    <h2 className="text-[16px] font-semibold text-ink">Project details</h2>
-                    <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-3 text-[13px]">
-                      {[
-                        ["Objective", objective],
-                        ["Type", project.projectType],
-                        ["Partnership", project.partnership],
-                        ["Duration", longTerm ? "Long-term" : "One-time"],
-                        ["Platforms", project.platform],
-                        [
-                          "Tracking",
-                          objective === "Sales"
-                            ? "Shopify connected"
-                            : objective === "Traffic"
-                              ? "UTM + GA4"
-                              : objective === "Leads"
-                                ? "Quiz form + UTM"
-                                : "Connected accounts",
-                        ],
-                      ].map(([label, value]) => (
-                        <div key={label}>
-                          <p className="text-[12px] text-tertiary">{label}</p>
-                          <p className="mt-0.5 truncate font-medium text-ink">{value}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                </section>
+
+                {/* 2. Content pipeline */}
                 <motion.section
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.28, delay: 0.06, ease: "easeOut" }}
                   className="rounded-xl border border-line bg-white p-5"
                 >
-                  <h2 className="text-[16px] font-semibold text-ink">Content pipeline</h2>
-                  <p className="text-[12px] text-secondary">
-                    Nothing submitted yet · deliverables start after launch on 7 Oct
-                  </p>
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <h2 className="text-[16px] font-semibold text-ink">Content pipeline</h2>
+                      <p className="mt-0.5 text-[12px] text-secondary">
+                        Nothing submitted yet · deliverables start after launch on 7 Oct
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setTab("Content")}
+                      className="text-[12px] font-medium text-[#3b5bff] hover:underline cursor-pointer"
+                    >
+                      View Content
+                    </button>
+                  </div>
                   <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     {[
-                      ["Awaiting approval", "bg-[#f29b07]"],
+                      ["Awaiting approval", "bg-[#f59e0b]"],
                       ["Changes requested", "bg-[#db231f]"],
-                      ["Approved · not live yet", "bg-primary"],
-                      [deliveryVerb, "bg-success"],
+                      ["Approved · not live yet", "bg-[#3b5bff]"],
+                      ["Live", "bg-[#16a34a]"],
                     ].map(([label, color]) => (
-                      <div className="rounded-md border border-line p-3.5" key={label}>
+                      <div className="rounded-lg border border-line p-3.5" key={label}>
                         <p className="flex items-center gap-1.5 text-[12px] text-secondary">
                           <span className={`size-2 rounded-full ${color}`} />
                           {label}
                         </p>
-                        <p className="mt-1 text-[16px] font-semibold">0</p>
+                        <p className="mt-2 text-[16px] font-semibold text-ink">0</p>
                       </div>
                     ))}
                   </div>
                 </motion.section>
+
+                {/* 3. Creators */}
                 <motion.section
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -2898,10 +2967,10 @@ export function BrandProjectPublishedPage({
                   className="rounded-xl border border-line bg-white p-5"
                 >
                   <h2 className="text-[16px] font-semibold text-ink">Creators</h2>
-                  <p className="text-[12px] text-secondary">
-                    {creators.length ? "Who has accepted · launch on 7 Oct" : "No creators yet"}
+                  <p className="mt-0.5 text-[12px] text-secondary">
+                    {!isNoCreators && creators.length ? "Who has accepted · launch on 7 Oct" : "No creators yet"}
                   </p>
-                  {creators.length ? (
+                  {!isNoCreators && creators.length ? (
                     <div className="mt-4 overflow-x-auto rounded-lg border border-line">
                       <div className="min-w-[640px]">
                         <div className="grid grid-cols-[minmax(0,1fr)_110px_190px_110px] gap-3 bg-subtle px-3.5 py-2.5 text-[12px] font-semibold tracking-[.06em] text-secondary">
@@ -2962,58 +3031,232 @@ export function BrandProjectPublishedPage({
                     </div>
                   ) : (
                     <div className="mt-4 rounded-lg bg-[#f8f9fb] px-5 py-10 text-center">
-                      <p className="text-[14px] font-medium">No creators invited yet</p>
-                      <p className="mx-auto mt-2 max-w-[560px] text-[12px] leading-4 text-secondary">
+                      <p className="text-[14px] font-medium text-ink">No creators invited yet</p>
+                      <p className="mx-auto mt-2 max-w-[560px] text-[12px] leading-4 text-[#8491a3]">
                         Invite creators you’ve shortlisted, or find new ones in Creator discovery.
                         Accepted creators will appear here.
                       </p>
-                      <Button className="mt-4" disabled={locked} leadingIcon={<Users size={16} />}>
+                      <Button
+                        className="mt-4 bg-[#0d0d10] text-white hover:bg-black font-medium"
+                        disabled={locked}
+                        leadingIcon={<Users size={16} />}
+                        onClick={() => setTab("Applications")}
+                      >
                         Invite creators
                       </Button>
                     </div>
                   )}
                 </motion.section>
+
+                {/* Additional sections for active projects with creators */}
+                {!isNoCreators && creators.length > 0 && (
+                  <>
+                    <section className="grid gap-5 lg:grid-cols-2">
+                      <section className="rounded-xl border border-line bg-white p-5">
+                        <h2 className="text-[16px] font-semibold text-ink">Key dates</h2>
+                        <div className="mt-4 divide-y divide-line-subtle">
+                          {keyDates.map(([label, value]) => (
+                            <div
+                              className="flex items-center justify-between gap-3 py-2.5 text-[13px]"
+                              key={label}
+                            >
+                              <span className="text-secondary">{label}</span>
+                              <span
+                                className={
+                                  label === "Payments"
+                                    ? "rounded-full bg-success-bg px-2 py-0.5 text-[12px] font-medium text-success"
+                                    : "font-medium text-ink"
+                                }
+                              >
+                                {value}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                      <section className="rounded-xl border border-line bg-white p-5">
+                        <h2 className="text-[16px] font-semibold text-ink">Results so far</h2>
+                        <p className="mt-0.5 text-[12px] text-secondary">
+                          {objective} performance to date
+                        </p>
+                        <div className="mt-4 grid grid-cols-2 gap-3">
+                          {resultMetrics.slice(0, 4).map((metric, index) => (
+                            <div className="rounded-lg bg-subtle px-3 py-2.5" key={metric}>
+                              <p className="text-[12px] text-secondary">{metric}</p>
+                              <p className="mt-1 text-[16px] font-semibold text-ink">
+                                {resultValues[objective][index]}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="mt-3 flex items-center justify-between border-t border-line pt-3 text-[13px]">
+                          <span className="text-secondary">{resultMetrics[4]}</span>
+                          <span className="font-semibold text-ink">{resultValues[objective][4]}</span>
+                        </div>
+                      </section>
+                    </section>
+                    <section className="grid gap-5 lg:grid-cols-2">
+                      <section className="rounded-xl border border-line bg-white p-5">
+                        <h2 className="text-[16px] font-semibold text-ink">Budget</h2>
+                        <div className="mt-4 space-y-3 text-[13px]">
+                          {(giftExchange
+                            ? [
+                                ["Shipped", "₹24,000"],
+                                ["Ships next", "₹16,000"],
+                                ["Still to ship", "₹12,000"],
+                              ]
+                            : [
+                                ["Paid to creators", "₹1,02,000"],
+                                ["Held in escrow", "₹58,000"],
+                                ["Not committed", "₹40,000"],
+                              ]
+                          ).map(([label, value]) => (
+                            <div className="flex items-center justify-between" key={label}>
+                              <span className="text-secondary">{label}</span>
+                              <span className="font-medium text-ink">{value}</span>
+                            </div>
+                          ))}
+                          {longTerm && (
+                            <p className="border-t border-line pt-3 text-[12px] text-secondary">
+                              {project.budget} · current cycle of 6
+                            </p>
+                          )}
+                        </div>
+                      </section>
+                      <section className="rounded-xl border border-line bg-white p-5">
+                        <h2 className="text-[16px] font-semibold text-ink">Project details</h2>
+                        <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-3 text-[13px]">
+                          {[
+                            ["Objective", objective],
+                            ["Type", project.projectType],
+                            ["Partnership", project.partnership],
+                            ["Duration", longTerm ? "Long-term" : "One-time"],
+                            ["Platforms", project.platform],
+                            [
+                              "Tracking",
+                              objective === "Sales"
+                                ? "Shopify connected"
+                                : objective === "Traffic"
+                                  ? "UTM + GA4"
+                                  : objective === "Leads"
+                                    ? "Quiz form + UTM"
+                                    : "Connected accounts",
+                            ],
+                          ].map(([label, value]) => (
+                            <div key={label}>
+                              <p className="text-[12px] text-tertiary">{label}</p>
+                              <p className="mt-0.5 truncate font-medium text-ink">{value}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    </section>
+                  </>
+                )}
               </div>
+
+              {/* Right column: Next actions */}
               <aside className="rounded-xl border border-line bg-white p-5 xl:sticky xl:top-6 xl:self-start">
-                <h2 className="text-[16px] font-semibold text-ink">What to do next</h2>
-                <p className="text-[12px] text-secondary">Recommended actions for this project</p>
-                <div className="mt-4 space-y-3">
-                  {[
-                    [
-                      quickAction,
-                      "16 places to fill · invites need a few days to be accepted",
-                      "Now",
-                      "text-[#db231f] bg-[#fde4e3]",
-                    ],
-                    [
-                      objective === "Sales"
-                        ? "Connect Shopify"
-                        : objective === "Traffic"
-                          ? "Confirm UTM tracking"
-                          : "Check creator progress",
-                      "Needed for codes and tracking links",
-                      "Before 7 Oct",
-                      "text-[#db231f] bg-[#fde4e3]",
-                    ],
-                    [
-                      "Browse Creator discovery",
-                      "Shortlist creators who match your requirements",
-                      "Suggested",
-                      "text-[#c77900] bg-[#fff3da]",
-                    ],
-                  ].map(([title, detail, tag, colors]) => (
-                    <div className="flex gap-3 border-t border-line pt-3" key={title}>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="text-[14px] font-medium">{title}</h3>
-                        <p className="mt-0.5 text-[12px] leading-4 text-secondary">{detail}</p>
+                <h2 className="text-[16px] font-semibold text-ink">
+                  {isNoCreators ? "Next actions" : "What to do next"}
+                </h2>
+                <p className="mt-0.5 text-[12px] text-[#8491a3]">
+                  {isNoCreators
+                    ? "3 things to do before launch on 7 Oct"
+                    : "Recommended actions for this project"}
+                </p>
+                <div className="mt-4 divide-y divide-line">
+                  {isNoCreators ? (
+                    <>
+                      {/* Action 1 */}
+                      <div className="flex items-center justify-between gap-3 pt-3 first:pt-0">
+                        <div className="min-w-0 flex-1">
+                          <button
+                            type="button"
+                            onClick={() => setTab("Applications")}
+                            className="text-left text-[14px] font-medium text-ink hover:text-primary transition-colors cursor-pointer block"
+                          >
+                            Invite creators
+                          </button>
+                          <p className="mt-0.5 text-[12px] text-[#8491a3] leading-4">
+                            16 places to fill · invites need a few days to be accepted
+                          </p>
+                        </div>
+                        <span className="shrink-0 rounded-[6px] bg-[rgba(219,35,31,0.12)] px-2 py-0.5 text-[12px] font-medium text-[#db231f]">
+                          Now
+                        </span>
                       </div>
-                      <span
-                        className={`h-fit shrink-0 rounded-md px-2 py-0.5 text-[12px] font-medium ${colors}`}
-                      >
-                        {tag}
-                      </span>
-                    </div>
-                  ))}
+
+                      {/* Action 2 */}
+                      <div className="flex items-center justify-between gap-3 pt-3">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="text-[14px] font-medium text-ink">Connect Shopify</h3>
+                          <p className="mt-0.5 text-[12px] text-[#8491a3] leading-4">
+                            Needed for codes and tracking links
+                          </p>
+                        </div>
+                        <span className="shrink-0 rounded-[6px] bg-[rgba(219,35,31,0.12)] px-2 py-0.5 text-[12px] font-medium text-[#db231f]">
+                          Before 7 Oct
+                        </span>
+                      </div>
+
+                      {/* Action 3 */}
+                      <div className="flex items-center justify-between gap-3 pt-3">
+                        <div className="min-w-0 flex-1">
+                          <button
+                            type="button"
+                            onClick={() => navigate(projectDiscoveryRoute)}
+                            className="text-left text-[14px] font-medium text-ink hover:text-primary transition-colors cursor-pointer block"
+                          >
+                            Browse Creator discovery
+                          </button>
+                          <p className="mt-0.5 text-[12px] text-[#8491a3] leading-4">
+                            Shortlist creators who match your requirements
+                          </p>
+                        </div>
+                        <span className="shrink-0 rounded-[6px] bg-[rgba(242,155,7,0.12)] px-2 py-0.5 text-[12px] font-medium text-[#f29b07]">
+                          Suggested
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    [
+                      [
+                        quickAction,
+                        "16 places to fill · invites need a few days to be accepted",
+                        "Now",
+                        "text-[#db231f] bg-[#fde4e3]",
+                      ],
+                      [
+                        objective === "Sales"
+                          ? "Connect Shopify"
+                          : objective === "Traffic"
+                            ? "Confirm UTM tracking"
+                            : "Check creator progress",
+                        "Needed for codes and tracking links",
+                        "Before 7 Oct",
+                        "text-[#db231f] bg-[#fde4e3]",
+                      ],
+                      [
+                        "Browse Creator discovery",
+                        "Shortlist creators who match your requirements",
+                        "Suggested",
+                        "text-[#c77900] bg-[#fff3da]",
+                      ],
+                    ].map(([title, detail, tag, colors]) => (
+                      <div className="flex gap-3 pt-3 first:pt-0" key={title}>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="text-[14px] font-medium">{title}</h3>
+                          <p className="mt-0.5 text-[12px] leading-4 text-secondary">{detail}</p>
+                        </div>
+                        <span
+                          className={`h-fit shrink-0 rounded-md px-2 py-0.5 text-[12px] font-medium ${colors}`}
+                        >
+                          {tag}
+                        </span>
+                      </div>
+                    ))
+                  )}
                 </div>
               </aside>
             </section>
