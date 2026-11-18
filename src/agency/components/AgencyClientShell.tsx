@@ -23,6 +23,18 @@ import {
 } from "./AgencyWorkspaceSwitcher";
 import { AgencyLogoutModal } from "./AgencyLogoutModal";
 
+function CountBadge({ count, active = false }: { count: string | number; active?: boolean }) {
+  return (
+    <span
+      className={`inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1.5 text-[11px] font-medium leading-4 ${
+        active ? "bg-primary-muted text-primary" : "bg-[#edeff3] text-[#0d0d10]"
+      }`}
+    >
+      {count}
+    </span>
+  );
+}
+
 export function AgencyClientShell({
   children,
   activeClientId,
@@ -45,6 +57,7 @@ export function AgencyClientShell({
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [clientsFolderOpen, setClientsFolderOpen] = useState(true);
   const [clientItemOpen, setClientItemOpen] = useState(true);
+  const [allProjectsOpen, setAllProjectsOpen] = useState(true);
 
   const navigate = useNavigate();
 
@@ -81,11 +94,15 @@ export function AgencyClientShell({
 
       <div className="h-2 shrink-0" />
 
-      {/* Workspace Switcher in Client Mode (Figma 1716:394) */}
+      {/* Workspace Switcher in Client Mode (Figma 1716:394 & 1716:729) */}
       <AgencyWorkspaceSwitcher mode="client" activeClientId={clientId} />
 
-      {/* Navigation (Figma Node 1716:669) */}
+      {/* Navigation (Figma Node 1716:729) */}
       <nav className="mt-3 flex flex-col">
+        <p className="px-3 pb-1 text-[12px] font-semibold leading-4 tracking-[.06em] text-[#a3a3ac]">
+          MAIN
+        </p>
+
         {/* Clients folder header */}
         <div
           onClick={() => setClientsFolderOpen((prev) => !prev)}
@@ -105,7 +122,7 @@ export function AgencyClientShell({
 
         {clientsFolderOpen && (
           <div className="flex flex-col">
-            {/* Active Client item (e.g. Minimalist) */}
+            {/* Active Client item (Minimalist) */}
             <div
               onClick={() => setClientItemOpen((prev) => !prev)}
               className="flex h-9 w-full items-center justify-between rounded-md pl-6 pr-3 text-[14px] text-[#0d0d10] hover:bg-subtle cursor-pointer transition-colors"
@@ -123,17 +140,64 @@ export function AgencyClientShell({
             </div>
 
             {clientItemOpen && (
-              <button
-                type="button"
-                onClick={() => {
-                  closeMenu?.();
-                  navigate(`${baseClientUrl}?action=new-project`);
-                }}
-                className="flex h-8 items-center gap-2.5 rounded-md pl-10 pr-3 text-[13px] text-[#71717a] hover:bg-subtle transition-colors text-left cursor-pointer"
-              >
-                <span className="size-1 rounded-full bg-current" />
-                <span>Create new project</span>
-              </button>
+              <div className="flex flex-col space-y-0.5">
+                {/* Create new project link */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeMenu?.();
+                    navigate(`${baseClientUrl}?action=new-project`);
+                  }}
+                  className="flex h-8 items-center gap-2.5 rounded-md pl-10 pr-3 text-[13px] text-[#71717a] hover:bg-subtle transition-colors text-left cursor-pointer"
+                >
+                  <span className="size-1 rounded-full bg-current" />
+                  <span>Create new project</span>
+                </button>
+
+                {/* All projects with count 11 */}
+                <div
+                  onClick={() => setAllProjectsOpen((prev) => !prev)}
+                  className="flex h-8 items-center justify-between rounded-md pl-10 pr-3 text-[13px] text-[#0d0d10] hover:bg-subtle transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="size-1 rounded-full bg-current" />
+                    <span>All projects</span>
+                  </div>
+                  <CountBadge count={11} />
+                </div>
+
+                {allProjectsOpen && (
+                  <div className="flex flex-col space-y-0.5 pl-4">
+                    <div className="flex h-7 items-center justify-between rounded-md pl-10 pr-3 text-[12px] text-[#71717a] hover:bg-subtle transition-colors cursor-pointer">
+                      <div className="flex items-center gap-2.5">
+                        <span className="size-1 rounded-full bg-current" />
+                        <span>Live</span>
+                      </div>
+                      <CountBadge count={5} />
+                    </div>
+                    <div className="flex h-7 items-center justify-between rounded-md pl-10 pr-3 text-[12px] text-[#71717a] hover:bg-subtle transition-colors cursor-pointer">
+                      <div className="flex items-center gap-2.5">
+                        <span className="size-1 rounded-full bg-current" />
+                        <span>Upcoming</span>
+                      </div>
+                      <CountBadge count={1} />
+                    </div>
+                    <div className="flex h-7 items-center justify-between rounded-md pl-10 pr-3 text-[12px] text-[#71717a] hover:bg-subtle transition-colors cursor-pointer">
+                      <div className="flex items-center gap-2.5">
+                        <span className="size-1 rounded-full bg-current" />
+                        <span>Completed</span>
+                      </div>
+                      <CountBadge count={3} />
+                    </div>
+                    <div className="flex h-7 items-center justify-between rounded-md pl-10 pr-3 text-[12px] text-[#71717a] hover:bg-subtle transition-colors cursor-pointer">
+                      <div className="flex items-center gap-2.5">
+                        <span className="size-1 rounded-full bg-current" />
+                        <span>Deleted</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         )}
@@ -148,14 +212,21 @@ export function AgencyClientShell({
           <span>Creator discovery</span>
         </Link>
 
-        {/* Content hub */}
+        {/* Content hub with badge 7 */}
         <Link
           to={`${baseClientUrl}?tab=content`}
           onClick={closeMenu}
-          className={navClass(location.search.includes("tab=content"))}
+          className={`flex h-9 w-full items-center justify-between rounded-md px-3 text-[14px] transition-colors ${
+            location.search.includes("tab=content")
+              ? "bg-primary-subtle font-semibold text-primary"
+              : "text-[#0d0d10] hover:bg-subtle"
+          }`}
         >
-          <Image size={18} />
-          <span>Content hub</span>
+          <div className="flex items-center gap-2.5">
+            <Image size={18} />
+            <span>Content hub</span>
+          </div>
+          <CountBadge count={7} active={location.search.includes("tab=content")} />
         </Link>
 
         {/* CONTENT & DATA Section */}
@@ -178,24 +249,38 @@ export function AgencyClientShell({
           ACCOUNT
         </p>
 
-        {/* Payments */}
+        {/* Payments with badge 2 */}
         <Link
           to={`${baseClientUrl}?tab=payments`}
           onClick={closeMenu}
-          className={navClass(location.search.includes("tab=payments"))}
+          className={`flex h-9 w-full items-center justify-between rounded-md px-3 text-[14px] transition-colors ${
+            location.search.includes("tab=payments")
+              ? "bg-primary-subtle font-semibold text-primary"
+              : "text-[#0d0d10] hover:bg-subtle"
+          }`}
         >
-          <Wallet size={18} />
-          <span>Payments</span>
+          <div className="flex items-center gap-2.5">
+            <Wallet size={18} />
+            <span>Payments</span>
+          </div>
+          <CountBadge count={2} active={location.search.includes("tab=payments")} />
         </Link>
 
-        {/* Messages */}
+        {/* Messages with badge 4 */}
         <Link
           to={ROUTES.agencyMessages}
           onClick={closeMenu}
-          className={navClass(location.pathname === ROUTES.agencyMessages)}
+          className={`flex h-9 w-full items-center justify-between rounded-md px-3 text-[14px] transition-colors ${
+            location.pathname === ROUTES.agencyMessages
+              ? "bg-primary-subtle font-semibold text-primary"
+              : "text-[#0d0d10] hover:bg-subtle"
+          }`}
         >
-          <MessageSquare size={18} />
-          <span>Messages</span>
+          <div className="flex items-center gap-2.5">
+            <MessageSquare size={18} />
+            <span>Messages</span>
+          </div>
+          <CountBadge count={4} active={location.pathname === ROUTES.agencyMessages} />
         </Link>
 
         {/* Settings */}
@@ -253,7 +338,7 @@ export function AgencyClientShell({
 
         {/* Main Content Area */}
         <div className="min-w-0 flex-1">
-          {/* Top bar (Figma Node 1716:671) */}
+          {/* Top bar (Figma Node 1716:731) */}
           <header className="flex h-16 items-center gap-3 border-b border-[#e3e5ec] bg-white px-4 sm:px-8">
             <button
               type="button"
