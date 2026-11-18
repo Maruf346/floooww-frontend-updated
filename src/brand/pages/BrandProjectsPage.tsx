@@ -312,6 +312,10 @@ const liveProjectEnds: Record<number, { date: string; relative: string }> = {
   5: { date: "1 Nov", relative: "in 4 days" },
 };
 
+const upcomingProjectStarts: Record<number, { date: string; relative: string }> = {
+  6: { date: "4 Nov", relative: "in 7 days" },
+};
+
 const kpis = [
   {
     icon: Folder,
@@ -820,7 +824,9 @@ export function BrandProjectsPage({
     ? `${tabCounts.Deleted} deleted project${tabCounts.Deleted === 1 ? "" : "s"} · kept for 30 days`
     : active === "Live"
       ? `${tabCounts.Live} projects running now`
-      : `${activeClientName} · ${tabCounts.All} projects · plus ${tabCounts.Archived} archived`;
+      : active === "Upcoming"
+        ? `${tabCounts.Upcoming} project${tabCounts.Upcoming === 1 ? "" : "s"} starting soon`
+        : `${activeClientName} · ${tabCounts.All} projects · plus ${tabCounts.Archived} archived`;
   const allSelected =
     visibleProjects.length > 0 && visibleProjects.every((project) => selected.includes(project.id));
   const toggle = (id: number) =>
@@ -1168,7 +1174,7 @@ export function BrandProjectsPage({
                   <col className="w-[142px]" />
                   <col className="w-[148px]" />
                   <col className="w-[84px]" />
-                  <col className={active === "Live" ? "w-[168px]" : "w-[116px]"} />
+                  <col className={active === "Live" || active === "Upcoming" ? "w-[170px]" : "w-[116px]"} />
                 </colgroup>
                 <thead className="bg-subtle text-[11px] font-semibold leading-4 tracking-[0.06em] text-secondary">
                   <tr className="h-[42px]">
@@ -1202,7 +1208,7 @@ export function BrandProjectsPage({
                       "APPROVED",
                       "BUDGET",
                       "PROGRESS",
-                      active === "Live" ? "ENDS" : "UPDATED",
+                      active === "Live" ? "ENDS" : active === "Upcoming" ? "STARTS" : "UPDATED",
                       "ACTIONS",
                     ].map((heading) => (
                       <th className="pr-2" key={heading}>
@@ -1264,7 +1270,9 @@ export function BrandProjectsPage({
                           </span>
                         </td>
                         <td className="text-ink">{project.apps}</td>
-                        <td className="text-ink">{project.approved}</td>
+                        <td className="text-ink">
+                          {active === "Upcoming" && project.id === 6 ? "3 of 6" : project.approved}
+                        </td>
                         <td>
                           <p className="font-medium text-ink">{project.budget}</p>
                           <p className="text-[12px] leading-4 text-secondary">
@@ -1281,14 +1289,18 @@ export function BrandProjectsPage({
                             </span>
                             <span className="text-[13px] text-ink">{project.progress}%</span>
                           </div>
-                          {project.showPace && (
-                            <p
-                              className={`mt-1 text-[12px] leading-4 ${
-                                project.id === 5 ? "text-[#db231f]" : "text-success"
-                              }`}
-                            >
-                              {project.id === 5 ? "Behind" : "Ahead"}
-                            </p>
+                          {active === "Upcoming" && project.id === 6 ? (
+                            <p className="mt-1 text-[12px] leading-4 text-secondary">Starts 4 Nov</p>
+                          ) : (
+                            project.showPace && (
+                              <p
+                                className={`mt-1 text-[12px] leading-4 ${
+                                  project.id === 5 ? "text-[#db231f]" : "text-success"
+                                }`}
+                              >
+                                {project.id === 5 ? "Behind" : "Ahead"}
+                              </p>
+                            )
                           )}
                         </td>
                         <td>
@@ -1297,6 +1309,13 @@ export function BrandProjectsPage({
                               <p className="font-medium text-ink">{liveProjectEnds[project.id].date}</p>
                               <p className="text-[12px] leading-4 text-secondary">
                                 {liveProjectEnds[project.id].relative}
+                              </p>
+                            </div>
+                          ) : active === "Upcoming" && upcomingProjectStarts[project.id] ? (
+                            <div>
+                              <p className="font-medium text-ink">{upcomingProjectStarts[project.id].date}</p>
+                              <p className="text-[12px] leading-4 text-secondary">
+                                {upcomingProjectStarts[project.id].relative}
                               </p>
                             </div>
                           ) : (
@@ -1315,6 +1334,18 @@ export function BrandProjectsPage({
                                 className="h-8 rounded-lg bg-[#0d0d10] px-3 text-[13px] font-medium text-white hover:bg-black transition-colors cursor-pointer"
                               >
                                 Nudge
+                              </button>
+                            )}
+                            {active === "Upcoming" && project.id === 6 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setNudgeToast("₹63,540 funded into escrow for Skin Quiz Leads");
+                                  setTimeout(() => setNudgeToast(null), 3500);
+                                }}
+                                className="h-8 rounded-lg bg-[#0d0d10] px-3 text-[13px] font-medium text-white hover:bg-black transition-colors cursor-pointer"
+                              >
+                                Fund
                               </button>
                             )}
                             <button
@@ -1378,7 +1409,7 @@ export function BrandProjectsPage({
             </footer>
           ) : totalPages <= 1 ? (
             <footer className="mt-6 text-[13px] leading-5 text-secondary">
-              Showing 1 to {filtered.length} of {filtered.length} {active === "Live" ? "live " : ""}projects
+              Showing 1 to {filtered.length} of {filtered.length} {active === "Live" ? "live " : active === "Upcoming" ? "upcoming " : ""}project{filtered.length === 1 ? "" : "s"}
             </footer>
           ) : (
             <footer className="mt-6 flex h-7 w-[720px] items-center justify-between text-[13px] leading-5 text-secondary">
