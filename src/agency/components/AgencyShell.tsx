@@ -51,7 +51,7 @@ function AgencySidebar({
   const overviewActive = pathname === ROUTES.agency;
   const clientsActive = pathname === ROUTES.agencyClients;
   const billingActive = pathname === ROUTES.agencyBilling;
-  const reportsActive = pathname === ROUTES.agencyReports;
+  const reportsActive = pathname.startsWith(ROUTES.agencyReports);
   const teamActive = pathname === ROUTES.agencyTeam;
   const messagesActive = pathname === ROUTES.agencyMessages;
   const settingsActive = pathname === ROUTES.agencySettings;

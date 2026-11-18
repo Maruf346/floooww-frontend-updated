@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { AgencyShell } from "@/agency/components/AgencyShell";
 import { AgencyAddClientModal } from "@/agency/components/AgencyAddClientModal";
 import { Button } from "@/common/components/ui/Button";
-import { ROUTES } from "@/common/constants/routes";
+import { ROUTES, agencyReportDetailRoute } from "@/common/constants/routes";
 
 const SORT_OPTIONS = ["Last modified (newest)", "Last modified (oldest)", "Name (A-Z)"];
 
@@ -116,9 +116,8 @@ export function AgencyCustomReportsPage() {
     return matching;
   }, [query, reports, sort]);
 
-  const handleOpenReport = (_reportId: string) => {
-    // Reuses the exact brand custom report builder as requested
-    navigate(ROUTES.brandCustomReportNew);
+  const handleOpenReport = (reportId: string) => {
+    navigate(agencyReportDetailRoute(reportId));
   };
 
   return (
@@ -151,7 +150,7 @@ export function AgencyCustomReportsPage() {
 
           <button
             type="button"
-            onClick={() => navigate(ROUTES.brandCustomReportNew)}
+            onClick={() => navigate(ROUTES.agencyReportNew)}
             className="flex w-full items-center gap-4 rounded-[12px] border border-[#e3e5ec] bg-white p-5 text-left transition hover:border-[#0d0d10] hover:shadow-xs focus-visible:outline-none cursor-pointer"
           >
             <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#f4f6fb] text-[#0d0d10]">
