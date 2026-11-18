@@ -28,7 +28,7 @@ import {
 import { AgencyClientShell } from "../components/AgencyClientShell";
 import { AGENCY_CLIENTS } from "../components/AgencyWorkspaceSwitcher";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
-import { ROUTES } from "@/common/constants/routes";
+import { ROUTES, agencyClientNewProjectRoute } from "@/common/constants/routes";
 import { asset } from "@/common/utils/asset";
 
 const ACTIONS = [
@@ -209,8 +209,7 @@ export function AgencyClientOverviewPage() {
   };
 
   const handleStartProject = (type?: "influencer" | "ugc") => {
-    setSelectedProjectType(type || "influencer");
-    setNewProjectModalOpen(true);
+    navigate(agencyClientNewProjectRoute(clientId) + (type ? `?type=${type}` : ""));
   };
 
   return (

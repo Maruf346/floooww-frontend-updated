@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
-import { ROUTES } from "@/common/constants/routes";
+import { ROUTES, agencyClientNewProjectRoute } from "@/common/constants/routes";
 
 export interface AgencyClient {
   id: string;
@@ -126,7 +126,7 @@ export function AgencyWorkspaceSwitcher({
 
   const handleCreateProject = (clientId: string) => {
     setIsOpen(false);
-    navigate(`/agency/client/${clientId}?action=new-project`);
+    navigate(agencyClientNewProjectRoute(clientId));
   };
 
   const handleAddClient = () => {
