@@ -13,6 +13,9 @@ import {
   UserPlus,
   Download,
   Plus,
+  Laptop,
+  Smartphone,
+  Monitor,
 } from "lucide-react";
 import { AgencyShell } from "@/agency/components/AgencyShell";
 import { AgencyAddClientModal } from "@/agency/components/AgencyAddClientModal";
@@ -28,6 +31,10 @@ import {
   AgencyBillingDetailsModal,
   BillingDetailsData,
 } from "@/agency/components/AgencyBillingDetailsModal";
+import {
+  ChangePasswordModal,
+  BackupCodesModal,
+} from "@/agency/components/AgencySecurityModals";
 import { ROUTES } from "@/common/constants/routes";
 
 type SettingsTab = "account" | "team" | "billing" | "notifications" | "security";
@@ -388,7 +395,70 @@ const INITIAL_EVENT_CATEGORIES: NotificationCategoryGroup[] = [
   },
 ];
 
+interface SessionDevice {
+  id: string;
+  name: string;
+  type: "laptop" | "phone" | "desktop";
+  isCurrent: boolean;
+  location: string;
+  lastActive: string;
+}
+
+const INITIAL_DEVICES: SessionDevice[] = [
+  {
+    id: "dev-1",
+    name: "MacBook Pro · Chrome",
+    type: "laptop",
+    isCurrent: true,
+    location: "Mumbai, IN",
+    lastActive: "Now",
+  },
+  {
+    id: "dev-2",
+    name: "iPhone 15 · Kreyio app",
+    type: "phone",
+    isCurrent: false,
+    location: "Mumbai, IN",
+    lastActive: "2 h ago",
+  },
+  {
+    id: "dev-3",
+    name: "Windows · Edge",
+    type: "desktop",
+    isCurrent: false,
+    location: "Pune, IN",
+    lastActive: "3 days ago",
+  },
+];
+
 const easeCurve = [0.22, 1, 0.36, 1] as const;
+
+function ToggleSwitch({
+  checked,
+  onChange,
+  disabled,
+}: {
+  checked: boolean;
+  onChange: (val: boolean) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      disabled={disabled}
+      onClick={() => onChange(!checked)}
+      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none ${checked ? "bg-[#0d0d10]" : "bg-[#e3e5ec]"
+        } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+    >
+      <span
+        className={`pointer-events-none inline-block size-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${checked ? "translate-x-4" : "translate-x-0.5"
+          }`}
+      />
+    </button>
+  );
+}
 
 export function AgencySettingsPage() {
   const { pathname } = useLocation();
@@ -426,6 +496,17 @@ export function AgencySettingsPage() {
   );
   const [clientFilter, setClientFilter] = useState<"only_my" | "all">("only_my");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // Security state
+  const [devices, setDevices] = useState<SessionDevice[]>(INITIAL_DEVICES);
+  const [requireTwoStepWorkspace, setRequireTwoStepWorkspace] = useState(true);
+  const [askTwoStepHighPayments, setAskTwoStepHighPayments] = useState(true);
+  const [holdNewPaymentMethods, setHoldNewPaymentMethods] = useState(true);
+  const [emailNewDeviceSignIns, setEmailNewDeviceSignIns] = useState(true);
+
+  // Security modals
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [isBackupCodesOpen, setIsBackupCodesOpen] = useState(false);
 
   // Form State for "Account" tab
   const [agencyName, setAgencyName] = useState("Brightside Agency");
@@ -580,6 +661,16 @@ export function AgencySettingsPage() {
     );
   };
 
+  const handleSignOutDevice = (id: string, name: string) => {
+    setDevices((prev) => prev.filter((d) => d.id !== id));
+    showToast(`Signed out of ${name}.`);
+  };
+
+  const handleSignOutAllOthers = () => {
+    setDevices((prev) => prev.filter((d) => d.isCurrent));
+    showToast("Signed out of all other devices.");
+  };
+
   return (
     <AgencyShell onAddClient={() => setIsAddClientOpen(true)}>
       <motion.div
@@ -647,16 +738,14 @@ export function AgencySettingsPage() {
                   key={tab.id}
                   type="button"
                   onClick={() => handleSelectTab(tab.id as SettingsTab)}
-                  className={`w-full text-left rounded-[8px] px-3 py-2.5 transition cursor-pointer select-none ${
-                    isActive
+                  className={`w-full text-left rounded-[8px] px-3 py-2.5 transition cursor-pointer select-none ${isActive
                       ? "bg-[#f1f4ff] text-[#0d0d10]"
                       : "hover:bg-[#f8f9fb] text-[#0d0d10]"
-                  }`}
+                    }`}
                 >
                   <p
-                    className={`text-[14px] leading-snug ${
-                      isActive ? "font-medium text-[#0d0d10]" : "font-normal text-[#0d0d10]"
-                    }`}
+                    className={`text-[14px] leading-snug ${isActive ? "font-medium text-[#0d0d10]" : "font-normal text-[#0d0d10]"
+                      }`}
                   >
                     {tab.title}
                   </p>
@@ -772,11 +861,10 @@ export function AgencySettingsPage() {
                         <button
                           type="button"
                           onClick={() => setIsServicesOpen(!isServicesOpen)}
-                          className={`flex h-10 w-full items-center justify-between rounded-[8px] bg-white px-3 text-left transition cursor-pointer ${
-                            isServicesOpen
+                          className={`flex h-10 w-full items-center justify-between rounded-[8px] bg-white px-3 text-left transition cursor-pointer ${isServicesOpen
                               ? "border border-[#0d0d10]"
                               : "border border-[#e3e5ec] hover:border-[#0d0d10]"
-                          }`}
+                            }`}
                         >
                           <span className="text-[13px] text-[#0d0d10] truncate">
                             {selectedServices.length > 0
@@ -801,11 +889,10 @@ export function AgencySettingsPage() {
                                   key={service}
                                   type="button"
                                   onClick={() => toggleService(service)}
-                                  className={`flex w-full items-center justify-between rounded-[6px] px-3 py-2 text-left text-[13px] transition cursor-pointer ${
-                                    isSelected
+                                  className={`flex w-full items-center justify-between rounded-[6px] px-3 py-2 text-left text-[13px] transition cursor-pointer ${isSelected
                                       ? "bg-[#f1f4ff] text-[#0d0d10]"
                                       : "text-[#0d0d10] hover:bg-[#f8f9fb]"
-                                  }`}
+                                    }`}
                                 >
                                   <span>{service}</span>
                                   {isSelected && (
@@ -1122,11 +1209,10 @@ export function AgencySettingsPage() {
                                   <span className="text-[13px] font-medium text-[#0d0d10]">
                                     {rule.isDefault
                                       ? `Default fee · ${rule.percent}% of creator fees`
-                                      : `${rule.clientName} · ${rule.percent}% of creator fees${
-                                          rule.retainer
-                                            ? ` + ₹${rule.retainer.toLocaleString("en-IN")} retainer`
-                                            : ""
-                                        }`}
+                                      : `${rule.clientName} · ${rule.percent}% of creator fees${rule.retainer
+                                        ? ` + ₹${rule.retainer.toLocaleString("en-IN")} retainer`
+                                        : ""
+                                      }`}
                                   </span>
                                   {rule.isDefault && (
                                     <span className="inline-flex items-center rounded-full bg-[#f1f4ff] px-2 py-0.5 text-[11px] font-medium text-[#3b5bff]">
@@ -1376,11 +1462,10 @@ export function AgencySettingsPage() {
                                 setClientFilter("only_my");
                                 setIsFilterOpen(false);
                               }}
-                              className={`flex w-full items-center justify-between px-3 py-1.5 text-[12px] rounded text-left transition cursor-pointer ${
-                                clientFilter === "only_my"
+                              className={`flex w-full items-center justify-between px-3 py-1.5 text-[12px] rounded text-left transition cursor-pointer ${clientFilter === "only_my"
                                   ? "bg-[#f1f4ff] font-medium text-[#0d0d10]"
                                   : "text-[#0d0d10] hover:bg-[#f8f9fb]"
-                              }`}
+                                }`}
                             >
                               <span>Only my clients</span>
                               {clientFilter === "only_my" && <Check className="size-3.5" />}
@@ -1391,11 +1476,10 @@ export function AgencySettingsPage() {
                                 setClientFilter("all");
                                 setIsFilterOpen(false);
                               }}
-                              className={`flex w-full items-center justify-between px-3 py-1.5 text-[12px] rounded text-left transition cursor-pointer ${
-                                clientFilter === "all"
+                              className={`flex w-full items-center justify-between px-3 py-1.5 text-[12px] rounded text-left transition cursor-pointer ${clientFilter === "all"
                                   ? "bg-[#f1f4ff] font-medium text-[#0d0d10]"
                                   : "text-[#0d0d10] hover:bg-[#f8f9fb]"
-                              }`}
+                                }`}
                             >
                               <span>All agency clients</span>
                               {clientFilter === "all" && <Check className="size-3.5" />}
@@ -1427,11 +1511,10 @@ export function AgencySettingsPage() {
                             {group.projects.map((project) => (
                               <label
                                 key={project.id}
-                                className={`flex items-center gap-2.5 text-[13px] select-none ${
-                                  project.disabled
+                                className={`flex items-center gap-2.5 text-[13px] select-none ${project.disabled
                                     ? "opacity-50 cursor-not-allowed text-[#8c94a0]"
                                     : "cursor-pointer text-[#0d0d10] hover:text-black"
-                                }`}
+                                  }`}
                               >
                                 <button
                                   type="button"
@@ -1439,11 +1522,10 @@ export function AgencySettingsPage() {
                                   onClick={() =>
                                     toggleProjectNotification(group.id, project.id)
                                   }
-                                  className={`size-4 rounded-[4px] flex items-center justify-center transition-colors shrink-0 ${
-                                    project.enabled
+                                  className={`size-4 rounded-[4px] flex items-center justify-center transition-colors shrink-0 ${project.enabled
                                       ? "bg-[#0d0d10] text-white"
                                       : "border border-[#d1d5db] bg-white hover:border-[#0d0d10]"
-                                  }`}
+                                    }`}
                                 >
                                   {project.enabled && (
                                     <Check className="size-3 text-white stroke-[3]" />
@@ -1522,11 +1604,10 @@ export function AgencySettingsPage() {
                                         onClick={() =>
                                           toggleEventNotification(ev.id, "email")
                                         }
-                                        className={`size-4 rounded-[4px] flex items-center justify-center transition-colors cursor-pointer ${
-                                          ev.email
+                                        className={`size-4 rounded-[4px] flex items-center justify-center transition-colors cursor-pointer ${ev.email
                                             ? "bg-[#0d0d10] text-white"
                                             : "border border-[#d1d5db] bg-white hover:border-[#0d0d10]"
-                                        }`}
+                                          }`}
                                       >
                                         {ev.email && (
                                           <Check className="size-3 text-white stroke-[3]" />
@@ -1541,11 +1622,10 @@ export function AgencySettingsPage() {
                                         onClick={() =>
                                           toggleEventNotification(ev.id, "inApp")
                                         }
-                                        className={`size-4 rounded-[4px] flex items-center justify-center transition-colors cursor-pointer ${
-                                          ev.inApp
+                                        className={`size-4 rounded-[4px] flex items-center justify-center transition-colors cursor-pointer ${ev.inApp
                                             ? "bg-[#0d0d10] text-white"
                                             : "border border-[#d1d5db] bg-white hover:border-[#0d0d10]"
-                                        }`}
+                                          }`}
                                       >
                                         {ev.inApp && (
                                           <Check className="size-3 text-white stroke-[3]" />
@@ -1572,19 +1652,363 @@ export function AgencySettingsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.35, ease: easeCurve }}
-                  className="rounded-[12px] border border-[#e3e5ec] bg-white p-6 flex flex-col gap-4 shadow-xs"
+                  className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-6 items-start"
                 >
-                  <div className="border-b border-[#edeff3] pb-3">
-                    <h2 className="text-[16px] font-semibold text-[#0d0d10]">
-                      Security
-                    </h2>
-                    <p className="text-[12px] text-[#71717a]">
-                      Password, two-factor authentication, and connected devices
-                    </p>
-                  </div>
-                  <p className="text-[13px] text-[#71717a]">
-                    Security settings will be implemented in the security step.
-                  </p>
+                    {/* LEFT COLUMN */}
+                    <div className="flex flex-col gap-6">
+                      {/* Card 1: Sign in */}
+                      <div className="rounded-[12px] border border-[#e3e5ec] bg-white p-5 flex flex-col gap-3 shadow-xs">
+                        {/* Head */}
+                        <div className="flex flex-col gap-0.5 pb-2 border-b border-[#edeff3]">
+                          <h2 className="text-[16px] font-semibold text-[#0d0d10]">
+                            Sign in
+                          </h2>
+                          <p className="text-[12px] text-[#71717a]">
+                            How you get into Kreyio
+                          </p>
+                        </div>
+
+                        {/* Rows */}
+                        <div className="divide-y divide-[#f0f2f5] text-[13px]">
+                          <div className="py-2.5 flex items-center justify-between gap-4">
+                            <span className="w-28 shrink-0 text-[#8c94a0]">
+                              Email
+                            </span>
+                            <span className="flex-1 font-normal text-[#0d0d10] truncate">
+                              rahul@brightside.agency
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => showToast("Email change verification sent.")}
+                              className="text-[#3b5bff] font-medium hover:underline cursor-pointer shrink-0"
+                            >
+                              Change
+                            </button>
+                          </div>
+
+                          <div className="py-2.5 flex items-center justify-between gap-4">
+                            <span className="w-28 shrink-0 text-[#8c94a0]">
+                              Password
+                            </span>
+                            <span className="flex-1 font-normal text-[#0d0d10] truncate">
+                              Last changed 14 Aug 2026
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setIsChangePasswordOpen(true)}
+                              className="text-[#3b5bff] font-medium hover:underline cursor-pointer shrink-0"
+                            >
+                              Change
+                            </button>
+                          </div>
+
+                          <div className="py-2.5 flex items-center justify-between gap-4">
+                            <span className="w-28 shrink-0 text-[#8c94a0]">
+                              Google sign-in
+                            </span>
+                            <span className="flex-1 font-normal text-[#0d0d10] truncate">
+                              Connected · rahul@brightside.agency
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => showToast("Google account disconnected.")}
+                              className="text-[#3b5bff] font-medium hover:underline cursor-pointer shrink-0"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Card 2: Two-step verification */}
+                      <div className="rounded-[12px] border border-[#e3e5ec] bg-white p-5 flex flex-col gap-3 shadow-xs">
+                        {/* Head */}
+                        <div className="flex items-start justify-between pb-2 border-b border-[#edeff3]">
+                          <div className="flex flex-col gap-0.5">
+                            <h2 className="text-[16px] font-semibold text-[#0d0d10]">
+                              Two-step verification
+                            </h2>
+                            <p className="text-[12px] text-[#71717a]">
+                              A code from your phone each time you sign in
+                            </p>
+                          </div>
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e8fbf0] px-2.5 py-0.5 text-[12px] font-medium text-[#059669]">
+                            <span className="size-1.5 rounded-full bg-[#059669]" />
+                            On
+                          </span>
+                        </div>
+
+                        {/* Rows */}
+                        <div className="divide-y divide-[#f0f2f5] text-[13px]">
+                          <div className="py-2.5 flex items-center justify-between gap-4">
+                            <span className="w-28 shrink-0 text-[#8c94a0]">
+                              Method
+                            </span>
+                            <span className="flex-1 font-normal text-[#0d0d10] truncate">
+                              Authenticator app · set up 12 Mar 2026
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => showToast("Authenticator app settings opened.")}
+                              className="text-[#3b5bff] font-medium hover:underline cursor-pointer shrink-0"
+                            >
+                              Change
+                            </button>
+                          </div>
+
+                          <div className="py-2.5 flex items-center justify-between gap-4">
+                            <span className="w-28 shrink-0 text-[#8c94a0]">
+                              Backup codes
+                            </span>
+                            <span className="flex-1 font-normal text-[#0d0d10] truncate">
+                              8 of 10 left
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setIsBackupCodesOpen(true)}
+                              className="text-[#3b5bff] font-medium hover:underline cursor-pointer shrink-0"
+                            >
+                              View codes
+                            </button>
+                          </div>
+
+                          {/* Bottom toggle */}
+                          <div className="pt-3 pb-1 flex items-center justify-between gap-4">
+                            <span className="text-[13px] text-[#0d0d10] font-normal">
+                              Require two-step for everyone in this workspace
+                            </span>
+                            <ToggleSwitch
+                              checked={requireTwoStepWorkspace}
+                              onChange={(val) => {
+                                setRequireTwoStepWorkspace(val);
+                                showToast(
+                                  val
+                                    ? "Two-step verification required for all members."
+                                    : "Two-step workspace requirement disabled."
+                                );
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Card 3: Where you're signed in */}
+                      <div className="rounded-[12px] border border-[#e3e5ec] bg-white p-5 flex flex-col gap-4 shadow-xs">
+                        {/* Head */}
+                        <div className="flex items-start justify-between pb-2 border-b border-[#edeff3]">
+                          <div className="flex flex-col gap-0.5">
+                            <h2 className="text-[16px] font-semibold text-[#0d0d10]">
+                              Where you’re signed in
+                            </h2>
+                            <p className="text-[12px] text-[#71717a]">
+                              Sign out anything you don’t recognise
+                            </p>
+                          </div>
+                          {devices.some((d) => !d.isCurrent) && (
+                            <button
+                              type="button"
+                              onClick={handleSignOutAllOthers}
+                              className="inline-flex h-8 items-center rounded-[8px] border border-[#e3e5ec] bg-white px-3 text-[13px] font-medium text-[#0d0d10] transition hover:border-[#0d0d10] shrink-0 cursor-pointer"
+                            >
+                              Sign out all others
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Table */}
+                        <div className="overflow-x-auto">
+                          <div className="min-w-[460px]">
+                            {/* Table Header */}
+                            <div className="grid grid-cols-[1.8fr_1fr_1fr_auto] items-center rounded-[8px] bg-[#f8f9fc] px-3.5 py-2 text-[12px] font-semibold text-[#525866] uppercase tracking-wider">
+                              <span>DEVICE</span>
+                              <span>LOCATION</span>
+                              <span>LAST ACTIVE</span>
+                              <span className="w-16" />
+                            </div>
+
+                            {/* Rows */}
+                            <div className="divide-y divide-[#f0f2f5]">
+                              {devices.map((dev) => (
+                                <div
+                                  key={dev.id}
+                                  className="grid grid-cols-[1.8fr_1fr_1fr_auto] items-center px-3.5 py-3 text-[13px] hover:bg-[#fafbfd] transition-colors"
+                                >
+                                  {/* Device info */}
+                                  <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                                    <div className="text-[#71717a] shrink-0">
+                                      {dev.type === "laptop" && <Laptop size={16} />}
+                                      {dev.type === "phone" && <Smartphone size={16} />}
+                                      {dev.type === "desktop" && <Monitor size={16} />}
+                                    </div>
+                                    <span className="font-normal text-[#0d0d10] truncate">
+                                      {dev.name}
+                                    </span>
+                                    {dev.isCurrent && (
+                                      <span className="inline-flex items-center rounded-full bg-[#f1f4ff] px-2 py-0.5 text-[11px] font-medium text-[#3b5bff] shrink-0">
+                                        This device
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  {/* Location */}
+                                  <span className="font-normal text-[#0d0d10]">
+                                    {dev.location}
+                                  </span>
+
+                                  {/* Last Active */}
+                                  <span className="font-normal text-[#0d0d10]">
+                                    {dev.lastActive}
+                                  </span>
+
+                                  {/* Action */}
+                                  <div className="w-16 text-right">
+                                    {!dev.isCurrent && (
+                                      <button
+                                        type="button"
+                                        onClick={() => handleSignOutDevice(dev.id, dev.name)}
+                                        className="text-[13px] font-medium text-[#3b5bff] hover:underline cursor-pointer"
+                                      >
+                                        Sign out
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* RIGHT COLUMN */}
+                    <div className="flex flex-col gap-6">
+                      {/* Card 4: Payment safety */}
+                      <div className="rounded-[12px] border border-[#e3e5ec] bg-white p-5 flex flex-col gap-3.5 shadow-xs">
+                        {/* Head */}
+                        <div className="flex flex-col gap-0.5 pb-2 border-b border-[#edeff3]">
+                          <h2 className="text-[16px] font-semibold text-[#0d0d10]">
+                            Payment safety
+                          </h2>
+                          <p className="text-[12px] text-[#71717a]">
+                            Extra checks before money moves
+                          </p>
+                        </div>
+
+                        {/* Toggles */}
+                        <div className="flex flex-col gap-3 pt-1">
+                          <div className="flex items-start justify-between gap-3">
+                            <span className="text-[13px] text-[#0d0d10] font-normal leading-snug">
+                              Ask for a two-step code on payments over ₹50,000
+                            </span>
+                            <ToggleSwitch
+                              checked={askTwoStepHighPayments}
+                              onChange={(val) => {
+                                setAskTwoStepHighPayments(val);
+                                showToast(val ? "Payment 2FA threshold active." : "Payment 2FA threshold turned off.");
+                              }}
+                            />
+                          </div>
+
+                          <div className="flex items-start justify-between gap-3">
+                            <span className="text-[13px] text-[#0d0d10] font-normal leading-snug">
+                              New payment methods wait 24 h before first use
+                            </span>
+                            <ToggleSwitch
+                              checked={holdNewPaymentMethods}
+                              onChange={(val) => {
+                                setHoldNewPaymentMethods(val);
+                                showToast(val ? "24h new payment method hold enabled." : "24h new payment hold disabled.");
+                              }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Note */}
+                        <div className="border-t border-[#f0f2f5] pt-2.5 mt-1">
+                          <p className="text-[12px] text-[#8c94a0]">
+                            Works with access levels in Team &amp; roles.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Card 5: Sign-in alerts */}
+                      <div className="rounded-[12px] border border-[#e3e5ec] bg-white p-5 flex flex-col gap-3.5 shadow-xs">
+                        {/* Head */}
+                        <div className="flex flex-col gap-0.5 pb-2 border-b border-[#edeff3]">
+                          <h2 className="text-[16px] font-semibold text-[#0d0d10]">
+                            Sign-in alerts
+                          </h2>
+                          <p className="text-[12px] text-[#71717a]">
+                            Know when someone signs in
+                          </p>
+                        </div>
+
+                        <div className="flex items-start justify-between gap-3 pt-1">
+                          <span className="text-[13px] text-[#0d0d10] font-normal leading-snug">
+                            Email me about sign-ins from a new device
+                          </span>
+                          <ToggleSwitch
+                            checked={emailNewDeviceSignIns}
+                            onChange={(val) => {
+                              setEmailNewDeviceSignIns(val);
+                              showToast(val ? "New device sign-in alerts enabled." : "New device alerts disabled.");
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Card 6: Recent activity */}
+                      <div className="rounded-[12px] border border-[#e3e5ec] bg-white p-5 flex flex-col gap-3.5 shadow-xs">
+                        {/* Head */}
+                        <div className="flex items-start justify-between pb-2 border-b border-[#edeff3]">
+                          <div className="flex flex-col gap-0.5">
+                            <h2 className="text-[16px] font-semibold text-[#0d0d10]">
+                              Recent activity
+                            </h2>
+                            <p className="text-[12px] text-[#71717a]">
+                              Last 7 days in this workspace
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => showToast("Full activity audit log opened.")}
+                            className="text-[13px] font-medium text-[#3b5bff] hover:underline cursor-pointer"
+                          >
+                            View all
+                          </button>
+                        </div>
+
+                        {/* Activity items */}
+                        <div className="divide-y divide-[#f0f2f5] text-[13px]">
+                          <div className="py-2.5 flex items-start gap-4">
+                            <span className="w-24 shrink-0 text-[#8c94a0] font-normal">
+                              28 Oct, 10:12
+                            </span>
+                            <span className="font-normal text-[#0d0d10] leading-snug">
+                              Rahul added client Petal &amp; Pine
+                            </span>
+                          </div>
+
+                          <div className="py-2.5 flex items-start gap-4">
+                            <span className="w-24 shrink-0 text-[#8c94a0] font-normal">
+                              27 Oct, 18:40
+                            </span>
+                            <span className="font-normal text-[#0d0d10] leading-snug">
+                              Priya changed Minimalist’s fee rule
+                            </span>
+                          </div>
+
+                          <div className="py-2.5 flex items-start gap-4">
+                            <span className="w-24 shrink-0 text-[#8c94a0] font-normal">
+                              26 Oct, 09:05
+                            </span>
+                            <span className="font-normal text-[#0d0d10] leading-snug">
+                              New sign-in · iPhone 15 · Mumbai
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -1596,7 +2020,7 @@ export function AgencySettingsPage() {
       <AgencyAddClientModal
         isOpen={isAddClientOpen}
         onClose={() => setIsAddClientOpen(false)}
-        onSuccess={() => {}}
+        onSuccess={() => { }}
       />
 
       {/* Invite / Manage Team Member Modal */}
@@ -1629,6 +2053,20 @@ export function AgencySettingsPage() {
         onClose={() => setIsBillingModalOpen(false)}
         onSave={handleSaveBillingDetails}
         initialDetails={billingDetails}
+      />
+
+      {/* Change Password Modal */}
+      <ChangePasswordModal
+        isOpen={isChangePasswordOpen}
+        onClose={() => setIsChangePasswordOpen(false)}
+        onSuccess={() => showToast("Password changed successfully.")}
+      />
+
+      {/* Backup Codes Modal */}
+      <BackupCodesModal
+        isOpen={isBackupCodesOpen}
+        onClose={() => setIsBackupCodesOpen(false)}
+        onCopied={() => showToast("Backup codes copied to clipboard.")}
       />
     </AgencyShell>
   );
