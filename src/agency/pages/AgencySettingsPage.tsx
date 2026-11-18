@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import {
   ChevronUp,
@@ -9,9 +10,15 @@ import {
   Receipt,
   Users,
   Building2,
+  UserPlus,
 } from "lucide-react";
 import { AgencyShell } from "@/agency/components/AgencyShell";
 import { AgencyAddClientModal } from "@/agency/components/AgencyAddClientModal";
+import {
+  AgencyInviteMemberModal,
+  TeamMemberData,
+} from "@/agency/components/AgencyInviteMemberModal";
+import { ROUTES } from "@/common/constants/routes";
 
 type SettingsTab = "account" | "team" | "billing" | "notifications" | "security";
 
@@ -24,12 +31,127 @@ const SERVICE_OPTIONS = [
   "Influencer casting",
 ];
 
+const INITIAL_TEAM_MEMBERS: TeamMemberData[] = [
+  {
+    id: "1",
+    name: "Rahul Verma",
+    email: "rahul@brightside.agency",
+    role: "Owner",
+    clients: ["Minimalist", "Dewdrop Naturals", "Velvet Lip Co."],
+    projects: "All projects of these clients (4 live)",
+    accessLevel: "full",
+    lastActive: "Now",
+    avatarUrl: "/assets/agency/avatars/rahul_avatar.png",
+  },
+  {
+    id: "2",
+    name: "Priya Sharma",
+    email: "priya@brightside.agency",
+    role: "Account manager",
+    clients: ["Minimalist", "Dewdrop Naturals"],
+    projects: "All projects of these clients (4 live)",
+    accessLevel: "approve_content",
+    lastActive: "2 h ago",
+    avatarUrl: "/assets/agency/avatars/priya_avatar.png",
+  },
+  {
+    id: "3",
+    name: "Neha Kapoor",
+    email: "neha@brightside.agency",
+    role: "Finance",
+    clients: ["Minimalist", "Dewdrop Naturals", "Velvet Lip Co."],
+    projects: "All projects of these clients (4 live)",
+    accessLevel: "approve_pay",
+    lastActive: "Yesterday",
+    avatarUrl: "/assets/agency/avatars/neha_avatar.png",
+  },
+  {
+    id: "4",
+    name: "Karan Mehta",
+    email: "karan@brightside.agency",
+    role: "Campaign exec.",
+    clients: ["Minimalist"],
+    projects: "Diwali Campaign 2024",
+    accessLevel: "edit",
+    lastActive: "3 d ago",
+    avatarUrl: "/assets/agency/avatars/karan_avatar.png",
+  },
+  {
+    id: "5",
+    name: "Sana Qureshi",
+    email: "sana@brightside.agency",
+    role: "Agency · Admin",
+    clients: ["Minimalist", "Dewdrop Naturals", "Velvet Lip Co."],
+    projects: "All projects of these clients (4 live)",
+    accessLevel: "full",
+    lastActive: "1 h ago",
+    avatarUrl: "/assets/agency/avatars/sana_avatar.png",
+  },
+];
+
+const PERMISSIONS_MATRIX = [
+  {
+    permission: "Create & edit client projects",
+    owner: true,
+    accountManager: true,
+    finance: false,
+    campaignExec: true,
+    clientGuest: false,
+  },
+  {
+    permission: "Invite creators & approve content",
+    owner: true,
+    accountManager: true,
+    finance: false,
+    campaignExec: true,
+    clientGuest: false,
+  },
+  {
+    permission: "Fund client escrow & see invoices",
+    owner: true,
+    accountManager: false,
+    finance: true,
+    campaignExec: false,
+    clientGuest: false,
+  },
+  {
+    permission: "Manage team, clients & billing",
+    owner: true,
+    accountManager: true,
+    finance: false,
+    campaignExec: false,
+    clientGuest: false,
+  },
+  {
+    permission: "View dashboards & reports",
+    owner: true,
+    accountManager: true,
+    finance: true,
+    campaignExec: true,
+    clientGuest: true,
+  },
+];
+
 const easeCurve = [0.22, 1, 0.36, 1] as const;
 
 export function AgencySettingsPage() {
-  const [activeTab, setActiveTab] = useState<SettingsTab>("account");
+  const { pathname } = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Tab initialization based on URL query or pathname
+  const initialTab: SettingsTab =
+    pathname === ROUTES.agencyTeam || searchParams.get("tab") === "team"
+      ? "team"
+      : ((searchParams.get("tab") as SettingsTab) || "account");
+
+  const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab);
   const [isAddClientOpen, setIsAddClientOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Team & roles state
+  const [teamMembers, setTeamMembers] = useState<TeamMemberData[]>(INITIAL_TEAM_MEMBERS);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [editingMember, setEditingMember] = useState<TeamMemberData | null>(null);
 
   // Form State for "Account" tab
   const [agencyName, setAgencyName] = useState("Brightside Agency");
@@ -54,6 +176,17 @@ export function AgencySettingsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (pathname === ROUTES.agencyTeam) {
+      setActiveTab("team");
+    } else {
+      const tabParam = searchParams.get("tab") as SettingsTab;
+      if (tabParam && tabParam !== activeTab) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, [pathname, searchParams]);
+
+  useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (servicesRef.current && !servicesRef.current.contains(event.target as Node)) {
         setIsServicesOpen(false);
@@ -66,6 +199,11 @@ export function AgencySettingsPage() {
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleSelectTab = (tab: SettingsTab) => {
+    setActiveTab(tab);
+    setSearchParams({ tab });
   };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,8 +223,25 @@ export function AgencySettingsPage() {
     );
   };
 
-  const handleSave = () => {
+  const handleSaveAccount = () => {
     showToast("Agency profile saved successfully.");
+  };
+
+  const handleSaveMember = (member: TeamMemberData) => {
+    if (editingMember) {
+      setTeamMembers((prev) =>
+        prev.map((m) => (m.id === member.id ? { ...m, ...member } : m))
+      );
+      showToast(`${member.name}'s permissions updated.`);
+    } else {
+      setTeamMembers((prev) => [...prev, member]);
+      showToast(`Invitation sent to ${member.email}.`);
+    }
+  };
+
+  const handleRemoveMember = (memberId: string) => {
+    setTeamMembers((prev) => prev.filter((m) => m.id !== memberId));
+    showToast("Member removed from agency workspace.");
   };
 
   return (
@@ -97,7 +252,7 @@ export function AgencySettingsPage() {
         transition={{ duration: 0.45, ease: easeCurve }}
         className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 pb-12"
       >
-        {/* Toast */}
+        {/* Toast Notification */}
         {toastMessage && (
           <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-[#0d0d10] px-4 py-2.5 text-[13px] font-medium text-white shadow-xl animate-in fade-in slide-in-from-bottom-2">
             {toastMessage}
@@ -117,7 +272,7 @@ export function AgencySettingsPage() {
         {/* Settings Body: 2 Columns */}
         <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* Left Sub-navigation Menu */}
-          <div className="w-full md:w-[240px] rounded-[12px] border border-[#e3e5ec] bg-white p-2 shrink-0 flex flex-col gap-0.5">
+          <div className="w-full md:w-[240px] rounded-[12px] border border-[#e3e5ec] bg-white p-2 shrink-0 flex flex-col gap-0.5 shadow-xs">
             {[
               {
                 id: "account",
@@ -134,7 +289,7 @@ export function AgencySettingsPage() {
               {
                 id: "billing",
                 title: "Billing & tax",
-                subtitle: "Your GSTIN, invoice template, how clients pay you",
+                subtitle: "Your GSTIN, invoice template, how cl...",
                 icon: Receipt,
               },
               {
@@ -155,7 +310,7 @@ export function AgencySettingsPage() {
                 <button
                   key={tab.id}
                   type="button"
-                  onClick={() => setActiveTab(tab.id as SettingsTab)}
+                  onClick={() => handleSelectTab(tab.id as SettingsTab)}
                   className={`w-full text-left rounded-[8px] px-3 py-2.5 transition cursor-pointer select-none ${
                     isActive
                       ? "bg-[#f1f4ff] text-[#0d0d10]"
@@ -180,6 +335,7 @@ export function AgencySettingsPage() {
           {/* Right Main Content Panel */}
           <div className="flex-1 w-full min-w-0">
             <AnimatePresence mode="wait">
+              {/* TAB 1: Account */}
               {activeTab === "account" && (
                 <motion.div
                   key="account"
@@ -187,7 +343,7 @@ export function AgencySettingsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.35, ease: easeCurve }}
-                  className="rounded-[12px] border border-[#e3e5ec] bg-white p-6 flex flex-col gap-6"
+                  className="rounded-[12px] border border-[#e3e5ec] bg-white p-6 flex flex-col gap-6 shadow-xs"
                 >
                   {/* Card Head */}
                   <div className="flex flex-col gap-1 border-b border-[#edeff3] pb-4">
@@ -300,7 +456,6 @@ export function AgencySettingsPage() {
                           </div>
                         </button>
 
-                        {/* Dropdown Popover matching Dropdown spec */}
                         {isServicesOpen && (
                           <div className="absolute left-0 top-[calc(100%+4px)] z-40 w-full rounded-[10px] border border-[#e5e7eb] bg-white p-1.5 shadow-[0px_8px_24px_0px_rgba(0,0,0,0.08)] animate-in fade-in zoom-in-95 duration-100 flex flex-col gap-0.5">
                             {SERVICE_OPTIONS.map((service) => {
@@ -417,8 +572,8 @@ export function AgencySettingsPage() {
                     <div className="pt-2">
                       <button
                         type="button"
-                        onClick={handleSave}
-                        className="inline-flex h-10 items-center justify-center rounded-[8px] bg-[#0d0d10] px-5 text-[14px] font-medium text-white transition hover:bg-black cursor-pointer"
+                        onClick={handleSaveAccount}
+                        className="inline-flex h-10 items-center justify-center rounded-[8px] bg-[#0d0d10] px-5 text-[14px] font-medium text-white transition hover:bg-black cursor-pointer shadow-xs"
                       >
                         Save changes
                       </button>
@@ -427,7 +582,7 @@ export function AgencySettingsPage() {
                 </motion.div>
               )}
 
-              {/* Other tabs placeholders for subsequent tabs */}
+              {/* TAB 2: AG-04 · Team & roles */}
               {activeTab === "team" && (
                 <motion.div
                   key="team"
@@ -435,22 +590,153 @@ export function AgencySettingsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.35, ease: easeCurve }}
-                  className="rounded-[12px] border border-[#e3e5ec] bg-white p-6 flex flex-col gap-4"
+                  className="flex flex-col gap-6"
                 >
-                  <div className="border-b border-[#edeff3] pb-3">
-                    <h2 className="text-[16px] font-semibold text-[#0d0d10]">
-                      Team & roles
-                    </h2>
-                    <p className="text-[12px] text-[#71717a]">
-                      Members, client access and permission scopes
+                  {/* Top Bar: Subtitle & Invite Member Button */}
+                  <div className="flex items-center justify-between">
+                    <p className="text-[14px] text-[#0d0d10] font-normal">
+                      6 members · 2 clients have guest seats
                     </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingMember(null);
+                        setIsInviteModalOpen(true);
+                      }}
+                      className="inline-flex h-9 items-center gap-1.5 rounded-[8px] bg-[#0d0d10] px-4 text-[13px] font-medium text-white transition hover:bg-black cursor-pointer shadow-xs"
+                    >
+                      <UserPlus size={15} />
+                      <span>Invite member</span>
+                    </button>
                   </div>
-                  <p className="text-[13px] text-[#71717a]">
-                    Team & roles management view will be configured in the next tab step.
-                  </p>
+
+                  {/* Card 1: Members Table */}
+                  <div className="rounded-[12px] border border-[#e3e5ec] bg-white overflow-hidden shadow-xs">
+                    {/* Header */}
+                    <div className="grid grid-cols-[1.8fr_1.3fr_1fr_auto] items-center bg-[#f8f9fc] border-b border-[#e3e5ec] px-5 py-3 text-[13px] font-medium text-[#525866]">
+                      <span>Campaign executive</span>
+                      <span>Role</span>
+                      <span>Last active</span>
+                      <span className="w-16" />
+                    </div>
+
+                    {/* Table Rows */}
+                    <div className="divide-y divide-[#f0f2f5]">
+                      {teamMembers.map((member) => (
+                        <div
+                          key={member.id}
+                          className="grid grid-cols-[1.8fr_1.3fr_1fr_auto] items-center px-5 py-3.5 hover:bg-[#fafbfd] transition-colors"
+                        >
+                          {/* Member info */}
+                          <div className="flex items-center gap-3 min-w-0 pr-2">
+                            <img
+                              src={member.avatarUrl}
+                              alt={member.name}
+                              className="size-9 rounded-full object-cover shrink-0 border border-[#e3e5ec]"
+                            />
+                            <div className="min-w-0 flex flex-col">
+                              <span className="text-[14px] font-medium text-[#0d0d10] leading-snug truncate">
+                                {member.name}
+                              </span>
+                              <span className="text-[12px] text-[#71717a] leading-tight truncate">
+                                {member.email}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Role Badge */}
+                          <div>
+                            {member.role === "Owner" ? (
+                              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f1f4ff] px-2.5 py-1 text-[12px] font-medium text-[#3b5bff]">
+                                <span className="size-1.5 rounded-full bg-[#3b5bff]" />
+                                Owner
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f4f6fb] px-2.5 py-1 text-[12px] font-medium text-[#4a4a55]">
+                                <span className="size-1.5 rounded-full bg-[#6b7280]" />
+                                {member.role}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Last Active */}
+                          <span className="text-[13px] text-[#525866]">
+                            {member.lastActive}
+                          </span>
+
+                          {/* Action */}
+                          <div className="w-16 text-right">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingMember(member);
+                                setIsInviteModalOpen(true);
+                              }}
+                              className="text-[13px] font-medium text-[#0d0d10] hover:text-[#3b5bff] transition-colors cursor-pointer"
+                            >
+                              Manage
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Card 2: Permissions Matrix */}
+                  <div className="rounded-[12px] border border-[#e3e5ec] bg-white p-5 shadow-xs flex flex-col gap-4">
+                    <div className="flex flex-col gap-0.5">
+                      <h3 className="text-[15px] font-semibold text-[#0d0d10]">
+                        What each role can do · per client and per project
+                      </h3>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <div className="min-w-[620px]">
+                        {/* Table Header */}
+                        <div className="grid grid-cols-[2fr_repeat(5,1fr)] items-center rounded-[8px] bg-[#f8f9fc] px-4 py-2.5 text-[13px] font-medium text-[#525866]">
+                          <span className="text-left">Permission</span>
+                          <span className="text-center">Owner</span>
+                          <span className="text-center">Account manager</span>
+                          <span className="text-center">Finance</span>
+                          <span className="text-center">Campaign exec.</span>
+                          <span className="text-center">Client guest</span>
+                        </div>
+
+                        {/* Table Rows */}
+                        <div className="divide-y divide-[#f0f2f5]">
+                          {PERMISSIONS_MATRIX.map((row) => (
+                            <div
+                              key={row.permission}
+                              className="grid grid-cols-[2fr_repeat(5,1fr)] items-center px-4 py-3 text-[13px] text-[#0d0d10] hover:bg-[#fafbfd] transition-colors"
+                            >
+                              <span className="font-normal text-[#0d0d10]">
+                                {row.permission}
+                              </span>
+                              <span className="text-center font-semibold text-[#0d0d10]">
+                                {row.owner ? "✓" : <span className="text-[#a3a3ac] font-normal">-</span>}
+                              </span>
+                              <span className="text-center font-semibold text-[#0d0d10]">
+                                {row.accountManager ? "✓" : <span className="text-[#a3a3ac] font-normal">-</span>}
+                              </span>
+                              <span className="text-center font-semibold text-[#0d0d10]">
+                                {row.finance ? "✓" : <span className="text-[#a3a3ac] font-normal">-</span>}
+                              </span>
+                              <span className="text-center font-semibold text-[#0d0d10]">
+                                {row.campaignExec ? "✓" : <span className="text-[#a3a3ac] font-normal">-</span>}
+                              </span>
+                              <span className="text-center font-semibold text-[#0d0d10]">
+                                {row.clientGuest ? "✓" : <span className="text-[#a3a3ac] font-normal">-</span>}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
               )}
 
+              {/* TAB 3: AG-05b · Billing & tax */}
               {activeTab === "billing" && (
                 <motion.div
                   key="billing"
@@ -458,7 +744,7 @@ export function AgencySettingsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.35, ease: easeCurve }}
-                  className="rounded-[12px] border border-[#e3e5ec] bg-white p-6 flex flex-col gap-4"
+                  className="rounded-[12px] border border-[#e3e5ec] bg-white p-6 flex flex-col gap-4 shadow-xs"
                 >
                   <div className="border-b border-[#edeff3] pb-3">
                     <h2 className="text-[16px] font-semibold text-[#0d0d10]">
@@ -474,6 +760,7 @@ export function AgencySettingsPage() {
                 </motion.div>
               )}
 
+              {/* TAB 4: AG-05c · Notifications */}
               {activeTab === "notifications" && (
                 <motion.div
                   key="notifications"
@@ -481,7 +768,7 @@ export function AgencySettingsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.35, ease: easeCurve }}
-                  className="rounded-[12px] border border-[#e3e5ec] bg-white p-6 flex flex-col gap-4"
+                  className="rounded-[12px] border border-[#e3e5ec] bg-white p-6 flex flex-col gap-4 shadow-xs"
                 >
                   <div className="border-b border-[#edeff3] pb-3">
                     <h2 className="text-[16px] font-semibold text-[#0d0d10]">
@@ -497,6 +784,7 @@ export function AgencySettingsPage() {
                 </motion.div>
               )}
 
+              {/* TAB 5: AG-05d · Security */}
               {activeTab === "security" && (
                 <motion.div
                   key="security"
@@ -504,7 +792,7 @@ export function AgencySettingsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.35, ease: easeCurve }}
-                  className="rounded-[12px] border border-[#e3e5ec] bg-white p-6 flex flex-col gap-4"
+                  className="rounded-[12px] border border-[#e3e5ec] bg-white p-6 flex flex-col gap-4 shadow-xs"
                 >
                   <div className="border-b border-[#edeff3] pb-3">
                     <h2 className="text-[16px] font-semibold text-[#0d0d10]">
@@ -529,6 +817,18 @@ export function AgencySettingsPage() {
         isOpen={isAddClientOpen}
         onClose={() => setIsAddClientOpen(false)}
         onSuccess={() => {}}
+      />
+
+      {/* Invite / Manage Team Member Modal */}
+      <AgencyInviteMemberModal
+        isOpen={isInviteModalOpen}
+        onClose={() => {
+          setIsInviteModalOpen(false);
+          setEditingMember(null);
+        }}
+        onSuccess={handleSaveMember}
+        onRemove={handleRemoveMember}
+        initialMember={editingMember}
       />
     </AgencyShell>
   );
