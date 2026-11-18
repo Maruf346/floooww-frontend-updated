@@ -54,6 +54,8 @@ export const ROUTES = {
   agencyClientOverview: "/agency/client",
   agencyClientDetail: "/agency/client/:clientId",
   agencyClientNewProject: "/agency/client/:clientId/projects/new",
+  agencyClientProjectPublished: "/agency/client/:clientId/projects/published",
+  agencyClientProjectDetail: "/agency/client/:clientId/projects/:projectId",
   agencyBilling: "/agency/billing",
   agencyReports: "/agency/reports",
   agencyReportNew: "/agency/reports/new",
@@ -95,5 +97,9 @@ export const agencyReportDetailRoute = (reportId: string) => `/agency/reports/${
 export const agencyClientRoute = (clientId: string) => `/agency/client/${clientId}`;
 export const agencyClientNewProjectRoute = (clientId: string) =>
   `/agency/client/${clientId}/projects/new`;
+export const agencyClientProjectPublishedRoute = (clientId: string) =>
+  `/agency/client/${clientId}/projects/published`;
+export const agencyClientProjectDetailRoute = (clientId: string, projectId: number | string) =>
+  `/agency/client/${clientId}/projects/${projectId}`;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];

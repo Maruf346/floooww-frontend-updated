@@ -28,6 +28,7 @@ import {
   WalletCards,
 } from "lucide-react";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { AgencyClientShell } from "@/agency/components/AgencyClientShell";
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import { Button } from "@/common/components/ui/Button";
 import { Dropdown } from "@/common/components/ui/Dropdown";
@@ -1990,10 +1991,33 @@ function ProjectContentBoard({
   );
 }
 
-export function BrandProjectPublishedPage() {
+export type BrandProjectPublishedPageProps = {
+  shell?: "brand" | "agency-client";
+  activeClientId?: string;
+};
+
+export function BrandProjectPublishedPage({
+  shell = "brand",
+  activeClientId,
+}: BrandProjectPublishedPageProps = {}) {
   const navigate = useNavigate();
-  const { projectId } = useParams();
-  const project = getProject(Number(projectId));
+  const { projectId, clientId: paramClientId } = useParams<{ projectId?: string; clientId?: string }>();
+  const clientId = activeClientId || paramClientId || "minimalist";
+  const project = getProject(Number(projectId) || 1);
+
+  // Sync latest published project details if just published
+  if (typeof window !== "undefined") {
+    try {
+      const stored = window.sessionStorage.getItem(`floooww-client-${clientId}-latest-project`);
+      if (stored) {
+        const latest = JSON.parse(stored);
+        if (latest.name) project.name = latest.name;
+        if (latest.type) project.projectType = latest.type;
+      }
+    } catch {
+      // Ignore parse error
+    }
+  }
   const [status, setStatus] = useState<Lifecycle>(project.detailStatus);
   const [tab, setTab] = useState(() => {
     if (typeof window === "undefined") return "Overview";
@@ -2011,6 +2035,8 @@ export function BrandProjectPublishedPage() {
   const [more, setMore] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [confirm, setConfirm] = useState<Confirm>(null);
+  const isAgencyClient = shell === "agency-client";
+  const projectHomeRoute = isAgencyClient ? `/agency/client/${clientId}` : ROUTES.brandProjects;
   const locked = status === "Archived" || status === "Deleted";
   const rules = getProjectRules(project);
   const objective = rules.objective;
@@ -2135,8 +2161,12 @@ export function BrandProjectPublishedPage() {
     setConfirm(null);
     setMore(false);
   };
+
+  const ShellContainer = shell === "agency-client" ? AgencyClientShell : BrandShell;
+  const shellProps = shell === "agency-client" ? { activeClientId: clientId } : {};
+
   return (
-    <BrandShell>
+    <ShellContainer {...shellProps}>
       <main className="w-full pb-10">
         <header className="flex flex-col justify-between gap-4 lg:h-[122px] lg:flex-row">
           <div>
@@ -2186,7 +2216,7 @@ export function BrandProjectPublishedPage() {
                   <div className="absolute right-0 top-12 z-50 w-[204px] rounded-lg border border-line bg-white p-1.5 shadow-[0_8px_24px_rgba(0,0,0,.12)]">
                     <button
                       className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-[13px] hover:bg-subtle"
-                      onClick={() => navigate(ROUTES.brandProjects)}
+                      onClick={() => navigate(projectHomeRoute)}
                     >
                       <Eye size={14} />
                       Back to projects
@@ -2327,7 +2357,7 @@ export function BrandProjectPublishedPage() {
               >
                 Restore project
               </Button>
-              <Button size="s" kind="ghost" onClick={() => navigate(ROUTES.brandProjects)}>
+              <Button size="s" kind="ghost" onClick={() => navigate(projectHomeRoute)}>
                 Back to projects
               </Button>
             </div>
@@ -2987,6 +3017,6 @@ export function BrandProjectPublishedPage() {
         onCancel={() => setConfirm(null)}
       />
       <ShareProjectModal project={project} isOpen={shareOpen} onClose={() => setShareOpen(false)} />
-    </BrandShell>
+    </ShellContainer>
   );
 }

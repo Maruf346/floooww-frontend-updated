@@ -302,6 +302,20 @@ export const router = createBrowserRouter(
           }),
         },
         {
+          path: ROUTES.agencyClientProjectPublished,
+          lazy: async () => ({
+            Component: (await import("@/agency/pages/AgencyClientProjectPublishedPage"))
+              .AgencyClientProjectPublishedPage,
+          }),
+        },
+        {
+          path: ROUTES.agencyClientProjectDetail,
+          lazy: async () => ({
+            Component: (await import("@/agency/pages/AgencyClientProjectPublishedPage"))
+              .AgencyClientProjectPublishedPage,
+          }),
+        },
+        {
           path: ROUTES.agencyClientDetail,
           lazy: async () => ({
             Component: (await import("@/agency/pages/AgencyClientOverviewPage")).AgencyClientOverviewPage,
