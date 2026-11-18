@@ -58,9 +58,7 @@ export function AgencyWorkspaceSwitcher({
 
   const handleSelectClient = (clientId: string) => {
     setIsOpen(false);
-    // If we're already on a brand route, retain the route but update client param
-    const currentPath = location.pathname.startsWith("/brand") ? location.pathname : ROUTES.brand;
-    navigate(`${currentPath}?client=${clientId}`);
+    navigate(`/agency/client/${clientId}`);
   };
 
   const handleAddClient = () => {

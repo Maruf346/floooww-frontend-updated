@@ -142,8 +142,8 @@ function AgencySidebar({
                   type="button"
                   onClick={() => {
                     close?.();
-                    // Opens Brand app in client mode for this client
-                    navigate(`/brand?client=${client.id}`);
+                    // Opens Agency client mode for this client
+                    navigate(`/agency/client/${client.id}`);
                   }}
                   className="flex h-8 w-full items-center gap-2.5 rounded-md px-3 pl-9 text-[13px] text-ink hover:bg-subtle transition-colors text-left cursor-pointer"
                 >

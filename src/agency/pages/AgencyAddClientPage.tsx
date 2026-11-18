@@ -861,7 +861,7 @@ export function AgencyAddClientPage() {
                   <div className="flex items-center justify-between border-t border-[#e3e5ec] pt-[20px]">
                     <button
                       type="button"
-                      onClick={() => navigate(`/brand?client=${clientIdSlug}`)}
+                      onClick={() => navigate(`/agency/client/${clientIdSlug}`)}
                       className="flex h-[40px] items-center gap-[8px] rounded-[8px] border border-[#e3e5ec] bg-white px-[16px] text-[14px] font-medium text-[#0d0d10] hover:bg-[#f4f6fb] transition-colors cursor-pointer"
                     >
                       <ArrowLeft size={16} />
@@ -871,7 +871,7 @@ export function AgencyAddClientPage() {
                     <div className="flex items-center gap-[12px]">
                       <button
                         type="button"
-                        onClick={() => navigate(`/brand/projects/new?client=${clientIdSlug}`)}
+                        onClick={() => navigate(`/agency/client/${clientIdSlug}?action=new-project`)}
                         className="h-[40px] px-[16px] text-[14px] font-medium text-[#0d0d10] hover:text-[#71717a] transition-colors cursor-pointer"
                       >
                         Create their first project
@@ -879,7 +879,7 @@ export function AgencyAddClientPage() {
 
                       <button
                         type="button"
-                        onClick={() => navigate(`/brand/projects/new?client=${clientIdSlug}`)}
+                        onClick={() => navigate(`/agency/client/${clientIdSlug}?action=new-project`)}
                         className="flex h-[40px] items-center gap-[8px] rounded-[8px] bg-[#0d0d10] px-[16px] text-[14px] font-medium text-white hover:bg-black transition-colors cursor-pointer shadow-xs"
                       >
                         <span>Create their first project</span>

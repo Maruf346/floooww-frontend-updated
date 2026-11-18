@@ -330,7 +330,7 @@ export function AgencyDashboardPage() {
 
   const openClientMode = (clientId: string) => {
     showToast(`Switching to ${clientId} workspace in Client Mode...`);
-    navigate(`/brand?client=${clientId}`);
+    navigate(`/agency/client/${clientId}`);
   };
 
   return (

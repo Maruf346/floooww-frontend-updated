@@ -190,7 +190,7 @@ export function AgencyClientsPage() {
   }, [clients, activeTab, searchQuery]);
 
   const handleOpenClient = (clientId: string) => {
-    navigate(`${ROUTES.brandOverview}?client=${clientId}`);
+    navigate(`/agency/client/${clientId}`);
   };
 
   const handleAddClientSuccess = (clientName: string) => {
