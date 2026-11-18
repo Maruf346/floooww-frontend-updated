@@ -470,21 +470,21 @@ export function AgencyAddClientPage() {
                   <div className="space-y-3.5">
                     {/* Shopify Integration */}
                     <div
-                      className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
+                      className={`flex items-center justify-between px-[14px] py-[12px] rounded-[12px] border transition-all ${
                         isShopifyConnected
-                          ? "border-emerald-500/40 bg-emerald-50/20"
-                          : "border-[#e3e5ec] bg-white hover:border-[#0d0d10]"
+                          ? "border-[#86efac] bg-white"
+                          : "border-[#e5e7eb] bg-white hover:border-[#0d0d10]"
                       }`}
                     >
-                      <div className="flex items-center gap-3.5">
-                        <div className="size-11 rounded-lg bg-[#5e8e3e] flex items-center justify-center text-white font-bold text-[18px] shrink-0">
+                      <div className="flex items-center gap-[12px]">
+                        <div className="size-[36px] rounded-[8px] bg-[#5e8e3e] flex items-center justify-center text-white font-bold text-[15px] shrink-0">
                           S
                         </div>
-                        <div>
-                          <h4 className="text-[14px] font-semibold text-[#0d0d10]">
+                        <div className="flex flex-col gap-[2px]">
+                          <h4 className="text-[14px] font-semibold text-[#070b13] leading-none">
                             Shopify
                           </h4>
-                          <p className="text-[12px] text-[#71717a]">
+                          <p className="text-[12px] text-[#6b7280] leading-normal">
                             Orders and net sales from creator codes and links
                           </p>
                         </div>
@@ -493,15 +493,15 @@ export function AgencyAddClientPage() {
                       <button
                         type="button"
                         onClick={() => setIsShopifyConnected(!isShopifyConnected)}
-                        className={`h-8 px-3.5 rounded-lg text-[13px] font-medium transition cursor-pointer ${
+                        className={`transition cursor-pointer ${
                           isShopifyConnected
-                            ? "bg-emerald-100/70 text-emerald-800 flex items-center gap-1.5"
-                            : "border border-[#e3e5ec] bg-white text-[#0d0d10] hover:bg-[#f4f6fb]"
+                            ? "bg-[#e1fce3] px-[8px] py-[2px] rounded-full flex items-center gap-[6px] text-[12px] font-medium text-[#16a34a]"
+                            : "h-[32px] px-[12px] rounded-[8px] border border-[#e3e5ec] bg-white text-[13px] font-medium text-[#0d0d10] hover:bg-[#f4f6fb]"
                         }`}
                       >
                         {isShopifyConnected ? (
                           <>
-                            <span className="size-1.5 rounded-full bg-emerald-600" />
+                            <span className="size-[6px] rounded-full bg-[#16a34a]" />
                             <span>Connected</span>
                           </>
                         ) : (
@@ -512,21 +512,21 @@ export function AgencyAddClientPage() {
 
                     {/* WooCommerce Integration */}
                     <div
-                      className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
+                      className={`flex items-center justify-between px-[14px] py-[12px] rounded-[12px] border transition-all ${
                         isWooConnected
-                          ? "border-purple-500/40 bg-purple-50/20"
-                          : "border-[#e3e5ec] bg-white hover:border-[#0d0d10]"
+                          ? "border-[#86efac] bg-white"
+                          : "border-[#e5e7eb] bg-white hover:border-[#0d0d10]"
                       }`}
                     >
-                      <div className="flex items-center gap-3.5">
-                        <div className="size-11 rounded-lg bg-[#7f54b3] flex items-center justify-center text-white font-bold text-[18px] shrink-0">
+                      <div className="flex items-center gap-[12px]">
+                        <div className="size-[36px] rounded-[8px] bg-[#7f54b3] flex items-center justify-center text-white font-bold text-[15px] shrink-0">
                           W
                         </div>
-                        <div>
-                          <h4 className="text-[14px] font-semibold text-[#0d0d10]">
+                        <div className="flex flex-col gap-[2px]">
+                          <h4 className="text-[14px] font-semibold text-[#070b13] leading-none">
                             WooCommerce
                           </h4>
-                          <p className="text-[12px] text-[#71717a]">
+                          <p className="text-[12px] text-[#6b7280] leading-normal">
                             Orders from WordPress stores
                           </p>
                         </div>
@@ -535,15 +535,15 @@ export function AgencyAddClientPage() {
                       <button
                         type="button"
                         onClick={() => setIsWooConnected(!isWooConnected)}
-                        className={`h-8 px-3.5 rounded-lg text-[13px] font-medium transition cursor-pointer ${
+                        className={`transition cursor-pointer ${
                           isWooConnected
-                            ? "bg-purple-100/70 text-purple-800 flex items-center gap-1.5"
-                            : "border border-[#e3e5ec] bg-white text-[#0d0d10] hover:bg-[#f4f6fb]"
+                            ? "bg-[#e1fce3] px-[8px] py-[2px] rounded-full flex items-center gap-[6px] text-[12px] font-medium text-[#16a34a]"
+                            : "h-[32px] px-[12px] rounded-[8px] border border-[#e3e5ec] bg-white text-[13px] font-medium text-[#0d0d10] hover:bg-[#f4f6fb]"
                         }`}
                       >
                         {isWooConnected ? (
                           <>
-                            <span className="size-1.5 rounded-full bg-purple-600" />
+                            <span className="size-[6px] rounded-full bg-[#16a34a]" />
                             <span>Connected</span>
                           </>
                         ) : (
