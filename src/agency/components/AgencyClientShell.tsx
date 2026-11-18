@@ -5,6 +5,7 @@ import {
   CircleHelp,
   FileBarChart,
   Folder,
+  Home,
   Image,
   LogOut,
   Menu,
@@ -67,6 +68,11 @@ export function AgencyClientShell({
   };
 
   const baseClientUrl = `/agency/client/${clientId}`;
+  const isOverview =
+    (location.pathname === baseClientUrl ||
+      location.pathname === `${baseClientUrl}/` ||
+      location.pathname === "/agency/client") &&
+    !location.search.includes("tab=");
 
   const navClass = (active: boolean) =>
     `flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] transition-colors ${
@@ -103,10 +109,20 @@ export function AgencyClientShell({
           MAIN
         </p>
 
+        {/* Overview */}
+        <Link
+          to={baseClientUrl}
+          onClick={closeMenu}
+          className={navClass(isOverview)}
+        >
+          <Home size={18} />
+          <span>Overview</span>
+        </Link>
+
         {/* Clients folder header */}
         <div
           onClick={() => setClientsFolderOpen((prev) => !prev)}
-          className="flex h-9 w-full items-center justify-between rounded-md px-3 text-[14px] text-[#0d0d10] hover:bg-subtle cursor-pointer transition-colors"
+          className="mt-0.5 flex h-9 w-full items-center justify-between rounded-md px-3 text-[14px] text-[#0d0d10] hover:bg-subtle cursor-pointer transition-colors"
         >
           <div className="flex items-center gap-2.5">
             <Folder size={18} className="text-[#0d0d10]" />

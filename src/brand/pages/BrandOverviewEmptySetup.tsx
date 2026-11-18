@@ -4,11 +4,9 @@ import {
   Plus,
   Check,
   Megaphone,
-  MessageSquare,
   HelpCircle,
   ExternalLink,
   X,
-  Sparkles,
   ShoppingBag,
   Store,
   Play,
@@ -28,28 +26,6 @@ export function BrandOverviewEmptySetup() {
   const [storeConnected, setStoreConnected] = useState(false);
   const [guideModalOpen, setGuideModalOpen] = useState(false);
   const [overviewVideoOpen, setOverviewVideoOpen] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false);
-  const [chatMessages, setChatMessages] = useState<Array<{ role: "assistant" | "user"; text: string }>>([
-    {
-      role: "assistant",
-      text: "Hi Ananya! I'm your Floooww campaign assistant. How can I help you get started with Minimalist today?",
-    },
-  ]);
-  const [inputMessage, setInputMessage] = useState("");
-
-  const handleSendMessage = () => {
-    if (!inputMessage.trim()) return;
-    const userText = inputMessage;
-    setInputMessage("");
-    setChatMessages((prev) => [
-      ...prev,
-      { role: "user", text: userText },
-      {
-        role: "assistant",
-        text: "I can help configure your campaign requirements and suggest top beauty & skincare creators who fit Minimalist's audience. Click 'Create new project' above to launch your first brief!",
-      },
-    ]);
-  };
 
   const newProjectUrl = `${ROUTES.brandNewProject}?client=${clientId}`;
 
@@ -236,99 +212,6 @@ export function BrandOverviewEmptySetup() {
           </div>
         </div>
       </div>
-
-      {/* Floating Chatbot Launcher */}
-      <button
-        type="button"
-        onClick={() => setChatOpen((prev) => !prev)}
-        className="fixed bottom-6 right-6 z-40 grid size-14 place-items-center rounded-full bg-[#0d0d10] text-white shadow-[0px_16px_40px_-8px_rgba(8,10,20,0.22)] transition-transform hover:scale-105 active:scale-95 cursor-pointer"
-        aria-label="Toggle assistant"
-      >
-        <MessageSquare size={22} className="fill-white" />
-      </button>
-
-      {/* Floating Chatbot Drawer / Popover */}
-      {chatOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-48px)] rounded-2xl border border-[#e3e5ec] bg-white shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
-          <div className="flex items-center justify-between bg-[#0d0d10] px-4 py-3.5 text-white">
-            <div className="flex items-center gap-2.5">
-              <div className="grid size-7 place-items-center rounded-full bg-white/10">
-                <Sparkles size={14} className="text-amber-300" />
-              </div>
-              <div>
-                <p className="text-[13px] font-semibold leading-4">Floooww AI Assistant</p>
-                <p className="text-[11px] text-[#a3a3ac]">Ready to draft briefs &amp; find creators</p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setChatOpen(false)}
-              className="p-1 rounded-md text-white/70 hover:text-white hover:bg-white/10 cursor-pointer"
-            >
-              <X size={16} />
-            </button>
-          </div>
-
-          <div className="max-h-[300px] min-h-[220px] overflow-y-auto p-4 space-y-3 bg-[#fbfcfd]">
-            {chatMessages.map((msg, idx) => (
-              <div
-                key={idx}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`max-w-[85%] rounded-xl px-3 py-2 text-[13px] leading-5 ${
-                    msg.role === "user"
-                      ? "bg-[#0d0d10] text-white"
-                      : "bg-[#f4f6fb] border border-[#e3e5ec] text-[#0d0d10]"
-                  }`}
-                >
-                  {msg.text}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Quick starter chips */}
-          <div className="border-t border-[#e3e5ec] bg-white px-3 py-2 flex gap-1.5 overflow-x-auto text-[11px]">
-            <button
-              type="button"
-              onClick={() => {
-                setInputMessage("Help draft my first brief for Minimalist");
-              }}
-              className="rounded-full bg-[#f4f6fb] px-2.5 py-1 text-[#0d0d10] hover:bg-[#e3e5ec] whitespace-nowrap cursor-pointer transition-colors"
-            >
-              Draft first brief
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setInputMessage("Recommend creator tier for skincare launch");
-              }}
-              className="rounded-full bg-[#f4f6fb] px-2.5 py-1 text-[#0d0d10] hover:bg-[#e3e5ec] whitespace-nowrap cursor-pointer transition-colors"
-            >
-              Creator tiers
-            </button>
-          </div>
-
-          <div className="flex items-center gap-2 border-t border-[#e3e5ec] bg-white p-3">
-            <input
-              type="text"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-              placeholder="Ask anything or request a brief..."
-              className="flex-1 rounded-lg border border-[#e3e5ec] px-3 py-1.5 text-[13px] outline-none focus:border-[#0d0d10]"
-            />
-            <button
-              type="button"
-              onClick={handleSendMessage}
-              className="rounded-lg bg-[#0d0d10] px-3 py-1.5 text-[13px] font-medium text-white hover:bg-black cursor-pointer"
-            >
-              Send
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Connect Store Modal */}
       {storeModalOpen && (
