@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { X, Check, ChevronDown, ChevronUp, UserPlus, Trash2 } from "lucide-react";
+import { motion } from "motion/react";
+import { Check, ChevronDown, UserPlus, Trash2 } from "lucide-react";
 
 export interface TeamMemberData {
   id: string;
@@ -41,18 +41,18 @@ const AVAILABLE_CLIENTS = [
 
 const PROJECT_OPTIONS = [
   "All projects of these clients (4 live)",
-  "Diwali Campaign 2024",
-  "Winter Glow Serum",
-  "Matte Lip Launch",
-  "Summer Essentials Promo",
+  "Minimalist · Vitamin-C Serum",
+  "Minimalist · Glow Squad",
+  "Dewdrop · Monsoon Sunscreen",
+  "Velvet Lip · Lip Tint Drop",
 ];
 
 const ACCESS_LEVELS: { id: TeamMemberData["accessLevel"]; label: string; desc: string }[] = [
   { id: "view", label: "View only", desc: "Read dashboards, projects & reports" },
-  { id: "edit", label: "Edit", desc: "Brief, deliverables, creators" },
+  { id: "edit", label: "Edit (brief, deliverables, creators)", desc: "Create/edit projects & briefs" },
   { id: "approve_content", label: "Approve content", desc: "Approve deliverables, mark live" },
-  { id: "approve_pay", label: "Approve & pay", desc: "Fund escrow, release payments, invoices" },
-  { id: "full", label: "Full", desc: "Full brand management on selected clients" },
+  { id: "approve_pay", label: "Approve & pay (fund escrow, release payments)", desc: "Fund escrow, release payouts" },
+  { id: "full", label: "Full", desc: "Full management on selected clients" },
 ];
 
 export function AgencyInviteMemberModal({
@@ -64,7 +64,7 @@ export function AgencyInviteMemberModal({
 }: AgencyInviteMemberModalProps) {
   const isEditing = Boolean(initialMember);
 
-  const [nameAndEmail, setNameAndEmail] = useState("");
+  const [nameAndEmail, setNameAndEmail] = useState("Meera Nair · meera@brightside.agency");
   const [role, setRole] = useState("Account manager");
   const [selectedClients, setSelectedClients] = useState<string[]>([
     "Minimalist",
@@ -122,6 +122,7 @@ export function AgencyInviteMemberModal({
   if (!isOpen) return null;
 
   const displayName = nameAndEmail.split("·")[0]?.trim() || "The member";
+  const firstName = displayName.split(" ")[0] || displayName;
   const clientText =
     selectedClients.length > 0
       ? selectedClients.join(" and ")
@@ -153,41 +154,45 @@ export function AgencyInviteMemberModal({
   };
 
   const currentAccessLabel =
-    ACCESS_LEVELS.find((a) => a.id === accessLevel)?.label || "Approve content";
+    accessLevel === "approve_content"
+      ? "Approve content"
+      : accessLevel === "view"
+        ? "View only"
+        : accessLevel === "edit"
+          ? "Edit (brief, deliverables, creators)"
+          : accessLevel === "approve_pay"
+            ? "Approve & pay (fund escrow, release payments)"
+            : "Full";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 10 }}
+        initial={{ opacity: 0, scale: 0.98, y: 8 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.96, y: 10 }}
+        exit={{ opacity: 0, scale: 0.98, y: 8 }}
         transition={{ duration: 0.2 }}
-        className="relative w-full max-w-[560px] rounded-[16px] bg-white p-6 shadow-2xl flex flex-col gap-5 border border-[#e3e5ec] max-h-[90vh] overflow-y-auto"
+        className="relative w-full max-w-[560px] rounded-[16px] bg-white p-[24px] shadow-[0px_12px_32px_0px_rgba(0,0,0,0.12)] flex flex-col gap-[16px] border border-[#e5e7eb] max-h-[90vh] overflow-y-auto"
       >
         {/* Header */}
-        <div className="flex items-start justify-between pr-2">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-[20px] font-semibold text-[#0d0d10] leading-snug">
-              {isEditing ? "Manage team member" : "Invite a team member"}
-            </h2>
-            <p className="text-[13px] text-[#71717a] leading-tight">
-              Give access per client and per project · you can change it any time in Team &amp; roles
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1 rounded-md text-[#71717a] hover:bg-[#f4f6fb] hover:text-[#0d0d10] transition-colors cursor-pointer"
-          >
-            <X size={18} />
-          </button>
+        <div className="flex flex-col gap-[4px] items-start w-full">
+          <h2 className="text-[18px] font-semibold text-[#070b13] leading-tight">
+            {isEditing ? "Manage team member" : "Invite a team member"}
+          </h2>
+          <p className="text-[13px] text-[#8491a3] font-normal leading-normal">
+            Give access per client and per project · you can change it any time in Team &amp; roles
+          </p>
         </div>
 
         {/* Fields */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-[16px] w-full">
           {/* Field 1: Name and work email */}
-          <div className="flex flex-col gap-1">
-            <label className="text-[13px] font-medium text-[#0d0d10]">
+          <div className="flex flex-col gap-[6px] w-full">
+            <label className="text-[12px] font-medium leading-[16px] text-[#0d0d10]">
               Name and work email
             </label>
             <input
@@ -195,31 +200,31 @@ export function AgencyInviteMemberModal({
               value={nameAndEmail}
               onChange={(e) => setNameAndEmail(e.target.value)}
               placeholder="Full name · email@brightside.agency"
-              className="h-10 w-full rounded-[8px] border border-[#e3e5ec] bg-white px-3.5 text-[14px] text-[#0d0d10] focus:border-[#0d0d10] focus:outline-none"
+              className="h-[40px] w-full rounded-[8px] border border-[#e3e5ec] bg-white px-[12px] text-[13px] text-[#0d0d10] focus:border-[#0d0d10] focus:outline-none transition-colors"
             />
-            <p className="text-[12px] text-[#8c94a0] leading-none mt-0.5">
+            <p className="text-[12px] text-[#a3a3ac] leading-[16px]">
               They get an email with a link · expires in 7 days
             </p>
           </div>
 
           {/* Field 2: Role */}
-          <div className="relative flex flex-col gap-1" ref={roleRef}>
-            <label className="text-[13px] font-medium text-[#0d0d10]">
+          <div className="relative flex flex-col gap-[6px] w-full" ref={roleRef}>
+            <label className="text-[12px] font-medium leading-[16px] text-[#0d0d10]">
               Role
             </label>
             <button
               type="button"
               onClick={() => setIsRoleOpen(!isRoleOpen)}
-              className="flex h-10 w-full items-center justify-between rounded-[8px] border border-[#e3e5ec] bg-white px-3.5 text-left text-[14px] text-[#0d0d10] hover:border-[#0d0d10] transition-colors cursor-pointer"
+              className="flex h-[40px] w-full items-center justify-between rounded-[8px] border border-[#e3e5ec] bg-white px-[12px] text-left text-[13px] text-[#0d0d10] hover:border-[#0d0d10] transition-colors cursor-pointer"
             >
               <span>{role}</span>
-              {isRoleOpen ? (
-                <ChevronUp className="size-4 text-[#71717a]" />
-              ) : (
-                <ChevronDown className="size-4 text-[#71717a]" />
-              )}
+              <ChevronDown
+                className={`size-[16px] text-[#8491a3] transition-transform duration-150 ${
+                  isRoleOpen ? "rotate-180" : ""
+                }`}
+              />
             </button>
-            <p className="text-[12px] text-[#8c94a0] leading-none mt-0.5">
+            <p className="text-[12px] text-[#a3a3ac] leading-[16px]">
               Owner · Account manager · Campaign executive · Finance · Content lead · Client guest
             </p>
 
@@ -248,27 +253,27 @@ export function AgencyInviteMemberModal({
           </div>
 
           {/* Field 3: Clients */}
-          <div className="relative flex flex-col gap-1" ref={clientsRef}>
-            <label className="text-[13px] font-medium text-[#0d0d10]">
+          <div className="relative flex flex-col gap-[6px] w-full" ref={clientsRef}>
+            <label className="text-[12px] font-medium leading-[16px] text-[#0d0d10]">
               Clients
             </label>
             <button
               type="button"
               onClick={() => setIsClientsOpen(!isClientsOpen)}
-              className="flex h-10 w-full items-center justify-between rounded-[8px] border border-[#e3e5ec] bg-white px-3.5 text-left text-[14px] text-[#0d0d10] hover:border-[#0d0d10] transition-colors cursor-pointer"
+              className="flex h-[40px] w-full items-center justify-between rounded-[8px] border border-[#e3e5ec] bg-white px-[12px] text-left text-[13px] text-[#0d0d10] hover:border-[#0d0d10] transition-colors cursor-pointer"
             >
               <span className="truncate">
                 {selectedClients.length > 0
                   ? selectedClients.join(", ")
                   : "Select clients"}
               </span>
-              {isClientsOpen ? (
-                <ChevronUp className="size-4 text-[#71717a] shrink-0" />
-              ) : (
-                <ChevronDown className="size-4 text-[#71717a] shrink-0" />
-              )}
+              <ChevronDown
+                className={`size-[16px] text-[#8491a3] shrink-0 transition-transform duration-150 ${
+                  isClientsOpen ? "rotate-180" : ""
+                }`}
+              />
             </button>
-            <p className="text-[12px] text-[#8c94a0] leading-none mt-0.5">
+            <p className="text-[12px] text-[#a3a3ac] leading-[16px]">
               Pick one, several or all clients · they only see the clients you choose
             </p>
 
@@ -297,23 +302,23 @@ export function AgencyInviteMemberModal({
           </div>
 
           {/* Field 4: Projects */}
-          <div className="relative flex flex-col gap-1" ref={projectsRef}>
-            <label className="text-[13px] font-medium text-[#0d0d10]">
+          <div className="relative flex flex-col gap-[6px] w-full" ref={projectsRef}>
+            <label className="text-[12px] font-medium leading-[16px] text-[#0d0d10]">
               Projects
             </label>
             <button
               type="button"
               onClick={() => setIsProjectsOpen(!isProjectsOpen)}
-              className="flex h-10 w-full items-center justify-between rounded-[8px] border border-[#e3e5ec] bg-white px-3.5 text-left text-[14px] text-[#0d0d10] hover:border-[#0d0d10] transition-colors cursor-pointer"
+              className="flex h-[40px] w-full items-center justify-between rounded-[8px] border border-[#e3e5ec] bg-white px-[12px] text-left text-[13px] text-[#0d0d10] hover:border-[#0d0d10] transition-colors cursor-pointer"
             >
               <span className="truncate">{projectOption}</span>
-              {isProjectsOpen ? (
-                <ChevronUp className="size-4 text-[#71717a] shrink-0" />
-              ) : (
-                <ChevronDown className="size-4 text-[#71717a] shrink-0" />
-              )}
+              <ChevronDown
+                className={`size-[16px] text-[#8491a3] shrink-0 transition-transform duration-150 ${
+                  isProjectsOpen ? "rotate-180" : ""
+                }`}
+              />
             </button>
-            <p className="text-[12px] text-[#8c94a0] leading-none mt-0.5">
+            <p className="text-[12px] text-[#a3a3ac] leading-[16px]">
               All projects of the chosen client(s), or specific ones · new projects are not added automatically
             </p>
 
@@ -342,23 +347,23 @@ export function AgencyInviteMemberModal({
           </div>
 
           {/* Field 5: Access level */}
-          <div className="relative flex flex-col gap-1" ref={accessRef}>
-            <label className="text-[13px] font-medium text-[#0d0d10]">
+          <div className="relative flex flex-col gap-[6px] w-full" ref={accessRef}>
+            <label className="text-[12px] font-medium leading-[16px] text-[#0d0d10]">
               Access level
             </label>
             <button
               type="button"
               onClick={() => setIsAccessOpen(!isAccessOpen)}
-              className="flex h-10 w-full items-center justify-between rounded-[8px] border border-[#e3e5ec] bg-white px-3.5 text-left text-[14px] text-[#0d0d10] hover:border-[#0d0d10] transition-colors cursor-pointer"
+              className="flex h-[40px] w-full items-center justify-between rounded-[8px] border border-[#e3e5ec] bg-white px-[12px] text-left text-[13px] text-[#0d0d10] hover:border-[#0d0d10] transition-colors cursor-pointer"
             >
               <span>{currentAccessLabel}</span>
-              {isAccessOpen ? (
-                <ChevronUp className="size-4 text-[#71717a] shrink-0" />
-              ) : (
-                <ChevronDown className="size-4 text-[#71717a] shrink-0" />
-              )}
+              <ChevronDown
+                className={`size-[16px] text-[#8491a3] shrink-0 transition-transform duration-150 ${
+                  isAccessOpen ? "rotate-180" : ""
+                }`}
+              />
             </button>
-            <p className="text-[12px] text-[#8c94a0] leading-none mt-0.5">
+            <p className="text-[12px] text-[#a3a3ac] leading-[16px]">
               View only · Edit (brief, deliverables, creators) · Approve content · Approve &amp; pay (fund escrow, release payments) · Full
             </p>
 
@@ -391,46 +396,40 @@ export function AgencyInviteMemberModal({
         </div>
 
         {/* Summary Card */}
-        <div className="rounded-[10px] bg-[#f4f6fb] p-4 flex flex-col gap-2">
-          <h4 className="text-[13px] font-semibold text-[#0d0d10]">
-            What {displayName} will be able to do
+        <div className="rounded-[10px] bg-[#f3f5f7] px-[14px] py-[12px] flex flex-col gap-[6px] text-[12px] w-full">
+          <h4 className="font-semibold text-[#394357]">
+            What {firstName} will be able to do
           </h4>
-          <div className="flex flex-col gap-1.5 text-[13px] text-[#0d0d10]">
-            <p className="flex items-center gap-2">
-              <span className="text-[#0d0d10] font-bold">✓</span>
-              <span>See and edit {clientText} projects</span>
+          <div className="flex flex-col gap-[4px] leading-normal">
+            <p className="text-[#394357] whitespace-pre-wrap">
+              ✓  See and edit {clientText} projects
             </p>
             {accessLevel !== "view" && (
-              <p className="flex items-center gap-2">
-                <span className="text-[#0d0d10] font-bold">✓</span>
-                <span>Approve or request changes on content</span>
+              <p className="text-[#394357] whitespace-pre-wrap">
+                ✓  Approve or request changes on content
               </p>
             )}
-            <p className="flex items-center gap-2">
-              <span className="text-[#0d0d10] font-bold">✓</span>
-              <span>Message creators and brands</span>
+            <p className="text-[#394357] whitespace-pre-wrap">
+              ✓  Message creators and brands
             </p>
             {accessLevel === "full" ? (
-              <p className="flex items-center gap-2">
-                <span className="text-[#0d0d10] font-bold">✓</span>
-                <span>Fund escrow, release payments, view invoices and manage workspace</span>
+              <p className="text-[#394357] whitespace-pre-wrap">
+                ✓  Fund escrow, release payments, view invoices and manage workspace
               </p>
             ) : accessLevel === "approve_pay" ? (
-              <p className="flex items-center gap-2">
-                <span className="text-[#0d0d10] font-bold">✓</span>
-                <span>Fund escrow, release payments and see client invoices</span>
+              <p className="text-[#394357] whitespace-pre-wrap">
+                ✓  Fund escrow, release payments and see client invoices
               </p>
             ) : (
-              <p className="flex items-center gap-2 text-[#71717a]">
-                <span className="text-[#8c94a0]">✕</span>
-                <span>Fund escrow, release payments, see invoices or manage the team</span>
+              <p className="text-[#8491a3] whitespace-pre-wrap">
+                ✕  Fund escrow, release payments, see invoices or manage the team
               </p>
             )}
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-between pt-1">
+        <div className="flex items-center justify-between pt-1 w-full">
           {isEditing && onRemove && initialMember ? (
             <button
               type="button"
@@ -447,18 +446,18 @@ export function AgencyInviteMemberModal({
             <div />
           )}
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-[12px] justify-end">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-[14px] font-medium text-[#0d0d10] hover:text-[#71717a] transition-colors cursor-pointer"
+              className="h-[32px] px-[12px] rounded-[8px] text-[13px] font-medium leading-[18px] text-[#0d0d10] hover:text-[#71717a] transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={handleSend}
-              className="inline-flex h-10 items-center gap-2 rounded-[8px] bg-[#0d0d10] px-4 py-2 text-[14px] font-medium text-white transition hover:bg-black cursor-pointer shadow-xs"
+              className="h-[40px] px-[16px] rounded-[8px] bg-[#0d0d10] hover:bg-black text-[14px] font-medium leading-[20px] text-white flex items-center gap-[8px] cursor-pointer shadow-xs transition"
             >
               <UserPlus size={16} />
               <span>{isEditing ? "Save changes" : "Send invite"}</span>
