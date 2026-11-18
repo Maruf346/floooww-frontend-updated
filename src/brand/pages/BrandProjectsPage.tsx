@@ -304,6 +304,14 @@ const tabs: Array<Status | "All"> = [
   "Archived",
   "Deleted",
 ];
+const liveProjectEnds: Record<number, { date: string; relative: string }> = {
+  1: { date: "7 Nov", relative: "in 10 days" },
+  2: { date: "4 Nov", relative: "in 7 days" },
+  3: { date: "31 Jan", relative: "month 4 on 1 Nov" },
+  4: { date: "2 Nov", relative: "in 5 days" },
+  5: { date: "1 Nov", relative: "in 4 days" },
+};
+
 const kpis = [
   {
     icon: Folder,
@@ -711,6 +719,18 @@ export function BrandProjectsPage({
       ? (requestedStatus as Status)
       : "All",
   );
+
+  useEffect(() => {
+    if (requestedStatus && tabs.includes(requestedStatus as Status)) {
+      setActive(requestedStatus as Status);
+      setPage(1);
+    } else if (!requestedStatus) {
+      setActive("All");
+      setPage(1);
+    }
+  }, [requestedStatus]);
+
+  const [nudgeToast, setNudgeToast] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [type, setType] = useState("All");
   const [partnership, setPartnership] = useState("All");
@@ -798,7 +818,9 @@ export function BrandProjectsPage({
   const isDeletedView = active === "Deleted";
   const pageSubtitle = isDeletedView
     ? `${tabCounts.Deleted} deleted project${tabCounts.Deleted === 1 ? "" : "s"} · kept for 30 days`
-    : `${activeClientName} · ${tabCounts.All} projects · plus ${tabCounts.Archived} archived`;
+    : active === "Live"
+      ? `${tabCounts.Live} projects running now`
+      : `${activeClientName} · ${tabCounts.All} projects · plus ${tabCounts.Archived} archived`;
   const allSelected =
     visibleProjects.length > 0 && visibleProjects.every((project) => selected.includes(project.id));
   const toggle = (id: number) =>
@@ -865,6 +887,13 @@ export function BrandProjectsPage({
               onClick={() => {
                 setActive(tab);
                 setPage(1);
+                const newParams = new URLSearchParams(params);
+                if (tab === "All") {
+                  newParams.delete("status");
+                } else {
+                  newParams.set("status", tab);
+                }
+                navigate({ search: newParams.toString() }, { replace: true });
               }}
               className={`flex h-9 shrink-0 items-start gap-1.5 border-b-2 text-[14px] leading-[22px] ${active === tab ? "border-primary font-medium text-primary" : "border-transparent text-secondary hover:text-ink"}`}
             >
@@ -878,7 +907,7 @@ export function BrandProjectsPage({
           ))}
         </nav>
 
-        {!isEmpty && !isDeletedView && (
+        {!isEmpty && !isDeletedView && active === "All" && (
           <section
             className="mt-6 grid h-[196px] grid-cols-4 gap-3 rounded-xl border border-line bg-white p-5"
             aria-label="Project metrics"
@@ -1139,7 +1168,7 @@ export function BrandProjectsPage({
                   <col className="w-[142px]" />
                   <col className="w-[148px]" />
                   <col className="w-[84px]" />
-                  <col className="w-[116px]" />
+                  <col className={active === "Live" ? "w-[168px]" : "w-[116px]"} />
                 </colgroup>
                 <thead className="bg-subtle text-[11px] font-semibold leading-4 tracking-[0.06em] text-secondary">
                   <tr className="h-[42px]">
@@ -1173,7 +1202,7 @@ export function BrandProjectsPage({
                       "APPROVED",
                       "BUDGET",
                       "PROGRESS",
-                      "UPDATED",
+                      active === "Live" ? "ENDS" : "UPDATED",
                       "ACTIONS",
                     ].map((heading) => (
                       <th className="pr-2" key={heading}>
@@ -1253,12 +1282,41 @@ export function BrandProjectsPage({
                             <span className="text-[13px] text-ink">{project.progress}%</span>
                           </div>
                           {project.showPace && (
-                            <p className="mt-1 text-[12px] leading-4 text-success">Pace</p>
+                            <p
+                              className={`mt-1 text-[12px] leading-4 ${
+                                project.id === 5 ? "text-[#db231f]" : "text-success"
+                              }`}
+                            >
+                              {project.id === 5 ? "Behind" : "Ahead"}
+                            </p>
                           )}
                         </td>
-                        <td className="text-[12px] leading-4 text-secondary">{project.updated}</td>
+                        <td>
+                          {active === "Live" && liveProjectEnds[project.id] ? (
+                            <div>
+                              <p className="font-medium text-ink">{liveProjectEnds[project.id].date}</p>
+                              <p className="text-[12px] leading-4 text-secondary">
+                                {liveProjectEnds[project.id].relative}
+                              </p>
+                            </div>
+                          ) : (
+                            <span className="text-[12px] leading-4 text-secondary">{project.updated}</span>
+                          )}
+                        </td>
                         <td>
                           <div className="flex items-center gap-[10px]">
+                            {active === "Live" && project.id === 5 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setNudgeToast("Nudge sent to creators for Hydration Bundle");
+                                  setTimeout(() => setNudgeToast(null), 3500);
+                                }}
+                                className="h-8 rounded-lg bg-[#0d0d10] px-3 text-[13px] font-medium text-white hover:bg-black transition-colors cursor-pointer"
+                              >
+                                Nudge
+                              </button>
+                            )}
                             <button
                               onClick={() => navigate(getProjectRoute(project.id))}
                               type="button"
@@ -1318,6 +1376,10 @@ export function BrandProjectsPage({
               Showing {(page - 1) * 8 + 1} to {Math.min(page * 8, filtered.length)} of{" "}
               {filtered.length} deleted project{filtered.length === 1 ? "" : "s"}
             </footer>
+          ) : totalPages <= 1 ? (
+            <footer className="mt-6 text-[13px] leading-5 text-secondary">
+              Showing 1 to {filtered.length} of {filtered.length} {active === "Live" ? "live " : ""}projects
+            </footer>
           ) : (
             <footer className="mt-6 flex h-7 w-[720px] items-center justify-between text-[13px] leading-5 text-secondary">
               <span>
@@ -1369,6 +1431,11 @@ export function BrandProjectsPage({
             setTargetProject(null);
           }}
         />
+      )}
+      {nudgeToast && (
+        <div className="fixed bottom-6 right-6 z-50 rounded-lg bg-[#0d0d10] px-4 py-2.5 text-[13px] font-medium text-white shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-150">
+          {nudgeToast}
+        </div>
       )}
     </ShellContainer>
   );
