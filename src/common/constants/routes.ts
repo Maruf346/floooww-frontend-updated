@@ -50,6 +50,7 @@ export const ROUTES = {
   brandCreatorDeliverables: "/brand/projects/:projectId/invited/:creatorId/deliverables",
   agency: "/agency",
   agencyClients: "/agency/clients",
+  agencyClientNew: "/agency/clients/new",
   agencyBilling: "/agency/billing",
   agencyReports: "/agency/reports",
   agencyReportNew: "/agency/reports/new",

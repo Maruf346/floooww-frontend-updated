@@ -49,7 +49,7 @@ function AgencySidebar({
   const navClass =
     "flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-[14px] transition-colors";
   const overviewActive = pathname === ROUTES.agency;
-  const clientsActive = pathname === ROUTES.agencyClients;
+  const clientsActive = pathname.startsWith(ROUTES.agencyClients);
   const billingActive = pathname === ROUTES.agencyBilling;
   const reportsActive = pathname.startsWith(ROUTES.agencyReports);
   const teamActive = pathname === ROUTES.agencyTeam;
@@ -189,6 +189,7 @@ function AgencySidebar({
                 onClick={() => {
                   close?.();
                   if (onAddClient) onAddClient();
+                  else navigate(ROUTES.agencyClientNew);
                 }}
                 className="flex h-8 w-full items-center gap-2.5 rounded-md px-3 pl-9 text-[13px] text-ink hover:bg-subtle transition-colors text-left cursor-pointer"
               >

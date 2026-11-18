@@ -244,8 +244,8 @@ export function AgencyClientsPage() {
             {/* Add client button */}
             <button
               type="button"
-              onClick={() => setIsAddClientOpen(true)}
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-[#0d0d10] px-4 text-[14px] font-medium text-white transition hover:bg-black"
+              onClick={() => navigate(ROUTES.agencyClientNew)}
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-[#0d0d10] px-4 text-[14px] font-medium text-white transition hover:bg-black cursor-pointer shadow-xs"
             >
               <Plus className="size-4" />
               <span>Add client</span>
