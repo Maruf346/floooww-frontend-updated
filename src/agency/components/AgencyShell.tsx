@@ -19,6 +19,7 @@ import {
 import { Logo } from "@/common/components/brand/Logo";
 import { ROUTES } from "@/common/constants/routes";
 import { AgencyLogoutModal } from "./AgencyLogoutModal";
+import { AgencyWorkspaceSwitcher } from "./AgencyWorkspaceSwitcher";
 
 type AgencyShellProps = {
   children: ReactNode;
@@ -74,23 +75,7 @@ function AgencySidebar({
       <div className="h-4 shrink-0" />
 
       {/* Workspace Switcher */}
-      <button
-        type="button"
-        className="flex w-full items-center gap-2.5 rounded-xl border border-[#e3e5ec] p-2.5 text-left hover:border-[#0d0d10] transition-colors cursor-pointer"
-      >
-        <span className="grid size-8 place-items-center rounded-lg bg-[#0d0d10] text-[12px] font-semibold text-white shrink-0">
-          BA
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-[14px] font-semibold leading-5 text-[#0d0d10]">
-            Brightside Agency
-          </span>
-          <span className="block truncate text-[12px] leading-4 text-[#a3a3ac]">
-            Agency workspace ▾
-          </span>
-        </span>
-        <ChevronDown size={16} className="text-[#71717a] shrink-0" />
-      </button>
+      <AgencyWorkspaceSwitcher mode="agency" />
 
       <nav className="mt-4 flex flex-col">
         <p className="px-3 pb-1.5 text-[12px] font-semibold leading-4 tracking-[.06em] text-[#a3a3ac]">
