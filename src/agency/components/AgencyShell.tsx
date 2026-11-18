@@ -161,7 +161,7 @@ function AgencySidebar({
                 type="button"
                 onClick={() => {
                   close?.();
-                  navigate("/brand/projects/new");
+                  navigate("/agency/client/minimalist/projects/new");
                 }}
                 className="flex h-8 w-full items-center gap-2.5 rounded-md px-3 pl-9 text-[13px] text-ink hover:bg-subtle transition-colors text-left cursor-pointer"
               >

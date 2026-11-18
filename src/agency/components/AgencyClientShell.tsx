@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Logo } from "@/common/components/brand/Logo";
-import { ROUTES } from "@/common/constants/routes";
+import { ROUTES, agencyClientNewProjectRoute } from "@/common/constants/routes";
 import {
   AgencyWorkspaceSwitcher,
   AGENCY_CLIENTS,
@@ -146,7 +146,7 @@ export function AgencyClientShell({
                   type="button"
                   onClick={() => {
                     closeMenu?.();
-                    navigate(`${baseClientUrl}?action=new-project`);
+                    navigate(agencyClientNewProjectRoute(clientId));
                   }}
                   className="flex h-8 items-center gap-2.5 rounded-md pl-10 pr-3 text-[13px] text-[#71717a] hover:bg-subtle transition-colors text-left cursor-pointer"
                 >

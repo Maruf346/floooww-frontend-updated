@@ -2037,6 +2037,9 @@ export function BrandProjectPublishedPage({
   const [confirm, setConfirm] = useState<Confirm>(null);
   const isAgencyClient = shell === "agency-client";
   const projectHomeRoute = isAgencyClient ? `/agency/client/${clientId}` : ROUTES.brandProjects;
+  const projectDiscoveryRoute = isAgencyClient
+    ? `/agency/client/${clientId}`
+    : ROUTES.brandCreatorDiscovery;
   const locked = status === "Archived" || status === "Deleted";
   const rules = getProjectRules(project);
   const objective = rules.objective;
@@ -2369,7 +2372,7 @@ export function BrandProjectPublishedPage({
               key={item}
               type="button"
               onClick={() =>
-                item === "Performance"
+                item === "Performance" && !isAgencyClient
                   ? navigate(brandProjectPerformanceRoute(project.id))
                   : setTab(item)
               }
@@ -2405,7 +2408,7 @@ export function BrandProjectPublishedPage({
           ) : (
             <InvitedCreatorsEmptyState
               onGoToApplications={() => setTab("Applications")}
-              onFindCreators={() => navigate(ROUTES.brandCreatorDiscovery)}
+              onFindCreators={() => navigate(projectDiscoveryRoute)}
             />
           )
         ) : tab === "Brief" ? (
@@ -2530,7 +2533,7 @@ export function BrandProjectPublishedPage({
                 </Button>
                 <Button
                   leadingIcon={<Search size={16} />}
-                  onClick={() => navigate(ROUTES.brandCreatorDiscovery)}
+                  onClick={() => navigate(projectDiscoveryRoute)}
                 >
                   Find creators
                 </Button>

@@ -433,7 +433,11 @@ export function AgencyClientOverviewPage() {
                     </thead>
                     <tbody className="divide-y divide-[#edeff3] text-[13px]">
                       {PROJECTS.map((proj, idx) => (
-                        <tr key={idx} className="hover:bg-[#fafbfd] transition-colors group cursor-pointer">
+                        <tr
+                          key={idx}
+                          onClick={() => navigate(`/agency/client/${clientId}/projects/${idx + 1}`)}
+                          className="hover:bg-[#fafbfd] transition-colors group cursor-pointer"
+                        >
                           <td className="py-3 pr-4">
                             <div className="flex items-center gap-3">
                               <img
