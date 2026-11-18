@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Bell,
   ChevronDown,
@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Logo } from "@/common/components/brand/Logo";
 import { ROUTES } from "@/common/constants/routes";
+import { CreatorLogoutModal } from "./CreatorLogoutModal";
 
 type CreatorShellProps = { children: ReactNode };
 
@@ -37,7 +38,7 @@ function NavCount({ children }: { children: string }) {
   );
 }
 
-function CreatorSidebar({ close }: { close?: () => void }) {
+function CreatorSidebar({ close, onLogout }: { close?: () => void; onLogout: () => void }) {
   const [projectsOpen, setProjectsOpen] = useState(true);
   const { pathname } = useLocation();
   const navClass = "flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-[14px] transition-colors";
@@ -158,7 +159,17 @@ function CreatorSidebar({ close }: { close?: () => void }) {
           <CircleHelp size={18} />
           <span className="flex-1 text-left">Help centre</span>
         </Link>
-        <button type="button" className={`${navClass} text-ink hover:bg-subtle`}><LogOut size={18} />Logout</button>
+        <button
+          type="button"
+          onClick={() => {
+            close?.();
+            onLogout();
+          }}
+          className={`${navClass} text-ink hover:bg-subtle cursor-pointer`}
+        >
+          <LogOut size={18} />
+          Logout
+        </button>
       </div>
     </aside>
   );
@@ -166,7 +177,15 @@ function CreatorSidebar({ close }: { close?: () => void }) {
 
 export function CreatorShell({ children }: CreatorShellProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+  const navigate = useNavigate();
   const { pathname } = useLocation();
+
+  const handleLogout = () => {
+    setLogoutModalOpen(false);
+    navigate(ROUTES.login);
+  };
+
   const isWhiteBg =
     pathname === ROUTES.creator ||
     pathname === ROUTES.creatorPerformance ||
@@ -178,20 +197,43 @@ export function CreatorShell({ children }: CreatorShellProps) {
   return (
     <div className={`min-h-dvh ${isWhiteBg ? "bg-white" : "bg-page"}`}>
       <div className="flex min-h-dvh">
-        <div className="sticky top-0 hidden h-dvh shrink-0 self-start lg:block"><CreatorSidebar /></div>
-        {menuOpen && <div className="fixed inset-0 z-50 bg-ink/30 lg:hidden"><CreatorSidebar close={() => setMenuOpen(false)} /></div>}
+        <div className="sticky top-0 hidden h-dvh shrink-0 self-start lg:block">
+          <CreatorSidebar onLogout={() => setLogoutModalOpen(true)} />
+        </div>
+        {menuOpen && (
+          <div className="fixed inset-0 z-50 bg-ink/30 lg:hidden">
+            <CreatorSidebar
+              close={() => setMenuOpen(false)}
+              onLogout={() => setLogoutModalOpen(true)}
+            />
+          </div>
+        )}
         <div className="min-w-0 flex-1">
           <header className="flex h-16 items-center gap-3 border-b border-line bg-white px-5 sm:px-8">
             <button type="button" onClick={() => setMenuOpen(true)} className="lg:hidden" aria-label="Open navigation"><Menu size={20} /></button>
             <button type="button" className="hidden h-9 w-[380px] items-center gap-2 rounded-md border border-line bg-subtle px-3 text-left md:flex"><Search size={16} className="text-secondary" /><span className="flex-1 text-[13px] text-tertiary">Search projects, messages, content...</span><kbd className="rounded border border-line bg-white px-1.5 text-[12px] text-tertiary">⌘K</kbd></button>
             <div className="flex-1" />
             <button type="button" className="grid size-9 place-items-center rounded-md border border-line text-secondary" aria-label="Notifications"><Bell size={18} /></button>
-            <span className="grid size-8 place-items-center rounded-full bg-primary-muted text-[12px] font-medium text-primary">IR</span>
-            <div className="hidden sm:block"><p className="text-[14px] font-semibold leading-5 text-ink">Ishita Rao</p><p className="text-[12px] leading-4 text-tertiary">Creator</p></div><ChevronDown size={14} className="hidden text-secondary sm:block" />
+            <button
+              type="button"
+              onClick={() => setLogoutModalOpen(true)}
+              className="flex items-center gap-2.5 p-1 rounded-lg hover:bg-subtle transition text-left cursor-pointer"
+              title="Click to manage account or log out"
+            >
+              <span className="grid size-8 place-items-center rounded-full bg-primary-muted text-[12px] font-medium text-primary">IR</span>
+              <div className="hidden sm:block"><p className="text-[14px] font-semibold leading-5 text-ink">Ishita Rao</p><p className="text-[12px] leading-4 text-tertiary">Creator</p></div>
+              <ChevronDown size={14} className="hidden text-secondary sm:block" />
+            </button>
           </header>
           <main className={`min-h-[calc(100dvh-64px)] ${pathname === ROUTES.creatorPerformance || pathname === ROUTES.creatorEarnings || pathname === ROUTES.creatorMessages ? "p-0 bg-white" : pathname === ROUTES.creatorHelp ? "pb-10 pt-7 px-5 sm:px-8 bg-white" : isWhiteBg ? "p-5 sm:p-8 bg-white" : "p-5 sm:p-8"}`}>{children}</main>
         </div>
       </div>
+
+      <CreatorLogoutModal
+        isOpen={logoutModalOpen}
+        onClose={() => setLogoutModalOpen(false)}
+        onConfirm={handleLogout}
+      />
     </div>
   );
 }
