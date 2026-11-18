@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, Check, Building2, Store, Users, ArrowRight } from "lucide-react";
+import { CreatorNicheDropdown } from "@/creator/components/CreatorNicheDropdown";
 
 type AgencyAddClientModalProps = {
   isOpen: boolean;
@@ -115,23 +116,11 @@ export function AgencyAddClientModal({
                 className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
               />
             </div>
-            <div>
-              <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">
-                Category
-              </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] bg-white focus:outline-none focus:border-[#0d0d10]"
-              >
-                <option>Beauty &amp; skincare</option>
-                <option>Make-up</option>
-                <option>Haircare</option>
-                <option>Wellness</option>
-                <option>Fashion</option>
-                <option>Food &amp; drink</option>
-              </select>
-            </div>
+            <CreatorNicheDropdown
+              value={category}
+              onChange={setCategory}
+              label="Category / Niche"
+            />
           </div>
         )}
 

@@ -49,6 +49,7 @@ function AgencySidebar({
   const navClass =
     "flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-[14px] transition-colors";
   const overviewActive = pathname === ROUTES.agency;
+  const clientsActive = pathname === ROUTES.agencyClients;
   const billingActive = pathname === ROUTES.agencyBilling;
   const reportsActive = pathname === ROUTES.agencyReports;
   const teamActive = pathname === ROUTES.agencyTeam;
@@ -112,13 +113,23 @@ function AgencySidebar({
         {/* Foldable Clients Menu */}
         <div className="mt-0.5">
           <div
-            onClick={() => setClientsOpen((prev) => !prev)}
-            className="flex h-9 w-full items-center justify-between rounded-md px-3 text-[14px] transition-colors cursor-pointer text-ink hover:bg-subtle select-none"
+            className={`flex h-9 w-full items-center justify-between rounded-md px-3 text-[14px] transition-colors select-none ${
+              clientsActive
+                ? "bg-primary-subtle font-semibold text-primary"
+                : "text-ink hover:bg-subtle"
+            }`}
           >
-            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+            <Link
+              to={ROUTES.agencyClients}
+              onClick={() => {
+                close?.();
+                setClientsOpen(true);
+              }}
+              className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer"
+            >
               <Users size={18} className="shrink-0" />
               <span className="truncate text-left flex-1 font-normal">Clients</span>
-            </div>
+            </Link>
             <button
               type="button"
               onClick={(e) => {
