@@ -49,6 +49,7 @@ function CreatorSidebar({ close }: { close?: () => void }) {
   const earningsActive = pathname === ROUTES.creatorEarnings;
   const messagesActive = pathname === ROUTES.creatorMessages;
   const settingsActive = pathname === ROUTES.creatorSettings;
+  const helpActive = pathname === ROUTES.creatorHelp;
 
   return (
     <aside className="flex h-full w-[260px] flex-col overflow-y-auto border-r border-line bg-white px-4 pb-4 pt-5">
@@ -149,7 +150,14 @@ function CreatorSidebar({ close }: { close?: () => void }) {
         </Link>
       </nav>
       <div className="mt-auto border-t border-line pt-2">
-        <button type="button" className={`${navClass} text-ink hover:bg-subtle`}><CircleHelp size={18} />Help centre</button>
+        <Link
+          to={ROUTES.creatorHelp}
+          onClick={close}
+          className={`${navClass} ${helpActive ? "bg-primary-subtle font-semibold text-primary" : "text-ink hover:bg-subtle"}`}
+        >
+          <CircleHelp size={18} />
+          <span className="flex-1 text-left">Help centre</span>
+        </Link>
         <button type="button" className={`${navClass} text-ink hover:bg-subtle`}><LogOut size={18} />Logout</button>
       </div>
     </aside>
@@ -164,7 +172,8 @@ export function CreatorShell({ children }: CreatorShellProps) {
     pathname === ROUTES.creatorPerformance ||
     pathname === ROUTES.creatorEarnings ||
     pathname === ROUTES.creatorMessages ||
-    pathname === ROUTES.creatorSettings;
+    pathname === ROUTES.creatorSettings ||
+    pathname === ROUTES.creatorHelp;
 
   return (
     <div className={`min-h-dvh ${isWhiteBg ? "bg-white" : "bg-page"}`}>
@@ -180,7 +189,7 @@ export function CreatorShell({ children }: CreatorShellProps) {
             <span className="grid size-8 place-items-center rounded-full bg-primary-muted text-[12px] font-medium text-primary">IR</span>
             <div className="hidden sm:block"><p className="text-[14px] font-semibold leading-5 text-ink">Ishita Rao</p><p className="text-[12px] leading-4 text-tertiary">Creator</p></div><ChevronDown size={14} className="hidden text-secondary sm:block" />
           </header>
-          <main className={`min-h-[calc(100dvh-64px)] ${pathname === ROUTES.creatorPerformance || pathname === ROUTES.creatorEarnings || pathname === ROUTES.creatorMessages ? "p-0 bg-white" : isWhiteBg ? "p-5 sm:p-8 bg-white" : "p-5 sm:p-8"}`}>{children}</main>
+          <main className={`min-h-[calc(100dvh-64px)] ${pathname === ROUTES.creatorPerformance || pathname === ROUTES.creatorEarnings || pathname === ROUTES.creatorMessages ? "p-0 bg-white" : pathname === ROUTES.creatorHelp ? "pb-10 pt-7 px-5 sm:px-8 bg-white" : isWhiteBg ? "p-5 sm:p-8 bg-white" : "p-5 sm:p-8"}`}>{children}</main>
         </div>
       </div>
     </div>
