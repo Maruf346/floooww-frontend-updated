@@ -4,6 +4,7 @@ import { Check, ChevronDown, ChevronUp, Image as ImageIcon } from "lucide-react"
 import { ROUTES } from "@/common/constants/routes";
 
 // Assets extracted from Figma designs (552:277, 793:13612, and 793:13021)
+import { CreatorShell } from "@/creator/components/CreatorShell";
 const imgDot = "https://www.figma.com/api/mcp/asset/9ebb528a-1588-4521-b6ac-d077bc640ff9.svg";
 const imgDot1 = "https://www.figma.com/api/mcp/asset/91e1a14d-9974-404e-9a6a-b54ec2d2a318.svg";
 const imgDot2 = "https://www.figma.com/api/mcp/asset/2d3b438f-eaa6-489f-9c10-32bfd72f9c95.svg";
@@ -954,7 +955,7 @@ export default function CreatorContentPage() {
   const visibleCards = displayedItems.slice(0, itemsLimit);
 
   return (
-    <div className="bg-[var(--bg-page,white)] flex min-h-screen items-start relative w-full" data-name="Creator · Content">
+    <CreatorShell>
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-6 right-6 z-50 bg-[#0d0d10] text-white px-4 py-3 rounded-lg shadow-xl text-sm font-medium flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
@@ -963,332 +964,6 @@ export default function CreatorContentPage() {
         </div>
       )}
 
-      {/* Sidebar */}
-      <aside
-        className="sticky top-0 h-screen shrink-0 w-[260px] flex flex-col gap-[2px] items-start overflow-y-auto border-r border-[#e3e5ec] bg-white px-[16px] pt-[20px] pb-[16px] z-30 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-        data-name="Sidebar / Creator"
-      >
-        <Link to={ROUTES.creator} className="content-stretch flex items-center overflow-clip relative rounded-[9.778px] shrink-0" data-name="Kreyio wordmark">
-          <img alt="Kreyio" className="h-[36px] w-[99.09px]" src={imgKreyioWordmark} />
-        </Link>
-        <div className="h-[16px] relative shrink-0 w-[10px]" data-name="gap" />
-
-        {/* Workspace Switcher */}
-        <div
-          className="border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[10px] items-center overflow-clip p-[10px] relative rounded-[var(--radius-lg,12px)] shrink-0 w-[228px]"
-          data-name="Workspace switcher"
-        >
-          <div
-            className="bg-[var(--primary-default,#0d0d10)] content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-md,8px)] shrink-0 size-[32px]"
-            data-name="Initials"
-          >
-            <p className="font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] text-white whitespace-nowrap">
-              IR
-            </p>
-          </div>
-          <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-px not-italic overflow-clip relative whitespace-nowrap">
-            <p className="font-['Inter:Semi_Bold'] font-semibold leading-[20px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)]">
-              Ishita Rao
-            </p>
-            <p className="font-['Inter:Regular'] font-normal leading-[16px] relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)]">
-              Creator · @ishitarao
-            </p>
-          </div>
-          <div className="relative shrink-0 size-[16px]" data-name="Icon">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconWorkspace} />
-          </div>
-        </div>
-
-        {/* Section MAIN */}
-        <div className="content-stretch flex items-start overflow-clip pb-[6px] pt-[16px] px-[12px] relative shrink-0">
-          <p className="font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] tracking-[0.72px] whitespace-nowrap">
-            MAIN
-          </p>
-        </div>
-
-        {/* Overview */}
-        <Link
-          to={ROUTES.creator}
-          className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
-        >
-          <div className="relative shrink-0 size-[18px]">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconOverview} />
-          </div>
-          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px text-[14px]">
-            Overview
-          </p>
-        </Link>
-
-        {/* Project Discovery */}
-        <Link
-          to={ROUTES.creatorProjects}
-          className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
-        >
-          <div className="relative shrink-0 size-[18px]">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconFind} />
-          </div>
-          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px text-[14px]">
-            Project discovery
-          </p>
-        </Link>
-
-        {/* My Projects */}
-        <Link
-          to={ROUTES.creatorMyProjects}
-          className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
-        >
-          <div className="relative shrink-0 size-[18px]">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconProjects} />
-          </div>
-          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px text-[14px]">
-            My projects
-          </p>
-          <div className="relative shrink-0 size-[14px]">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgChevron} />
-          </div>
-        </Link>
-
-        {/* Sub-item: Invitations & offers */}
-        <Link
-          to={`${ROUTES.creatorMyProjects}?tab=invitations`}
-          className="content-stretch flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
-        >
-          <div className="relative shrink-0 size-[4px]">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgBullet} />
-          </div>
-          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px text-[13px] text-left text-[color:var(--text-secondary,#0d0d10)]">
-            Invitations &amp; offers
-          </p>
-          <div className="bg-[var(--bg-muted,#edeff3)] flex h-[18px] items-center px-[6px] rounded-[var(--radius-full,999px)] shrink-0">
-            <p className="font-['Inter:Medium'] font-medium text-[12px] text-[color:var(--text-secondary,#0d0d10)]">4</p>
-          </div>
-        </Link>
-
-        {/* Sub-item: Applied */}
-        <Link
-          to={`${ROUTES.creatorMyProjects}?tab=applied`}
-          className="content-stretch flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
-        >
-          <div className="relative shrink-0 size-[4px]">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgBullet} />
-          </div>
-          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px text-[13px] text-left text-[color:var(--text-secondary,#0d0d10)]">
-            Applied
-          </p>
-          <div className="bg-[var(--bg-muted,#edeff3)] flex h-[18px] items-center px-[6px] rounded-[var(--radius-full,999px)] shrink-0">
-            <p className="font-['Inter:Medium'] font-medium text-[12px] text-[color:var(--text-secondary,#0d0d10)]">3</p>
-          </div>
-        </Link>
-
-        {/* Sub-item: Live */}
-        <Link
-          to={`${ROUTES.creatorMyProjects}?tab=live`}
-          className="content-stretch flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
-        >
-          <div className="relative shrink-0 size-[4px]">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgBullet} />
-          </div>
-          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px text-[13px] text-left text-[color:var(--text-secondary,#0d0d10)]">
-            Live
-          </p>
-          <div className="bg-[var(--bg-muted,#edeff3)] flex h-[18px] items-center px-[6px] rounded-[var(--radius-full,999px)] shrink-0">
-            <p className="font-['Inter:Medium'] font-medium text-[12px] text-[color:var(--text-secondary,#0d0d10)]">2</p>
-          </div>
-        </Link>
-
-        {/* Sub-item: Completed */}
-        <Link
-          to={`${ROUTES.creatorMyProjects}?tab=completed`}
-          className="content-stretch flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
-        >
-          <div className="relative shrink-0 size-[4px]">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgBullet} />
-          </div>
-          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px text-[13px] text-left text-[color:var(--text-secondary,#0d0d10)]">
-            Completed
-          </p>
-          <div className="bg-[var(--bg-muted,#edeff3)] flex h-[18px] items-center px-[6px] rounded-[var(--radius-full,999px)] shrink-0">
-            <p className="font-['Inter:Medium'] font-medium text-[12px] text-[color:var(--text-secondary,#0d0d10)]">7</p>
-          </div>
-        </Link>
-
-        {/* Sub-item: Declined */}
-        <Link
-          to={`${ROUTES.creatorMyProjects}?tab=declined`}
-          className="content-stretch flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition text-[#0d0d10]"
-        >
-          <div className="relative shrink-0 size-[4px]">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgBullet} />
-          </div>
-          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px text-[13px] text-left text-[color:var(--text-secondary,#0d0d10)]">
-            Declined
-          </p>
-          <div className="bg-[var(--bg-muted,#edeff3)] flex h-[18px] items-center px-[6px] rounded-[var(--radius-full,999px)] shrink-0">
-            <p className="font-['Inter:Medium'] font-medium text-[12px] text-[color:var(--text-secondary,#0d0d10)]">3</p>
-          </div>
-        </Link>
-
-        {/* Content (Active Page) */}
-        <div
-          className="bg-[var(--primary-subtle,#f1f4ff)] content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]"
-          data-name="Content"
-        >
-          <div className="relative shrink-0 size-[18px]">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconContent} />
-          </div>
-          <p className="flex-[1_0_0] font-['Inter:Semi_Bold'] font-semibold leading-[20px] min-w-px text-[14px] text-[color:var(--primary-default,#0d0d10)]">
-            Content
-          </p>
-          <div className="bg-[var(--primary-muted,#e3e9ff)] content-stretch flex h-[18px] items-center overflow-clip px-[6px] relative rounded-[var(--radius-full,999px)] shrink-0">
-            <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[color:var(--primary-default,#0d0d10)] whitespace-nowrap">
-              {isEmptyMode ? "0" : "18"}
-            </p>
-          </div>
-        </div>
-
-        {/* CONTENT & DATA */}
-        <div className="content-stretch flex items-start overflow-clip pb-[6px] pt-[16px] px-[12px] relative shrink-0">
-          <p className="font-['Inter:Semi_Bold'] font-semibold leading-[16px] text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] tracking-[0.72px] whitespace-nowrap">
-            CONTENT &amp; DATA
-          </p>
-        </div>
-        <Link
-          to={ROUTES.creatorPerformance}
-          className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] text-[#0d0d10] hover:bg-[#f4f6fb] transition cursor-pointer"
-        >
-          <div className="relative shrink-0 size-[18px]">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconPerformance} />
-          </div>
-          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px text-[14px]">
-            Performance
-          </p>
-        </Link>
-        <Link
-          to={ROUTES.creatorEarnings}
-          className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] text-[#0d0d10] hover:bg-[#f4f6fb] transition cursor-pointer"
-        >
-          <div className="relative shrink-0 size-[18px]">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconEarnings} />
-          </div>
-          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px text-[14px]">
-            Earnings
-          </p>
-        </Link>
-
-        {/* ACCOUNT */}
-        <div className="content-stretch flex items-start overflow-clip pb-[6px] pt-[16px] px-[12px] relative shrink-0">
-          <p className="font-['Inter:Semi_Bold'] font-semibold leading-[16px] text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] tracking-[0.72px] whitespace-nowrap">
-            ACCOUNT
-          </p>
-        </div>
-        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] text-[#0d0d10] hover:bg-[#f4f6fb] transition cursor-pointer">
-          <div className="relative shrink-0 size-[18px]">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconMessages} />
-          </div>
-          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px text-[14px]">
-            Messages
-          </p>
-          <div className="bg-[var(--bg-muted,#edeff3)] content-stretch flex h-[18px] items-center overflow-clip px-[6px] relative rounded-[var(--radius-full,999px)] shrink-0">
-            <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap">
-              3
-            </p>
-          </div>
-        </div>
-        <Link
-          to={ROUTES.creatorSettings}
-          className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] text-[#0d0d10] hover:bg-[#f4f6fb] transition cursor-pointer"
-        >
-          <div className="relative shrink-0 size-[18px]">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconSettings} />
-          </div>
-          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px text-[14px]">
-            Settings
-          </p>
-        </Link>
-
-        <div className="flex-[1_0_0] h-[50px] min-h-[20px] w-full" />
-        <div className="bg-[var(--border-default,#e3e5ec)] h-px shrink-0 w-[228px] my-1" />
-
-        {/* Help Center */}
-        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] text-[#0d0d10] hover:bg-[#f4f6fb] transition cursor-pointer">
-          <div className="relative shrink-0 size-[18px]">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconHelp} />
-          </div>
-          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px text-[14px]">
-            Help Center
-          </p>
-        </div>
-
-        {/* Logout */}
-        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] text-[#0d0d10] hover:bg-[#f4f6fb] transition cursor-pointer">
-          <div className="relative shrink-0 size-[18px]">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconLogout} />
-          </div>
-          <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px text-[14px]">
-            Logout
-          </p>
-        </div>
-      </aside>
-
-      {/* Main Container */}
-      <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-0 min-h-screen overflow-x-hidden relative" data-name="Main">
-        {/* Top bar */}
-        <header
-          className="sticky top-0 bg-[var(--bg-surface,white)] border-[var(--border-default,#e3e5ec)] border-b border-solid content-stretch flex gap-[12px] h-[64px] items-center overflow-clip px-[32px] relative shrink-0 w-full z-20"
-          data-name="Top bar"
-        >
-          {/* Search */}
-          <div
-            className="bg-[var(--bg-subtle,#f4f6fb)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[8px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[380px]"
-            data-name="Search"
-          >
-            <div className="relative shrink-0 size-[16px]">
-              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconSearch} />
-            </div>
-            <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px text-[13px] text-[color:var(--text-tertiary,#a3a3ac)] truncate">
-              Search projects, creators, content…
-            </p>
-            <div className="border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex items-start overflow-clip px-[6px] py-px relative rounded-[4px] shrink-0">
-              <p className="font-['Inter:Regular'] font-normal leading-[16px] text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] whitespace-nowrap">
-                ⌘K
-              </p>
-            </div>
-          </div>
-
-          <div className="flex-[1_0_0] h-px min-w-px relative" />
-
-          {/* Notifications */}
-          <button
-            type="button"
-            className="border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-md,8px)] shrink-0 size-[36px] hover:bg-[#f4f6fb] transition cursor-pointer"
-            data-name="Notifications"
-            aria-label="Notifications"
-          >
-            <div className="relative shrink-0 size-[18px]">
-              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIconNotifications} />
-            </div>
-          </button>
-
-          {/* Account */}
-          <div className="content-stretch flex gap-[10px] items-center overflow-clip relative shrink-0" data-name="Account">
-            <div
-              className="bg-[var(--primary-muted,#e3e9ff)] content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-full,999px)] shrink-0 size-[32px]"
-              data-name="Avatar"
-            >
-              <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[color:var(--primary-default,#0d0d10)] whitespace-nowrap">
-                IR
-              </p>
-            </div>
-            <div className="content-stretch flex flex-col items-start not-italic overflow-clip relative shrink-0 whitespace-nowrap">
-              <p className="font-['Inter:Semi_Bold'] font-semibold leading-[20px] text-[14px] text-[color:var(--text-primary,#0d0d10)]">
-                Ishita Rao
-              </p>
-              <p className="font-['Inter:Regular'] font-normal leading-[16px] text-[12px] text-[color:var(--text-tertiary,#a3a3ac)]">
-                Creator
-              </p>
-            </div>
-          </div>
-        </header>
 
         {/* Content Body Area */}
         <div className="content-stretch flex flex-col gap-[20px] items-start p-[32px] relative shrink-0 w-full max-w-[1400px]">
@@ -1849,8 +1524,6 @@ export default function CreatorContentPage() {
             </div>
           )}
         </div>
-      </div>
-
       {/* DETAIL DRAWER / PANEL (Figma Node 793:13021) */}
       {activeDetailItem && (
         <>
@@ -2137,6 +1810,6 @@ export default function CreatorContentPage() {
           </div>
         </>
       )}
-    </div>
+    </CreatorShell>
   );
 }

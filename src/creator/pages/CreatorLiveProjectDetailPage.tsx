@@ -1,3 +1,4 @@
+import { CreatorShell } from "@/creator/components/CreatorShell";
 import { useState, useRef } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ROUTES } from "@/common/constants/routes";
@@ -209,247 +210,8 @@ export function CreatorLiveProjectDetailPage() {
   };
 
   return (
-    <div className="bg-[var(--bg-page,white)] flex min-h-screen items-start relative w-full" data-node-id="551:747" data-name="Creator · Vitamin-C Serum: 1 Overview">
-      <aside className="sticky top-0 h-screen shrink-0 w-[260px] flex flex-col gap-[2px] items-start overflow-y-auto border-r border-[#e3e5ec] bg-white px-[16px] pt-[20px] pb-[16px] z-30 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden" data-node-id="551:748" data-name="Sidebar / Creator">
-        <Logo className="content-stretch flex items-center overflow-clip relative rounded-[9.778px] shrink-0" />
-        <div className="h-[16px] relative shrink-0 w-[10px]" data-node-id="I551:748;9:488" data-name="gap" />
-        <div className="border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[10px] items-center overflow-clip p-[10px] relative rounded-[var(--radius-lg,12px)] shrink-0 w-[228px]" data-node-id="I551:748;9:489" data-name="Workspace switcher">
-          <div className="bg-[var(--primary-default,#0d0d10)] content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-md,8px)] shrink-0 size-[32px]" data-node-id="I551:748;9:489;9:61" data-name="Initials">
-            <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-on-primary,white)] whitespace-nowrap" data-node-id="I551:748;9:489;9:62">
-              IR
-            </p>
-          </div>
-          <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col items-start min-w-px not-italic overflow-clip relative whitespace-nowrap" data-node-id="I551:748;9:489;9:63" data-name="Text">
-            <p className="font-['Inter:Semi_Bold'] font-semibold leading-[20px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="I551:748;9:489;9:64">
-              Ishita Rao
-            </p>
-            <p className="font-['Inter:Regular'] font-normal leading-[16px] relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)]" data-node-id="I551:748;9:489;9:65">
-              Creator · @ishitarao
-            </p>
-          </div>
-          <div className="relative shrink-0 size-[16px]" data-node-id="I551:748;9:489;9:66" data-name="Icon">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon2} />
-          </div>
-        </div>
-        <div className="content-stretch flex items-start overflow-clip pb-[6px] pt-[16px] px-[12px] relative shrink-0" data-node-id="I551:748;9:497" data-name="Section · MAIN">
-          <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] tracking-[0.72px] whitespace-nowrap" data-node-id="I551:748;9:498">
-            MAIN
-          </p>
-        </div>
-        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-node-id="I551:748;9:499" data-name="Home">
-          <div className="relative shrink-0 size-[18px]" data-node-id="I551:748;9:499;9:8" data-name="Icon">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon3} />
-          </div>
-          <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="I551:748;9:499;9:11">
-            Overview
-          </p>
-        </div>
-        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-node-id="I551:748;9:510" data-name="Find projects">
-          <div className="relative shrink-0 size-[18px]" data-node-id="I551:748;9:510;9:8" data-name="Icon">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon4} />
-          </div>
-          <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="I551:748;9:510;9:11">
-            Project discovery
-          </p>
-        </div>
-        <div className="bg-[var(--primary-subtle,#f1f4ff)] content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-node-id="I551:748;9:521" data-name="My projects">
-          <div className="relative shrink-0 size-[18px]" data-node-id="I551:748;9:521;9:18" data-name="Icon">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon5} />
-          </div>
-          <a className="[word-break:break-word] block cursor-pointer flex-[1_0_0] font-['Inter:Semi_Bold'] font-semibold leading-[0] min-w-px not-italic relative text-[14px] text-[color:var(--primary-default,#0d0d10)]" data-node-id="I551:748;9:521;9:21">
-            <p className="leading-[20px]">My projects</p>
-          </a>
-          <div className="relative shrink-0 size-[14px]" data-node-id="I551:748;9:521;9:24" data-name="Chevron">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgChevron} />
-          </div>
-        </div>
-        <div className="content-stretch flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-node-id="I551:748;9:531" data-name="Invitations & offers">
-          <div className="relative shrink-0 size-[4px]" data-node-id="I551:748;9:531;9:28" data-name="Bullet">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgBullet} />
-          </div>
-          <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px not-italic relative text-[13px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="I551:748;9:531;9:29">{`Invitations & offers`}</p>
-          <div className="bg-[var(--bg-muted,#edeff3)] content-stretch flex h-[18px] items-center overflow-clip px-[6px] relative rounded-[var(--radius-full,999px)] shrink-0" data-node-id="I551:748;9:531;9:30" data-name="Count">
-            <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap" data-node-id="I551:748;9:531;9:31">
-              4
-            </p>
-          </div>
-        </div>
-        <div className="content-stretch flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-node-id="I551:748;9:538" data-name="Applied">
-          <div className="relative shrink-0 size-[4px]" data-node-id="I551:748;9:538;9:28" data-name="Bullet">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgBullet} />
-          </div>
-          <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px not-italic relative text-[13px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="I551:748;9:538;9:29">
-            Applied
-          </p>
-          <div className="bg-[var(--bg-muted,#edeff3)] content-stretch flex h-[18px] items-center overflow-clip px-[6px] relative rounded-[var(--radius-full,999px)] shrink-0" data-node-id="I551:748;9:538;9:30" data-name="Count">
-            <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap" data-node-id="I551:748;9:538;9:31">
-              3
-            </p>
-          </div>
-        </div>
-        <div className="content-stretch flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-node-id="I551:748;9:545" data-name="Active">
-          <div className="relative shrink-0 size-[4px]" data-node-id="I551:748;9:545;9:28" data-name="Bullet">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgBullet} />
-          </div>
-          <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px not-italic relative text-[13px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="I551:748;9:545;9:29">
-            Live
-          </p>
-          <div className="bg-[var(--bg-muted,#edeff3)] content-stretch flex h-[18px] items-center overflow-clip px-[6px] relative rounded-[var(--radius-full,999px)] shrink-0" data-node-id="I551:748;9:545;9:30" data-name="Count">
-            <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap" data-node-id="I551:748;9:545;9:31">
-              2
-            </p>
-          </div>
-        </div>
-        <div className="content-stretch flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-node-id="I551:748;9:552" data-name="Completed">
-          <div className="relative shrink-0 size-[4px]" data-node-id="I551:748;9:552;9:28" data-name="Bullet">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgBullet} />
-          </div>
-          <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px not-italic relative text-[13px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="I551:748;9:552;9:29">
-            Completed
-          </p>
-          <div className="bg-[var(--bg-muted,#edeff3)] content-stretch flex h-[18px] items-center overflow-clip px-[6px] relative rounded-[var(--radius-full,999px)] shrink-0" data-node-id="I551:748;9:552;9:30" data-name="Count">
-            <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap" data-node-id="I551:748;9:552;9:31">
-              7
-            </p>
-          </div>
-        </div>
-        <div className="content-stretch flex gap-[10px] h-[32px] items-center overflow-clip pl-[40px] pr-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-node-id="I551:748;778:13550" data-name="Declined">
-          <div className="relative shrink-0 size-[4px]" data-node-id="I551:748;778:13550;9:28" data-name="Bullet">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgBullet} />
-          </div>
-          <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px not-italic relative text-[13px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="I551:748;778:13550;9:29">
-            Declined
-          </p>
-          <div className="bg-[var(--bg-muted,#edeff3)] content-stretch flex h-[18px] items-center overflow-clip px-[6px] relative rounded-[var(--radius-full,999px)] shrink-0" data-node-id="I551:748;778:13550;9:30" data-name="Count">
-            <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap" data-node-id="I551:748;778:13550;9:31">
-              3
-            </p>
-          </div>
-        </div>
-        <Link
-          to={ROUTES.creatorContent}
-          className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition"
-          data-node-id="I551:748;9:559"
-          data-name="Content"
-        >
-          <div className="relative shrink-0 size-[18px]" data-node-id="I551:748;9:559;9:8" data-name="Icon">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon6} />
-          </div>
-          <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="I551:748;9:559;9:11">
-            Content
-          </p>
-          <div className="bg-[var(--bg-muted,#edeff3)] content-stretch flex h-[18px] items-center overflow-clip px-[6px] relative rounded-[var(--radius-full,999px)] shrink-0" data-node-id="I551:748;9:559;9:12" data-name="Count">
-            <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap" data-node-id="I551:748;9:559;9:13">
-              18
-            </p>
-          </div>
-        </Link>
-        <div className="content-stretch flex items-start overflow-clip pb-[6px] pt-[16px] px-[12px] relative shrink-0" data-node-id="I551:748;9:571" data-name="Section · CONTENT & DATA">
-          <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] tracking-[0.72px] whitespace-nowrap" data-node-id="I551:748;9:572">{`CONTENT & DATA`}</p>
-        </div>
-        <Link to={ROUTES.creatorPerformance} className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition cursor-pointer" data-node-id="I551:748;9:573" data-name="Performance">
-          <div className="relative shrink-0 size-[18px]" data-node-id="I551:748;9:573;9:8" data-name="Icon">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon7} />
-          </div>
-          <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="I551:748;9:573;9:11">
-            Performance
-          </p>
-        </Link>
-        <Link to={ROUTES.creatorEarnings} className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition cursor-pointer" data-node-id="I551:748;9:584" data-name="Earnings">
-          <div className="relative shrink-0 size-[18px]" data-node-id="I551:748;9:584;9:8" data-name="Icon">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon8} />
-          </div>
-          <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="I551:748;9:584;9:11">
-            Earnings
-          </p>
-        </Link>
-        <div className="content-stretch flex items-start overflow-clip pb-[6px] pt-[16px] px-[12px] relative shrink-0" data-node-id="I551:748;9:596" data-name="Section · ACCOUNT">
-          <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] tracking-[0.72px] whitespace-nowrap" data-node-id="I551:748;9:597">
-            ACCOUNT
-          </p>
-        </div>
-        <Link to="/brand/messages" className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px] hover:bg-[#f4f6fb] transition" data-name="Messages">
-          <div className="relative shrink-0 size-[18px]" data-name="Icon">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon9} />
-          </div>
-          <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]">
-            Messages
-          </p>
-          <div className="bg-[var(--bg-muted,#edeff3)] content-stretch flex h-[18px] items-center overflow-clip px-[6px] relative rounded-[var(--radius-full,999px)] shrink-0" data-name="Count">
-            <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap">
-              1
-            </p>
-          </div>
-        </Link>
-        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-node-id="I551:748;9:619" data-name="Settings">
-          <div className="relative shrink-0 size-[18px]" data-node-id="I551:748;9:619;9:8" data-name="Icon">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon10} />
-          </div>
-          <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="I551:748;9:619;9:11">
-            Settings
-          </p>
-        </div>
-        <div className="flex-1 min-h-[16px] w-full" data-name="Spacer" />
-        <div className="bg-[var(--border-default,#e3e5ec)] h-px relative shrink-0 w-full" data-node-id="I551:748;9:631" data-name="Divider" />
-        <div className="h-[8px] relative shrink-0 w-[10px]" data-node-id="I551:748;9:632" data-name="gap" />
-        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-node-id="I551:748;9:633" data-name="Help Center">
-          <div className="relative shrink-0 size-[18px]" data-node-id="I551:748;9:633;9:8" data-name="Icon">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon11} />
-          </div>
-          <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="I551:748;9:633;9:11">
-            Help centre
-          </p>
-        </div>
-        <div className="content-stretch flex gap-[10px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[228px]" data-node-id="I551:748;9:645" data-name="Logout">
-          <div className="relative shrink-0 size-[18px]" data-node-id="I551:748;9:645;9:8" data-name="Icon">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon12} />
-          </div>
-          <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="I551:748;9:645;9:11">
-            Logout
-          </p>
-        </div>
-      </aside>
-      <div className="bg-[var(--bg-page,white)] flex-1 min-w-0 flex flex-col items-start relative min-h-screen" data-node-id="551:888" data-name="Main">
-        <div className="bg-[var(--bg-surface,white)]/95 backdrop-blur-xs border-[var(--border-default,#e3e5ec)] border-b border-solid content-stretch flex gap-[12px] h-[64px] items-center px-[32px] sticky top-0 z-20 w-full" data-node-id="551:889" data-name="Top bar">
-          <div className="bg-[var(--bg-subtle,#f4f6fb)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex gap-[8px] h-[36px] items-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 w-[380px]" data-node-id="I551:889;10:343" data-name="Search">
-            <div className="relative shrink-0 size-[16px]" data-node-id="I551:889;10:344" data-name="Icon">
-              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon13} />
-            </div>
-            <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px not-italic relative text-[13px] text-[color:var(--text-tertiary,#a3a3ac)]" data-node-id="I551:889;10:347">
-              Search projects, creators, content…
-            </p>
-            <div className="border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex items-start overflow-clip px-[6px] py-px relative rounded-[4px] shrink-0" data-node-id="I551:889;10:348" data-name="Kbd">
-              <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] whitespace-nowrap" data-node-id="I551:889;10:349">
-                ⌘K
-              </p>
-            </div>
-          </div>
-          <div className="flex-[1_0_0] h-px min-w-px relative" data-node-id="I551:889;10:350" data-name="Spacer" />
-          <div className="border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-md,8px)] shrink-0 size-[36px]" data-node-id="I551:889;72:2241" data-name="Notifications">
-            <div className="relative shrink-0 size-[18px]" data-node-id="I551:889;72:2242" data-name="Icon">
-              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon14} />
-            </div>
-          </div>
-          <div className="content-stretch flex gap-[10px] items-center overflow-clip relative shrink-0" data-node-id="I551:889;10:355" data-name="Account">
-            <div className="bg-[var(--primary-muted,#e3e9ff)] content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-full,999px)] shrink-0 size-[32px]" data-node-id="I551:889;10:356" data-name="Avatar">
-              <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--primary-default,#0d0d10)] whitespace-nowrap" data-node-id="I551:889;10:357">
-                IR
-              </p>
-            </div>
-            <div className="[word-break:break-word] content-stretch flex flex-col items-start not-italic overflow-clip relative shrink-0 whitespace-nowrap" data-node-id="I551:889;10:358" data-name="Name">
-              <p className="font-['Inter:Semi_Bold'] font-semibold leading-[20px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="I551:889;10:359">
-                Ishita Rao
-              </p>
-              <p className="font-['Inter:Regular'] font-normal leading-[16px] relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)]" data-node-id="I551:889;10:360">
-                Creator · @ishitarao
-              </p>
-            </div>
-            <div className="relative shrink-0 size-[14px]" data-node-id="I551:889;10:361" data-name="Icon">
-              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon15} />
-            </div>
-          </div>
-        </div>
-        <div className="content-stretch flex flex-col gap-[24px] items-start pb-[40px] pt-[28px] px-[32px] relative shrink-0 w-full" data-node-id="551:913" data-name="Content">
+    <CreatorShell>
+      <div className="content-stretch flex flex-col gap-[24px] items-start pb-[40px] pt-[28px] px-[32px] relative shrink-0 w-full" data-node-id="551:913" data-name="Content">
           <div className="content-stretch flex gap-[16px] items-end overflow-clip relative shrink-0 w-full" data-node-id="551:914" data-name="Page header">
             <div className="content-stretch flex flex-[1_0_0] flex-col gap-[4px] items-start min-w-px overflow-clip relative" data-node-id="551:915" data-name="Left">
               <Link to="/creator/my-projects?tab=live" className="[word-break:break-word] block cursor-pointer font-['Inter:Regular'] font-normal leading-[0] not-italic relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] hover:text-[#3b5bff] transition whitespace-nowrap" data-node-id="551:916">
@@ -1283,7 +1045,6 @@ export function CreatorLiveProjectDetailPage() {
           </>
           )}
         </div>
-      </div>
 
       {/* Counter Offer Modal */}
       <CounterOfferModal
@@ -1308,8 +1069,7 @@ export function CreatorLiveProjectDetailPage() {
           setUploadedFileName(fileName);
           setIsUploadOpen(false);
         }}
-      />
-    </div>
+      />    </CreatorShell>
   );
 }
 
