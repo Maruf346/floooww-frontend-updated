@@ -11,6 +11,8 @@ import {
   Users,
   Building2,
   UserPlus,
+  Download,
+  Plus,
 } from "lucide-react";
 import { AgencyShell } from "@/agency/components/AgencyShell";
 import { AgencyAddClientModal } from "@/agency/components/AgencyAddClientModal";
@@ -18,6 +20,14 @@ import {
   AgencyInviteMemberModal,
   TeamMemberData,
 } from "@/agency/components/AgencyInviteMemberModal";
+import {
+  AgencyFeeRuleModal,
+  FeeRuleData,
+} from "@/agency/components/AgencyFeeRuleModal";
+import {
+  AgencyBillingDetailsModal,
+  BillingDetailsData,
+} from "@/agency/components/AgencyBillingDetailsModal";
 import { ROUTES } from "@/common/constants/routes";
 
 type SettingsTab = "account" | "team" | "billing" | "notifications" | "security";
@@ -132,6 +142,84 @@ const PERMISSIONS_MATRIX = [
   },
 ];
 
+const INITIAL_FEE_RULES: FeeRuleData[] = [
+  {
+    id: "rule-1",
+    clientId: null,
+    clientName: "Default fee",
+    isDefault: true,
+    percent: 12,
+    retainer: 0,
+    effectiveFrom: "Default",
+    subtitle: "Applied to every client project unless a client has its own rule",
+  },
+  {
+    id: "rule-2",
+    clientId: "minimalist",
+    clientName: "Minimalist",
+    isDefault: false,
+    percent: 10,
+    retainer: 25000,
+    effectiveFrom: "Jan 2026",
+    subtitle: "Client-specific rule · agreed Jan 2026",
+  },
+];
+
+const INITIAL_BILLING_DETAILS: BillingDetailsData = {
+  legalName: "Brightside Media Pvt Ltd",
+  gstin: "27AABCG1234M1Z5",
+  address: "4th floor, Kamala Mills, Lower Parel, Mumbai 400013",
+  placeOfSupply: "Maharashtra",
+  settlementAccount: "HDFC Bank ···· 2210 · payouts every Monday",
+};
+
+interface ServiceInvoice {
+  id: string;
+  date: string;
+  invoiceNumber: string;
+  client: string;
+  clientSub?: string;
+  amount: string;
+  status: "paid" | "overdue" | "draft" | "sent";
+}
+
+const SERVICE_INVOICES: ServiceInvoice[] = [
+  {
+    id: "inv-1",
+    date: "26 Oct",
+    invoiceNumber: "FLW-2610-0412",
+    client: "Minimalist",
+    amount: "₹1,20,000",
+    status: "paid",
+  },
+  {
+    id: "inv-2",
+    date: "6 Oct",
+    invoiceNumber: "FLW-0610-0388",
+    client: "Velvet Lip Co.",
+    amount: "₹25,000",
+    status: "overdue",
+  },
+  {
+    id: "inv-3",
+    date: "2 Oct",
+    invoiceNumber: "FLW-0210-0371",
+    client: "Dewdrop Naturals",
+    clientSub: "Oct",
+    amount: "₹4,500",
+    status: "paid",
+  },
+  {
+    id: "inv-4",
+    date: "12 Sep",
+    invoiceNumber: "FLW-1209-0322",
+    client: "Minimalist",
+    clientSub: "-",
+    amount: "₹13,800",
+    status: "paid",
+  },
+];
+
 const easeCurve = [0.22, 1, 0.36, 1] as const;
 
 export function AgencySettingsPage() {
@@ -152,6 +240,14 @@ export function AgencySettingsPage() {
   const [teamMembers, setTeamMembers] = useState<TeamMemberData[]>(INITIAL_TEAM_MEMBERS);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<TeamMemberData | null>(null);
+
+  // Billing & tax state
+  const [feeRules, setFeeRules] = useState<FeeRuleData[]>(INITIAL_FEE_RULES);
+  const [isFeeRuleModalOpen, setIsFeeRuleModalOpen] = useState(false);
+  const [editingFeeRule, setEditingFeeRule] = useState<FeeRuleData | null>(null);
+
+  const [billingDetails, setBillingDetails] = useState<BillingDetailsData>(INITIAL_BILLING_DETAILS);
+  const [isBillingModalOpen, setIsBillingModalOpen] = useState(false);
 
   // Form State for "Account" tab
   const [agencyName, setAgencyName] = useState("Brightside Agency");
@@ -244,6 +340,36 @@ export function AgencySettingsPage() {
     showToast("Member removed from agency workspace.");
   };
 
+  const handleSaveFeeRule = (rule: FeeRuleData) => {
+    if (editingFeeRule) {
+      setFeeRules((prev) =>
+        prev.map((r) => (r.id === rule.id ? { ...r, ...rule } : r))
+      );
+      showToast(`${rule.clientName} fee rule updated.`);
+    } else {
+      setFeeRules((prev) => [...prev, rule]);
+      showToast(`New fee rule added for ${rule.clientName}.`);
+    }
+  };
+
+  const handleDeleteFeeRule = (ruleId: string) => {
+    setFeeRules((prev) => prev.filter((r) => r.id !== ruleId));
+    showToast("Fee rule removed.");
+  };
+
+  const handleSaveBillingDetails = (details: BillingDetailsData) => {
+    setBillingDetails(details);
+    showToast("Billing details updated successfully.");
+  };
+
+  const handleDownloadInvoice = (invNum: string) => {
+    showToast(`Downloading invoice ${invNum}.pdf`);
+  };
+
+  const handleDownloadAllInvoices = () => {
+    showToast("Downloading all service-fee invoices (ZIP)...");
+  };
+
   return (
     <AgencyShell onAddClient={() => setIsAddClientOpen(true)}>
       <motion.div
@@ -265,7 +391,7 @@ export function AgencySettingsPage() {
             Settings
           </h1>
           <p className="text-[13px] text-[#0d0d10] font-normal leading-[20px]">
-            Brightside Agency · agency workspace
+            Brightside Agency workspace
           </p>
         </div>
 
@@ -744,19 +870,254 @@ export function AgencySettingsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.35, ease: easeCurve }}
-                  className="rounded-[12px] border border-[#e3e5ec] bg-white p-6 flex flex-col gap-4 shadow-xs"
+                  className="flex flex-col gap-6"
                 >
-                  <div className="border-b border-[#edeff3] pb-3">
-                    <h2 className="text-[16px] font-semibold text-[#0d0d10]">
-                      Billing & tax (AG-05b)
-                    </h2>
-                    <p className="text-[12px] text-[#71717a]">
-                      Your GSTIN, invoice template, and how clients pay you (FeeRules)
-                    </p>
+                  {/* Top Row: 2 Cards */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+                    {/* Left Card: How clients pay you */}
+                    <div className="rounded-[12px] border border-[#e3e5ec] bg-white p-5 flex flex-col justify-between shadow-xs">
+                      <div>
+                        {/* Card Head */}
+                        <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#edeff3]">
+                          <div className="flex flex-col gap-1 min-w-0">
+                            <h2 className="text-[16px] font-semibold text-[#0d0d10] leading-snug">
+                              How clients pay you
+                            </h2>
+                            <p className="text-[12px] text-[#71717a] leading-tight">
+                              Your agency service fee · invoiced monthly per client · Kreyio collects it with the client’s project payments or you invoice directly
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingFeeRule(null);
+                              setIsFeeRuleModalOpen(true);
+                            }}
+                            className="inline-flex h-8 items-center gap-1 rounded-[8px] border border-[#e3e5ec] bg-white px-3 text-[13px] font-medium text-[#0d0d10] transition hover:border-[#0d0d10] shrink-0 cursor-pointer"
+                          >
+                            <Plus size={14} />
+                            <span>Add fee rule</span>
+                          </button>
+                        </div>
+
+                        {/* Rules List */}
+                        <div className="divide-y divide-[#f0f2f5]">
+                          {feeRules.map((rule) => (
+                            <div
+                              key={rule.id}
+                              className="py-3.5 flex items-start justify-between gap-4"
+                            >
+                              <div className="flex flex-col gap-1 min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="text-[13px] font-medium text-[#0d0d10]">
+                                    {rule.isDefault
+                                      ? `Default fee · ${rule.percent}% of creator fees`
+                                      : `${rule.clientName} · ${rule.percent}% of creator fees${
+                                          rule.retainer
+                                            ? ` + ₹${rule.retainer.toLocaleString("en-IN")} retainer`
+                                            : ""
+                                        }`}
+                                  </span>
+                                  {rule.isDefault && (
+                                    <span className="inline-flex items-center rounded-full bg-[#f1f4ff] px-2 py-0.5 text-[11px] font-medium text-[#3b5bff]">
+                                      Default
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-[12px] text-[#71717a] leading-normal">
+                                  {rule.subtitle}
+                                </p>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingFeeRule(rule);
+                                  setIsFeeRuleModalOpen(true);
+                                }}
+                                className="text-[13px] font-medium text-[#3b5bff] hover:underline cursor-pointer shrink-0 pt-0.5"
+                              >
+                                Edit
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right Card: Your billing details */}
+                    <div className="rounded-[12px] border border-[#e3e5ec] bg-white p-5 flex flex-col justify-between shadow-xs">
+                      <div>
+                        {/* Card Head */}
+                        <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#edeff3]">
+                          <div className="flex flex-col gap-1 min-w-0">
+                            <h2 className="text-[16px] font-semibold text-[#0d0d10] leading-snug">
+                              Your billing details
+                            </h2>
+                            <p className="text-[12px] text-[#71717a] leading-tight">
+                              Printed on every service-fee invoice you send to clients
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setIsBillingModalOpen(true)}
+                            className="inline-flex h-8 items-center rounded-[8px] border border-[#e3e5ec] bg-white px-3 text-[13px] font-medium text-[#0d0d10] transition hover:border-[#0d0d10] shrink-0 cursor-pointer"
+                          >
+                            Edit
+                          </button>
+                        </div>
+
+                        {/* Key-Value Pairs */}
+                        <div className="divide-y divide-[#f0f2f5] text-[13px]">
+                          <div className="py-2.5 flex items-start gap-4">
+                            <span className="w-[130px] shrink-0 text-[#8c94a0] font-normal">
+                              Legal name
+                            </span>
+                            <span className="font-normal text-[#0d0d10]">
+                              {billingDetails.legalName}
+                            </span>
+                          </div>
+
+                          <div className="py-2.5 flex items-start gap-4">
+                            <span className="w-[130px] shrink-0 text-[#8c94a0] font-normal">
+                              GSTIN
+                            </span>
+                            <span className="font-normal text-[#0d0d10]">
+                              {billingDetails.gstin}
+                            </span>
+                          </div>
+
+                          <div className="py-2.5 flex items-start gap-4">
+                            <span className="w-[130px] shrink-0 text-[#8c94a0] font-normal">
+                              Address
+                            </span>
+                            <span className="font-normal text-[#0d0d10] leading-relaxed">
+                              {billingDetails.address}
+                            </span>
+                          </div>
+
+                          <div className="py-2.5 flex items-start gap-4">
+                            <span className="w-[130px] shrink-0 text-[#8c94a0] font-normal">
+                              Place of supply
+                            </span>
+                            <span className="font-normal text-[#0d0d10]">
+                              {billingDetails.placeOfSupply}
+                            </span>
+                          </div>
+
+                          <div className="py-2.5 flex items-start gap-4">
+                            <span className="w-[130px] shrink-0 text-[#8c94a0] font-normal">
+                              Settlement account
+                            </span>
+                            <span className="font-normal text-[#0d0d10]">
+                              {billingDetails.settlementAccount}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-[13px] text-[#71717a]">
-                    Billing & tax configuration will be implemented in the AG-05b step.
-                  </p>
+
+                  {/* Bottom Card: Service-fee invoices to clients */}
+                  <div className="rounded-[12px] border border-[#e3e5ec] bg-white p-5 flex flex-col gap-4 shadow-xs">
+                    {/* Head */}
+                    <div className="flex items-center justify-between pb-3 border-b border-[#edeff3]">
+                      <div className="flex flex-col gap-0.5">
+                        <h3 className="text-[16px] font-semibold text-[#0d0d10]">
+                          Service-fee invoices to clients
+                        </h3>
+                        <p className="text-[12px] text-[#71717a]">
+                          One GST invoice per payment · Kreyio charges brands nothing
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleDownloadAllInvoices}
+                        className="inline-flex h-8 items-center gap-1.5 rounded-[8px] border border-[#e3e5ec] bg-white px-3.5 text-[13px] font-medium text-[#0d0d10] transition hover:border-[#0d0d10] cursor-pointer"
+                      >
+                        <Download size={14} />
+                        <span>Download all</span>
+                      </button>
+                    </div>
+
+                    {/* Invoices Table */}
+                    <div className="overflow-x-auto">
+                      <div className="min-w-[700px]">
+                        {/* Table Header */}
+                        <div className="grid grid-cols-[1.1fr_1.4fr_1.8fr_1.2fr_1.1fr_1fr] items-center rounded-[8px] bg-[#f8f9fc] px-4 py-2.5 text-[12px] font-semibold text-[#525866] uppercase tracking-wider">
+                          <span>DATE</span>
+                          <span>INVOICE</span>
+                          <span>CLIENT</span>
+                          <span>AMOUNT</span>
+                          <span>STATUS</span>
+                          <span className="text-right" />
+                        </div>
+
+                        {/* Table Rows */}
+                        <div className="divide-y divide-[#f0f2f5]">
+                          {SERVICE_INVOICES.map((inv) => (
+                            <div
+                              key={inv.id}
+                              className="grid grid-cols-[1.1fr_1.4fr_1.8fr_1.2fr_1.1fr_1fr] items-center px-4 py-3 text-[13px] text-[#0d0d10] hover:bg-[#fafbfd] transition-colors"
+                            >
+                              {/* Date */}
+                              <span className="font-normal text-[#0d0d10]">
+                                {inv.date}
+                              </span>
+
+                              {/* Invoice Number */}
+                              <span className="font-normal text-[#0d0d10]">
+                                {inv.invoiceNumber}
+                              </span>
+
+                              {/* Client */}
+                              <div className="flex flex-col min-w-0 pr-2">
+                                <span className="font-normal text-[#0d0d10] truncate">
+                                  {inv.client}
+                                </span>
+                                {inv.clientSub && (
+                                  <span className="text-[11px] text-[#71717a] leading-none">
+                                    {inv.clientSub}
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* Amount */}
+                              <span className="font-normal text-[#0d0d10]">
+                                {inv.amount}
+                              </span>
+
+                              {/* Status Badge */}
+                              <div>
+                                {inv.status === "paid" ? (
+                                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e8fbf0] px-2.5 py-0.5 text-[12px] font-medium text-[#059669]">
+                                    <span className="size-1.5 rounded-full bg-[#059669]" />
+                                    Paid
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#fef2f2] px-2.5 py-0.5 text-[12px] font-medium text-[#dc2626]">
+                                    <span className="size-1.5 rounded-full bg-[#dc2626]" />
+                                    Overdue
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* Action: Download */}
+                              <div className="text-right">
+                                <button
+                                  type="button"
+                                  onClick={() => handleDownloadInvoice(inv.invoiceNumber)}
+                                  className="text-[13px] font-medium text-[#3b5bff] hover:underline cursor-pointer"
+                                >
+                                  Download
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
               )}
 
@@ -829,6 +1190,26 @@ export function AgencySettingsPage() {
         onSuccess={handleSaveMember}
         onRemove={handleRemoveMember}
         initialMember={editingMember}
+      />
+
+      {/* Add / Edit Fee Rule Modal */}
+      <AgencyFeeRuleModal
+        isOpen={isFeeRuleModalOpen}
+        onClose={() => {
+          setIsFeeRuleModalOpen(false);
+          setEditingFeeRule(null);
+        }}
+        onSave={handleSaveFeeRule}
+        onDelete={handleDeleteFeeRule}
+        initialRule={editingFeeRule}
+      />
+
+      {/* Edit Billing Details Modal */}
+      <AgencyBillingDetailsModal
+        isOpen={isBillingModalOpen}
+        onClose={() => setIsBillingModalOpen(false)}
+        onSave={handleSaveBillingDetails}
+        initialDetails={billingDetails}
       />
     </AgencyShell>
   );
