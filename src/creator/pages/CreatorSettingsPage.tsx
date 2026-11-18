@@ -23,6 +23,8 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { CreatorShell } from "@/creator/components/CreatorShell";
+import { CreatorNicheDropdown } from "@/creator/components/CreatorNicheDropdown";
+import { CreatorLanguagesDropdown } from "@/creator/components/CreatorLanguagesDropdown";
 
 // Assets
 const avatarImg = "/assets/creator/settings/avatar.png";
@@ -83,7 +85,7 @@ export default function CreatorSettingsPage() {
   // Profile editable states
   const [name, setName] = useState("Ishita Rao");
   const [handle, setHandle] = useState("@ishitarao");
-  const [niche, setNiche] = useState("Beauty & skincare creator");
+  const [niche, setNiche] = useState("Beauty & skincare");
   const [location, setLocation] = useState("Chennai, India");
   const [languages, setLanguages] = useState("English, Hindi, Tamil");
   const [aboutMe, setAboutMe] = useState(
@@ -1866,15 +1868,11 @@ export default function CreatorSettingsPage() {
                 />
               </div>
 
-              <div>
-                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">Primary niche</label>
-                <input
-                  type="text"
-                  value={niche}
-                  onChange={(e) => setNiche(e.target.value)}
-                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
-                />
-              </div>
+              <CreatorNicheDropdown
+                value={niche}
+                onChange={setNiche}
+                label="Primary niche"
+              />
 
               <div>
                 <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">Location</label>
@@ -1886,15 +1884,11 @@ export default function CreatorSettingsPage() {
                 />
               </div>
 
-              <div>
-                <label className="text-[12px] font-medium text-[#4a4a55] block mb-1">Languages</label>
-                <input
-                  type="text"
-                  value={languages}
-                  onChange={(e) => setLanguages(e.target.value)}
-                  className="w-full h-10 px-3 rounded-lg border border-[#e3e5ec] text-[13px] text-[#0d0d10] focus:outline-none focus:border-[#0d0d10]"
-                />
-              </div>
+              <CreatorLanguagesDropdown
+                value={languages}
+                onChange={setLanguages}
+                label="Languages"
+              />
             </div>
 
             <div className="flex items-center justify-end gap-2.5 pt-2">
