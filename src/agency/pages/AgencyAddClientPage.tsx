@@ -782,32 +782,32 @@ export function AgencyAddClientPage() {
                   className="flex flex-col gap-6"
                 >
                   {/* Status Banner */}
-                  <div className="flex items-start gap-4">
-                    <div className="grid size-12 place-items-center rounded-full bg-emerald-100 text-emerald-600 shrink-0">
-                      <Check size={24} strokeWidth={2.5} />
+                  <div className="flex items-center gap-[14px]">
+                    <div className="grid size-[44px] place-items-center rounded-full bg-[#e1fce3] text-[#16a34a] shrink-0">
+                      <Check size={20} strokeWidth={2.5} />
                     </div>
-                    <div>
-                      <h2 className="text-[22px] font-bold text-[#0d0d10] leading-snug">
+                    <div className="flex flex-col gap-[4px]">
+                      <h2 className="text-[22px] font-semibold text-[#070b13] leading-none">
                         {brandName} is now your client
                       </h2>
-                      <p className="text-[13px] text-[#71717a] mt-0.5">
+                      <p className="text-[14px] text-[#8491a3] leading-normal">
                         The client workspace is ready. Nothing is charged until the client funds a project.
                       </p>
                     </div>
                   </div>
 
                   {/* What happens next Card */}
-                  <div className="rounded-xl border border-[#e3e5ec] bg-white p-5 flex flex-col gap-4">
-                    <div>
-                      <h3 className="text-[15px] font-semibold text-[#0d0d10]">
+                  <div className="rounded-[12px] border border-[#e5e7eb] bg-white flex flex-col overflow-hidden">
+                    <div className="pb-[12px] pt-[16px] px-[20px] flex flex-col gap-[2px]">
+                      <h3 className="text-[16px] font-semibold text-[#070b13] leading-none">
                         What happens next
                       </h3>
-                      <p className="text-[12px] text-[#71717a] mt-0.5">
+                      <p className="text-[13px] text-[#8491a3] leading-normal">
                         Every client runs the same way. Kreyio reminds both sides of each step.
                       </p>
                     </div>
 
-                    <div className="divide-y divide-[#f0f2f5]">
+                    <div className="divide-y divide-[#edeff3]">
                       {[
                         {
                           num: 1,
@@ -840,15 +840,15 @@ export function AgencyAddClientPage() {
                           desc: "Service fees billed from Billing · GST invoice to the client.",
                         },
                       ].map((item) => (
-                        <div key={item.num} className="flex items-start gap-3.5 py-3 first:pt-1 last:pb-1">
-                          <span className="grid size-6 place-items-center rounded-full bg-[#eef4ff] text-[12px] font-semibold text-[#014ef6] shrink-0 mt-0.5">
+                        <div key={item.num} className="flex items-start gap-[14px] px-[20px] py-[12px]">
+                          <span className="grid size-[26px] place-items-center rounded-full bg-[#f1f4ff] text-[12px] font-semibold text-[#3b5bff] shrink-0 mt-0.5">
                             {item.num}
                           </span>
-                          <div>
-                            <p className="text-[13px] font-medium text-[#0d0d10] leading-tight">
+                          <div className="flex flex-col gap-[2px]">
+                            <p className="text-[14px] font-medium text-[#070b13] leading-snug">
                               {item.title}
                             </p>
-                            <p className="text-[12px] text-[#71717a] leading-normal mt-0.5">
+                            <p className="text-[13px] text-[#8491a3] leading-normal">
                               {item.desc}
                             </p>
                           </div>
@@ -858,21 +858,21 @@ export function AgencyAddClientPage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center justify-between border-t border-[#e3e5ec] pt-5">
+                  <div className="flex items-center justify-between border-t border-[#e3e5ec] pt-[20px]">
                     <button
                       type="button"
                       onClick={() => navigate(`/brand?client=${clientIdSlug}`)}
-                      className="flex h-10 items-center gap-2 rounded-lg border border-[#e3e5ec] bg-white px-4 text-[14px] font-medium text-[#0d0d10] hover:bg-[#f4f6fb] transition-colors cursor-pointer"
+                      className="flex h-[40px] items-center gap-[8px] rounded-[8px] border border-[#e3e5ec] bg-white px-[16px] text-[14px] font-medium text-[#0d0d10] hover:bg-[#f4f6fb] transition-colors cursor-pointer"
                     >
                       <ArrowLeft size={16} />
                       <span>Open client workspace</span>
                     </button>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-[12px]">
                       <button
                         type="button"
                         onClick={() => navigate(`/brand/projects/new?client=${clientIdSlug}`)}
-                        className="h-10 px-4 text-[14px] font-medium text-[#0d0d10] hover:text-[#71717a] transition-colors cursor-pointer"
+                        className="h-[40px] px-[16px] text-[14px] font-medium text-[#0d0d10] hover:text-[#71717a] transition-colors cursor-pointer"
                       >
                         Create their first project
                       </button>
@@ -880,7 +880,7 @@ export function AgencyAddClientPage() {
                       <button
                         type="button"
                         onClick={() => navigate(`/brand/projects/new?client=${clientIdSlug}`)}
-                        className="flex h-10 items-center gap-2 rounded-lg bg-[#0d0d10] px-5 text-[14px] font-medium text-white hover:bg-black transition-colors cursor-pointer shadow-xs"
+                        className="flex h-[40px] items-center gap-[8px] rounded-[8px] bg-[#0d0d10] px-[16px] text-[14px] font-medium text-white hover:bg-black transition-colors cursor-pointer shadow-xs"
                       >
                         <span>Create their first project</span>
                       </button>
