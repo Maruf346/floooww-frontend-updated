@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { AgencyClientShell } from "../components/AgencyClientShell";
 import { AGENCY_CLIENTS } from "../components/AgencyWorkspaceSwitcher";
+import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { ROUTES } from "@/common/constants/routes";
 import { asset } from "@/common/utils/asset";
 
@@ -177,8 +178,6 @@ export function AgencyClientOverviewPage() {
     searchParams.get("view") === "setup" ? "setup" : "campaigns"
   );
 
-  const [dateRangeDropdown, setDateRangeDropdown] = useState(false);
-  const [selectedRange, setSelectedRange] = useState("1 Oct – 28 Oct 2026");
   const [storeModalOpen, setStoreModalOpen] = useState(false);
   const [storeConnected, setStoreConnected] = useState(false);
   const [guideModalOpen, setGuideModalOpen] = useState(false);
@@ -270,40 +269,8 @@ export function AgencyClientOverviewPage() {
               </div>
 
               <div className="flex items-center gap-3">
-                {/* Date range picker (1716:739) */}
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setDateRangeDropdown((prev) => !prev)}
-                    className="flex h-[40px] items-center gap-2 rounded-lg border border-[#e3e5ec] bg-white px-3.5 text-[13px] font-medium text-[#0d0d10] hover:bg-[#f4f6fb] transition-colors cursor-pointer shadow-xs"
-                  >
-                    <Calendar size={15} className="text-[#71717a]" />
-                    <span>{selectedRange}</span>
-                    <span className="text-[#a3a3ac]">vs previous</span>
-                    <ChevronDown size={14} className="text-[#71717a]" />
-                  </button>
-
-                  {dateRangeDropdown && (
-                    <div className="absolute right-0 top-full mt-1.5 z-30 w-56 rounded-xl border border-[#e3e5ec] bg-white p-1.5 shadow-xl text-[13px]">
-                      {["1 Oct – 28 Oct 2026", "Last 30 days", "Last 7 days", "This quarter"].map((r) => (
-                        <button
-                          key={r}
-                          type="button"
-                          onClick={() => {
-                            setSelectedRange(r);
-                            setDateRangeDropdown(false);
-                          }}
-                          className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left transition-colors cursor-pointer ${
-                            selectedRange === r ? "bg-[#f4f6fb] font-semibold text-[#0d0d10]" : "text-[#71717a] hover:bg-[#f4f6fb]"
-                          }`}
-                        >
-                          <span>{r}</span>
-                          {selectedRange === r && <Check size={14} className="text-[#0d0d10]" />}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                {/* Date range picker reused from creator dashboard (Figma 1716:739) */}
+                <DateRangePicker value="1 Oct - 28 Oct 2026" showCompare={true} />
 
                 {/* Create new project button (1716:740) */}
                 <button
