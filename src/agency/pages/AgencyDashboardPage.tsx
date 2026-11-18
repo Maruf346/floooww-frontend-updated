@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "motion/react";
 import {
   AlertTriangle,
   ArrowRight,
@@ -334,7 +335,12 @@ export function AgencyDashboardPage() {
 
   return (
     <AgencyShell onAddClient={() => setIsAddClientOpen(true)}>
-      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 pb-10">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 pb-10"
+      >
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
@@ -360,7 +366,10 @@ export function AgencyDashboardPage() {
         </div>
 
         {/* 1. Results KPI Tiles */}
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
           data-name="Results"
           className="bg-white border border-[#e3e5ec] rounded-[12px] p-5 shadow-2xs"
         >
@@ -368,11 +377,14 @@ export function AgencyDashboardPage() {
             data-name="Tiles"
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full"
           >
-            {kpiTiles.map((tile) => (
-              <div
+            {kpiTiles.map((tile, idx) => (
+              <motion.div
                 key={tile.label}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.08 + idx * 0.06, ease: [0.22, 1, 0.36, 1] }}
                 data-name="KPI tile"
-                className="bg-white border border-[#edeff3] rounded-[12px] p-4 flex flex-col items-start min-w-0"
+                className="bg-white border border-[#edeff3] rounded-[12px] p-4 flex flex-col items-start min-w-0 hover:border-[#0d0d10] transition-colors"
               >
                 <div
                   className={`size-[36px] rounded-[8px] ${tile.iconBg} flex items-center justify-center shrink-0`}
@@ -388,10 +400,10 @@ export function AgencyDashboardPage() {
                 <p className="text-[12px] font-medium leading-4 text-[#a3a3ac] mt-2.5 truncate w-full">
                   {tile.subtext}
                 </p>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* 2. Action Required + Upcoming deadlines */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -865,7 +877,7 @@ export function AgencyDashboardPage() {
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Add Client Modal */}
       <AgencyAddClientModal

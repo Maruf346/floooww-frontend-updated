@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "motion/react";
 import {
   Plus,
   Search,
@@ -214,7 +215,12 @@ export function AgencyClientsPage() {
     <AgencyShell
       onAddClient={() => setIsAddClientOpen(true)}
     >
-      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 pb-12">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 pb-12"
+      >
         {/* Page Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-1">
@@ -411,11 +417,14 @@ export function AgencyClientsPage() {
                     </td>
                   </tr>
                 ) : (
-                  filteredClients.map((client) => {
+                  filteredClients.map((client, idx) => {
                     const isMenuOpen = activeActionMenuId === client.id;
                     return (
-                      <tr
+                      <motion.tr
                         key={client.id}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.25, delay: idx * 0.04, ease: [0.22, 1, 0.36, 1] }}
                         className="transition hover:bg-[#fcfdfe] group"
                       >
                         {/* Client & Industry */}
@@ -606,7 +615,7 @@ export function AgencyClientsPage() {
                             )}
                           </div>
                         </td>
-                      </tr>
+                      </motion.tr>
                     );
                   })
                 )}
@@ -619,7 +628,7 @@ export function AgencyClientsPage() {
         <div className="text-[12px] text-[#71717a]">
           Showing {filteredClients.length} of {clients.length} clients
         </div>
-      </div>
+      </motion.div>
 
       {/* Add Client Modal */}
       <AgencyAddClientModal
