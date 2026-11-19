@@ -99,13 +99,39 @@ type ProjectApplicationsViewProps = {
   partnership: string;
   duration: string;
   onOpenShare: () => void;
+  onOpenInvite?: (creatorName?: string) => void;
 };
 
-function ContextApplicantCard({ applicant, index, type, partnership, duration, objective, status, onStatus }: { applicant: Applicant; index: number; type: string; partnership: string; duration: string; objective: string; status: ApplicationStatus; onStatus: (status: ApplicationStatus) => void }) {
+function ContextApplicantCard({
+  applicant,
+  index,
+  type,
+  partnership,
+  duration,
+  objective,
+  status,
+  onStatus,
+  onOpenInvite,
+}: {
+  applicant: Applicant;
+  index: number;
+  type: string;
+  partnership: string;
+  duration: string;
+  objective: string;
+  status: ApplicationStatus;
+  onStatus: (status: ApplicationStatus) => void;
+  onOpenInvite?: (creatorName?: string) => void;
+}) {
   const navigate = useNavigate();
   const { projectId = "1" } = useParams();
   const updateStatus = onStatus;
-  onStatus = (next) => next === "Reviewed" ? navigate(brandCreatorInviteRoute(projectId, applicant.handle.slice(1))) : updateStatus(next);
+  onStatus = (next) =>
+    next === "Reviewed"
+      ? onOpenInvite
+        ? onOpenInvite(applicant.name)
+        : navigate(brandCreatorInviteRoute(projectId, applicant.handle.slice(1)))
+      : updateStatus(next);
   const [profileOpen, setProfileOpen] = useState(false);
   const isUgc = /ugc/i.test(type);
   const isAi = /ai/i.test(type);
@@ -141,7 +167,17 @@ function ContextApplicantCard({ applicant, index, type, partnership, duration, o
   </article>;
 }
 
-export function ProjectApplicationsView({ projectName, applicationCount, hasApplications, objective, projectType, partnership, duration, onOpenShare }: ProjectApplicationsViewProps) {
+export function ProjectApplicationsView({
+  projectName,
+  applicationCount,
+  hasApplications,
+  objective,
+  projectType,
+  partnership,
+  duration,
+  onOpenShare,
+  onOpenInvite,
+}: ProjectApplicationsViewProps) {
   const isVideoProject = /ugc|ai/i.test(projectType);
   const isGift = /gift/i.test(partnership);
   const isLongTerm = /long/i.test(partnership) || /long/i.test(duration);
@@ -178,5 +214,5 @@ export function ProjectApplicationsView({ projectName, applicationCount, hasAppl
   }).sort((a, b) => sort === "Match" ? b.match - a.match : a.name.localeCompare(b.name)), [audienceFilter, city, feeFilter, isVideoProject, platform, qualityFilter, sort, status, statuses]);
   const toolbar = <div className="flex flex-wrap items-center gap-2"><div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-[10px] bg-subtle p-1">{segments.map((item) => <button type="button" key={item} onClick={() => setStatus(item)} className={`flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-[13px] leading-5 transition ${status === item ? "bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,.08)]" : "text-secondary hover:text-ink"}`}><span>{item}</span><span className="text-[12px] leading-4 text-secondary">{hasApplications ? counts[item] ?? 0 : 0}</span></button>)}</div><span className="hidden h-px flex-1 bg-line xl:block" /><div className="flex min-w-0 flex-1 flex-wrap justify-end gap-2 xl:flex-none"><Dropdown compact ariaLabel="Filter by platform" value={platform} onChange={setPlatform} options={["Platform", "Instagram", "TikTok", "YouTube", "Snapchat", "Pinterest"]} className="w-[96px] [&>button]:h-[38px]" /><Dropdown compact ariaLabel={isVideoProject ? "Filter by portfolio" : "Filter by followers"} value={audienceFilter} onChange={setAudienceFilter} options={isVideoProject ? ["Portfolio", "Beauty", "Skincare", "Lifestyle"] : ["Followers", "Under 10K", "10K–50K", "50K–100K", "100K+"]} className="w-[103px] [&>button]:h-[38px]" /><Dropdown compact ariaLabel={isVideoProject ? "Filter by turnaround" : "Filter by engagement rate"} value={qualityFilter} onChange={setQualityFilter} options={isVideoProject ? ["Turnaround", "1–3 days", "4–7 days", "8+ days"] : ["Eng. rate", "2%+", "4%+", "6%+"]} className="w-[99px] [&>button]:h-[38px]" /><Dropdown compact ariaLabel={isGift ? "Filter by asks" : "Filter by fee"} value={feeFilter} onChange={setFeeFilter} options={isGift ? ["Asks", "Accepts gift", "Asks cash + kit"] : ["Fee", "Accepts your fee", "Counter offer"]} className="w-[67px] [&>button]:h-[38px]" /><Dropdown compact ariaLabel="Filter by city" value={city} onChange={setCity} options={["City", "Bengaluru", "Mumbai", "Delhi", "Pune", "Chennai", "Hyderabad"]} className="w-[69px] [&>button]:h-[38px]" /></div><button type="button" onClick={() => setSort((value) => value === "Match" ? "Name" : "Match")} className="ml-auto flex h-9 items-center gap-1.5 px-2 text-[13px] text-secondary transition hover:text-ink">Sort: {sort} <ChevronDown size={14} /></button></div>;
   if (!hasApplications) return <section className="mt-6">{toolbar}<motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }} className="mt-5 flex min-h-[294px] flex-col items-center justify-center rounded-xl border border-line bg-white px-6 py-12 text-center"><motion.div initial={{ opacity: 0, scale: 0.76 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.65, delay: 0.12, ease: [0.22, 1, 0.36, 1] }} className="grid size-14 place-items-center rounded-[28px] bg-subtle text-secondary"><Search size={26} strokeWidth={1.7} /></motion.div><h2 className="mt-3 text-[14px] font-semibold leading-5 text-ink">No applications yet</h2><p className="mt-1 max-w-[520px] text-[13px] leading-5 text-secondary">{projectName} is live. Creators who match it can apply from the marketplace; you’ll see them here with their match score and fee. Share the project link or invite creators yourself.</p><div className="mt-4 flex flex-wrap justify-center gap-2"><Button kind="secondary" leadingIcon={<Share2 size={16} />} onClick={onOpenShare}>Copy project link</Button><Button leadingIcon={<Search size={16} />} onClick={() => window.location.assign(ROUTES.brandCreatorDiscovery)}>Find creators</Button></div></motion.div></section>;
-  return <section className="mt-6">{toolbar}<div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">{visible.map((applicant, index) => <ContextApplicantCard applicant={applicant} index={index} type={projectType} partnership={partnership} duration={duration} objective={objective} status={statuses[applicant.id]} onStatus={(next) => setStatuses((current) => ({ ...current, [applicant.id]: next }))} key={applicant.id} />)}</div>{!visible.length && <div className="mt-5 rounded-xl border border-line bg-white px-6 py-12 text-center text-[13px] text-secondary">No applications match these filters.</div>}<p className="mt-5 text-[12px] leading-5 text-secondary">Showing {visible.length} of {applicationCount} applications · {isLongTerm ? "open until 1 Nov" : "applications close 1 Nov"} · creator stats from the last 30 days</p></section>;
+  return <section className="mt-6">{toolbar}<div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">{visible.map((applicant, index) => <ContextApplicantCard applicant={applicant} index={index} type={projectType} partnership={partnership} duration={duration} objective={objective} status={statuses[applicant.id]} onStatus={(next) => setStatuses((current) => ({ ...current, [applicant.id]: next }))} onOpenInvite={onOpenInvite} key={applicant.id} />)}</div>{!visible.length && <div className="mt-5 rounded-xl border border-line bg-white px-6 py-12 text-center text-[13px] text-secondary">No applications match these filters.</div>}<p className="mt-5 text-[12px] leading-5 text-secondary">Showing {visible.length} of {applicationCount} applications · {isLongTerm ? "open until 1 Nov" : "applications close 1 Nov"} · creator stats from the last 30 days</p></section>;
 }

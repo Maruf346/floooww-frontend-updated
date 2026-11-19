@@ -40,6 +40,7 @@ import {
   type ProjectConfirmAction,
 } from "@/brand/components/ProjectConfirmModal";
 import { ShareProjectModal } from "@/brand/components/ShareProjectModal";
+import { InviteCreatorToProjectModal } from "@/brand/components/InviteCreatorToProjectModal";
 import { ProjectApplicationsView } from "@/brand/pages/project-applications/ProjectApplicationsPanel";
 import {
   agencyClientNewProjectRoute,
@@ -2124,7 +2125,7 @@ export function BrandProjectPublishedPage({
     window.sessionStorage.removeItem(key);
     return requestedTab === "Invited creators" ? requestedTab : "Overview";
   });
-  const [invitedCreatorCount] = useState(() => {
+  const [invitedCreatorCount, setInvitedCreatorCount] = useState(() => {
     if (isNoCreators) return 0;
     const newlyInvited =
       typeof window !== "undefined" &&
@@ -2133,7 +2134,32 @@ export function BrandProjectPublishedPage({
   });
   const [more, setMore] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
+  const [selectedCreatorName, setSelectedCreatorName] = useState("Diya Kapoor");
   const [confirm, setConfirm] = useState<Confirm>(null);
+
+  const handleOpenInvite = (name: string = "Diya Kapoor") => {
+    setSelectedCreatorName(name);
+    setInviteModalOpen(true);
+  };
+
+  const handleContinueInvite = (selectedProjId: number) => {
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem(`floooww-project-${selectedProjId}-invited`, "true");
+      window.sessionStorage.setItem(`floooww-project-${selectedProjId}-active-tab`, "Invited creators");
+    }
+    setInviteModalOpen(false);
+    if (selectedProjId === project.id) {
+      setInvitedCreatorCount((prev) => Math.max(prev, 1));
+      setTab("Invited creators");
+    } else {
+      if (isAgencyClient) {
+        navigate(`/agency/client/${clientId}/projects/${selectedProjId}`);
+      } else {
+        navigate(`/brand/projects/${selectedProjId}`);
+      }
+    }
+  };
   const [applicationStatus, setApplicationStatus] = useState("All");
   const [applicationPlatform, setApplicationPlatform] = useState("Platform");
   const [applicationFollowers, setApplicationFollowers] = useState("Followers");
@@ -2327,7 +2353,7 @@ export function BrandProjectPublishedPage({
                 disabled={locked}
                 className="bg-[#0d0d10] text-white hover:bg-black font-medium"
                 leadingIcon={<Users size={16} />}
-                onClick={() => setTab("Applications")}
+                onClick={() => handleOpenInvite()}
               >
                 Invite creators
               </Button>
@@ -2541,6 +2567,7 @@ export function BrandProjectPublishedPage({
             partnership={project.partnership}
             duration={project.duration}
             onOpenShare={() => setShareOpen(true)}
+            onOpenInvite={handleOpenInvite}
           />
         ) : tab === "Invited creators" ? (
           invitedCreatorCount > 0 ? (
@@ -3363,7 +3390,7 @@ export function BrandProjectPublishedPage({
                         className="mt-4 bg-[#0d0d10] text-white hover:bg-black font-medium"
                         disabled={locked}
                         leadingIcon={<Users size={16} />}
-                        onClick={() => setTab("Applications")}
+                        onClick={() => handleOpenInvite()}
                       >
                         Invite creators
                       </Button>
@@ -3565,7 +3592,7 @@ export function BrandProjectPublishedPage({
                         <div className="min-w-0 flex-1">
                           <button
                             type="button"
-                            onClick={() => setTab("Applications")}
+                            onClick={() => handleOpenInvite()}
                             className="text-left text-[14px] font-medium text-ink hover:text-primary transition-colors cursor-pointer block"
                           >
                             Invite creators
@@ -3663,6 +3690,15 @@ export function BrandProjectPublishedPage({
         onCancel={() => setConfirm(null)}
       />
       <ShareProjectModal project={project} isOpen={shareOpen} onClose={() => setShareOpen(false)} />
+      <InviteCreatorToProjectModal
+        isOpen={inviteModalOpen}
+        onClose={() => setInviteModalOpen(false)}
+        creatorName={selectedCreatorName}
+        currentProjectId={project.id}
+        clientId={clientId}
+        isAgencyClient={isAgencyClient}
+        onContinueToInvite={handleContinueInvite}
+      />
     </ShellContainer>
   );
 }
