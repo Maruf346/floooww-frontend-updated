@@ -58,39 +58,35 @@ const transactionRows: Transaction[] = [
   },
   {
     date: "26 Oct",
-    description: "18% GST on ₹42,500 releases",
-    project: "GST filing",
+    description: "GST (18%)",
+    project: "Monsoon Sunscreen",
     state: "Fee",
-    amount: "₹7,650",
+    amount: "₹2,950",
   },
   {
     date: "24 Oct",
-    description: "Tara Bose declined · refunded",
-    project: "Monsoon Sunscreen",
+    description: "Refund · Pooja Menon declined",
+    project: "Vitamin-C Serum",
     state: "Refunded",
-    amount: "₹12,000",
-  },
-  {
-    date: "22 Oct",
-    description: "Rohan Desai · YouTube Short",
-    project: "Glow Squad",
-    state: "Released",
-    amount: "₹14,500",
-  },
-  {
-    date: "20 Oct",
-    description: "Kavya Reddy · Reel deliverable",
-    project: "Lip Tint Drop",
-    state: "Released",
-    amount: "₹11,000",
+    amount: "−₹13,215",
   },
 ];
 
-const upcomingReleases = [
-  { date: "31 Oct", detail: "Sneha Patil · 1 Reel", project: "Vitamin-C", amount: "₹12,500" },
-  { date: "2 Nov", detail: "Aisha Khan · 2 UGC cuts", project: "Monsoon", amount: "₹10,000" },
-  { date: "5 Nov", detail: "Tanvi Shah · Static post", project: "Hydration", amount: "₹6,000" },
-];
+const upcomingRows = [
+  ["30 Oct", "Release · Meera Iyer · Short", "₹7,500"],
+  ["1 Nov", "Hold · Glow Squad month 4", "₹79,425"],
+  ["2 Nov", "Release · 2 Monsoon Shorts", "₹12,000"],
+  ["4 Nov", "Hold · Skin Quiz Leads (3 creators)", "₹63,540"],
+] as const;
+
+const spend = [41, 58, 48, 72, 67, 94];
+
+const stateTone: Record<TransactionState, string> = {
+  Released: "bg-[#e1fce3] text-[#16a34a]",
+  Held: "bg-[#feefce] text-[#d97706]",
+  Fee: "bg-[#f4f6fb] text-[#4a4a55]",
+  Refunded: "bg-[#f1f4ff] text-[#3b5bff]",
+};
 
 export type DisputeStatus = "Waiting for you" | "Under review" | "Resolved";
 
@@ -109,70 +105,57 @@ export const disputes: Dispute[] = [
   {
     id: "DSP-0418",
     creator: "Rohan Desai",
-    avatar: "https://www.figma.com/api/mcp/asset/c88ee9d0-1b77-4c07-b379-3ba3c78a3c8e.png",
+    avatar: "https://www.figma.com/api/mcp/asset/b2043c84-88f8-45ab-8085-3de23d863a87.png",
     project: "Monsoon Sunscreen",
-    reason: "Deliverable delay · 6 days",
+    reason: "Late delivery",
     amount: "₹7,500",
     status: "Waiting for you",
-    next: "Reply by 29 Oct",
+    next: "Reply by 30 Oct",
   },
   {
     id: "DSP-0421",
     creator: "Tara Bose",
-    avatar: "https://www.figma.com/api/mcp/asset/b8377c8e-db83-4a17-91fb-db6ee2e2d93e.png",
-    project: "Glow Squad",
-    reason: "Brief mismatch · CTA omitted",
-    amount: "₹14,000",
+    avatar: "https://www.figma.com/api/mcp/asset/3cd695a6-cf4c-49b8-9030-9453d79576ca.png",
+    project: "Vitamin-C Serum",
+    reason: "Doesn’t match brief",
+    amount: "₹7,500",
     status: "Under review",
-    next: "Mediation call today 4:30 PM",
+    next: "Decision by 4 Nov",
   },
   {
     id: "DSP-0377",
     creator: "Riya Sen",
-    avatar: "https://www.figma.com/api/mcp/asset/5231c261-2680-4b24-91ba-68936ad9ad33.png",
+    avatar: "https://www.figma.com/api/mcp/asset/5d846c24-5e8d-4dec-8d60-3e25146862f9.png",
     project: "Lip Tint Drop",
-    reason: "Deliverable defect · reshot",
-    amount: "₹8,000",
+    reason: "Posted then deleted",
+    amount: "₹5,000",
     status: "Resolved",
-    next: "₹4,000 released · ₹4,000 refunded",
+    next: "Partial refund",
   },
 ];
 
-const reasons = [
-  "Deliverable delay (>5 days overdue)",
-  "Brief mismatch (missing brand guidelines or CTA)",
-  "Deliverable quality / defect",
-  "Creator unresponsive",
-  "Unauthorized content reuse",
-  "Other",
-] as const;
-
 function StatusPill({ state }: { state: TransactionState }) {
-  const styles: Record<TransactionState, string> = {
-    Released: "bg-[#eaf8ee] text-[#1e8a44]",
-    Held: "bg-[#f4f6fb] text-[#4a4a55]",
-    Fee: "bg-[#f4f6fb] text-[#4a4a55]",
-    Refunded: "bg-[#e7edff] text-primary",
-  };
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium leading-4 ${styles[state]}`}
+      className={`inline-flex h-5 items-center gap-1.5 whitespace-nowrap rounded-full px-2 text-[12px] font-medium leading-4 ${stateTone[state]}`}
     >
+      <span className="size-1.5 rounded-full bg-current" />
       {state}
     </span>
   );
 }
 
 function DisputePill({ status }: { status: DisputeStatus }) {
-  const styles: Record<DisputeStatus, string> = {
+  const tone = {
     "Waiting for you": "bg-[#fde4e3] text-[#db231f]",
     "Under review": "bg-[#feefce] text-[#d97706]",
     Resolved: "bg-[#f4f6fb] text-[#4a4a55]",
-  };
+  }[status];
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium leading-4 ${styles[status]}`}
+      className={`inline-flex h-5 items-center gap-1.5 whitespace-nowrap rounded-full px-2 text-[12px] font-medium leading-4 ${tone}`}
     >
+      <span className="size-1.5 rounded-full bg-current" />
       {status}
     </span>
   );
@@ -180,89 +163,87 @@ function DisputePill({ status }: { status: DisputeStatus }) {
 
 function Tile({
   icon: Icon,
+  iconClass,
   label,
   value,
-  hint,
-  tone,
+  detail,
+  delay,
 }: {
-  icon: typeof Landmark;
+  icon: typeof WalletCards;
+  iconClass: string;
   label: string;
   value: string;
-  hint: string;
-  tone?: "warn" | "neutral";
+  detail: string;
+  delay: number;
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-line bg-white p-4">
-      <div className="flex items-center gap-2 text-secondary">
-        <span className="grid size-8 place-items-center rounded-lg bg-subtle text-ink">
-          <Icon size={16} />
-        </span>
-        <span className="text-[12px] font-medium leading-4">{label}</span>
-      </div>
-      <div>
-        <p className="text-[22px] font-bold leading-7 text-ink">{value}</p>
-        <p
-          className={`mt-1 text-[12px] leading-4 ${tone === "warn" ? "text-status-warning-fg" : "text-secondary"}`}
-        >
-          {hint}
-        </p>
-      </div>
-    </div>
+    <motion.article
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.38, delay }}
+      className="min-w-0 rounded-xl border border-[#edeff3] bg-white p-4"
+    >
+      <span className={`grid size-9 place-items-center rounded-lg text-white ${iconClass}`}>
+        <Icon size={18} strokeWidth={2} />
+      </span>
+      <p className="mt-3.5 text-[12px] leading-4 text-secondary">{label}</p>
+      <p className="mt-0.5 text-[22px] font-semibold leading-7 tracking-[-.015em] text-ink">
+        {value}
+      </p>
+      <p
+        className={`mt-2.5 text-[12px] font-medium leading-4 ${label === "Released" ? "text-[#16a34a]" : "text-tertiary"}`}
+      >
+        {detail}
+      </p>
+    </motion.article>
   );
 }
 
 function SpendChart() {
-  const bars = [
-    { label: "May", spend: 42, escrow: 18 },
-    { label: "Jun", spend: 68, escrow: 22 },
-    { label: "Jul", spend: 94, escrow: 28 },
-    { label: "Aug", spend: 130, escrow: 36 },
-    { label: "Sep", spend: 184, escrow: 44 },
-    { label: "Oct", spend: 248, escrow: 62 },
-  ];
-  const max = 260;
-
   return (
     <div className="rounded-xl border border-line bg-white p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="text-[16px] font-semibold leading-6 text-ink">Spend over time</h2>
-          <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-            Monthly released fees vs escrow held (in ₹ thousands)
-          </p>
-        </div>
-        <div className="flex items-center gap-4 text-[12px] text-secondary">
-          <span className="inline-flex items-center gap-1.5">
-            <span className="size-2.5 rounded-sm bg-primary" /> Released
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <span className="size-2.5 rounded-sm bg-[#c7d5ff]" /> Escrow
-          </span>
-        </div>
+      <div>
+        <h2 className="text-[16px] font-semibold leading-6 text-ink">Spend by month</h2>
+        <p className="text-[12px] leading-4 text-secondary">₹4,33,800 released since May</p>
       </div>
-
-      <div className="mt-6 flex h-48 items-end gap-3 border-b border-line pb-2 sm:gap-6">
-        {bars.map((bar) => {
-          const spendH = Math.round((bar.spend / max) * 100);
-          const escrowH = Math.round((bar.escrow / max) * 100);
-          return (
-            <div className="flex flex-1 flex-col items-center gap-2" key={bar.label}>
-              <div className="flex w-full max-w-10 items-end justify-center gap-1.5">
+      <div className="mt-4 rounded-xl border border-line p-5">
+        <p className="text-[12px] leading-4 text-secondary">Released to creators each month</p>
+        <div className="mt-4 flex gap-2">
+          <div className="flex h-[180px] w-11 flex-col justify-between text-right text-[11px] leading-[14px] text-tertiary">
+            <span>₹1.2 L</span>
+            <span>₹90K</span>
+            <span>₹60K</span>
+            <span>₹30K</span>
+            <span>₹0</span>
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="relative flex h-[180px] items-end justify-around border-b border-l border-line/90 bg-[repeating-linear-gradient(to_bottom,transparent_0,transparent_43px,#edeff3_44px)] px-2">
+              {spend.map((height, index) => (
                 <div
-                  className="w-1/2 rounded-t bg-primary transition-all duration-300"
-                  style={{ height: `${spendH}%` }}
-                  title={`Released ₹${bar.spend}K`}
-                />
-                <div
-                  className="w-1/2 rounded-t bg-[#c7d5ff] transition-all duration-300"
-                  style={{ height: `${escrowH}%` }}
-                  title={`Escrow ₹${bar.escrow}K`}
-                />
-              </div>
-              <span className="text-[11px] text-secondary">{bar.label}</span>
+                  key={index}
+                  className="group relative flex h-full flex-1 items-end justify-center"
+                >
+                  {index === spend.length - 1 && (
+                    <span className="absolute -top-3 z-10 rounded bg-[#2a44cc] px-1.5 py-0.5 text-[12px] font-medium leading-4 text-white">
+                      ₹1.13 L
+                    </span>
+                  )}
+                  <motion.span
+                    initial={{ height: 0 }}
+                    animate={{ height: `${height}%` }}
+                    transition={{ duration: 0.72, delay: index * 0.07, ease: "easeOut" }}
+                    className={`mx-2 w-full max-w-10 rounded-t-md ${index === spend.length - 1 ? "bg-[#2a44cc]" : "bg-[#dfe6ff]"}`}
+                  />
+                </div>
+              ))}
             </div>
-          );
-        })}
+            <div className="mt-2 grid grid-cols-6 text-center text-[11px] leading-[14px] text-tertiary">
+              {["May", "Jun", "Jul", "Aug", "Sep", "Oct (so far)"].map((month) => (
+                <span key={month}>{month}</span>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -270,296 +251,328 @@ function SpendChart() {
 
 function UpcomingCard() {
   return (
-    <aside className="rounded-xl border border-line bg-white p-5">
-      <div className="flex items-center justify-between">
-        <h2 className="text-[16px] font-semibold leading-6 text-ink">Upcoming releases</h2>
-        <span className="text-[12px] text-secondary">Next 7 days</span>
-      </div>
-      <p className="mt-1 text-[12px] leading-4 text-secondary">
-        Releases trigger automatically upon deliverable approval.
-      </p>
-
-      <ul className="mt-4 space-y-3">
-        {upcomingReleases.map((item) => (
-          <li
-            key={item.detail}
-            className="flex items-center justify-between gap-3 rounded-lg border border-line p-3"
+    <section className="rounded-xl border border-line bg-white p-5 lg:min-h-[378px]">
+      <h2 className="text-[16px] font-semibold leading-6 text-ink">Next 14 days</h2>
+      <p className="text-[12px] leading-4 text-secondary">Releases and holds</p>
+      <div className="mt-5 space-y-4">
+        {upcomingRows.map(([date, text, amount], index) => (
+          <motion.div
+            initial={{ opacity: 0, x: 8 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.3, delay: index * 0.05 }}
+            className="flex items-center gap-2.5"
+            key={date}
           >
-            <div className="min-w-0">
-              <p className="truncate text-[13px] font-medium leading-5 text-ink">{item.detail}</p>
-              <p className="text-[12px] leading-4 text-secondary">
-                {item.project} · {item.date}
-              </p>
-            </div>
-            <span className="shrink-0 text-[14px] font-semibold leading-5 text-ink">
-              {item.amount}
+            <span className="w-12 shrink-0 text-[12px] font-medium leading-4 text-secondary">
+              {date}
             </span>
-          </li>
+            <span className="min-w-0 flex-1 text-[13px] leading-5 text-ink">{text}</span>
+            <span className="shrink-0 text-[13px] font-medium leading-5 text-ink">{amount}</span>
+          </motion.div>
         ))}
-      </ul>
-    </aside>
+      </div>
+    </section>
   );
 }
 
 function DisputesBoard({ onOpen }: { onOpen: (dispute: Dispute) => void }) {
   return (
-    <section className="rounded-xl border border-line bg-white p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="text-[16px] font-semibold leading-6 text-ink">Active disputes (2)</h2>
-          <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-            Kreyio holds escrow until disputes are resolved or mutual release is agreed.
-          </p>
-        </div>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-status-warning-bg px-2.5 py-1 text-[12px] font-medium text-status-warning-fg">
-          <CircleAlert size={14} /> ₹21,500 held in dispute
-        </span>
-      </div>
-
-      <div className="mt-4 overflow-x-auto">
-        <table className="w-full min-w-[720px] text-left text-[13px]">
-          <thead className="border-b border-line bg-subtle text-[12px] text-secondary">
+    <>
+      <section className="grid gap-3 rounded-xl border border-line bg-white p-5 sm:grid-cols-3">
+        <Tile
+          icon={CircleAlert}
+          iconClass="bg-[#db231f]"
+          label="Open"
+          value="2"
+          detail="1 needs your reply"
+          delay={0}
+        />
+        <Tile
+          icon={LockKeyhole}
+          iconClass="bg-[#db231f]"
+          label="Money frozen"
+          value="₹15,000"
+          detail="held until decided"
+          delay={0.05}
+        />
+        <Tile
+          icon={Clock3}
+          iconClass="bg-[#db231f]"
+          label="Avg days to resolve"
+          value="4.2"
+          detail="last 90 days"
+          delay={0.1}
+        />
+      </section>
+      <section className="overflow-x-auto rounded-xl border border-line bg-white">
+        <table className="w-full min-w-[960px] border-collapse text-left">
+          <thead className="bg-subtle text-[12px] font-semibold leading-4 text-secondary">
             <tr>
-              <th className="px-4 py-2.5 font-medium">Case ID</th>
-              <th className="px-4 py-2.5 font-medium">Creator</th>
-              <th className="px-4 py-2.5 font-medium">Project</th>
-              <th className="px-4 py-2.5 font-medium">Reason</th>
-              <th className="px-4 py-2.5 font-medium">Amount</th>
-              <th className="px-4 py-2.5 font-medium">Status</th>
-              <th className="px-4 py-2.5 font-medium">Next step</th>
-              <th className="px-4 py-2.5 text-right font-medium">Action</th>
+              <th className="w-[90px] px-4 py-2.5">ID</th>
+              <th className="w-[170px] px-4 py-2.5">Creator</th>
+              <th className="w-40 px-4 py-2.5">Project</th>
+              <th className="px-4 py-2.5">Reason</th>
+              <th className="w-20 px-4 py-2.5 text-right">Amount</th>
+              <th className="w-[130px] px-4 py-2.5">Status</th>
+              <th className="w-[120px] px-4 py-2.5">Next</th>
+              <th className="w-[70px] px-4 py-2.5">
+                <span className="sr-only">Open case</span>
+              </th>
             </tr>
           </thead>
           <tbody>
             {disputes.map((dispute) => (
               <tr className="border-t border-[#edeff3]" key={dispute.id}>
-                <td className="px-4 py-3 font-semibold text-ink">{dispute.id}</td>
+                <td className="whitespace-nowrap px-4 py-3 text-[14px] font-medium leading-[22px] text-ink">
+                  {dispute.id}
+                </td>
                 <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2.5">
                     <img className="size-8 rounded-full object-cover" src={dispute.avatar} alt="" />
-                    <span className="font-medium text-ink">{dispute.creator}</span>
+                    <span className="whitespace-nowrap text-[14px] font-medium leading-[22px] text-ink">
+                      {dispute.creator}
+                    </span>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-secondary">{dispute.project}</td>
+                <td className="whitespace-nowrap px-4 py-3 text-[13px] leading-5 text-ink">
+                  {dispute.project}
+                </td>
                 <td className="px-4 py-3 text-[13px] leading-5 text-ink">{dispute.reason}</td>
-                <td className="px-4 py-3 font-semibold text-ink">{dispute.amount}</td>
+                <td className="whitespace-nowrap px-4 py-3 text-right text-[13px] font-medium leading-5 text-ink">
+                  {dispute.amount}
+                </td>
                 <td className="px-4 py-3">
                   <DisputePill status={dispute.status} />
                 </td>
-                <td className="px-4 py-3 text-[12px] text-secondary">{dispute.next}</td>
-                <td className="px-4 py-3 text-right">
+                <td className="whitespace-nowrap px-4 py-3 text-[13px] leading-5 text-ink">
+                  {dispute.next}
+                </td>
+                <td className="px-4 py-3">
                   <button
                     type="button"
                     onClick={() => onOpen(dispute)}
-                    className="inline-flex h-8 items-center rounded-md border border-line bg-white px-2.5 text-[12px] font-medium text-ink transition hover:bg-subtle"
+                    className="inline-flex h-8 items-center justify-center rounded-lg border border-line bg-white px-3 text-[13px] font-medium leading-[18px] text-ink transition hover:bg-subtle"
                   >
-                    View case
+                    Open
                   </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
 
 function RaiseDisputeModal({ onClose, onSubmit }: { onClose: () => void; onSubmit: () => void }) {
-  const [project, setProject] = useState("Monsoon Sunscreen");
-  const [creator, setCreator] = useState("Rohan Desai · ₹7,500 on hold");
-  const [reason, setReason] = useState<string>(reasons[0]);
-  const [details, setDetails] = useState("");
-  const [requestedOutcome, setRequestedOutcome] = useState("Full refund (₹7,500)");
-  const [files, setFiles] = useState<string[]>([]);
+  const [collaboration, setCollaboration] = useState("Tara Bose · Vitamin-C Serum");
+  const [deliverable, setDeliverable] = useState("Reel 2: Launch look");
+  const [reason, setReason] = useState("Doesn’t match the brief");
+  const [amount, setAmount] = useState("₹7,500");
+  const [description, setDescription] = useState(
+    "The Reel doesn’t show the 3 steps and the code isn’t mentioned in the video.",
+  );
+  const [fileName, setFileName] = useState("");
 
   return (
     <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="raise-dispute-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-[#070b13]/40 p-4 sm:p-8"
+      role="presentation"
+      onMouseDown={onClose}
     >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.96 }}
-        className="w-full max-w-xl rounded-2xl border border-line bg-white p-6 shadow-2xl"
+      <motion.section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="raise-dispute-title"
+        onMouseDown={(event) => event.stopPropagation()}
+        initial={{ opacity: 0, y: 16, scale: 0.985 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.24, ease: "easeOut" }}
+        className="my-auto w-full max-w-[640px] rounded-2xl bg-white p-5 shadow-[0_24px_60px_rgba(0,0,0,.20)] sm:p-7"
       >
-        <div className="flex items-start justify-between">
-          <div>
-            <h2
-              id="raise-dispute-title"
-              className="text-[18px] font-bold leading-6 text-ink"
-            >
-              Raise a dispute
-            </h2>
-            <p className="mt-1 text-[12px] text-secondary">
-              Freezes the deliverable escrow. Kreyio mediation team reviews evidence within 24 hours.
-            </p>
-          </div>
+        <div className="flex items-center gap-3">
+          <h2
+            id="raise-dispute-title"
+            className="flex-1 text-[26px] font-bold leading-[34px] tracking-[-.01em] text-ink"
+          >
+            Raise a dispute
+          </h2>
           <button
             type="button"
             onClick={onClose}
+            className="grid size-8 place-items-center rounded-md text-secondary transition hover:bg-subtle hover:text-ink"
             aria-label="Close raise dispute dialog"
-            className="rounded-md p-1.5 text-secondary hover:bg-subtle"
           >
-            <X size={18} />
+            <X size={20} />
           </button>
         </div>
+        <p className="mt-3 text-[13px] leading-5 text-secondary">
+          The money for this deliverable stays frozen in escrow until Kreyio decides. Both sides
+          reply within 48 hours.
+        </p>
 
-        <form
-          className="mt-5 space-y-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            onSubmit();
-          }}
-        >
-          <div>
-            <label className="block text-[12px] font-medium text-ink">Project</label>
-            <select
-              value={project}
-              onChange={(e) => setProject(e.target.value)}
-              className="mt-1.5 h-10 w-full rounded-lg border border-line bg-white px-3 text-[13px] text-ink outline-none focus:border-primary"
-            >
-              <option>Monsoon Sunscreen</option>
-              <option>Vitamin-C Serum</option>
-              <option>Glow Squad</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-[12px] font-medium text-ink">Creator / Deliverable</label>
-            <select
-              value={creator}
-              onChange={(e) => setCreator(e.target.value)}
-              className="mt-1.5 h-10 w-full rounded-lg border border-line bg-white px-3 text-[13px] text-ink outline-none focus:border-primary"
-            >
-              <option>Rohan Desai · ₹7,500 on hold</option>
-              <option>Tara Bose · ₹14,000 on hold</option>
-              <option>Sneha Patil · ₹12,500 on hold</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-[12px] font-medium text-ink">Primary reason</label>
-            <select
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              className="mt-1.5 h-10 w-full rounded-lg border border-line bg-white px-3 text-[13px] text-ink outline-none focus:border-primary"
-            >
-              {reasons.map((r) => (
-                <option key={r}>{r}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-[12px] font-medium text-ink">What happened?</label>
-            <textarea
-              rows={3}
-              value={details}
-              onChange={(e) => setDetails(e.target.value)}
-              placeholder="Explain the timeline, agreed dates, what was delivered or missing..."
-              className="mt-1.5 w-full rounded-lg border border-line bg-white p-3 text-[13px] text-ink outline-none focus:border-primary"
-            />
-          </div>
-
-          <div>
-            <label className="block text-[12px] font-medium text-ink">Requested outcome</label>
-            <div className="mt-1.5 grid grid-cols-1 gap-2 sm:grid-cols-3">
-              {["Full refund (₹7,500)", "Partial release (₹3,500)", "Redo by 3 Nov"].map((opt) => (
-                <button
-                  type="button"
-                  key={opt}
-                  onClick={() => setRequestedOutcome(opt)}
-                  className={`rounded-lg border p-2.5 text-left text-[12px] transition ${
-                    requestedOutcome === opt
-                      ? "border-primary bg-primary-subtle font-medium text-primary"
-                      : "border-line bg-white text-ink hover:bg-subtle"
-                  }`}
-                >
-                  {opt}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-[12px] font-medium text-ink">
-              Evidence (screenshots, brief, chat)
-            </label>
-            <label className="mt-1.5 flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-line bg-subtle/50 px-4 py-5 text-center hover:bg-subtle">
-              <UploadCloud size={20} className="text-secondary" />
-              <span className="mt-1.5 text-[12px] font-medium text-ink">
-                Upload PNG, PDF or MP4
-              </span>
-              <span className="text-[11px] text-secondary">Up to 25 MB</span>
-              <input
-                type="file"
-                multiple
-                className="hidden"
-                onChange={(e) => {
-                  const names = Array.from(e.target.files ?? []).map((f) => f.name);
-                  setFiles((prev) => [...prev, ...names]);
-                }}
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <label className="grid gap-1.5 text-[12px] font-medium leading-4 text-ink">
+            Collaboration
+            <span className="relative">
+              <select
+                value={collaboration}
+                onChange={(event) => setCollaboration(event.target.value)}
+                className="h-10 w-full appearance-none rounded-lg border border-line bg-white px-3 pr-9 text-[13px] font-normal leading-5 text-ink outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
+              >
+                <option>Tara Bose · Vitamin-C Serum</option>
+                <option>Rohan Desai · Monsoon Sunscreen</option>
+                <option>Riya Sen · Lip Tint Drop</option>
+              </select>
+              <ChevronDown
+                size={16}
+                className="pointer-events-none absolute right-3 top-3 text-secondary"
               />
-            </label>
-            {files.length > 0 && (
-              <ul className="mt-2 space-y-1 text-[12px] text-secondary">
-                {files.map((name, i) => (
-                  <li key={i} className="flex items-center gap-1.5">
-                    <FileText size={14} /> {name}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+            </span>
+          </label>
+          <label className="grid gap-1.5 text-[12px] font-medium leading-4 text-ink">
+            Deliverable
+            <span className="relative">
+              <select
+                value={deliverable}
+                onChange={(event) => setDeliverable(event.target.value)}
+                className="h-10 w-full appearance-none rounded-lg border border-line bg-white px-3 pr-9 text-[13px] font-normal leading-5 text-ink outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
+              >
+                <option>Reel 2: Launch look</option>
+                <option>Story: code reminder</option>
+                <option>Short: product demo</option>
+              </select>
+              <ChevronDown
+                size={16}
+                className="pointer-events-none absolute right-3 top-3 text-secondary"
+              />
+            </span>
+          </label>
+          <label className="grid gap-1.5 text-[12px] font-medium leading-4 text-ink">
+            Reason
+            <span className="relative">
+              <select
+                value={reason}
+                onChange={(event) => setReason(event.target.value)}
+                className="h-10 w-full appearance-none rounded-lg border border-line bg-white px-3 pr-9 text-[13px] font-normal leading-5 text-ink outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
+              >
+                <option>Doesn’t match the brief</option>
+                <option>Late delivery</option>
+                <option>Content quality issue</option>
+                <option>Rights or usage issue</option>
+              </select>
+              <ChevronDown
+                size={16}
+                className="pointer-events-none absolute right-3 top-3 text-secondary"
+              />
+            </span>
+          </label>
+          <label className="grid gap-1.5 text-[12px] font-medium leading-4 text-ink">
+            Amount in question
+            <input
+              value={amount}
+              onChange={(event) => setAmount(event.target.value)}
+              className="h-10 rounded-lg border border-line px-3 text-[13px] font-normal leading-5 text-ink outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
+            />
+          </label>
+        </div>
 
-          <div className="flex items-center justify-end gap-2.5 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="inline-flex h-9 items-center rounded-lg border border-line bg-white px-4 text-[13px] font-medium text-ink hover:bg-subtle"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="inline-flex h-9 items-center rounded-lg bg-[#db231f] px-4 text-[13px] font-medium text-white hover:bg-[#b91c1c]"
-            >
-              Raise dispute
-            </button>
-          </div>
-        </form>
-      </motion.div>
+        <label className="mt-4 grid gap-1.5 text-[12px] font-medium leading-4 text-ink">
+          What happened?
+          <textarea
+            value={description}
+            onChange={(event) => setDescription(event.target.value.slice(0, 1000))}
+            className="min-h-28 w-full resize-y rounded-lg border border-line px-3 py-2.5 text-[13px] font-normal leading-5 text-ink outline-none transition placeholder:text-tertiary focus:border-primary focus:ring-1 focus:ring-primary"
+          />
+          <span className="flex justify-between gap-4 text-[12px] font-normal leading-4 text-tertiary">
+            <span>Be specific: what was agreed and what was delivered</span>
+            <span className="shrink-0">{description.length} / 1,000</span>
+          </span>
+        </label>
+
+        <label className="mt-4 flex min-h-[126px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[#d4d7df] bg-subtle px-5 py-4 text-center transition hover:border-primary hover:bg-[#f8faff]">
+          <UploadCloud size={20} className="text-secondary" />
+          <span className="text-[13px] leading-5 text-ink">
+            Drag a file here or <span className="font-medium text-primary">browse</span>
+          </span>
+          <span className="text-[12px] leading-4 text-tertiary">JPG or PNG · 16:5 · max 5 MB</span>
+          {fileName && (
+            <span className="max-w-full truncate text-[12px] font-medium leading-4 text-primary">
+              {fileName}
+            </span>
+          )}
+          <input
+            type="file"
+            accept="image/jpeg,image/png"
+            className="sr-only"
+            onChange={(event) => setFileName(event.target.files?.[0]?.name ?? "")}
+          />
+        </label>
+
+        <div className="mt-4 flex justify-end gap-2.5">
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-10 items-center justify-center rounded-lg border border-line bg-white px-4 text-[14px] font-medium text-ink transition hover:bg-subtle"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onSubmit}
+            disabled={!description.trim()}
+            className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#dc2626] px-4 text-[14px] font-medium text-white transition hover:bg-[#b91c1c] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Scale size={16} />
+            Raise dispute
+          </button>
+        </div>
+      </motion.section>
     </div>
   );
 }
 
 function TransactionsTable({ rows = transactionRows }: { rows?: Transaction[] }) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[640px] text-left text-[13px]">
-        <thead className="border-b border-line bg-subtle text-[12px] text-secondary">
+    <div className="overflow-x-auto rounded-xl border border-line">
+      <table className="w-full min-w-[720px] border-collapse text-left">
+        <thead className="bg-subtle text-[12px] font-semibold leading-4 text-secondary">
           <tr>
-            <th className="px-4 py-2.5 font-medium">Date</th>
-            <th className="px-4 py-2.5 font-medium">Description</th>
-            <th className="px-4 py-2.5 font-medium">Project</th>
-            <th className="px-4 py-2.5 font-medium">Type</th>
-            <th className="px-4 py-2.5 text-right font-medium">Amount</th>
+            <th className="w-20 px-4 py-2.5">Date</th>
+            <th className="px-4 py-2.5">Description</th>
+            <th className="w-40 px-4 py-2.5">Project</th>
+            <th className="w-[110px] px-4 py-2.5">Type</th>
+            <th className="w-[110px] px-4 py-2.5 text-right">Amount</th>
+            <th className="w-20 px-4 py-2.5">Invoice</th>
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, idx) => (
-            <tr className="border-t border-[#edeff3]" key={idx}>
-              <td className="px-4 py-3 text-secondary">{row.date}</td>
-              <td className="px-4 py-3 font-medium text-ink">{row.description}</td>
-              <td className="px-4 py-3 text-secondary">{row.project}</td>
+          {rows.map((row) => (
+            <tr key={`${row.date}-${row.description}`} className="border-t border-[#edeff3]">
+              <td className="whitespace-nowrap px-4 py-3 text-[13px] font-medium leading-5 text-ink">
+                {row.date}
+              </td>
+              <td className="px-4 py-3 text-[13px] leading-5 text-ink">{row.description}</td>
+              <td className="whitespace-nowrap px-4 py-3 text-[13px] leading-5 text-ink">
+                {row.project}
+              </td>
               <td className="px-4 py-3">
                 <StatusPill state={row.state} />
               </td>
-              <td className="px-4 py-3 text-right font-semibold text-ink">{row.amount}</td>
+              <td className="whitespace-nowrap px-4 py-3 text-right text-[13px] font-medium leading-5 text-ink">
+                {row.amount}
+              </td>
+              <td className="px-4 py-3">
+                <button
+                  type="button"
+                  title={`Download invoice for ${row.description}`}
+                  className="text-secondary transition hover:text-primary"
+                >
+                  <FileText size={16} />
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -570,63 +583,69 @@ function TransactionsTable({ rows = transactionRows }: { rows?: Transaction[] })
 
 function Overview({ onViewAll }: { onViewAll: () => void }) {
   return (
-    <div className="space-y-6">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <>
+      <section className="grid gap-3 rounded-xl border border-line bg-white p-5 sm:grid-cols-2 xl:grid-cols-5">
         <Tile
-          icon={Landmark}
-          label="Total spend"
-          value="₹2,48,000"
-          hint="+₹38,000 vs previous 28 days"
+          icon={WalletCards}
+          iconClass="bg-[#070b13]"
+          label="Committed"
+          value="₹8,90,000"
+          detail="89% of ₹10,00,000 budget"
+          delay={0}
         />
         <Tile
           icon={LockKeyhole}
-          label="Escrow balance"
-          value="₹62,400"
-          hint="Held across 8 deliverables"
+          iconClass="bg-[#f29b07]"
+          label="In escrow"
+          value="₹1,71,200"
+          detail="14 creators"
+          delay={0.04}
         />
         <Tile
           icon={CheckCircle2}
-          label="Released to creators"
-          value="₹1,85,600"
-          hint="Across 18 approved tasks"
+          iconClass="bg-[#149d46]"
+          label="Released"
+          value="₹4,33,800"
+          detail="↑ 42.7%"
+          delay={0.08}
         />
         <Tile
-          icon={Scale}
-          label="Frozen in disputes"
-          value="₹21,500"
-          hint="2 cases pending resolution"
-          tone="warn"
+          icon={ReceiptText}
+          iconClass="bg-[#070b13]"
+          label="GST"
+          value="₹35,695"
+          detail="₹30,250 + ₹5,445"
+          delay={0.12}
         />
-      </div>
-
-      <div className="grid gap-5 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <SpendChart />
-        </div>
+        <Tile
+          icon={CircleAlert}
+          iconClass="bg-[#db231f]"
+          label="Frozen in disputes"
+          value="₹15,000"
+          detail="2 open"
+          delay={0.16}
+        />
+      </section>
+      <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_400px]">
+        <SpendChart />
         <UpcomingCard />
-      </div>
-
+      </section>
       <section className="rounded-xl border border-line bg-white p-5">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-[16px] font-semibold leading-6 text-ink">Recent transactions</h2>
-            <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-              Escrow funding, deliverable payouts and GST filings
-            </p>
-          </div>
+        <div className="mb-4 flex items-center gap-2">
+          <h2 className="flex-1 text-[16px] font-semibold leading-6 text-ink">
+            Recent transactions
+          </h2>
           <button
             type="button"
             onClick={onViewAll}
-            className="text-[13px] font-medium text-primary hover:underline"
+            className="text-[12px] font-medium leading-4 text-primary hover:text-[#1d4ed8]"
           >
             View all
           </button>
         </div>
-        <div className="mt-4">
-          <TransactionsTable />
-        </div>
+        <TransactionsTable />
       </section>
-    </div>
+    </>
   );
 }
 
@@ -743,6 +762,15 @@ export function AgencyClientPaymentsPage({
     }
   }, [location.search]);
 
+  const handleTabChange = (tab: PaymentTab) => {
+    setActiveTab(tab);
+    const sp = new URLSearchParams(location.search);
+    if (sp.get("tab") === "payments" || location.pathname.includes("/payments")) {
+      sp.set("subtab", tab.toLowerCase());
+      navigate({ search: sp.toString() }, { replace: true });
+    }
+  };
+
   const downloadStatement = () => {
     const lines = [
       "Date,Description,Project,Type,Amount",
@@ -806,7 +834,7 @@ export function AgencyClientPaymentsPage({
             <button
               key={tab}
               type="button"
-              onClick={() => setActiveTab(tab)}
+              onClick={() => handleTabChange(tab)}
               className={`relative shrink-0 px-0 pb-3 pr-6 text-[14px] leading-[22px] transition ${activeTab === tab ? "font-medium text-ink" : "text-secondary hover:text-ink"}`}
             >
               {tab}
@@ -821,7 +849,7 @@ export function AgencyClientPaymentsPage({
         </nav>
 
         {activeTab === "Overview" ? (
-          <Overview onViewAll={() => setActiveTab("Collaborations")} />
+          <Overview onViewAll={() => handleTabChange("Collaborations")} />
         ) : activeTab === "Disputes" ? (
           <DisputesBoard
             onOpen={(dispute) =>
