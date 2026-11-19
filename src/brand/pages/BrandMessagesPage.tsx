@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Paperclip, Search, Send } from "lucide-react";
 import { motion } from "motion/react";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
-import { AgencyShell } from "@/agency/components/AgencyShell";
 import { brandProjectRoute } from "@/common/constants/routes";
 
 type Thread = {
@@ -130,9 +129,6 @@ function ThreadRow({
 
 export function BrandMessagesPage() {
   const [searchParams] = useSearchParams();
-  const { pathname } = useLocation();
-  const isAgency = pathname.startsWith("/agency");
-  const Shell = isAgency ? AgencyShell : BrandShell;
 
   const threadParam = searchParams.get("thread") || searchParams.get("creator");
   const nameParam = searchParams.get("name");
@@ -198,7 +194,7 @@ export function BrandMessagesPage() {
   };
 
   return (
-    <Shell {...(!isAgency ? { hideChat: true } : {})}>
+    <BrandShell hideChat>
       <div className="-m-5 flex h-[calc(100dvh-64px)] min-h-[560px] overflow-hidden bg-page sm:-m-8">
         <aside className="flex w-full shrink-0 flex-col border-r border-line bg-white md:w-[340px]">
           <div className="p-4">
@@ -321,6 +317,6 @@ export function BrandMessagesPage() {
           </div>
         </section>
       </div>
-    </Shell>
+    </BrandShell>
   );
 }

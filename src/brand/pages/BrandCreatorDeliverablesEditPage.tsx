@@ -18,15 +18,10 @@ import {
   Tag,
 } from "lucide-react";
 import { BrandShell } from "@/brand/components/BrandShell";
-import { AgencyClientShell } from "@/agency/components/AgencyClientShell";
 import { Button } from "@/common/components/ui/Button";
 import { DeadlinePicker } from "@/common/components/ui/DeadlinePicker";
 import { Dropdown } from "@/common/components/ui/Dropdown";
 import {
-  agencyClientCreatorProfileRoute,
-  agencyClientInvitedCreatorRoute,
-  agencyClientProjectDetailRoute,
-  agencyClientProjectsRoute,
   brandCreatorProfileRoute,
   brandInvitedCreatorRoute,
   brandProjectRoute,
@@ -678,18 +673,12 @@ function ChangesSentConfirmation({
   const adjustedType = oneTime ? "Story · last-day reminder" : "Story · code reminder";
   const deadline = oneTime ? "4 Nov" : "20 Dec";
 
-  const location = useLocation();
-  const isAgencyClient = location.pathname.startsWith("/agency");
-  const Shell = isAgencyClient ? AgencyClientShell : BrandShell;
-  const { clientId: paramClientId } = useParams();
-  const clientId = paramClientId || "minimalist";
-  const shellProps = isAgencyClient ? { activeClientId: clientId } : {};
-  const projectsUrl = isAgencyClient ? agencyClientProjectsRoute(clientId) : "/brand/projects";
-  const projectUrl = isAgencyClient ? agencyClientProjectDetailRoute(clientId, projectId) : brandProjectRoute(projectId);
-  const invitedUrl = isAgencyClient ? `${agencyClientProjectDetailRoute(clientId, projectId)}?tab=Invited creators` : `${brandProjectRoute(projectId)}?tab=Invited creators`;
+  const projectsUrl = "/brand/projects";
+  const projectUrl = brandProjectRoute(projectId);
+  const invitedUrl = `${brandProjectRoute(projectId)}?tab=Invited creators`;
 
   return (
-    <Shell {...shellProps}>
+    <BrandShell>
       <div className="w-full pb-10">
         <nav className="flex flex-wrap items-center gap-2 text-[12px] leading-4 text-secondary">
           <Link to={projectsUrl}>Projects</Link>
@@ -777,11 +766,7 @@ function ChangesSentConfirmation({
               </Button>
               <Button
                 onClick={() =>
-                  navigate(
-                    isAgencyClient
-                      ? agencyClientInvitedCreatorRoute(clientId, projectId, creator.handle.slice(1))
-                      : brandInvitedCreatorRoute(projectId, creator.handle.slice(1)),
-                  )
+                  navigate(brandInvitedCreatorRoute(projectId, creator.handle.slice(1)))
                 }
                 leadingIcon={<ArrowLeft size={16} />}
               >
@@ -791,7 +776,7 @@ function ChangesSentConfirmation({
           </footer>
         </motion.main>
       </div>
-    </Shell>
+    </BrandShell>
   );
 }
 
@@ -832,18 +817,12 @@ function OneTimeReviewPay({
     );
   }
 
-  const location = useLocation();
-  const isAgencyClient = location.pathname.startsWith("/agency");
-  const Shell = isAgencyClient ? AgencyClientShell : BrandShell;
-  const { clientId: paramClientId } = useParams();
-  const clientId = paramClientId || "minimalist";
-  const shellProps = isAgencyClient ? { activeClientId: clientId } : {};
-  const projectsUrl = isAgencyClient ? agencyClientProjectsRoute(clientId) : "/brand/projects";
-  const projectUrl = isAgencyClient ? agencyClientProjectDetailRoute(clientId, projectId) : brandProjectRoute(projectId);
-  const invitedUrl = isAgencyClient ? `${agencyClientProjectDetailRoute(clientId, projectId)}?tab=Invited creators` : `${brandProjectRoute(projectId)}?tab=Invited creators`;
+  const projectsUrl = "/brand/projects";
+  const projectUrl = brandProjectRoute(projectId);
+  const invitedUrl = `${brandProjectRoute(projectId)}?tab=Invited creators`;
 
   return (
-    <Shell {...shellProps}>
+    <BrandShell>
       <div className="w-full pb-10">
         <nav className="flex flex-wrap items-center gap-2 text-[12px] leading-4 text-secondary">
           <Link to={projectsUrl}>Projects</Link>
@@ -1024,7 +1003,7 @@ function OneTimeReviewPay({
           </footer>
         </motion.main>
       </div>
-    </Shell>
+    </BrandShell>
   );
 }
 
@@ -1038,16 +1017,10 @@ function OneTimeDeliverablesEditor({
   project: ReturnType<typeof getProject>;
 }) {
   const navigate = useNavigate();
-  const location = useLocation();
-  const isAgencyClient = location.pathname.startsWith("/agency");
-  const Shell = isAgencyClient ? AgencyClientShell : BrandShell;
-  const { clientId: paramClientId } = useParams();
-  const clientId = paramClientId || "minimalist";
-  const shellProps = isAgencyClient ? { activeClientId: clientId } : {};
-  const projectsUrl = isAgencyClient ? agencyClientProjectsRoute(clientId) : "/brand/projects";
-  const projectUrl = isAgencyClient ? agencyClientProjectDetailRoute(clientId, projectId) : brandProjectRoute(projectId);
-  const invitedUrl = isAgencyClient ? `${agencyClientProjectDetailRoute(clientId, projectId)}?tab=Invited creators` : `${brandProjectRoute(projectId)}?tab=Invited creators`;
-  const creatorProfileUrl = isAgencyClient ? agencyClientInvitedCreatorRoute(clientId, projectId, creator.handle.slice(1)) : brandCreatorProfileRoute(projectId, creator.handle.slice(1));
+  const projectsUrl = "/brand/projects";
+  const projectUrl = brandProjectRoute(projectId);
+  const invitedUrl = `${brandProjectRoute(projectId)}?tab=Invited creators`;
+  const creatorProfileUrl = brandCreatorProfileRoute(projectId, creator.handle.slice(1));
 
   const [rows, setRows] = useState(oneTimeRows);
   const [editingId, setEditingId] = useState<string | null>("results");
@@ -1065,7 +1038,7 @@ function OneTimeDeliverablesEditor({
     );
   }
   return (
-    <Shell {...shellProps}>
+    <BrandShell>
       <div className="w-full pb-10">
         <nav className="flex flex-wrap items-center gap-2 text-[12px] leading-4 text-secondary">
           <Link to={projectsUrl}>Projects</Link>
@@ -1243,22 +1216,17 @@ function OneTimeDeliverablesEditor({
           </footer>
         </motion.main>
       </div>
-    </Shell>
+    </BrandShell>
   );
 }
 
 export function BrandCreatorDeliverablesEditPage() {
-  const { projectId = "1", creatorId = "diya", clientId: paramClientId } = useParams();
+  const { projectId = "1", creatorId = "diya" } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const isAgencyClient = location.pathname.startsWith("/agency");
-  const clientId = paramClientId || "minimalist";
-  const Shell = isAgencyClient ? AgencyClientShell : BrandShell;
-  const shellProps = isAgencyClient ? { activeClientId: clientId } : {};
-  const projectsUrl = isAgencyClient ? agencyClientProjectsRoute(clientId) : "/brand/projects";
-  const projectUrl = isAgencyClient ? agencyClientProjectDetailRoute(clientId, projectId) : brandProjectRoute(projectId);
-  const invitedUrl = isAgencyClient ? `${agencyClientProjectDetailRoute(clientId, projectId)}?tab=Invited creators` : `${brandProjectRoute(projectId)}?tab=Invited creators`;
-  const creatorProfileUrl = isAgencyClient ? agencyClientInvitedCreatorRoute(clientId, projectId, creatorId) : brandCreatorProfileRoute(projectId, creatorId);
+  const projectsUrl = "/brand/projects";
+  const projectUrl = brandProjectRoute(projectId);
+  const invitedUrl = `${brandProjectRoute(projectId)}?tab=Invited creators`;
+  const creatorProfileUrl = brandCreatorProfileRoute(projectId, creatorId);
 
   const creator = useMemo(() => getCreatorProfile(creatorId), [creatorId]);
   const project = getProject(Number(projectId));
@@ -1298,7 +1266,7 @@ export function BrandCreatorDeliverablesEditPage() {
     );
   }
   return (
-    <Shell {...shellProps}>
+    <BrandShell>
       <div className="w-full pb-10">
         <nav className="flex flex-wrap items-center gap-2 text-[12px] text-secondary">
           <Link to={projectsUrl}>Projects</Link>
@@ -1466,6 +1434,6 @@ export function BrandCreatorDeliverablesEditPage() {
           </motion.div>
         )}
       </div>
-    </Shell>
+    </BrandShell>
   );
 }

@@ -25,15 +25,11 @@ import {
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { BrandShell } from "@/brand/components/BrandShell";
-import { AgencyClientShell } from "@/agency/components/AgencyClientShell";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { CreatorPerformanceTab } from "@/brand/components/CreatorPerformanceTab";
 import { Dropdown } from "@/common/components/ui/Dropdown";
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import {
-  agencyClientCreatorDeliverablesRoute,
-  agencyClientProjectDetailRoute,
-  agencyClientProjectsRoute,
   brandCreatorDeliverablesRoute,
   brandProjectRoute,
   ROUTES,
@@ -1978,19 +1974,9 @@ function ReportDeliverableModal({
   );
 }
 
-export type BrandInvitedCreatorPageProps = {
-  shell?: "brand" | "agency-client";
-  activeClientId?: string;
-};
-
-export function BrandInvitedCreatorPage({
-  shell = "brand",
-  activeClientId,
-}: BrandInvitedCreatorPageProps = {}) {
+export function BrandInvitedCreatorPage() {
   const navigate = useNavigate();
-  const { projectId = "1", creatorId = "ishita", clientId: paramClientId } = useParams();
-  const clientId = activeClientId || paramClientId || "minimalist";
-  const isAgencyClient = shell === "agency-client";
+  const { projectId = "1", creatorId = "ishita" } = useParams();
   const project = getProject(Number(projectId));
   const creator = useMemo(
     () => creatorDetails[creatorId] ?? fallbackCreator(creatorId),
@@ -2011,15 +1997,12 @@ export function BrandInvitedCreatorPage({
     Performance: "Performance becomes available as each approved deliverable goes live.",
   } as const;
 
-  const projectsUrl = isAgencyClient ? agencyClientProjectsRoute(clientId) : "/brand/projects";
-  const projectUrl = isAgencyClient ? agencyClientProjectDetailRoute(clientId, project.id) : brandProjectRoute(project.id);
-  const invitedUrl = isAgencyClient ? `${agencyClientProjectDetailRoute(clientId, project.id)}?tab=invited-creators` : brandProjectRoute(project.id);
-
-  const Shell = isAgencyClient ? AgencyClientShell : BrandShell;
-  const shellProps = isAgencyClient ? { activeClientId: clientId } : {};
+  const projectsUrl = "/brand/projects";
+  const projectUrl = brandProjectRoute(project.id);
+  const invitedUrl = brandProjectRoute(project.id);
 
   return (
-    <Shell {...shellProps}>
+    <BrandShell>
       <div className="w-full pb-10">
         <nav
           className="flex flex-wrap items-center gap-2 text-[12px] leading-4 text-secondary"
@@ -2082,9 +2065,7 @@ export function BrandInvitedCreatorPage({
               className="flex h-10 items-center gap-2 rounded-md border border-line bg-white px-3 text-[13px] font-medium text-ink transition hover:bg-subtle cursor-pointer"
               onClick={() => {
                 navigate(
-                  isAgencyClient
-                    ? `${ROUTES.agencyMessages}?thread=${creatorId}&name=${encodeURIComponent(creator.name)}`
-                    : `${ROUTES.brandMessages}?thread=${creatorId}&name=${encodeURIComponent(creator.name)}`,
+                  `${ROUTES.brandMessages}?thread=${creatorId}&name=${encodeURIComponent(creator.name)}`,
                 );
               }}
             >
@@ -2094,11 +2075,7 @@ export function BrandInvitedCreatorPage({
             <button
               type="button"
               onClick={() =>
-                navigate(
-                  isAgencyClient
-                    ? agencyClientCreatorDeliverablesRoute(clientId, project.id, creatorId)
-                    : brandCreatorDeliverablesRoute(project.id, creatorId),
-                )
+                navigate(brandCreatorDeliverablesRoute(project.id, creatorId))
               }
               className="flex h-10 items-center gap-2 rounded-md bg-ink px-3 text-[13px] font-medium text-white"
             >
@@ -2218,6 +2195,6 @@ export function BrandInvitedCreatorPage({
         projectName={project.name}
         onClose={() => setReportOpen(false)}
       />
-    </Shell>
+    </BrandShell>
   );
 }

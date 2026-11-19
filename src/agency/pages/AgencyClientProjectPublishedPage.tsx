@@ -40,7 +40,7 @@ import {
   type ProjectConfirmAction,
 } from "@/brand/components/ProjectConfirmModal";
 import { ShareProjectModal } from "@/brand/components/ShareProjectModal";
-import { InviteCreatorToProjectModal } from "@/brand/components/InviteCreatorToProjectModal";
+import { AgencyInviteCreatorToProjectModal } from "@/agency/components/AgencyInviteCreatorToProjectModal";
 import { ProjectApplicationsView } from "@/brand/pages/project-applications/ProjectApplicationsPanel";
 import {
   agencyClientCreatorDeliverablesRoute,
@@ -3769,13 +3769,12 @@ export function AgencyClientProjectPublishedPage({
         onCancel={() => setConfirm(null)}
       />
       <ShareProjectModal project={project} isOpen={shareOpen} onClose={() => setShareOpen(false)} />
-      <InviteCreatorToProjectModal
+      <AgencyInviteCreatorToProjectModal
         isOpen={inviteModalOpen}
         onClose={() => setInviteModalOpen(false)}
         creatorName={selectedCreatorName}
         currentProjectId={project.id}
         clientId={clientId}
-        isAgencyClient={isAgencyClient}
         onContinueToInvite={handleContinueInvite}
       />
     </AgencyClientShell>

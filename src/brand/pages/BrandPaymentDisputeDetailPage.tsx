@@ -1,9 +1,8 @@
 import { useState, type ReactNode } from "react";
 import { ArrowLeft, Check, FileText, Info, MessageSquareText, Paperclip, Send } from "lucide-react";
 import { motion } from "motion/react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
-import { AgencyClientShell } from "@/agency/components/AgencyClientShell";
 import { disputes, type Dispute, type DisputeStatus } from "@/brand/pages/BrandPaymentsPage";
 import { ROUTES } from "@/common/constants/routes";
 
@@ -163,22 +162,9 @@ function DetailSummary({ dispute, detail }: { dispute: Dispute; detail: DisputeD
   );
 }
 
-type BrandPaymentDisputeDetailPageProps = {
-  shell?: "brand" | "agency-client";
-  activeClientId?: string;
-};
-
-export function BrandPaymentDisputeDetailPage({
-  shell = "brand",
-  activeClientId,
-}: BrandPaymentDisputeDetailPageProps = {}) {
+export function BrandPaymentDisputeDetailPage() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { clientId: paramClientId, disputeId } = useParams();
-  const isAgencyClient = shell === "agency-client" || location.pathname.startsWith("/agency");
-  const clientId = activeClientId || paramClientId || "minimalist";
-  const Shell = isAgencyClient ? AgencyClientShell : BrandShell;
-  const shellProps = isAgencyClient ? { activeClientId: clientId } : {};
+  const { disputeId } = useParams();
 
   const dispute =
     disputes.find((item) => item.id.toLowerCase() === disputeId?.toLowerCase()) ?? disputes[0];
@@ -195,15 +181,11 @@ export function BrandPaymentDisputeDetailPage({
     setStatus("Under review");
   };
 
-  const paymentsRoute = isAgencyClient
-    ? `/agency/client/${clientId}?tab=payments`
-    : ROUTES.brandPayments;
-  const disputesRoute = isAgencyClient
-    ? `/agency/client/${clientId}?tab=payments&subtab=disputes`
-    : `${ROUTES.brandPayments}?tab=disputes`;
+  const paymentsRoute = ROUTES.brandPayments;
+  const disputesRoute = `${ROUTES.brandPayments}?tab=disputes`;
 
   return (
-    <Shell {...shellProps}>
+    <BrandShell>
       <main className="mx-auto w-full max-w-[1440px] space-y-6 pb-10">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -357,6 +339,6 @@ export function BrandPaymentDisputeDetailPage({
           Back to payments
         </button>
       </main>
-    </Shell>
+    </BrandShell>
   );
 }

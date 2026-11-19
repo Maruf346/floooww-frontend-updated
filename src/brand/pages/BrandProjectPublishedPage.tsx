@@ -29,7 +29,6 @@ import {
   WalletCards,
 } from "lucide-react";
 import { BrandShell } from "@/brand/components/BrandShell";
-import { AgencyClientShell } from "@/agency/components/AgencyClientShell";
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import { Button } from "@/common/components/ui/Button";
 import { Dropdown } from "@/common/components/ui/Dropdown";
@@ -43,10 +42,6 @@ import { ShareProjectModal } from "@/brand/components/ShareProjectModal";
 import { InviteCreatorToProjectModal } from "@/brand/components/InviteCreatorToProjectModal";
 import { ProjectApplicationsView } from "@/brand/pages/project-applications/ProjectApplicationsPanel";
 import {
-  agencyClientCreatorDeliverablesRoute,
-  agencyClientInvitedCreatorRoute,
-  agencyClientNewProjectRoute,
-  agencyClientProjectsRoute,
   brandCreatorDeliverablesRoute,
   brandInvitedCreatorRoute,
   brandProjectPerformanceRoute,
@@ -1001,13 +996,9 @@ function InvitedCreatorCard({
 function InvitedCreatorsGrid({
   projectId,
   creatorCount,
-  isAgencyClient = false,
-  clientId = "minimalist",
 }: {
   projectId: number;
   creatorCount: number;
-  isAgencyClient?: boolean;
-  clientId?: string;
 }) {
   const navigate = useNavigate();
   const project = getProject(projectId);
@@ -1101,24 +1092,14 @@ function InvitedCreatorsGrid({
             index={index}
             project={project}
             onViewProfile={(creatorId) =>
-              navigate(
-                isAgencyClient
-                  ? agencyClientInvitedCreatorRoute(clientId, projectId, creatorId)
-                  : brandInvitedCreatorRoute(projectId, creatorId),
-              )
+              navigate(brandInvitedCreatorRoute(projectId, creatorId))
             }
             onEditDeliverables={(creatorId) =>
-              navigate(
-                isAgencyClient
-                  ? agencyClientCreatorDeliverablesRoute(clientId, projectId, creatorId)
-                  : brandCreatorDeliverablesRoute(projectId, creatorId),
-              )
+              navigate(brandCreatorDeliverablesRoute(projectId, creatorId))
             }
             onMessage={(creatorId, creatorName) =>
               navigate(
-                isAgencyClient
-                  ? `${ROUTES.agencyMessages}?thread=${creatorId}&name=${encodeURIComponent(creatorName)}`
-                  : `${ROUTES.brandMessages}?thread=${creatorId}&name=${encodeURIComponent(creatorName)}`,
+                `${ROUTES.brandMessages}?thread=${creatorId}&name=${encodeURIComponent(creatorName)}`,
               )
             }
           />
@@ -2079,42 +2060,17 @@ function ProjectContentBoard({
   );
 }
 
-export type BrandProjectPublishedPageProps = {
-  shell?: "brand" | "agency-client";
-  activeClientId?: string;
-  initialTab?: string;
-};
-
 export function BrandProjectPublishedPage({
-  shell = "brand",
-  activeClientId,
   initialTab,
-}: BrandProjectPublishedPageProps = {}) {
+}: {
+  initialTab?: string;
+} = {}) {
   const navigate = useNavigate();
-  const { projectId, clientId: paramClientId } = useParams<{ projectId?: string; clientId?: string }>();
-  const clientId = activeClientId || paramClientId || "minimalist";
+  const { projectId } = useParams<{ projectId?: string }>();
   const project = getProject(Number(projectId) || 1);
 
-  // Sync latest published project details if just published
-  if (typeof window !== "undefined") {
-    try {
-      const stored = window.sessionStorage.getItem(`floooww-client-${clientId}-latest-project`);
-      if (stored) {
-        const latest = JSON.parse(stored);
-        if (latest.name) project.name = latest.name;
-        if (latest.type) project.projectType = latest.type;
-      }
-    } catch {
-      // Ignore parse error
-    }
-  }
-  const isAgencyClient = shell === "agency-client";
-  const projectHomeRoute = isAgencyClient
-    ? agencyClientProjectsRoute(clientId)
-    : ROUTES.brandProjects;
-  const projectDiscoveryRoute = isAgencyClient
-    ? `/agency/client/${clientId}?tab=creators`
-    : ROUTES.brandCreatorDiscovery;
+  const projectHomeRoute = ROUTES.brandProjects;
+  const projectDiscoveryRoute = ROUTES.brandCreatorDiscovery;
 
   const isPublishedRoute =
     typeof window !== "undefined" && window.location.pathname.endsWith("/published");
@@ -2134,11 +2090,7 @@ export function BrandProjectPublishedPage({
     !isArchivedParam &&
     (isJustPublished ||
       project.creatorCount === 0 ||
-      project.detailStatus === "Upcoming" ||
-      (isAgencyClient &&
-        project.id === 1 &&
-        typeof window !== "undefined" &&
-        !window.sessionStorage.getItem(`floooww-project-${project.id}-invited`)));
+      project.detailStatus === "Upcoming");
 
   const [status, setStatus] = useState<Lifecycle>(() => {
     if (isArchivedParam) return "Archived";
@@ -2165,7 +2117,7 @@ export function BrandProjectPublishedPage({
     alert("Downloading campaign performance report (PDF)...");
   };
   const handleTabChange = (item: string) => {
-    if (item === "Performance" && !isAgencyClient) {
+    if (item === "Performance") {
       navigate(brandProjectPerformanceRoute(project.id));
       return;
     }
@@ -2204,11 +2156,7 @@ export function BrandProjectPublishedPage({
       setInvitedCreatorCount((prev) => Math.max(prev, 1));
       setTab("Invited creators");
     } else {
-      if (isAgencyClient) {
-        navigate(`/agency/client/${clientId}/projects/${selectedProjId}`);
-      } else {
-        navigate(`/brand/projects/${selectedProjId}`);
-      }
+      navigate(`/brand/projects/${selectedProjId}`);
     }
   };
   const [applicationStatus, setApplicationStatus] = useState("All");
@@ -2351,11 +2299,8 @@ export function BrandProjectPublishedPage({
     setMore(false);
   };
 
-  const ShellContainer = shell === "agency-client" ? AgencyClientShell : BrandShell;
-  const shellProps = shell === "agency-client" ? { activeClientId: clientId } : {};
-
   return (
-    <ShellContainer {...shellProps}>
+    <BrandShell>
       <main className="w-full pb-10">
         <header className="flex flex-col justify-between gap-4 lg:h-[122px] lg:flex-row">
           <div>
@@ -2526,7 +2471,7 @@ export function BrandProjectPublishedPage({
             </Button>
           </div>
         )}
-        {status === "Archived" && !isAgencyClient && (
+        {status === "Archived" && (
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-muted px-4 py-3 text-[13px] leading-5 text-secondary">
             <div className="flex items-center gap-2.5">
               <Archive size={16} className="shrink-0 text-secondary" />
@@ -2644,8 +2589,6 @@ export function BrandProjectPublishedPage({
             <InvitedCreatorsGrid
               projectId={project.id}
               creatorCount={invitedCreatorCount}
-              isAgencyClient={isAgencyClient}
-              clientId={clientId}
             />
           ) : (
             <InvitedCreatorsEmptyState
@@ -2787,13 +2730,7 @@ export function BrandProjectPublishedPage({
             <PerformanceReportBlocks focusMetric="Net sales" />
             <Reveal>
               <CustomReportCard
-                onMakeReport={() =>
-                  navigate(
-                    isAgencyClient
-                      ? ROUTES.agencyReportNew
-                      : ROUTES.brandCustomReportNew,
-                  )
-                }
+                onMakeReport={() => navigate(ROUTES.brandCustomReportNew)}
               />
             </Reveal>
           </div>
@@ -3653,13 +3590,7 @@ export function BrandProjectPublishedPage({
                         <div className="min-w-0 flex-1">
                           <button
                             type="button"
-                            onClick={() =>
-                              navigate(
-                                isAgencyClient
-                                  ? agencyClientNewProjectRoute(clientId)
-                                  : ROUTES.brandNewProject,
-                              )
-                            }
+                            onClick={() => navigate(ROUTES.brandNewProject)}
                             className="text-left text-[14px] font-medium text-ink hover:text-primary transition-colors cursor-pointer block"
                           >
                             Duplicate project
@@ -3783,10 +3714,8 @@ export function BrandProjectPublishedPage({
         onClose={() => setInviteModalOpen(false)}
         creatorName={selectedCreatorName}
         currentProjectId={project.id}
-        clientId={clientId}
-        isAgencyClient={isAgencyClient}
         onContinueToInvite={handleContinueInvite}
       />
-    </ShellContainer>
+    </BrandShell>
   );
 }

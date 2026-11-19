@@ -18,12 +18,8 @@ import {
 import { motion } from "motion/react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
-import { AgencyClientShell } from "@/agency/components/AgencyClientShell";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
-import {
-  brandPaymentDisputeRoute,
-  agencyClientPaymentDisputeRoute,
-} from "@/common/constants/routes";
+import { brandPaymentDisputeRoute } from "@/common/constants/routes";
 
 type TransactionState = "Released" | "Held" | "Fee" | "Refunded";
 
@@ -724,22 +720,9 @@ function TabPanel({ tab }: { tab: Exclude<PaymentTab, "Overview"> }) {
   );
 }
 
-type BrandPaymentsPageProps = {
-  shell?: "brand" | "agency-client";
-  activeClientId?: string;
-};
-
-export function BrandPaymentsPage({
-  shell = "brand",
-  activeClientId,
-}: BrandPaymentsPageProps = {}) {
+export function BrandPaymentsPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { clientId: paramClientId } = useParams();
-  const isAgencyClient = shell === "agency-client" || location.pathname.startsWith("/agency");
-  const clientId = activeClientId || paramClientId || "minimalist";
-  const Shell = isAgencyClient ? AgencyClientShell : BrandShell;
-  const shellProps = isAgencyClient ? { activeClientId: clientId } : {};
 
   const resolveActiveTab = (): PaymentTab => {
     const sp = new URLSearchParams(location.search);
@@ -793,7 +776,7 @@ export function BrandPaymentsPage({
   };
 
   return (
-    <Shell {...shellProps}>
+    <BrandShell>
       <div className="mx-auto w-full max-w-[1440px] space-y-6 pb-10">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -855,11 +838,7 @@ export function BrandPaymentsPage({
         ) : activeTab === "Disputes" ? (
           <DisputesBoard
             onOpen={(dispute) =>
-              navigate(
-                isAgencyClient
-                  ? agencyClientPaymentDisputeRoute(clientId, dispute.id.toLowerCase())
-                  : brandPaymentDisputeRoute(dispute.id.toLowerCase()),
-              )
+              navigate(brandPaymentDisputeRoute(dispute.id.toLowerCase()))
             }
           />
         ) : (
@@ -872,6 +851,6 @@ export function BrandPaymentsPage({
           onSubmit={() => setRaiseDispute(false)}
         />
       )}
-    </Shell>
+    </BrandShell>
   );
 }

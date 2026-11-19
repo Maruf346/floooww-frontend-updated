@@ -23,17 +23,13 @@ import {
   Trash2,
   UserRoundPlus,
 } from "lucide-react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
-import { AgencyClientShell } from "@/agency/components/AgencyClientShell";
-import { AGENCY_CLIENTS } from "@/agency/components/AgencyWorkspaceSwitcher";
 import { Button } from "@/common/components/ui/Button";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { KpiTile } from "@/common/components/ui/KpiTile";
 import {
   brandProjectRoute,
-  agencyClientNewProjectRoute,
-  agencyClientProjectDetailRoute,
   ROUTES,
 } from "@/common/constants/routes";
 import { asset } from "@/common/utils/asset";
@@ -701,21 +697,9 @@ function ProjectActionsMenu({
   );
 }
 
-export function BrandProjectsPage({
-  shell = "brand",
-  activeClientId,
-}: {
-  shell?: "brand" | "agency-client";
-  activeClientId?: string;
-} = {}) {
+export function BrandProjectsPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const routeParams = useParams<{ clientId?: string }>();
-  const isAgencyClient = shell === "agency-client";
-  const clientId = activeClientId || routeParams.clientId || "minimalist";
-  const activeClientName = isAgencyClient
-    ? (AGENCY_CLIENTS.find((c) => c.id === clientId)?.name || "Minimalist")
-    : "Minimalist";
 
   const requestedStatus = params.get("status");
   const [active, setActive] = useState<Status | "All">(
@@ -842,26 +826,16 @@ export function BrandProjectsPage({
     setPage(1);
   };
 
-  const ShellContainer = isAgencyClient ? AgencyClientShell : BrandShell;
-  const shellProps = isAgencyClient ? { activeClientId: clientId } : {};
-
   const handleCreateNewProject = () => {
-    if (isAgencyClient) {
-      navigate(agencyClientNewProjectRoute(clientId));
-    } else {
-      navigate(ROUTES.brandNewProject);
-    }
+    navigate(ROUTES.brandNewProject);
   };
 
   const getProjectRoute = (projectId: number | string) => {
-    if (isAgencyClient) {
-      return agencyClientProjectDetailRoute(clientId, projectId);
-    }
     return brandProjectRoute(projectId);
   };
 
   return (
-    <ShellContainer {...shellProps}>
+    <BrandShell>
       <div className="-mt-1 mx-auto w-full max-w-[1440px]">
         <header className="flex h-[58px] items-end justify-between gap-4">
           <div>
@@ -1468,6 +1442,6 @@ export function BrandProjectsPage({
           {nudgeToast}
         </div>
       )}
-    </ShellContainer>
+    </BrandShell>
   );
 }

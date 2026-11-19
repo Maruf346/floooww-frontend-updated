@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Bookmark,
   Check,
@@ -14,12 +14,9 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { BrandShell } from "@/brand/components/BrandShell";
-import { AgencyClientShell } from "@/agency/components/AgencyClientShell";
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import { Button } from "@/common/components/ui/Button";
 import {
-  agencyClientCreatorInviteRoute,
-  agencyClientCreatorProfileRoute,
   brandCreatorInviteRoute,
   brandCreatorProfileRoute,
   ROUTES,
@@ -424,22 +421,8 @@ function DiscoveryDropdown({
   );
 }
 
-type BrandCreatorDiscoveryPageProps = {
-  shell?: "brand" | "agency-client";
-  activeClientId?: string;
-};
-
-export function BrandCreatorDiscoveryPage({
-  shell = "brand",
-  activeClientId,
-}: BrandCreatorDiscoveryPageProps = {}) {
+export function BrandCreatorDiscoveryPage() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { clientId: paramClientId } = useParams();
-  const isAgencyClient = shell === "agency-client" || location.pathname.startsWith("/agency");
-  const clientId = activeClientId || paramClientId || "minimalist";
-  const Shell = isAgencyClient ? AgencyClientShell : BrandShell;
-  const shellProps = isAgencyClient ? { activeClientId: clientId } : {};
 
   const [query, setQuery] = useState("Kannada skincare creators");
   const [filters, setFilters] = useState<string[]>(initialFilters);
@@ -486,7 +469,7 @@ export function BrandCreatorDiscoveryPage({
   });
 
   return (
-    <Shell {...shellProps}>
+    <BrandShell>
       <div className="w-full pb-10">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -642,17 +625,11 @@ export function BrandCreatorDiscoveryPage({
                     key={creator.id}
                     onInvite={() => {
                       setInvited((items) => [...items, creator.id]);
-                      navigate(
-                        isAgencyClient
-                          ? agencyClientCreatorInviteRoute(clientId, matchedProjectId, creator.id)
-                          : brandCreatorInviteRoute(matchedProjectId, creator.id),
-                      );
+                      navigate(brandCreatorInviteRoute(matchedProjectId, creator.id));
                     }}
                     onMessage={() => {
                       navigate(
-                        isAgencyClient
-                          ? `${ROUTES.agencyMessages}?thread=${creator.id}&name=${encodeURIComponent(creator.name)}`
-                          : `${ROUTES.brandMessages}?thread=${creator.id}&name=${encodeURIComponent(creator.name)}`,
+                        `${ROUTES.brandMessages}?thread=${creator.id}&name=${encodeURIComponent(creator.name)}`,
                       );
                     }}
                     onShortlist={() =>
@@ -663,11 +640,7 @@ export function BrandCreatorDiscoveryPage({
                       )
                     }
                     onViewProfile={() =>
-                      navigate(
-                        isAgencyClient
-                          ? agencyClientCreatorProfileRoute(clientId, matchedProjectId, creator.id)
-                          : brandCreatorProfileRoute(matchedProjectId, creator.id),
-                      )
+                      navigate(brandCreatorProfileRoute(matchedProjectId, creator.id))
                     }
                     shortlisted={shortlisted.includes(creator.id)}
                   />
@@ -764,11 +737,7 @@ export function BrandCreatorDiscoveryPage({
                 className="mt-4 w-full"
                 leadingIcon={<UserRoundPlus size={16} />}
                 onClick={() => {
-                  navigate(
-                    isAgencyClient
-                      ? agencyClientCreatorInviteRoute(clientId, matchedProjectId, "meera")
-                      : brandCreatorInviteRoute(matchedProjectId, "meera"),
-                  );
+                  navigate(brandCreatorInviteRoute(matchedProjectId, "meera"));
                 }}
               >
                 Invite all 3
@@ -794,6 +763,6 @@ export function BrandCreatorDiscoveryPage({
           </aside>
         </div>
       </div>
-    </Shell>
+    </BrandShell>
   );
 }

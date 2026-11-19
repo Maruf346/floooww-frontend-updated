@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Search, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useNavigate } from "react-router-dom";
-import { agencyClientNewProjectRoute, ROUTES } from "@/common/constants/routes";
+import { ROUTES } from "@/common/constants/routes";
 
 export type ProjectOption = {
   id: number;
@@ -90,8 +90,6 @@ export type InviteCreatorToProjectModalProps = {
   onClose: () => void;
   creatorName?: string;
   currentProjectId?: number | string;
-  clientId?: string;
-  isAgencyClient?: boolean;
   onContinueToInvite?: (selectedProjectId: number) => void;
 };
 
@@ -100,8 +98,6 @@ export function InviteCreatorToProjectModal({
   onClose,
   creatorName = "Diya Kapoor",
   currentProjectId = 1,
-  clientId = "velvet-lip",
-  isAgencyClient = false,
   onContinueToInvite,
 }: InviteCreatorToProjectModalProps) {
   const navigate = useNavigate();
@@ -118,11 +114,7 @@ export function InviteCreatorToProjectModal({
 
   const handleCreateNewProject = () => {
     onClose();
-    if (isAgencyClient) {
-      navigate(agencyClientNewProjectRoute(clientId));
-    } else {
-      navigate(ROUTES.brandNewProject);
-    }
+    navigate(ROUTES.brandNewProject);
   };
 
   const handleContinue = () => {
@@ -135,11 +127,7 @@ export function InviteCreatorToProjectModal({
       }
       onClose();
       if (Number(currentProjectId) !== selectedId) {
-        if (isAgencyClient) {
-          navigate(`/agency/client/${clientId}/projects/${selectedId}`);
-        } else {
-          navigate(`/brand/projects/${selectedId}`);
-        }
+        navigate(`/brand/projects/${selectedId}`);
       }
     }
   };
