@@ -330,6 +330,27 @@ export const router = createBrowserRouter(
           }),
         },
         {
+          path: ROUTES.agencyClientCreatorProfile,
+          lazy: async () => ({
+            Component: (await import("@/agency/pages/AgencyClientCreatorProfilePage"))
+              .AgencyClientCreatorProfilePage,
+          }),
+        },
+        {
+          path: ROUTES.agencyClientCreatorInvite,
+          lazy: async () => ({
+            Component: (await import("@/agency/pages/AgencyClientCreatorInvitePage"))
+              .AgencyClientCreatorInvitePage,
+          }),
+        },
+        {
+          path: ROUTES.agencyClientInvitedCreator,
+          lazy: async () => ({
+            Component: (await import("@/agency/pages/AgencyClientInvitedCreatorPage"))
+              .AgencyClientInvitedCreatorPage,
+          }),
+        },
+        {
           path: ROUTES.agencyClientDetail,
           lazy: async () => ({
             Component: (await import("@/agency/pages/AgencyClientOverviewPage")).AgencyClientOverviewPage,

@@ -20,11 +20,15 @@ import {
   Video,
 } from "lucide-react";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { AgencyClientShell } from "@/agency/components/AgencyClientShell";
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import { Button } from "@/common/components/ui/Button";
 import { Dropdown, MultiDropdown } from "@/common/components/ui/Dropdown";
 import type { Platform } from "@/common/types";
 import {
+  agencyClientCreatorProfileRoute,
+  agencyClientProjectDetailRoute,
+  agencyClientProjectsRoute,
   brandCreatorProfileRoute,
   brandProjectRoute,
 } from "@/common/constants/routes";
@@ -1508,8 +1512,18 @@ function Review({
   );
 }
 
-export function BrandCreatorInvitePage() {
-  const { projectId = "1", creatorId = "diya" } = useParams();
+export type BrandCreatorInvitePageProps = {
+  shell?: "brand" | "agency-client";
+  activeClientId?: string;
+};
+
+export function BrandCreatorInvitePage({
+  shell = "brand",
+  activeClientId,
+}: BrandCreatorInvitePageProps = {}) {
+  const { projectId = "1", creatorId = "diya", clientId: paramClientId } = useParams();
+  const clientId = activeClientId || paramClientId || "minimalist";
+  const isAgencyClient = shell === "agency-client";
   const navigate = useNavigate();
   const creator = useMemo(() => getCreatorProfile(creatorId), [creatorId]);
   const [step, setStep] = useState<Step>("setup");
@@ -1544,19 +1558,28 @@ export function BrandCreatorInvitePage() {
   const sentCharge = readyFee + Math.round(readyFee * 0.18);
   const sentProjectName = repeat ? "Glow Squad" : "Vitamin-C Serum";
   const oneTimeDueDate = reviewDateRange(ready);
+
+  const projectsUrl = isAgencyClient ? agencyClientProjectsRoute(clientId) : "/brand/projects";
+  const projectUrl = isAgencyClient ? agencyClientProjectDetailRoute(clientId, projectId) : brandProjectRoute(projectId);
+  const applicationsUrl = isAgencyClient ? `${agencyClientProjectDetailRoute(clientId, projectId)}?tab=applications` : brandProjectRoute(projectId);
+  const creatorProfileUrl = isAgencyClient
+    ? agencyClientCreatorProfileRoute(clientId, projectId, creator.handle.slice(1))
+    : brandCreatorProfileRoute(projectId, creator.handle.slice(1));
+
+  const Shell = isAgencyClient ? AgencyClientShell : BrandShell;
+  const shellProps = isAgencyClient ? { activeClientId: clientId } : {};
+
   return (
-    <BrandShell>
+    <Shell {...shellProps}>
       <div className="w-full pb-10">
         <nav className="flex flex-wrap items-center gap-2 text-[12px] text-secondary">
-          <Link to="/brand/projects">Projects</Link>
+          <Link to={projectsUrl}>Projects</Link>
           <span>/</span>
-          <Link to={brandProjectRoute(projectId)}>Vitamin-C Serum</Link>
+          <Link to={projectUrl}>Vitamin-C Serum</Link>
           <span>/</span>
-          <Link to={brandProjectRoute(projectId)}>Applications</Link>
+          <Link to={applicationsUrl}>Applications</Link>
           <span>/</span>
-          <Link
-            to={brandCreatorProfileRoute(projectId, creator.handle.slice(1))}
-          >
+          <Link to={creatorProfileUrl}>
             {creator.name}
           </Link>
           <span>/</span>
@@ -1849,17 +1872,25 @@ export function BrandCreatorInvitePage() {
                 <div className="flex gap-2">
                   <Button
                     kind="secondary"
-                    onClick={() => navigate(brandProjectRoute(projectId))}
+                    onClick={() => {
+                      if (typeof window !== "undefined") {
+                        window.sessionStorage.setItem(`floooww-project-${projectId}-invited`, "true");
+                      }
+                      navigate(isAgencyClient ? agencyClientProjectDetailRoute(clientId, projectId) : brandProjectRoute(projectId));
+                    }}
                   >
                     Done
                   </Button>
                   <Button
                     onClick={() => {
-                      window.sessionStorage.setItem(
-                        `floooww-project-${projectId}-active-tab`,
-                        "Invited creators",
-                      );
-                      navigate(brandProjectRoute(projectId));
+                      if (typeof window !== "undefined") {
+                        window.sessionStorage.setItem(`floooww-project-${projectId}-invited`, "true");
+                        window.sessionStorage.setItem(
+                          `floooww-project-${projectId}-active-tab`,
+                          "Invited creators",
+                        );
+                      }
+                      navigate(isAgencyClient ? `${agencyClientProjectDetailRoute(clientId, projectId)}?tab=invited-creators` : brandProjectRoute(projectId));
                     }}
                     trailingIcon={<ArrowRight size={16} />}
                   >
@@ -1871,6 +1902,6 @@ export function BrandCreatorInvitePage() {
           )}
         </div>
       </div>
-    </BrandShell>
+    </Shell>
   );
 }

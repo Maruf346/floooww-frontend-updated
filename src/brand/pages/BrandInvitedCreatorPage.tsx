@@ -25,11 +25,18 @@ import {
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { AgencyClientShell } from "@/agency/components/AgencyClientShell";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { CreatorPerformanceTab } from "@/brand/components/CreatorPerformanceTab";
 import { Dropdown } from "@/common/components/ui/Dropdown";
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
-import { brandCreatorDeliverablesRoute, brandProjectRoute } from "@/common/constants/routes";
+import {
+  agencyClientCreatorDeliverablesRoute,
+  agencyClientProjectDetailRoute,
+  agencyClientProjectsRoute,
+  brandCreatorDeliverablesRoute,
+  brandProjectRoute,
+} from "@/common/constants/routes";
 import { getProject, type Project } from "@/brand/data/projects";
 import { getProjectRules } from "@/brand/data/projectRules";
 import type { Platform } from "@/common/types";
@@ -1970,9 +1977,19 @@ function ReportDeliverableModal({
   );
 }
 
-export function BrandInvitedCreatorPage() {
+export type BrandInvitedCreatorPageProps = {
+  shell?: "brand" | "agency-client";
+  activeClientId?: string;
+};
+
+export function BrandInvitedCreatorPage({
+  shell = "brand",
+  activeClientId,
+}: BrandInvitedCreatorPageProps = {}) {
   const navigate = useNavigate();
-  const { projectId = "1", creatorId = "ishita" } = useParams();
+  const { projectId = "1", creatorId = "ishita", clientId: paramClientId } = useParams();
+  const clientId = activeClientId || paramClientId || "minimalist";
+  const isAgencyClient = shell === "agency-client";
   const project = getProject(Number(projectId));
   const creator = useMemo(
     () => creatorDetails[creatorId] ?? fallbackCreator(creatorId),
@@ -1993,22 +2010,29 @@ export function BrandInvitedCreatorPage() {
     Performance: "Performance becomes available as each approved deliverable goes live.",
   } as const;
 
+  const projectsUrl = isAgencyClient ? agencyClientProjectsRoute(clientId) : "/brand/projects";
+  const projectUrl = isAgencyClient ? agencyClientProjectDetailRoute(clientId, project.id) : brandProjectRoute(project.id);
+  const invitedUrl = isAgencyClient ? `${agencyClientProjectDetailRoute(clientId, project.id)}?tab=invited-creators` : brandProjectRoute(project.id);
+
+  const Shell = isAgencyClient ? AgencyClientShell : BrandShell;
+  const shellProps = isAgencyClient ? { activeClientId: clientId } : {};
+
   return (
-    <BrandShell>
+    <Shell {...shellProps}>
       <div className="w-full pb-10">
         <nav
           className="flex flex-wrap items-center gap-2 text-[12px] leading-4 text-secondary"
           aria-label="Breadcrumb"
         >
-          <Link to="/brand/projects" className="hover:text-primary">
+          <Link to={projectsUrl} className="hover:text-primary">
             Projects
           </Link>
           <span>/</span>
-          <Link to={brandProjectRoute(project.id)} className="hover:text-primary">
+          <Link to={projectUrl} className="hover:text-primary">
             {project.name}
           </Link>
           <span>/</span>
-          <Link to={brandProjectRoute(project.id)} className="hover:text-primary">
+          <Link to={invitedUrl} className="hover:text-primary">
             Invited creators
           </Link>
           <span>/</span>
@@ -2064,7 +2088,13 @@ export function BrandInvitedCreatorPage() {
             </button>
             <button
               type="button"
-              onClick={() => navigate(brandCreatorDeliverablesRoute(project.id, creatorId))}
+              onClick={() =>
+                navigate(
+                  isAgencyClient
+                    ? agencyClientCreatorDeliverablesRoute(clientId, project.id, creatorId)
+                    : brandCreatorDeliverablesRoute(project.id, creatorId),
+                )
+              }
               className="flex h-10 items-center gap-2 rounded-md bg-ink px-3 text-[13px] font-medium text-white"
             >
               <Pencil size={16} />
@@ -2183,6 +2213,6 @@ export function BrandInvitedCreatorPage() {
         projectName={project.name}
         onClose={() => setReportOpen(false)}
       />
-    </BrandShell>
+    </Shell>
   );
 }

@@ -59,6 +59,14 @@ export const ROUTES = {
   agencyClientProjectDetail: "/agency/client/:clientId/projects/:projectId",
   agencyClientProjectPerformance:
     "/agency/client/:clientId/projects/:projectId/performance",
+  agencyClientCreatorProfile:
+    "/agency/client/:clientId/projects/:projectId/applications/:creatorId",
+  agencyClientCreatorInvite:
+    "/agency/client/:clientId/projects/:projectId/applications/:creatorId/invite",
+  agencyClientInvitedCreator:
+    "/agency/client/:clientId/projects/:projectId/invited/:creatorId",
+  agencyClientCreatorDeliverables:
+    "/agency/client/:clientId/projects/:projectId/invited/:creatorId/deliverables",
   agencyBilling: "/agency/billing",
   agencyReports: "/agency/reports",
   agencyReportNew: "/agency/reports/new",
@@ -110,5 +118,25 @@ export const agencyClientProjectPerformanceRoute = (
   clientId: string,
   projectId: number | string,
 ) => `/agency/client/${clientId}/projects/${projectId}/performance`;
+export const agencyClientCreatorProfileRoute = (
+  clientId: string,
+  projectId: number | string,
+  creatorId: string,
+) => `/agency/client/${clientId}/projects/${projectId}/applications/${creatorId}`;
+export const agencyClientCreatorInviteRoute = (
+  clientId: string,
+  projectId: number | string,
+  creatorId: string,
+) => `/agency/client/${clientId}/projects/${projectId}/applications/${creatorId}/invite`;
+export const agencyClientInvitedCreatorRoute = (
+  clientId: string,
+  projectId: number | string,
+  creatorId: string,
+) => `/agency/client/${clientId}/projects/${projectId}/invited/${creatorId}`;
+export const agencyClientCreatorDeliverablesRoute = (
+  clientId: string,
+  projectId: number | string,
+  creatorId: string,
+) => `/agency/client/${clientId}/projects/${projectId}/invited/${creatorId}/deliverables`;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];

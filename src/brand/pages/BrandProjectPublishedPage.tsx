@@ -43,6 +43,8 @@ import { ShareProjectModal } from "@/brand/components/ShareProjectModal";
 import { InviteCreatorToProjectModal } from "@/brand/components/InviteCreatorToProjectModal";
 import { ProjectApplicationsView } from "@/brand/pages/project-applications/ProjectApplicationsPanel";
 import {
+  agencyClientCreatorDeliverablesRoute,
+  agencyClientInvitedCreatorRoute,
   agencyClientNewProjectRoute,
   agencyClientProjectsRoute,
   brandCreatorDeliverablesRoute,
@@ -1094,9 +1096,19 @@ function InvitedCreatorsGrid({
             creator={creator}
             index={index}
             project={project}
-            onViewProfile={(creatorId) => navigate(brandInvitedCreatorRoute(projectId, creatorId))}
+            onViewProfile={(creatorId) =>
+              navigate(
+                isAgencyClient
+                  ? agencyClientInvitedCreatorRoute(clientId, projectId, creatorId)
+                  : brandInvitedCreatorRoute(projectId, creatorId),
+              )
+            }
             onEditDeliverables={(creatorId) =>
-              navigate(brandCreatorDeliverablesRoute(projectId, creatorId))
+              navigate(
+                isAgencyClient
+                  ? agencyClientCreatorDeliverablesRoute(clientId, projectId, creatorId)
+                  : brandCreatorDeliverablesRoute(projectId, creatorId),
+              )
             }
           />
         ))}

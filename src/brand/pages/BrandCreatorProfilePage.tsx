@@ -3,8 +3,15 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "motion/react";
 import { Bookmark, ChevronLeft, CircleDollarSign, MessageSquare, Play, Star, UserRoundPlus } from "lucide-react";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { AgencyClientShell } from "@/agency/components/AgencyClientShell";
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
-import { brandCreatorInviteRoute, brandProjectRoute } from "@/common/constants/routes";
+import {
+  agencyClientCreatorInviteRoute,
+  agencyClientProjectDetailRoute,
+  agencyClientProjectsRoute,
+  brandCreatorInviteRoute,
+  brandProjectRoute,
+} from "@/common/constants/routes";
 import type { Platform } from "@/common/types";
 import { ApplicantPortfolio } from "./project-applications/ApplicantPortfolio";
 import { ApplicantReviews } from "./project-applications/ApplicantReviews";
@@ -65,24 +72,90 @@ function CombinedSocialStats() {
 
 function CreatorRail({ channel, onChannel, onInvite }: { channel: Channel; onChannel: (channel: Channel) => void; onInvite: () => void }) {
   const profile = useContext(CreatorContext);
-  const navigate = useNavigate();
-  const { projectId = "1" } = useParams();
-  const completeInvite = onInvite;
-  onInvite = () => { completeInvite(); navigate(brandCreatorInviteRoute(projectId, profile.handle.slice(1))); };
   const data = channelDataFor(profile)[channel];
   const platforms: Platform[] = ["Instagram", "YouTube", "Pinterest", "Snapchat"];
   return <aside className="space-y-4 xl:sticky xl:top-6 xl:self-start"><section className="rounded-xl border border-line bg-white p-5"><div className="flex flex-col items-center text-center"><img src={`/assets/creators/${profile.avatar}.png`} alt={profile.name} className="size-24 rounded-full object-cover" /><div className="mt-3 flex flex-wrap items-center justify-center gap-2"><h1 className="text-[28px] font-semibold leading-8 tracking-[-.02em] text-ink">{profile.name}</h1><span className="inline-flex items-center gap-1 rounded-full bg-success-bg px-2 py-0.5 text-[12px] font-medium leading-4 text-success"><span className="size-1.5 rounded-full bg-success" />Insights verified</span></div><p className="mt-3 text-[13px] leading-5 text-secondary">{profile.handle} · {data.category}</p><p className="mt-3 flex items-center gap-1 text-[14px] leading-5 text-ink"><Star size={15} fill="currentColor" className="text-[#f59e0b]" />{profile.rating} <span className="text-tertiary">·</span> {profile.reviewCount} reviews <span className="text-tertiary">·</span> Top creator</p></div><div className="mt-4 grid grid-cols-[40px_minmax(0,1fr)_minmax(0,1fr)] gap-2"><button type="button" aria-label={`Save ${profile.name}`} className="grid h-10 place-items-center rounded-md border border-line text-secondary transition hover:bg-subtle"><Bookmark size={17} /></button><a href={`mailto:?subject=${encodeURIComponent(`Vitamin-C Serum collaboration — ${profile.name}`)}`} className="flex h-10 items-center justify-center gap-2 rounded-md border border-line text-[14px] font-medium text-ink transition hover:bg-subtle"><MessageSquare size={16} />Message</a><button type="button" onClick={onInvite} className="flex h-10 items-center justify-center gap-2 rounded-md bg-primary text-[14px] font-medium text-white transition hover:bg-[#1d4ed8]"><UserRoundPlus size={16} />Invite</button></div><div title="Updated 6 h ago" className="mt-3 grid grid-cols-3 border-t border-line pt-3 text-center"><div><p className="text-[14px] font-semibold leading-5 text-ink">{data.followers}</p><p className="mt-0.5 text-[12px] leading-4 text-secondary">{channel === "YouTube" ? "Subscribers" : "Followers"}</p></div><div><p className="text-[14px] font-semibold leading-5 text-ink">{data.rate}</p><p className="mt-0.5 text-[12px] leading-4 text-secondary">{data.rateLabel}</p></div><div><p className="text-[14px] font-semibold leading-5 text-ink">{profile.onTime}</p><p className="mt-0.5 text-[12px] leading-4 text-secondary">On time</p></div></div><dl className="mt-5 grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-3 text-[13px] leading-5"><dt className="text-secondary">From</dt><dd className="text-right text-ink">{profile.city}, India</dd><dt className="text-secondary">Member since</dt><dd className="text-right text-ink">{profile.memberSince}</dd><dt className="text-secondary">Avg. response time</dt><dd className="text-right text-ink">{profile.responseTime}</dd><dt className="text-secondary">Last delivery</dt><dd className="text-right text-ink">{profile.lastDelivery}</dd><dt className="text-secondary">Languages</dt><dd className="text-right text-ink">{profile.languages}</dd></dl></section><section className="rounded-xl border border-line bg-white p-5"><h2 className="text-[14px] font-semibold leading-5 text-ink">All Channels</h2><div className="mt-3 space-y-3">{platforms.map((platform) => { const connected = profile.platforms.some(([name]) => name === platform); return <button type="button" disabled={!connected} onClick={() => onChannel(platform)} key={platform} className={`flex w-full items-center gap-2 text-left text-[13px] leading-5 ${connected ? channel === platform ? "text-primary" : "text-secondary hover:text-ink" : "cursor-not-allowed text-tertiary/70"}`}><PlatformLogo platform={platform} size={16} /><span className="min-w-0 flex-1 truncate">{platform} · {platform === "YouTube" ? profile.name : profile.handle}</span><span className="shrink-0 text-ink">{connected ? `${followerFor(profile, platform)} ${platform === "YouTube" ? "subscribers" : "followers"}` : "Not connected"}</span></button>; })}</div><button type="button" onClick={() => onChannel("All channels")} className="mt-4 text-[12px] font-medium leading-4 text-primary">{channel === "All channels" ? "Combined view selected" : "View combined metrics"}</button></section></aside>;
 }
 
-export function BrandCreatorProfilePage() {
-  const { projectId = "1", creatorId = "diya" } = useParams();
+export type BrandCreatorProfilePageProps = {
+  shell?: "brand" | "agency-client";
+  activeClientId?: string;
+};
+
+export function BrandCreatorProfilePage({
+  shell = "brand",
+  activeClientId,
+}: BrandCreatorProfilePageProps = {}) {
+  const { projectId = "1", creatorId = "diya", clientId: paramClientId } = useParams();
+  const clientId = activeClientId || paramClientId || "minimalist";
+  const isAgencyClient = shell === "agency-client";
   const navigate = useNavigate();
   const profile = useMemo(() => getCreatorProfile(creatorId), [creatorId]);
   const [tab, setTab] = useState<ProfileTab>("Profile");
   const [channel, setChannel] = useState<Channel>("All channels");
   const [invited, setInvited] = useState(false);
   const selectedPlatform = channel === "All channels" ? undefined : channel;
-  return <CreatorContext.Provider value={profile}><BrandShell><div className="w-full pb-10"><nav className="flex flex-wrap items-center gap-2 text-[12px] leading-4 text-secondary" aria-label="Breadcrumb"><Link to="/brand/projects" className="hover:text-primary">Projects</Link><span>/</span><Link to={brandProjectRoute(projectId)} className="hover:text-primary">Vitamin-C Serum</Link><span>/</span><Link to={brandProjectRoute(projectId)} className="hover:text-primary">Applications</Link><span>/</span><span className="text-ink">{profile.name}</span></nav><div className="mt-5 grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]"><main className="min-w-0"><div className="flex min-h-10 items-center gap-2 rounded-lg bg-subtle px-3 text-[13px] leading-5 text-ink"><CircleDollarSign size={16} className="shrink-0 text-secondary" /><p className="min-w-0 flex-1 truncate">Applied to Vitamin-C Serum 2 days ago · {profile.fee.toLowerCase()} · {profile.match}% match</p><button type="button" onClick={() => navigate(-1)} className="shrink-0 text-[13px] font-medium text-primary">Back to application</button></div><div className="mt-4 flex min-h-[84px] items-center gap-3 rounded-lg bg-subtle p-2.5"><div className="grid h-[63px] w-[112px] shrink-0 place-items-center rounded-md bg-gradient-to-br from-[#edc2a8] via-[#ba7854] to-[#65412c] text-white"><Play size={14} fill="currentColor" /></div><div className="min-w-0 flex-1"><p className="text-[14px] font-medium leading-5 text-ink">{profile.name.split(" ")[0]}’s intro video · 0:42</p><p className="mt-1 text-[13px] leading-5 text-secondary">42-Sec Video</p></div><button type="button" className="h-8 rounded-md border border-line bg-white px-3 text-[13px] font-medium text-ink">Play</button></div><div className="mt-4 overflow-hidden rounded-xl border border-line bg-white"><ProfileTabs active={tab} onChange={setTab} />{tab === "Profile" ? <ProfileOverview channel={channel} /> : tab === "Social stats" ? selectedPlatform ? <ApplicantSocialStats applicant={profile} selectedPlatform={selectedPlatform as SocialPlatform} onPlatformChange={setChannel} /> : <CombinedSocialStats /> : tab === "Portfolio" ? <ApplicantPortfolio applicant={profile} selectedPlatform={selectedPlatform} onPlatformChange={setChannel} /> : <ApplicantReviews applicant={profile} />}</div></main><CreatorRail channel={channel} onChannel={setChannel} onInvite={() => setInvited(true)} /></div>{invited && <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="fixed bottom-6 left-1/2 z-30 -translate-x-1/2 rounded-lg bg-ink px-4 py-3 text-[13px] font-medium text-white shadow-lg">{profile.name} has been invited to this project.</motion.div>}</div></BrandShell></CreatorContext.Provider>;
+
+  const projectsUrl = isAgencyClient ? agencyClientProjectsRoute(clientId) : "/brand/projects";
+  const projectUrl = isAgencyClient ? agencyClientProjectDetailRoute(clientId, projectId) : brandProjectRoute(projectId);
+  const applicationsUrl = isAgencyClient ? `${agencyClientProjectDetailRoute(clientId, projectId)}?tab=applications` : brandProjectRoute(projectId);
+
+  const handleInvite = () => {
+    setInvited(true);
+    if (isAgencyClient) {
+      navigate(agencyClientCreatorInviteRoute(clientId, projectId, profile.handle.slice(1)));
+    } else {
+      navigate(brandCreatorInviteRoute(projectId, profile.handle.slice(1)));
+    }
+  };
+
+  const Shell = isAgencyClient ? AgencyClientShell : BrandShell;
+  const shellProps = isAgencyClient ? { activeClientId: clientId } : {};
+
+  return (
+    <CreatorContext.Provider value={profile}>
+      <Shell {...shellProps}>
+        <div className="w-full pb-10">
+          <nav className="flex flex-wrap items-center gap-2 text-[12px] leading-4 text-secondary" aria-label="Breadcrumb">
+            <Link to={projectsUrl} className="hover:text-primary">Projects</Link>
+            <span>/</span>
+            <Link to={projectUrl} className="hover:text-primary">Vitamin-C Serum</Link>
+            <span>/</span>
+            <Link to={applicationsUrl} className="hover:text-primary">Applications</Link>
+            <span>/</span>
+            <span className="text-ink">{profile.name}</span>
+          </nav>
+          <div className="mt-5 grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+            <main className="min-w-0">
+              <div className="flex min-h-10 items-center gap-2 rounded-lg bg-subtle px-3 text-[13px] leading-5 text-ink">
+                <CircleDollarSign size={16} className="shrink-0 text-secondary" />
+                <p className="min-w-0 flex-1 truncate">Applied to Vitamin-C Serum 2 days ago · {profile.fee.toLowerCase()} · {profile.match}% match</p>
+                <button type="button" onClick={() => isAgencyClient ? navigate(applicationsUrl) : navigate(-1)} className="shrink-0 text-[13px] font-medium text-primary">
+                  Back to application
+                </button>
+              </div>
+              <div className="mt-4 flex min-h-[84px] items-center gap-3 rounded-lg bg-subtle p-2.5">
+                <div className="grid h-[63px] w-[112px] shrink-0 place-items-center rounded-md bg-gradient-to-br from-[#edc2a8] via-[#ba7854] to-[#65412c] text-white">
+                  <Play size={14} fill="currentColor" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[14px] font-medium leading-5 text-ink">{profile.name.split(" ")[0]}’s intro video · 0:42</p>
+                  <p className="mt-1 text-[13px] leading-5 text-secondary">42-Sec Video</p>
+                </div>
+                <button type="button" className="h-8 rounded-md border border-line bg-white px-3 text-[13px] font-medium text-ink">Play</button>
+              </div>
+              <div className="mt-4 overflow-hidden rounded-xl border border-line bg-white">
+                <ProfileTabs active={tab} onChange={setTab} />
+                {tab === "Profile" ? <ProfileOverview channel={channel} /> : tab === "Social stats" ? selectedPlatform ? <ApplicantSocialStats applicant={profile} selectedPlatform={selectedPlatform as SocialPlatform} onPlatformChange={setChannel} /> : <CombinedSocialStats /> : tab === "Portfolio" ? <ApplicantPortfolio applicant={profile} selectedPlatform={selectedPlatform} onPlatformChange={setChannel} /> : <ApplicantReviews applicant={profile} />}
+              </div>
+            </main>
+            <CreatorRail channel={channel} onChannel={setChannel} onInvite={handleInvite} />
+          </div>
+          {invited && <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="fixed bottom-6 left-1/2 z-30 -translate-x-1/2 rounded-lg bg-ink px-4 py-3 text-[13px] font-medium text-white shadow-lg">{profile.name} has been invited to this project.</motion.div>}
+        </div>
+      </Shell>
+    </CreatorContext.Provider>
+  );
 }
 
 function StaticBrandCreatorProfilePage() {
