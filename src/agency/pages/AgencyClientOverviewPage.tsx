@@ -162,25 +162,10 @@ const CONTENT_REVIEW = [
   },
 ];
 
-export function AgencyClientOverviewPage() {
+function AgencyClientOverviewDashboard({ clientId }: { clientId: string }) {
   const navigate = useNavigate();
-  const params = useParams<{ clientId?: string }>();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const clientId = params.clientId || searchParams.get("client") || "minimalist";
-  const tab = searchParams.get("tab");
-
-  if (tab === "creators" || tab === "creator-discovery") {
-    return <AgencyClientCreatorDiscoveryPage activeClientId={clientId} />;
-  }
-
-  if (tab === "content" || tab === "content-hub") {
-    return <AgencyClientContentHubPage activeClientId={clientId} />;
-  }
-
-  if (tab === "payments") {
-    return <AgencyClientPaymentsPage activeClientId={clientId} />;
-  }
 
   const activeClient =
     AGENCY_CLIENTS.find((c) => c.id === clientId) || {
@@ -1110,4 +1095,26 @@ export function AgencyClientOverviewPage() {
       </div>
     </AgencyClientShell>
   );
+}
+
+export function AgencyClientOverviewPage() {
+  const params = useParams<{ clientId?: string }>();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const clientId = params.clientId || searchParams.get("client") || "minimalist";
+  const tab = searchParams.get("tab");
+
+  if (tab === "creators" || tab === "creator-discovery") {
+    return <AgencyClientCreatorDiscoveryPage activeClientId={clientId} />;
+  }
+
+  if (tab === "content" || tab === "content-hub") {
+    return <AgencyClientContentHubPage activeClientId={clientId} />;
+  }
+
+  if (tab === "payments") {
+    return <AgencyClientPaymentsPage activeClientId={clientId} />;
+  }
+
+  return <AgencyClientOverviewDashboard clientId={clientId} />;
 }

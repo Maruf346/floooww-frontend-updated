@@ -360,7 +360,7 @@ export const router = createBrowserRouter(
         {
           path: ROUTES.agencyMessages,
           lazy: async () => ({
-            Component: (await import("@/brand/pages/BrandMessagesPage")).BrandMessagesPage,
+            Component: (await import("@/agency/pages/AgencyMessagesPage")).AgencyMessagesPage,
           }),
         },
         {
