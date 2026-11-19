@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { AgencyClientShell } from "../components/AgencyClientShell";
 import { AGENCY_CLIENTS } from "../components/AgencyWorkspaceSwitcher";
+import { BrandCreatorDiscoveryPage } from "@/brand/pages/BrandCreatorDiscoveryPage";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { ROUTES, agencyClientNewProjectRoute } from "@/common/constants/routes";
 import { asset } from "@/common/utils/asset";
@@ -165,6 +166,11 @@ export function AgencyClientOverviewPage() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const clientId = params.clientId || searchParams.get("client") || "minimalist";
+  const tab = searchParams.get("tab");
+
+  if (tab === "creators" || tab === "creator-discovery") {
+    return <BrandCreatorDiscoveryPage shell="agency-client" activeClientId={clientId} />;
+  }
 
   const activeClient =
     AGENCY_CLIENTS.find((c) => c.id === clientId) || {
