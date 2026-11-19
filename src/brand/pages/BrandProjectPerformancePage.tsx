@@ -71,7 +71,7 @@ const creatorRows = [
   ],
 ] as const;
 
-function Reveal({
+export function Reveal({
   children,
   delay = 0,
   className = "",
@@ -1423,7 +1423,8 @@ function AnimatedCostEfficiencyCard() {
   );
 }
 
-function CustomReportCard() {
+export function CustomReportCard({ onMakeReport }: { onMakeReport?: () => void } = {}) {
+  const navigate = useNavigate();
   return (
     <section className="flex h-[86px] flex-wrap items-center justify-between gap-4 rounded-xl border border-line bg-white px-5">
       <div>
@@ -1435,7 +1436,12 @@ function CustomReportCard() {
           export it as a PDF or CSV.
         </p>
       </div>
-      <Button className="w-[200px] shrink-0">Make custom report</Button>
+      <Button
+        onClick={onMakeReport ? onMakeReport : () => navigate("/brand/reports/new")}
+        className="w-[200px] shrink-0"
+      >
+        Make custom report
+      </Button>
     </section>
   );
 }

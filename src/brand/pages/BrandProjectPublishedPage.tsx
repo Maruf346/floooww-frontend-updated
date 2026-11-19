@@ -51,8 +51,13 @@ import {
   ROUTES,
 } from "@/common/constants/routes";
 import type { Platform } from "@/common/types";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { motion } from "motion/react";
+import {
+  CustomReportCard,
+  PerformanceReportBlocks,
+  Reveal,
+} from "@/brand/pages/BrandProjectPerformancePage";
 import { getProject } from "@/brand/data/projects";
 import { getProjectRules } from "@/brand/data/projectRules";
 
@@ -2054,11 +2059,13 @@ function ProjectContentBoard({
 export type BrandProjectPublishedPageProps = {
   shell?: "brand" | "agency-client";
   activeClientId?: string;
+  initialTab?: string;
 };
 
 export function BrandProjectPublishedPage({
   shell = "brand",
   activeClientId,
+  initialTab,
 }: BrandProjectPublishedPageProps = {}) {
   const navigate = useNavigate();
   const { projectId, clientId: paramClientId } = useParams<{ projectId?: string; clientId?: string }>();
@@ -2088,10 +2095,7 @@ export function BrandProjectPublishedPage({
 
   const isPublishedRoute =
     typeof window !== "undefined" && window.location.pathname.endsWith("/published");
-  const searchParams =
-    typeof window !== "undefined"
-      ? new URLSearchParams(window.location.search)
-      : new URLSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const isJustPublished =
     isPublishedRoute ||
     searchParams.get("published") === "true" ||
@@ -2119,12 +2123,36 @@ export function BrandProjectPublishedPage({
     return project.detailStatus;
   });
   const [tab, setTab] = useState(() => {
+    const qTab = searchParams.get("tab");
+    if (qTab) {
+      const match = tabs.find((t) => t.toLowerCase() === qTab.toLowerCase());
+      if (match) return match;
+    }
+    if (initialTab && tabs.includes(initialTab)) {
+      return initialTab;
+    }
     if (typeof window === "undefined") return "Overview";
     const key = `floooww-project-${project.id}-active-tab`;
     const requestedTab = window.sessionStorage.getItem(key);
     window.sessionStorage.removeItem(key);
     return requestedTab === "Invited creators" ? requestedTab : "Overview";
   });
+  const [performancePlatform, setPerformancePlatform] = useState("All platforms");
+  const handleDownloadReport = () => {
+    alert("Downloading campaign performance report (PDF)...");
+  };
+  const handleTabChange = (item: string) => {
+    if (item === "Performance" && !isAgencyClient) {
+      navigate(brandProjectPerformanceRoute(project.id));
+      return;
+    }
+    setTab(item);
+    if (searchParams.get("tab")) {
+      const nextParams = new URLSearchParams(searchParams);
+      nextParams.delete("tab");
+      setSearchParams(nextParams, { replace: true });
+    }
+  };
   const [invitedCreatorCount, setInvitedCreatorCount] = useState(() => {
     if (isNoCreators) return 0;
     const newlyInvited =
@@ -2524,38 +2552,57 @@ export function BrandProjectPublishedPage({
             </div>
           </div>
         )}
-        <nav className="mt-6 flex h-[37px] gap-6 overflow-x-auto border-b border-line">
-          {tabs.map((item) => (
-            <button
-              key={item}
-              type="button"
-              onClick={() =>
-                item === "Performance" && !isAgencyClient
-                  ? navigate(brandProjectPerformanceRoute(project.id))
-                  : setTab(item)
-              }
-              className={`h-9 shrink-0 border-b-2 text-[14px] leading-[22px] ${tab === item ? "border-primary font-medium text-primary" : "border-transparent text-secondary"}`}
-            >
-              {item}
-              {["Applications", "Invited creators", "Content"].includes(item) && (
-                <span className="ml-1.5 rounded-full bg-muted px-[7px] py-px text-[12px] leading-4 text-secondary">
-                  {status === "Archived"
-                    ? item === "Applications"
-                      ? 12
-                      : item === "Invited creators"
-                        ? 16
-                        : 63
-                    : isNoCreators
-                      ? 0
-                      : item === "Applications"
-                        ? project.apps
+        <nav className="mt-6 flex min-h-[37px] flex-wrap items-end justify-between gap-3 border-b border-line">
+          <div className="flex max-w-full gap-6 overflow-x-auto">
+            {tabs.map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => handleTabChange(item)}
+                className={`h-9 shrink-0 border-b-2 text-[14px] leading-[22px] ${tab === item ? "border-primary font-medium text-primary" : "border-transparent text-secondary"}`}
+              >
+                {item}
+                {["Applications", "Invited creators", "Content"].includes(item) && (
+                  <span className="ml-1.5 rounded-full bg-muted px-[7px] py-px text-[12px] leading-4 text-secondary">
+                    {status === "Archived"
+                      ? item === "Applications"
+                        ? 12
                         : item === "Invited creators"
-                          ? invitedCreatorCount
-                          : contentCountForProject(project.id)}
-                </span>
-              )}
-            </button>
-          ))}
+                          ? 16
+                          : 63
+                      : isNoCreators
+                        ? 0
+                        : item === "Applications"
+                          ? project.apps
+                          : item === "Invited creators"
+                            ? invitedCreatorCount
+                            : contentCountForProject(project.id)}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+          {tab === "Performance" && (
+            <div className="mb-0.5 flex items-center gap-2">
+              <span className="hidden text-[12px] text-tertiary sm:block">View by platform</span>
+              <Dropdown
+                compact
+                ariaLabel="View by platform"
+                className="w-[118px]"
+                value={performancePlatform}
+                onChange={setPerformancePlatform}
+                options={["All platforms", "Instagram", "TikTok", "YouTube"]}
+              />
+              <button
+                type="button"
+                onClick={handleDownloadReport}
+                aria-label="Download report"
+                className="grid size-8 place-items-center rounded-md border border-line bg-white text-secondary transition hover:bg-subtle"
+              >
+                <Download size={16} />
+              </button>
+            </div>
+          )}
         </nav>
         {tab === "Applications" ? (
           <ProjectApplicationsView
@@ -2707,14 +2754,27 @@ export function BrandProjectPublishedPage({
               </div>
             </motion.section>
           </section>
+        ) : tab === "Performance" ? (
+          <div className="mt-6 space-y-6">
+            <PerformanceReportBlocks focusMetric="Net sales" />
+            <Reveal>
+              <CustomReportCard
+                onMakeReport={() =>
+                  navigate(
+                    isAgencyClient
+                      ? ROUTES.agencyReportNew
+                      : ROUTES.brandCustomReportNew,
+                  )
+                }
+              />
+            </Reveal>
+          </div>
         ) : tab !== "Overview" ? (
           <section className="mt-6 rounded-xl border border-line bg-white px-10 py-20 text-center">
             <FileText className="mx-auto text-tertiary" size={28} />
             <h2 className="mt-3 text-[16px] font-semibold text-ink">{tab}</h2>
             <p className="mt-1 text-[13px] text-secondary">
-              {tab === "Performance"
-                ? "Results will appear here as creator content goes live."
-                : `No ${tab.toLowerCase()} yet.`}
+              No {tab.toLowerCase()} yet.
             </p>
           </section>
         ) : (
