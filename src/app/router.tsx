@@ -353,8 +353,8 @@ export const router = createBrowserRouter(
         {
           path: ROUTES.agencyClientCreatorDeliverables,
           lazy: async () => ({
-            Component: (await import("@/brand/pages/BrandCreatorDeliverablesEditPage"))
-              .BrandCreatorDeliverablesEditPage,
+            Component: (await import("@/agency/pages/AgencyClientCreatorDeliverablesEditPage"))
+              .AgencyClientCreatorDeliverablesEditPage,
           }),
         },
         {
@@ -372,32 +372,36 @@ export const router = createBrowserRouter(
         {
           path: ROUTES.agencyClientContent,
           lazy: async () => ({
-            Component: (await import("@/brand/pages/BrandContentHubPage")).BrandContentHubPage,
+            Component: (await import("@/agency/pages/AgencyClientContentHubPage"))
+              .AgencyClientContentHubPage,
           }),
         },
         {
           path: ROUTES.agencyClientContentHub,
           lazy: async () => ({
-            Component: (await import("@/brand/pages/BrandContentHubPage")).BrandContentHubPage,
+            Component: (await import("@/agency/pages/AgencyClientContentHubPage"))
+              .AgencyClientContentHubPage,
           }),
         },
         {
           path: ROUTES.agencyClientCreatorDiscovery,
           lazy: async () => ({
-            Component: (await import("@/brand/pages/BrandCreatorDiscoveryPage")).BrandCreatorDiscoveryPage,
+            Component: (await import("@/agency/pages/AgencyClientCreatorDiscoveryPage"))
+              .AgencyClientCreatorDiscoveryPage,
           }),
         },
         {
           path: ROUTES.agencyClientPayments,
           lazy: async () => ({
-            Component: (await import("@/brand/pages/BrandPaymentsPage")).BrandPaymentsPage,
+            Component: (await import("@/agency/pages/AgencyClientPaymentsPage"))
+              .AgencyClientPaymentsPage,
           }),
         },
         {
           path: ROUTES.agencyClientPaymentDispute,
           lazy: async () => ({
-            Component: (await import("@/brand/pages/BrandPaymentDisputeDetailPage"))
-              .BrandPaymentDisputeDetailPage,
+            Component: (await import("@/agency/pages/AgencyClientPaymentDisputeDetailPage"))
+              .AgencyClientPaymentDisputeDetailPage,
           }),
         },
         {

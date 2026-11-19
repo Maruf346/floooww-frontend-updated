@@ -26,9 +26,9 @@ import {
 } from "lucide-react";
 import { AgencyClientShell } from "../components/AgencyClientShell";
 import { AGENCY_CLIENTS } from "../components/AgencyWorkspaceSwitcher";
-import { BrandCreatorDiscoveryPage } from "@/brand/pages/BrandCreatorDiscoveryPage";
-import { BrandContentHubPage } from "@/brand/pages/BrandContentHubPage";
-import { BrandPaymentsPage } from "@/brand/pages/BrandPaymentsPage";
+import { AgencyClientCreatorDiscoveryPage } from "./AgencyClientCreatorDiscoveryPage";
+import { AgencyClientContentHubPage } from "./AgencyClientContentHubPage";
+import { AgencyClientPaymentsPage } from "./AgencyClientPaymentsPage";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { ROUTES, agencyClientNewProjectRoute } from "@/common/constants/routes";
 import { asset } from "@/common/utils/asset";
@@ -171,15 +171,15 @@ export function AgencyClientOverviewPage() {
   const tab = searchParams.get("tab");
 
   if (tab === "creators" || tab === "creator-discovery") {
-    return <BrandCreatorDiscoveryPage shell="agency-client" activeClientId={clientId} />;
+    return <AgencyClientCreatorDiscoveryPage activeClientId={clientId} />;
   }
 
   if (tab === "content" || tab === "content-hub") {
-    return <BrandContentHubPage shell="agency-client" activeClientId={clientId} />;
+    return <AgencyClientContentHubPage activeClientId={clientId} />;
   }
 
   if (tab === "payments") {
-    return <BrandPaymentsPage shell="agency-client" activeClientId={clientId} />;
+    return <AgencyClientPaymentsPage activeClientId={clientId} />;
   }
 
   const activeClient =
