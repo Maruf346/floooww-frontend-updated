@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Paperclip, Search, Send } from "lucide-react";
 import { motion } from "motion/react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { AgencyShell } from "@/agency/components/AgencyShell";
 import { brandProjectRoute } from "@/common/constants/routes";
 
 type Thread = {
@@ -128,17 +129,60 @@ function ThreadRow({
 }
 
 export function BrandMessagesPage() {
-  const [selectedId, setSelectedId] = useState("meera");
+  const [searchParams] = useSearchParams();
+  const { pathname } = useLocation();
+  const isAgency = pathname.startsWith("/agency");
+  const Shell = isAgency ? AgencyShell : BrandShell;
+
+  const threadParam = searchParams.get("thread") || searchParams.get("creator");
+  const nameParam = searchParams.get("name");
+
+  const [threadList, setThreadList] = useState<Thread[]>(() => {
+    if (threadParam && !threads.some((t) => t.id === threadParam)) {
+      const newThread: Thread = {
+        id: threadParam,
+        name: nameParam || threadParam.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+        project: "Vitamin-C Serum",
+        preview: "Start a conversation…",
+        time: "Just now",
+        avatar: `/assets/creators/${threadParam.split("-")[0]}.png`,
+        meta: "Vitamin-C Serum · Invited creator",
+      };
+      return [newThread, ...threads];
+    }
+    return threads;
+  });
+
+  const [selectedId, setSelectedId] = useState<string>(() => threadParam || "meera");
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState("");
   const [messages, setMessages] = useState(initialMessages);
-  const selected = threads.find((thread) => thread.id === selectedId) ?? threads[0];
+
+  useEffect(() => {
+    if (threadParam) {
+      if (!threadList.some((t) => t.id === threadParam)) {
+        const newThread: Thread = {
+          id: threadParam,
+          name: nameParam || threadParam.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+          project: "Vitamin-C Serum",
+          preview: "Start a conversation…",
+          time: "Just now",
+          avatar: `/assets/creators/${threadParam.split("-")[0]}.png`,
+          meta: "Vitamin-C Serum · Invited creator",
+        };
+        setThreadList((prev) => [newThread, ...prev]);
+      }
+      setSelectedId(threadParam);
+    }
+  }, [threadParam, nameParam]);
+
+  const selected = threadList.find((thread) => thread.id === selectedId) ?? threadList[0];
   const visibleThreads = useMemo(() => {
     const term = query.trim().toLowerCase();
     return term
-      ? threads.filter((thread) => `${thread.name} ${thread.project}`.toLowerCase().includes(term))
-      : threads;
-  }, [query]);
+      ? threadList.filter((thread) => `${thread.name} ${thread.project}`.toLowerCase().includes(term))
+      : threadList;
+  }, [query, threadList]);
 
   const send = () => {
     const text = draft.trim();
@@ -154,7 +198,7 @@ export function BrandMessagesPage() {
   };
 
   return (
-    <BrandShell hideChat>
+    <Shell {...(!isAgency ? { hideChat: true } : {})}>
       <div className="-m-5 flex h-[calc(100dvh-64px)] min-h-[560px] overflow-hidden bg-page sm:-m-8">
         <aside className="flex w-full shrink-0 flex-col border-r border-line bg-white md:w-[340px]">
           <div className="p-4">
@@ -277,6 +321,6 @@ export function BrandMessagesPage() {
           </div>
         </section>
       </div>
-    </BrandShell>
+    </Shell>
   );
 }

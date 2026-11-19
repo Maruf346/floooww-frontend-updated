@@ -351,6 +351,19 @@ export const router = createBrowserRouter(
           }),
         },
         {
+          path: ROUTES.agencyClientCreatorDeliverables,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandCreatorDeliverablesEditPage"))
+              .BrandCreatorDeliverablesEditPage,
+          }),
+        },
+        {
+          path: ROUTES.agencyMessages,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandMessagesPage")).BrandMessagesPage,
+          }),
+        },
+        {
           path: ROUTES.agencyClientDetail,
           lazy: async () => ({
             Component: (await import("@/agency/pages/AgencyClientOverviewPage")).AgencyClientOverviewPage,

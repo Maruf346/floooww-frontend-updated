@@ -36,6 +36,7 @@ import {
   agencyClientProjectsRoute,
   brandCreatorDeliverablesRoute,
   brandProjectRoute,
+  ROUTES,
 } from "@/common/constants/routes";
 import { getProject, type Project } from "@/brand/data/projects";
 import { getProjectRules } from "@/brand/data/projectRules";
@@ -2078,9 +2079,13 @@ export function BrandInvitedCreatorPage({
             <DateRangePicker value="7 Oct - 28 Oct 2026" showCompare={false} />
             <button
               type="button"
-              className="flex h-10 items-center gap-2 rounded-md border border-line bg-white px-3 text-[13px] font-medium text-ink"
+              className="flex h-10 items-center gap-2 rounded-md border border-line bg-white px-3 text-[13px] font-medium text-ink transition hover:bg-subtle cursor-pointer"
               onClick={() => {
-                window.location.href = `mailto:?subject=${encodeURIComponent(`${project.name} collaboration — ${creator.name}`)}`;
+                navigate(
+                  isAgencyClient
+                    ? `${ROUTES.agencyMessages}?thread=${creatorId}&name=${encodeURIComponent(creator.name)}`
+                    : `${ROUTES.brandMessages}?thread=${creatorId}&name=${encodeURIComponent(creator.name)}`,
+                );
               }}
             >
               <MessageSquare size={16} />

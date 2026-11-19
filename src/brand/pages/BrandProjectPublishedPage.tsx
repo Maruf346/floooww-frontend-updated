@@ -867,12 +867,14 @@ function InvitedCreatorCard({
   project,
   onViewProfile,
   onEditDeliverables,
+  onMessage,
 }: {
   creator: InvitedCreatorCard;
   index: number;
   project: ReturnType<typeof getProject>;
   onViewProfile: (creatorId: string) => void;
   onEditDeliverables: (creatorId: string) => void;
+  onMessage: (creatorId: string, creatorName: string) => void;
 }) {
   const rules = getProjectRules(project);
   const tone = {
@@ -972,17 +974,15 @@ function InvitedCreatorCard({
       <div className="mt-3 grid grid-cols-2 gap-2">
         <button
           type="button"
-          onClick={() => {
-            window.location.href = `mailto:?subject=${encodeURIComponent(`Vitamin-C Serum collaboration — ${creator.name}`)}`;
-          }}
-          className="h-8 rounded-md border border-line bg-white text-[13px] font-medium text-ink transition hover:bg-subtle"
+          onClick={() => onMessage(creator.id, creator.name)}
+          className="h-8 rounded-md border border-line bg-white text-[13px] font-medium text-ink transition hover:bg-subtle cursor-pointer"
         >
           Message
         </button>
         <button
           type="button"
           onClick={() => onViewProfile(creator.id)}
-          className="h-8 rounded-md border border-line bg-white text-[13px] font-medium text-ink transition hover:bg-subtle"
+          className="h-8 rounded-md border border-line bg-white text-[13px] font-medium text-ink transition hover:bg-subtle cursor-pointer"
         >
           View profile
         </button>
@@ -990,7 +990,7 @@ function InvitedCreatorCard({
       <button
         type="button"
         onClick={() => onEditDeliverables(creator.id)}
-        className="mt-2 h-8 w-full rounded-md border border-line bg-white text-[13px] font-medium text-ink transition hover:bg-subtle"
+        className="mt-2 h-8 w-full rounded-md border border-line bg-white text-[13px] font-medium text-ink transition hover:bg-subtle cursor-pointer"
       >
         Edit deliverables
       </button>
@@ -1001,9 +1001,13 @@ function InvitedCreatorCard({
 function InvitedCreatorsGrid({
   projectId,
   creatorCount,
+  isAgencyClient = false,
+  clientId = "minimalist",
 }: {
   projectId: number;
   creatorCount: number;
+  isAgencyClient?: boolean;
+  clientId?: string;
 }) {
   const navigate = useNavigate();
   const project = getProject(projectId);
@@ -1108,6 +1112,13 @@ function InvitedCreatorsGrid({
                 isAgencyClient
                   ? agencyClientCreatorDeliverablesRoute(clientId, projectId, creatorId)
                   : brandCreatorDeliverablesRoute(projectId, creatorId),
+              )
+            }
+            onMessage={(creatorId, creatorName) =>
+              navigate(
+                isAgencyClient
+                  ? `${ROUTES.agencyMessages}?thread=${creatorId}&name=${encodeURIComponent(creatorName)}`
+                  : `${ROUTES.brandMessages}?thread=${creatorId}&name=${encodeURIComponent(creatorName)}`,
               )
             }
           />
@@ -2630,7 +2641,12 @@ export function BrandProjectPublishedPage({
           />
         ) : tab === "Invited creators" ? (
           invitedCreatorCount > 0 ? (
-            <InvitedCreatorsGrid projectId={project.id} creatorCount={invitedCreatorCount} />
+            <InvitedCreatorsGrid
+              projectId={project.id}
+              creatorCount={invitedCreatorCount}
+              isAgencyClient={isAgencyClient}
+              clientId={clientId}
+            />
           ) : (
             <InvitedCreatorsEmptyState
               onGoToApplications={() => setTab("Applications")}
