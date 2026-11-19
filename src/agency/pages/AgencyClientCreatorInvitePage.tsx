@@ -19,7 +19,6 @@ import {
   Trash2,
   Video,
 } from "lucide-react";
-import { BrandShell } from "@/brand/components/BrandShell";
 import { AgencyClientShell } from "@/agency/components/AgencyClientShell";
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import { Button } from "@/common/components/ui/Button";
@@ -29,8 +28,6 @@ import {
   agencyClientCreatorProfileRoute,
   agencyClientProjectDetailRoute,
   agencyClientProjectsRoute,
-  brandCreatorProfileRoute,
-  brandProjectRoute,
 } from "@/common/constants/routes";
 import { getCreatorProfile } from "@/brand/pages/project-applications/creatorProfileData";
 
@@ -1866,7 +1863,7 @@ export function AgencyClientCreatorInvitePage({
                       if (typeof window !== "undefined") {
                         window.sessionStorage.setItem(`floooww-project-${projectId}-invited`, "true");
                       }
-                      navigate(isAgencyClient ? agencyClientProjectDetailRoute(clientId, projectId) : brandProjectRoute(projectId));
+                      navigate(agencyClientProjectDetailRoute(clientId, projectId));
                     }}
                   >
                     Done
@@ -1880,7 +1877,7 @@ export function AgencyClientCreatorInvitePage({
                           "Invited creators",
                         );
                       }
-                      navigate(isAgencyClient ? `${agencyClientProjectDetailRoute(clientId, projectId)}?tab=invited-creators` : brandProjectRoute(projectId));
+                      navigate(`${agencyClientProjectDetailRoute(clientId, projectId)}?tab=invited-creators`);
                     }}
                     trailingIcon={<ArrowRight size={16} />}
                   >

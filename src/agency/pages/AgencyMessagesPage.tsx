@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Paperclip, Search, Send } from "lucide-react";
 import { motion } from "motion/react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { AgencyShell } from "@/agency/components/AgencyShell";
+import { agencyClientProjectDetailRoute } from "@/common/constants/routes";
 
 type Thread = {
   id: string;
@@ -239,7 +240,7 @@ export function AgencyMessagesPage() {
               <p className="truncate text-[12px] leading-4 text-secondary">{selected.meta}</p>
             </div>
             <Link
-              to={brandProjectRoute(selected.project === "Monsoon Sunscreen" ? 9 : 1)}
+              to={agencyClientProjectDetailRoute("minimalist", selected.project === "Monsoon Sunscreen" ? 9 : 1)}
               className="inline-flex h-8 shrink-0 items-center justify-center rounded-lg border border-line bg-white px-3 text-[13px] font-medium leading-[18px] text-ink transition hover:bg-subtle"
             >
               View project
