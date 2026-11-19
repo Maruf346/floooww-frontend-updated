@@ -301,7 +301,7 @@ export function AgencyClientShell({
           to={`${baseClientUrl}?tab=payments`}
           onClick={closeMenu}
           className={`flex h-9 w-full items-center justify-between rounded-md px-3 text-[14px] transition-colors ${
-            location.search.includes("tab=payments")
+            location.search.includes("tab=payments") || location.pathname.includes("/payments")
               ? "bg-primary-subtle font-semibold text-primary"
               : "text-[#0d0d10] hover:bg-subtle"
           }`}
@@ -310,7 +310,12 @@ export function AgencyClientShell({
             <Wallet size={18} />
             <span>Payments</span>
           </div>
-          <CountBadge count={2} active={location.search.includes("tab=payments")} />
+          <CountBadge
+            count={2}
+            active={
+              location.search.includes("tab=payments") || location.pathname.includes("/payments")
+            }
+          />
         </Link>
 
         {/* Messages with badge 4 */}

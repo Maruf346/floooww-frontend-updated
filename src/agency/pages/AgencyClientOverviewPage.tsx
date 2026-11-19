@@ -28,6 +28,7 @@ import { AgencyClientShell } from "../components/AgencyClientShell";
 import { AGENCY_CLIENTS } from "../components/AgencyWorkspaceSwitcher";
 import { BrandCreatorDiscoveryPage } from "@/brand/pages/BrandCreatorDiscoveryPage";
 import { BrandContentHubPage } from "@/brand/pages/BrandContentHubPage";
+import { BrandPaymentsPage } from "@/brand/pages/BrandPaymentsPage";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { ROUTES, agencyClientNewProjectRoute } from "@/common/constants/routes";
 import { asset } from "@/common/utils/asset";
@@ -175,6 +176,10 @@ export function AgencyClientOverviewPage() {
 
   if (tab === "content" || tab === "content-hub") {
     return <BrandContentHubPage shell="agency-client" activeClientId={clientId} />;
+  }
+
+  if (tab === "payments") {
+    return <BrandPaymentsPage shell="agency-client" activeClientId={clientId} />;
   }
 
   const activeClient =
@@ -344,16 +349,28 @@ export function AgencyClientOverviewPage() {
                 <div className="mt-3 divide-y divide-[#edeff3]">
                   {ACTIONS.map((item, idx) => {
                     const IconComponent = item.icon;
+                    const handleActionClick = () => {
+                      if (item.title.includes("Shopify")) {
+                        setStoreModalOpen(true);
+                      } else if (item.title.includes("Reels") || item.title.includes("Approve")) {
+                        navigate(`/agency/client/${clientId}?tab=content`);
+                      } else if (item.title.includes("dispute")) {
+                        navigate(`/agency/client/${clientId}?tab=payments&subtab=disputes`);
+                      } else {
+                        navigate(`/agency/client/${clientId}/projects/1`);
+                      }
+                    };
                     return (
                       <div
                         key={idx}
-                        className="flex items-center gap-3.5 py-3.5 hover:bg-[#fafbfd] transition-colors rounded-lg px-2"
+                        onClick={handleActionClick}
+                        className="flex items-center gap-3.5 py-3.5 hover:bg-[#fafbfd] transition-colors rounded-lg px-2 cursor-pointer group"
                       >
-                        <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#f4f6fb] text-[#0d0d10]">
+                        <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#f4f6fb] text-[#0d0d10] group-hover:bg-[#e7edff] group-hover:text-primary transition-colors">
                           <IconComponent size={18} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-[14px] font-medium text-[#0d0d10] leading-snug">{item.title}</p>
+                          <p className="text-[14px] font-medium text-[#0d0d10] leading-snug group-hover:text-primary transition-colors">{item.title}</p>
                           <p className="text-[12px] text-[#71717a] truncate">{item.body}</p>
                         </div>
                         <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-medium ${item.badgeClass}`}>

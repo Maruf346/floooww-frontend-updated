@@ -16,10 +16,14 @@ import {
   X,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { AgencyClientShell } from "@/agency/components/AgencyClientShell";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
-import { brandPaymentDisputeRoute } from "@/common/constants/routes";
+import {
+  brandPaymentDisputeRoute,
+  agencyClientPaymentDisputeRoute,
+} from "@/common/constants/routes";
 
 type TransactionState = "Released" | "Held" | "Fee" | "Refunded";
 
@@ -720,16 +724,53 @@ function TabPanel({ tab }: { tab: Exclude<PaymentTab, "Overview"> }) {
   );
 }
 
-export function BrandPaymentsPage() {
+type BrandPaymentsPageProps = {
+  shell?: "brand" | "agency-client";
+  activeClientId?: string;
+};
+
+export function BrandPaymentsPage({
+  shell = "brand",
+  activeClientId,
+}: BrandPaymentsPageProps = {}) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState<PaymentTab>(() =>
-    new URLSearchParams(window.location.search).get("tab") === "disputes" ? "Disputes" : "Overview",
-  );
+  const { clientId: paramClientId } = useParams();
+  const isAgencyClient = shell === "agency-client" || location.pathname.startsWith("/agency");
+  const clientId = activeClientId || paramClientId || "minimalist";
+  const Shell = isAgencyClient ? AgencyClientShell : BrandShell;
+  const shellProps = isAgencyClient ? { activeClientId: clientId } : {};
+
+  const resolveActiveTab = (): PaymentTab => {
+    const sp = new URLSearchParams(location.search);
+    const sub = sp.get("subtab") || sp.get("paymentTab");
+    if (sub) {
+      const match = tabs.find((t) => t.toLowerCase() === sub.toLowerCase());
+      if (match) return match;
+    }
+    const tabParam = sp.get("tab");
+    if (tabParam && tabParam.toLowerCase() === "disputes") {
+      return "Disputes";
+    }
+    return "Overview";
+  };
+
+  const [activeTab, setActiveTab] = useState<PaymentTab>(resolveActiveTab);
   const [raiseDispute, setRaiseDispute] = useState(false);
 
   useEffect(() => {
-    setActiveTab(new URLSearchParams(location.search).get("tab") === "disputes" ? "Disputes" : "Overview");
+    const sp = new URLSearchParams(location.search);
+    const sub = sp.get("subtab") || sp.get("paymentTab");
+    if (sub) {
+      const match = tabs.find((t) => t.toLowerCase() === sub.toLowerCase());
+      if (match) {
+        setActiveTab(match);
+        return;
+      }
+    }
+    if (sp.get("tab") === "disputes") {
+      setActiveTab("Disputes");
+    }
   }, [location.search]);
 
   const downloadStatement = () => {
@@ -752,7 +793,7 @@ export function BrandPaymentsPage() {
   };
 
   return (
-    <BrandShell>
+    <Shell {...shellProps}>
       <div className="mx-auto w-full max-w-[1440px] space-y-6 pb-10">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -813,7 +854,13 @@ export function BrandPaymentsPage() {
           <Overview onViewAll={() => setActiveTab("Collaborations")} />
         ) : activeTab === "Disputes" ? (
           <DisputesBoard
-            onOpen={(dispute) => navigate(brandPaymentDisputeRoute(dispute.id.toLowerCase()))}
+            onOpen={(dispute) =>
+              navigate(
+                isAgencyClient
+                  ? agencyClientPaymentDisputeRoute(clientId, dispute.id.toLowerCase())
+                  : brandPaymentDisputeRoute(dispute.id.toLowerCase()),
+              )
+            }
           />
         ) : (
           <TabPanel tab={activeTab} />
@@ -825,6 +872,6 @@ export function BrandPaymentsPage() {
           onSubmit={() => setRaiseDispute(false)}
         />
       )}
-    </BrandShell>
+    </Shell>
   );
 }

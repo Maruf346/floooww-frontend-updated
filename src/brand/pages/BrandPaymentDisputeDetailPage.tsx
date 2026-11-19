@@ -1,8 +1,9 @@
 import { useState, type ReactNode } from "react";
 import { ArrowLeft, Check, FileText, Info, MessageSquareText, Paperclip, Send } from "lucide-react";
 import { motion } from "motion/react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { AgencyClientShell } from "@/agency/components/AgencyClientShell";
 import { disputes, type Dispute, type DisputeStatus } from "@/brand/pages/BrandPaymentsPage";
 import { ROUTES } from "@/common/constants/routes";
 
@@ -162,9 +163,23 @@ function DetailSummary({ dispute, detail }: { dispute: Dispute; detail: DisputeD
   );
 }
 
-export function BrandPaymentDisputeDetailPage() {
+type BrandPaymentDisputeDetailPageProps = {
+  shell?: "brand" | "agency-client";
+  activeClientId?: string;
+};
+
+export function BrandPaymentDisputeDetailPage({
+  shell = "brand",
+  activeClientId,
+}: BrandPaymentDisputeDetailPageProps = {}) {
   const navigate = useNavigate();
-  const { disputeId } = useParams();
+  const location = useLocation();
+  const { clientId: paramClientId, disputeId } = useParams();
+  const isAgencyClient = shell === "agency-client" || location.pathname.startsWith("/agency");
+  const clientId = activeClientId || paramClientId || "minimalist";
+  const Shell = isAgencyClient ? AgencyClientShell : BrandShell;
+  const shellProps = isAgencyClient ? { activeClientId: clientId } : {};
+
   const dispute =
     disputes.find((item) => item.id.toLowerCase() === disputeId?.toLowerCase()) ?? disputes[0];
   const detail = detailsById[dispute.id.toLowerCase()] ?? detailsById["dsp-0418"];
@@ -180,13 +195,27 @@ export function BrandPaymentDisputeDetailPage() {
     setStatus("Under review");
   };
 
+  const paymentsRoute = isAgencyClient
+    ? `/agency/client/${clientId}?tab=payments`
+    : ROUTES.brandPayments;
+  const disputesRoute = isAgencyClient
+    ? `/agency/client/${clientId}?tab=payments&subtab=disputes`
+    : `${ROUTES.brandPayments}?tab=disputes`;
+
   return (
-    <BrandShell>
+    <Shell {...shellProps}>
       <main className="mx-auto w-full max-w-[1440px] space-y-6 pb-10">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-[12px] leading-4 text-tertiary">
-              Payments&nbsp; / &nbsp;Disputes&nbsp; / &nbsp;{dispute.id}
+              <Link to={paymentsRoute} className="hover:underline">
+                Payments
+              </Link>
+              &nbsp; / &nbsp;
+              <Link to={disputesRoute} className="hover:underline">
+                Disputes
+              </Link>
+              &nbsp; / &nbsp;{dispute.id}
             </p>
             <div className="mt-2 flex flex-wrap items-center gap-2.5">
               <h1 className="text-[26px] font-bold leading-[34px] tracking-[-.01em] text-ink">
@@ -321,13 +350,13 @@ export function BrandPaymentDisputeDetailPage() {
 
         <button
           type="button"
-          onClick={() => navigate(ROUTES.brandPayments)}
+          onClick={() => navigate(paymentsRoute)}
           className="inline-flex h-9 items-center gap-2 rounded-lg border border-line bg-white px-3 text-[13px] font-medium text-ink transition hover:bg-subtle"
         >
           <ArrowLeft size={16} />
           Back to payments
         </button>
       </main>
-    </BrandShell>
+    </Shell>
   );
 }

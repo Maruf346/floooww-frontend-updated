@@ -388,6 +388,19 @@ export const router = createBrowserRouter(
           }),
         },
         {
+          path: ROUTES.agencyClientPayments,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandPaymentsPage")).BrandPaymentsPage,
+          }),
+        },
+        {
+          path: ROUTES.agencyClientPaymentDispute,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandPaymentDisputeDetailPage"))
+              .BrandPaymentDisputeDetailPage,
+          }),
+        },
+        {
           path: ROUTES.agencyBilling,
           lazy: async () => ({
             Component: (await import("@/agency/pages/AgencyBillingPage")).AgencyBillingPage,
