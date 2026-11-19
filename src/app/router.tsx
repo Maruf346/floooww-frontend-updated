@@ -370,6 +370,24 @@ export const router = createBrowserRouter(
           }),
         },
         {
+          path: ROUTES.agencyClientContent,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandContentHubPage")).BrandContentHubPage,
+          }),
+        },
+        {
+          path: ROUTES.agencyClientContentHub,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandContentHubPage")).BrandContentHubPage,
+          }),
+        },
+        {
+          path: ROUTES.agencyClientCreatorDiscovery,
+          lazy: async () => ({
+            Component: (await import("@/brand/pages/BrandCreatorDiscoveryPage")).BrandCreatorDiscoveryPage,
+          }),
+        },
+        {
           path: ROUTES.agencyBilling,
           lazy: async () => ({
             Component: (await import("@/agency/pages/AgencyBillingPage")).AgencyBillingPage,

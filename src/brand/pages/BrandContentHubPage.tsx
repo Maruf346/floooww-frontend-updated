@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import {
   Check,
   ChevronDown,
@@ -11,9 +12,15 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { AgencyClientShell } from "@/agency/components/AgencyClientShell";
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import { Button } from "@/common/components/ui/Button";
-import { ROUTES } from "@/common/constants/routes";
+import {
+  ROUTES,
+  agencyClientNewProjectRoute,
+  agencyClientProjectsRoute,
+} from "@/common/constants/routes";
+import { asset } from "@/common/utils/asset";
 import type { Platform } from "@/common/types";
 
 const media = {
@@ -350,7 +357,13 @@ function StatusBadge({ status }: { status: ContentStatus }) {
   );
 }
 
-function EmptyContentState() {
+function EmptyContentState({
+  isAgencyClient,
+  clientId,
+}: {
+  isAgencyClient?: boolean;
+  clientId?: string;
+}) {
   return (
     <motion.section
       animate={{ opacity: 1, y: 0 }}
@@ -372,10 +385,17 @@ function EmptyContentState() {
         usage rights and results.
       </p>
       <div className="mt-3 flex flex-wrap justify-center gap-2">
-        <Button kind="secondary" leadingIcon={<FolderOpen size={16} />} to={ROUTES.brandProjects}>
+        <Button
+          kind="secondary"
+          leadingIcon={<FolderOpen size={16} />}
+          to={isAgencyClient && clientId ? agencyClientProjectsRoute(clientId) : ROUTES.brandProjects}
+        >
           Go to projects
         </Button>
-        <Button leadingIcon={<Plus size={16} />} to={ROUTES.brandNewProject}>
+        <Button
+          leadingIcon={<Plus size={16} />}
+          to={isAgencyClient && clientId ? agencyClientNewProjectRoute(clientId) : ROUTES.brandNewProject}
+        >
           Create new project
         </Button>
       </div>
@@ -383,7 +403,22 @@ function EmptyContentState() {
   );
 }
 
-export function BrandContentHubPage() {
+type BrandContentHubPageProps = {
+  shell?: "brand" | "agency-client";
+  activeClientId?: string;
+};
+
+export function BrandContentHubPage({
+  shell = "brand",
+  activeClientId,
+}: BrandContentHubPageProps = {}) {
+  const location = useLocation();
+  const { clientId: paramClientId } = useParams();
+  const isAgencyClient = shell === "agency-client" || location.pathname.startsWith("/agency");
+  const clientId = activeClientId || paramClientId || "minimalist";
+  const Shell = isAgencyClient ? AgencyClientShell : BrandShell;
+  const shellProps = isAgencyClient ? { activeClientId: clientId } : {};
+
   const [activeTab, setActiveTab] = useState<keyof typeof tabCounts>("All");
   const [openFilter, setOpenFilter] = useState<string | null>(null);
   const [project, setProject] = useState("All");
@@ -438,7 +473,7 @@ export function BrandContentHubPage() {
   };
 
   return (
-    <BrandShell>
+    <Shell {...shellProps}>
       <div className="w-full pb-10">
         <header className="flex flex-wrap items-end justify-between gap-3">
           <div>
@@ -610,7 +645,7 @@ export function BrandContentHubPage() {
         </div>
 
         {visibleItems.length === 0 ? (
-          <EmptyContentState />
+          <EmptyContentState isAgencyClient={isAgencyClient} clientId={clientId} />
         ) : (
           <>
             <div
@@ -716,6 +751,6 @@ export function BrandContentHubPage() {
           </>
         )}
       </div>
-    </BrandShell>
+    </Shell>
   );
 }

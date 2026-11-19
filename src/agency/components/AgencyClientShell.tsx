@@ -248,7 +248,7 @@ export function AgencyClientShell({
         <Link
           to={`${baseClientUrl}?tab=creators`}
           onClick={closeMenu}
-          className={`mt-0.5 ${navClass(location.search.includes("tab=creators"))}`}
+          className={`mt-0.5 ${navClass(location.search.includes("tab=creators") || location.pathname.endsWith("/creators"))}`}
         >
           <Search size={18} />
           <span>Creator discovery</span>
@@ -259,7 +259,7 @@ export function AgencyClientShell({
           to={`${baseClientUrl}?tab=content`}
           onClick={closeMenu}
           className={`flex h-9 w-full items-center justify-between rounded-md px-3 text-[14px] transition-colors ${
-            location.search.includes("tab=content")
+            location.search.includes("tab=content") || location.pathname.includes("/content")
               ? "bg-primary-subtle font-semibold text-primary"
               : "text-[#0d0d10] hover:bg-subtle"
           }`}
@@ -268,7 +268,12 @@ export function AgencyClientShell({
             <Image size={18} />
             <span>Content hub</span>
           </div>
-          <CountBadge count={7} active={location.search.includes("tab=content")} />
+          <CountBadge
+            count={7}
+            active={
+              location.search.includes("tab=content") || location.pathname.includes("/content")
+            }
+          />
         </Link>
 
         {/* CONTENT & DATA Section */}

@@ -27,6 +27,7 @@ import {
 import { AgencyClientShell } from "../components/AgencyClientShell";
 import { AGENCY_CLIENTS } from "../components/AgencyWorkspaceSwitcher";
 import { BrandCreatorDiscoveryPage } from "@/brand/pages/BrandCreatorDiscoveryPage";
+import { BrandContentHubPage } from "@/brand/pages/BrandContentHubPage";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { ROUTES, agencyClientNewProjectRoute } from "@/common/constants/routes";
 import { asset } from "@/common/utils/asset";
@@ -170,6 +171,10 @@ export function AgencyClientOverviewPage() {
 
   if (tab === "creators" || tab === "creator-discovery") {
     return <BrandCreatorDiscoveryPage shell="agency-client" activeClientId={clientId} />;
+  }
+
+  if (tab === "content" || tab === "content-hub") {
+    return <BrandContentHubPage shell="agency-client" activeClientId={clientId} />;
   }
 
   const activeClient =
