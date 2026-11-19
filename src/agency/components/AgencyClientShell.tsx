@@ -19,6 +19,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Logo } from "@/common/components/brand/Logo";
 import {
   ROUTES,
+  agencyClientHelpRoute,
   agencyClientNewProjectRoute,
   agencyClientProjectsRoute,
 } from "@/common/constants/routes";
@@ -349,7 +350,7 @@ export function AgencyClientShell({
       {/* Bottom links */}
       <div className="mt-auto border-t border-[#e3e5ec] pt-2">
         <Link
-          to={ROUTES.agencyHelp}
+          to={agencyClientHelpRoute(clientId)}
           onClick={closeMenu}
           className="flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-[14px] text-[#0d0d10] hover:bg-subtle transition-colors"
         >
@@ -444,6 +445,7 @@ export function AgencyClientShell({
           isOpen={logoutOpen}
           onClose={() => setLogoutOpen(false)}
           onConfirm={handleLogout}
+          clientName={activeClient.name}
         />
       )}
     </div>
