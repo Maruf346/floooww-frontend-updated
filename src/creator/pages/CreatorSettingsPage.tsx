@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   Info,
@@ -77,9 +77,18 @@ export default function CreatorSettingsPage() {
       : "account"
   );
 
+  useEffect(() => {
+    const tabParam = searchParams.get("tab") as TabKey;
+    if (tabParam && ["account", "connected", "payouts", "notifications", "security"].includes(tabParam)) {
+      setActiveTabState(tabParam);
+    } else if (!tabParam) {
+      setActiveTabState("account");
+    }
+  }, [searchParams]);
+
   const setActiveTab = (tab: TabKey) => {
     setActiveTabState(tab);
-    setSearchParams(tab === "account" ? {} : { tab });
+    setSearchParams(tab === "account" ? {} : { tab }, { replace: true });
   };
 
   // Profile editable states
@@ -443,7 +452,10 @@ export default function CreatorSettingsPage() {
                 <button
                   key={tab.id}
                   type="button"
-                  onClick={() => setActiveTab(tab.id as TabKey)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setActiveTab(tab.id as TabKey);
+                  }}
                   className={`pb-3 font-['Inter:Medium'] text-[14px] leading-5 whitespace-nowrap cursor-pointer transition relative ${
                     isActive
                       ? "text-[#3b5bff] font-semibold"

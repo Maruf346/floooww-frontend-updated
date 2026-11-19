@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Check,
   ChevronDown,
@@ -1972,7 +1973,36 @@ function SecuritySettings() {
 }
 
 export function BrandSettingsPage() {
-  const [activeTab, setActiveTab] = useState<(typeof settingsTabs)[number][0]>("Account");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const getTabFromUrl = (): (typeof settingsTabs)[number][0] => {
+    const q = searchParams.get("tab")?.toLowerCase();
+    if (!q) return "Account";
+    const match = settingsTabs.find(
+      ([name]) =>
+        name.toLowerCase() === q ||
+        name.toLowerCase().replace(/[^a-z0-9]/g, "") === q.replace(/[^a-z0-9]/g, ""),
+    );
+    return match ? match[0] : "Account";
+  };
+
+  const [activeTab, setActiveTab] = useState<(typeof settingsTabs)[number][0]>(getTabFromUrl);
+
+  useEffect(() => {
+    const urlTab = getTabFromUrl();
+    if (urlTab !== activeTab) {
+      setActiveTab(urlTab);
+    }
+  }, [searchParams]);
+
+  const handleSelectTab = (tabName: (typeof settingsTabs)[number][0]) => {
+    setActiveTab(tabName);
+    setSearchParams(
+      tabName === "Account" ? {} : { tab: tabName.toLowerCase() },
+      { replace: true },
+    );
+  };
+
   return (
     <BrandShell>
       <div className="mx-auto w-full max-w-[1440px] space-y-6 pb-10">
@@ -1990,8 +2020,11 @@ export function BrandSettingsPage() {
               <button
                 key={name}
                 type="button"
-                onClick={() => setActiveTab(name)}
-                className={`flex w-full flex-col gap-0.5 rounded-lg px-3 py-2.5 text-left transition ${activeTab === name ? "bg-primary-subtle" : "hover:bg-subtle"}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSelectTab(name);
+                }}
+                className={`flex w-full flex-col gap-0.5 rounded-lg px-3 py-2.5 text-left transition cursor-pointer select-none ${activeTab === name ? "bg-primary-subtle" : "hover:bg-subtle"}`}
               >
                 <span className="text-[14px] font-medium leading-5 text-ink">{name}</span>
                 <span className="text-[12px] leading-4 text-tertiary">{description}</span>

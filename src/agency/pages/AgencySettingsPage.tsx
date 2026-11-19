@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import {
   ChevronUp,
@@ -462,11 +462,12 @@ function ToggleSwitch({
 
 export function AgencySettingsPage() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Tab initialization based on URL query or pathname
   const initialTab: SettingsTab =
-    pathname === ROUTES.agencyTeam || searchParams.get("tab") === "team"
+    pathname === ROUTES.agencyTeam && !searchParams.get("tab")
       ? "team"
       : ((searchParams.get("tab") as SettingsTab) || "account");
 
@@ -532,11 +533,11 @@ export function AgencySettingsPage() {
   const filterDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (pathname === ROUTES.agencyTeam) {
+    if (pathname === ROUTES.agencyTeam && !searchParams.get("tab")) {
       setActiveTab("team");
     } else {
       const tabParam = searchParams.get("tab") as SettingsTab;
-      if (tabParam && tabParam !== activeTab) {
+      if (tabParam && ["account", "team", "billing", "notifications", "security"].includes(tabParam)) {
         setActiveTab(tabParam);
       }
     }
@@ -551,8 +552,8 @@ export function AgencySettingsPage() {
         setIsFilterOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   const showToast = (msg: string) => {
@@ -562,7 +563,11 @@ export function AgencySettingsPage() {
 
   const handleSelectTab = (tab: SettingsTab) => {
     setActiveTab(tab);
-    setSearchParams({ tab });
+    if (pathname === ROUTES.agencyTeam) {
+      navigate(`${ROUTES.agencySettings}?tab=${tab}`, { replace: true });
+    } else {
+      setSearchParams({ tab }, { replace: true });
+    }
   };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -737,7 +742,10 @@ export function AgencySettingsPage() {
                 <button
                   key={tab.id}
                   type="button"
-                  onClick={() => handleSelectTab(tab.id as SettingsTab)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSelectTab(tab.id as SettingsTab);
+                  }}
                   className={`w-full text-left rounded-[8px] px-3 py-2.5 transition cursor-pointer select-none ${isActive
                       ? "bg-[#f1f4ff] text-[#0d0d10]"
                       : "hover:bg-[#f8f9fb] text-[#0d0d10]"
