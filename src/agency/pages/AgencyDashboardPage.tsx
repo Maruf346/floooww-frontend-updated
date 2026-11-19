@@ -19,6 +19,7 @@ import {
 import { AgencyShell } from "@/agency/components/AgencyShell";
 import { AgencyAddClientModal } from "@/agency/components/AgencyAddClientModal";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
+import { ROUTES } from "@/common/constants/routes";
 
 // KPI Tiles
 const kpiTiles = [
@@ -334,7 +335,7 @@ export function AgencyDashboardPage() {
   };
 
   return (
-    <AgencyShell onAddClient={() => setIsAddClientOpen(true)}>
+    <AgencyShell>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -356,7 +357,7 @@ export function AgencyDashboardPage() {
             <DateRangePicker value="1 Oct – 28 Oct 2026" showCompare={true} />
             <button
               type="button"
-              onClick={() => setIsAddClientOpen(true)}
+              onClick={() => navigate(ROUTES.agencyClientNew)}
               className="h-10 px-4 rounded-lg bg-[#0d0d10] text-[13px] font-medium text-white hover:bg-black transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs select-none"
             >
               <Plus size={16} />

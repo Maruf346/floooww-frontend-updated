@@ -12,7 +12,8 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { AgencyShell } from "@/agency/components/AgencyShell";
-import { ROUTES } from "@/common/constants/routes";
+import { AGENCY_CLIENTS } from "@/agency/components/AgencyWorkspaceSwitcher";
+import { ROUTES, agencyClientNewProjectRoute } from "@/common/constants/routes";
 
 const CATEGORIES = [
   "Beauty & skincare",
@@ -145,6 +146,17 @@ export function AgencyAddClientPage() {
     } else if (step === 2) {
       setStep(3);
     } else if (step === 3) {
+      if (!AGENCY_CLIENTS.some((c) => c.id === clientIdSlug)) {
+        AGENCY_CLIENTS.push({
+          id: clientIdSlug,
+          name: brandName,
+          category: category,
+          statusText: `${category} · onboarding`,
+          statusTone: "onboarding",
+          initials: brandName.slice(0, 2).toUpperCase(),
+          liveProjectsCount: 0,
+        });
+      }
       setStep(4);
     }
   };
@@ -868,23 +880,13 @@ export function AgencyAddClientPage() {
                       <span>Open client workspace</span>
                     </button>
 
-                    <div className="flex items-center gap-[12px]">
-                      <button
-                        type="button"
-                        onClick={() => navigate(`/agency/client/${clientIdSlug}?action=new-project`)}
-                        className="h-[40px] px-[16px] text-[14px] font-medium text-[#0d0d10] hover:text-[#71717a] transition-colors cursor-pointer"
-                      >
-                        Create their first project
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => navigate(`/agency/client/${clientIdSlug}?action=new-project`)}
-                        className="flex h-[40px] items-center gap-[8px] rounded-[8px] bg-[#0d0d10] px-[16px] text-[14px] font-medium text-white hover:bg-black transition-colors cursor-pointer shadow-xs"
-                      >
-                        <span>Create their first project</span>
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => navigate(agencyClientNewProjectRoute(clientIdSlug))}
+                      className="flex h-[40px] items-center gap-[8px] rounded-[8px] bg-[#0d0d10] px-[16px] text-[14px] font-medium text-white hover:bg-black transition-colors cursor-pointer shadow-xs"
+                    >
+                      <span>Create their first project</span>
+                    </button>
                   </div>
                 </motion.div>
               )}
@@ -938,81 +940,56 @@ export function AgencyAddClientPage() {
 
             {/* Steps / Checklist Indicators */}
             <div className="space-y-3 text-[13px]">
-              {step < 4 ? (
-                <>
-                  <div
-                    className={`flex items-center gap-2.5 ${
-                      step === 1 ? "font-semibold text-[#0d0d10]" : "text-[#71717a]"
-                    }`}
-                  >
-                    {step > 1 ? (
-                      <Check size={16} className="text-emerald-500 shrink-0" />
-                    ) : (
-                      <ArrowRight size={16} className="text-[#0d0d10] shrink-0" />
-                    )}
-                    <span>About the client</span>
-                  </div>
+              <div
+                className={`flex items-center gap-2.5 ${
+                  step === 1 ? "font-semibold text-[#0d0d10]" : step > 1 ? "text-[#0d0d10]" : "text-[#a3a3ac]"
+                }`}
+              >
+                {step > 1 ? (
+                  <Check size={16} className="text-emerald-500 shrink-0" />
+                ) : (
+                  <ArrowRight size={16} className="text-[#0d0d10] shrink-0" />
+                )}
+                <span>About the client</span>
+              </div>
 
-                  <div
-                    className={`flex items-center gap-2.5 ${
-                      step === 2
-                        ? "font-semibold text-[#0d0d10]"
-                        : step > 2
-                          ? "text-[#71717a]"
-                          : "text-[#a3a3ac]"
-                    }`}
-                  >
-                    {step > 2 ? (
-                      <Check size={16} className="text-emerald-500 shrink-0" />
-                    ) : step === 2 ? (
-                      <ArrowRight size={16} className="text-[#0d0d10] shrink-0" />
-                    ) : (
-                      <Clock size={16} className="shrink-0 text-[#a3a3ac]" />
-                    )}
-                    <span>Store &amp; analytics</span>
-                  </div>
+              <div
+                className={`flex items-center gap-2.5 ${
+                  step === 2
+                    ? "font-semibold text-[#0d0d10]"
+                    : step > 2
+                      ? "text-[#0d0d10]"
+                      : "text-[#a3a3ac]"
+                }`}
+              >
+                {step > 2 ? (
+                  <Check size={16} className="text-emerald-500 shrink-0" />
+                ) : step === 2 ? (
+                  <ArrowRight size={16} className="text-[#0d0d10] shrink-0" />
+                ) : (
+                  <Clock size={16} className="shrink-0 text-[#a3a3ac]" />
+                )}
+                <span>Store &amp; analytics</span>
+              </div>
 
-                  <div
-                    className={`flex items-center gap-2.5 ${
-                      step === 3 ? "font-semibold text-[#0d0d10]" : "text-[#a3a3ac]"
-                    }`}
-                  >
-                    {step === 3 ? (
-                      <ArrowRight size={16} className="text-[#0d0d10] shrink-0" />
-                    ) : (
-                      <Clock size={16} className="shrink-0 text-[#a3a3ac]" />
-                    )}
-                    <span>Team &amp; access</span>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center gap-2.5 text-[#0d0d10]">
-                    <Check size={16} className="text-emerald-500 shrink-0" />
-                    <span>Store</span>
-                  </div>
-                  <div className="flex items-center gap-2.5 text-[#0d0d10]">
-                    <Check size={16} className="text-emerald-500 shrink-0" />
-                    <span>Team</span>
-                  </div>
-                  <div className="flex items-center gap-2.5 text-[#0d0d10]">
-                    <Check size={16} className="text-emerald-500 shrink-0" />
-                    <span>Managed by</span>
-                  </div>
-                  <div className="flex items-center gap-2.5 text-[#0d0d10]">
-                    <Check size={16} className="text-emerald-500 shrink-0" />
-                    <span>About the client</span>
-                  </div>
-                  <div className="flex items-center gap-2.5 text-[#0d0d10]">
-                    <Check size={16} className="text-emerald-500 shrink-0" />
-                    <span>Store &amp; analytics</span>
-                  </div>
-                  <div className="flex items-center gap-2.5 text-[#0d0d10]">
-                    <Check size={16} className="text-emerald-500 shrink-0" />
-                    <span>Team &amp; access</span>
-                  </div>
-                </>
-              )}
+              <div
+                className={`flex items-center gap-2.5 ${
+                  step === 3
+                    ? "font-semibold text-[#0d0d10]"
+                    : step > 3
+                      ? "text-[#0d0d10]"
+                      : "text-[#a3a3ac]"
+                }`}
+              >
+                {step > 3 ? (
+                  <Check size={16} className="text-emerald-500 shrink-0" />
+                ) : step === 3 ? (
+                  <ArrowRight size={16} className="text-[#0d0d10] shrink-0" />
+                ) : (
+                  <Clock size={16} className="shrink-0 text-[#a3a3ac]" />
+                )}
+                <span>Team &amp; access</span>
+              </div>
             </div>
           </div>
         </div>

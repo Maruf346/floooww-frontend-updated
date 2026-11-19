@@ -51,6 +51,7 @@ function AgencySidebar({
     "flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-[14px] transition-colors";
   const overviewActive = pathname === ROUTES.agency;
   const clientsActive = pathname.startsWith(ROUTES.agencyClients);
+  const isAddClientActive = pathname === ROUTES.agencyClientNew;
   const billingActive = pathname === ROUTES.agencyBilling;
   const reportsActive = pathname.startsWith(ROUTES.agencyReports);
   const teamActive = pathname === ROUTES.agencyTeam;
@@ -173,12 +174,15 @@ function AgencySidebar({
                 type="button"
                 onClick={() => {
                   close?.();
-                  if (onAddClient) onAddClient();
-                  else navigate(ROUTES.agencyClientNew);
+                  navigate(ROUTES.agencyClientNew);
                 }}
-                className="flex h-8 w-full items-center gap-2.5 rounded-md px-3 pl-9 text-[13px] text-ink hover:bg-subtle transition-colors text-left cursor-pointer"
+                className={`flex h-8 w-full items-center gap-2.5 rounded-md px-3 pl-9 text-[13px] transition-colors text-left cursor-pointer ${
+                  isAddClientActive
+                    ? "bg-primary-subtle font-semibold text-primary"
+                    : "text-ink hover:bg-subtle"
+                }`}
               >
-                <span className="size-1 rounded-full bg-[#a3a3ac] shrink-0" />
+                <span className={`size-1 rounded-full shrink-0 ${isAddClientActive ? "bg-primary" : "bg-[#a3a3ac]"}`} />
                 <span className="flex-1 truncate font-medium">+ Add client</span>
               </button>
             </div>

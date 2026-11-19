@@ -228,6 +228,19 @@ export function AgencyClientShell({
                 )}
               </div>
             )}
+
+            {/* Add client button */}
+            <button
+              type="button"
+              onClick={() => {
+                closeMenu?.();
+                navigate(ROUTES.agencyClientNew);
+              }}
+              className="flex h-8 items-center gap-2.5 rounded-md pl-6 pr-3 text-[13px] text-[#71717a] hover:bg-subtle transition-colors text-left cursor-pointer"
+            >
+              <span className="size-1 rounded-full bg-current" />
+              <span>+ Add client</span>
+            </button>
           </div>
         )}
 
