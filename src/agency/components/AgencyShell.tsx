@@ -52,7 +52,7 @@ function AgencySidebar({
   const overviewActive = pathname === ROUTES.agency;
   const clientsActive = pathname.startsWith(ROUTES.agencyClients);
   const isAddClientActive = pathname === ROUTES.agencyClientNew;
-  const billingActive = pathname === ROUTES.agencyBilling;
+  const paymentsActive = pathname === ROUTES.agencyPayments || pathname === ROUTES.agencyBilling;
   const reportsActive = pathname.startsWith(ROUTES.agencyReports);
   const teamActive = pathname === ROUTES.agencyTeam;
   const messagesActive = pathname === ROUTES.agencyMessages;
@@ -190,16 +190,19 @@ function AgencySidebar({
         </div>
 
         <Link
-          to={ROUTES.agencyBilling}
+          to={ROUTES.agencyPayments}
           onClick={close}
           className={`${navClass} mt-0.5 ${
-            billingActive
+            paymentsActive
               ? "bg-primary-subtle font-semibold text-primary"
               : "text-ink hover:bg-subtle"
           }`}
         >
           <WalletCards size={18} />
-          <span>Billing</span>
+          <span className="flex-1">Payments</span>
+          <span className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#edeff3] px-1.5 text-[12px] font-medium leading-4 text-ink">
+            2
+          </span>
         </Link>
 
         <Link

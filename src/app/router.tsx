@@ -405,9 +405,15 @@ export const router = createBrowserRouter(
           }),
         },
         {
+          path: ROUTES.agencyPayments,
+          lazy: async () => ({
+            Component: (await import("@/agency/pages/AgencyPaymentsPage")).AgencyPaymentsPage,
+          }),
+        },
+        {
           path: ROUTES.agencyBilling,
           lazy: async () => ({
-            Component: (await import("@/agency/pages/AgencyBillingPage")).AgencyBillingPage,
+            Component: (await import("@/agency/pages/AgencyPaymentsPage")).AgencyPaymentsPage,
           }),
         },
         {

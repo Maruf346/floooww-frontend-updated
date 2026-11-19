@@ -711,7 +711,7 @@ export function AgencyDashboardPage() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-[16px] font-semibold text-[#0d0d10] leading-6">
-                  Budget
+                  Budget & payments
                 </h2>
                 <p className="text-[12px] text-[#71717a]">
                   Service fees, client invoices and payouts
@@ -719,10 +719,10 @@ export function AgencyDashboardPage() {
               </div>
               <button
                 type="button"
-                onClick={() => showToast("Opening billing overview")}
+                onClick={() => navigate(ROUTES.agencyPayments)}
                 className="text-[#3b5bff] text-[13px] font-medium hover:underline inline-flex items-center gap-1 cursor-pointer select-none"
               >
-                <span>Billing</span>
+                <span>Payments</span>
                 <ArrowRight size={14} />
               </button>
             </div>

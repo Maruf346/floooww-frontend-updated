@@ -72,6 +72,7 @@ export const ROUTES = {
   agencyClientCreatorDiscovery: "/agency/client/:clientId/creators",
   agencyClientPayments: "/agency/client/:clientId/payments",
   agencyClientPaymentDispute: "/agency/client/:clientId/payments/disputes/:disputeId",
+  agencyPayments: "/agency/payments",
   agencyBilling: "/agency/billing",
   agencyReports: "/agency/reports",
   agencyReportNew: "/agency/reports/new",
@@ -147,6 +148,7 @@ export const agencyClientContentRoute = (clientId: string) =>
   `/agency/client/${clientId}?tab=content`;
 export const agencyClientCreatorDiscoveryRoute = (clientId: string) =>
   `/agency/client/${clientId}?tab=creators`;
+export const agencyPaymentsRoute = () => `/agency/payments`;
 export const agencyClientPaymentsRoute = (clientId: string) =>
   `/agency/client/${clientId}?tab=payments`;
 export const agencyClientPaymentDisputeRoute = (clientId: string, disputeId: string) =>
