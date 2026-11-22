@@ -10,7 +10,7 @@ export interface WhyFeature {
 
 export const WHY_COPY = {
   eyebrow: "WHY KREYIO",
-  title: { before: "Everything you need to run", highlight: " better projects" },
+  title: { before: "Everything you need to run better projects", highlight: "" },
   description: "Find the creators who fit, then run every project with them in one place.",
 };
 

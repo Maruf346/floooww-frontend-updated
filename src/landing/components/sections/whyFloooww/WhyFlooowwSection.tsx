@@ -1,10 +1,9 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { AnimatePresence, motion, useInView } from "motion/react";
+import { AnimatePresence, motion, useInView, useReducedMotion } from "motion/react";
 import { ScaledFrame } from "@/common/components/layout/ScaledFrame";
 import { Container } from "@/common/components/ui/Container";
 import { Reveal } from "@/common/components/motion/Reveal";
-import { ASSETS } from "@/common/constants/assets";
 import { EASE_OUT, scaleIn } from "@/common/constants/motion";
 import { ROUTES } from "@/common/constants/routes";
 import { useAutoCycle } from "@/common/hooks/useAutoCycle";
@@ -76,53 +75,87 @@ function FeatureCopy({
   );
 }
 
-/** Soft glow behind the card at Figma (20, 170) relative to it; rendered inside the scaled frame. */
-function Glow() {
-  return (
-    <div
-      aria-hidden="true"
-      className="pointer-events-none absolute left-5 top-[170px] h-[300px] w-[560px]"
-    >
-      <div className="absolute inset-[-30%_-16.07%]">
-        <img src={ASSETS.why.glow} alt="" className="block size-full max-w-none" />
-      </div>
-    </div>
-  );
-}
-
-/** Desktop: heading scrolls in, then card + feature reel pin while scroll walks the four features. */
+/** Desktop: section pins with heading, dark card panel and rolling feature text. */
 function StickyWhy() {
   const { ref, index, goTo } = useStickySteps<HTMLDivElement>(COUNT);
   const viewportHeight = useViewportHeight();
 
+  // (5) When scrolling stops, snap to the nearest feature so it never rests halfway
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    let isSnapping = false;
+
+    const handleScroll = () => {
+      if (isSnapping) return;
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        const el = ref.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const sectionTop = rect.top + window.scrollY - HEADER_OFFSET;
+        const totalDistance = el.offsetHeight - (window.innerHeight - HEADER_OFFSET);
+        if (totalDistance <= 0) return;
+        const currentProgress = (window.scrollY - sectionTop) / totalDistance;
+
+        // Snap only when resting in the active scroll range
+        if (currentProgress > 0.05 && currentProgress < 0.95) {
+          const nearestIndex = Math.min(
+            COUNT - 1,
+            Math.max(0, Math.floor(currentProgress * COUNT)),
+          );
+          const targetCenter = (nearestIndex + 0.5) / COUNT;
+          if (Math.abs(currentProgress - targetCenter) > 0.04) {
+            isSnapping = true;
+            goTo(nearestIndex);
+            setTimeout(() => {
+              isSnapping = false;
+            }, 600);
+          }
+        }
+      }, 160);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(timeoutId);
+    };
+  }, [goTo, ref]);
+
   return (
-    <section aria-labelledby="why-title" className="relative bg-white">
-      <Container className="pb-4 pt-[88px]">
-        <SectionHeading
-          id="why-title"
-          eyebrow={WHY_COPY.eyebrow}
-          title={WHY_COPY.title}
-          description={WHY_COPY.description}
-          titleClassName="text-heading"
-        />
-      </Container>
-      <div ref={ref} style={{ height: `calc(${COUNT} * 60vh + 100dvh - ${HEADER_OFFSET}px)` }}>
-        <div
-          className="sticky flex items-center"
-          style={{ top: HEADER_OFFSET, height: `calc(100dvh - ${HEADER_OFFSET}px)` }}
-        >
-          <Container className="grid grid-cols-[minmax(0,600px)_minmax(0,460px)] items-center justify-center gap-12 xl:gap-[100px]">
-            <Reveal variants={scaleIn} className="relative w-full">
+    <section
+      ref={ref}
+      aria-labelledby="why-title"
+      className="relative bg-white"
+      style={{ height: `calc(${COUNT} * 70vh + 100dvh - ${HEADER_OFFSET}px)` }}
+    >
+      <div
+        className="sticky flex flex-col justify-center overflow-hidden"
+        style={{ top: HEADER_OFFSET, height: `calc(100dvh - ${HEADER_OFFSET}px)` }}
+      >
+        <Container className="flex flex-col items-center gap-6 xl:gap-8">
+          {/* (4) Heading 'Everything you need to run better projects' is all near-black */}
+          <SectionHeading
+            id="why-title"
+            eyebrow={WHY_COPY.eyebrow}
+            title={WHY_COPY.title}
+            description={WHY_COPY.description}
+            titleClassName="text-ink text-[#070b13]"
+          />
+
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,600px)_minmax(0,460px)] items-center justify-center gap-10 xl:gap-[100px] w-full">
+            {/* (1) Near-black panel with rounded corners, (2) One card at a time, (3) Progress bar */}
+            <Reveal variants={scaleIn} className="relative w-full flex justify-center lg:justify-end">
               <ScaledFrame
                 width={WHY_CARD_WIDTH}
                 height={WHY_CARD_HEIGHT}
-                maxHeight={viewportHeight - HEADER_OFFSET - 64}
+                maxHeight={Math.max(340, viewportHeight - HEADER_OFFSET - 220)}
               >
-                <Glow />
                 <WhyCard index={index} />
               </ScaledFrame>
             </Reveal>
 
+            {/* Feature copy roll */}
             <Reveal
               delay={0.1}
               className="relative h-[420px] overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,#000_14%,#000_86%,transparent)]"
@@ -147,8 +180,8 @@ function StickyWhy() {
                 ))}
               </motion.div>
             </Reveal>
-          </Container>
-        </div>
+          </div>
+        </Container>
       </div>
     </section>
   );
@@ -169,7 +202,7 @@ function StackedWhy() {
           eyebrow={WHY_COPY.eyebrow}
           title={WHY_COPY.title}
           description={WHY_COPY.description}
-          titleClassName="text-heading"
+          titleClassName="text-ink text-[#070b13]"
         />
         <Reveal variants={scaleIn} className="relative mx-auto w-full max-w-[600px]">
           <motion.div
@@ -183,7 +216,6 @@ function StackedWhy() {
             className="cursor-grab touch-pan-y active:cursor-grabbing"
           >
             <ScaledFrame width={WHY_CARD_WIDTH} height={WHY_CARD_HEIGHT}>
-              <Glow />
               <WhyCard index={index} />
             </ScaledFrame>
           </motion.div>
@@ -228,8 +260,9 @@ function StackedWhy() {
   );
 }
 
-/** Figma "Why Floooww · scroll (sticky)" (869:1702). */
+/** Figma "Why Floooww · scroll (sticky)" (869:1702). (6) Reduced motion: no pinning. */
 export function WhyFlooowwSection() {
   const desktop = useMediaQuery(DESKTOP_QUERY);
-  return desktop ? <StickyWhy /> : <StackedWhy />;
+  const shouldReduceMotion = useReducedMotion();
+  return desktop && !shouldReduceMotion ? <StickyWhy /> : <StackedWhy />;
 }

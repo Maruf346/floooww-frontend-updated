@@ -23,13 +23,13 @@ export function useStickySteps<T extends HTMLElement = HTMLElement>(count: numbe
     setIndex((current) => (current === next ? current : next));
   });
 
-  /** Glide to the start of step `target` (slightly inside it so it reads as active). */
+  /** Glide to the center of step `target` so it rests comfortably active. */
   const goTo = (target: number) => {
     const element = ref.current;
     if (!element) return;
     const sectionTop = element.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
     const distance = element.offsetHeight - (window.innerHeight - HEADER_OFFSET);
-    const top = sectionTop + distance * ((target + 0.08) / count);
+    const top = sectionTop + distance * ((target + 0.5) / count);
     window.scrollTo({ top, behavior: "smooth" });
   };
 

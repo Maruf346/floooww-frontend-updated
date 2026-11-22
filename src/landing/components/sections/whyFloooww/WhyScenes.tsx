@@ -1,20 +1,20 @@
 import type { ReactNode } from "react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { ASSETS } from "@/common/constants/assets";
 import { EASE_OUT } from "@/common/constants/motion";
 import { cn } from "@/common/utils/cn";
 import { WHY_SCENES } from "@/landing/data/whyFloooww";
 
 export const WHY_CARD_WIDTH = 600;
-export const WHY_CARD_HEIGHT = 440;
+export const WHY_CARD_HEIGHT = 480;
 
-/* Shared panel (Figma "Panel"): 482.383 × 350 at (59, 80) inside the 600 × 440 card. */
+/* Shared panel (Figma "Panel"): 482.383 × 350 at (59, 80) inside the 600 × 480 card. */
 function Panel({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <div
       className={cn(
-        "absolute left-[59px] top-[80px] flex h-[350px] w-[482.383px] flex-col items-start gap-[17.772px] rounded-[21.762px] border-[0.787px] border-line-subtle bg-white p-[25.389px] leading-normal",
-        "[filter:drop-shadow(0px_1.574px_2.361px_rgba(8,13,38,0.06))_drop-shadow(0px_12.593px_15.741px_rgba(8,13,38,0.1))]",
+        "absolute left-[59px] top-[80px] flex h-[350px] w-[482.383px] flex-col items-start gap-[17.772px] rounded-[20px] bg-white p-[25.389px] leading-normal",
+        "drop-shadow-[0px_24px_30px_rgba(0,0,0,0.35)]",
         className,
       )}
     >
@@ -294,28 +294,66 @@ function AnalyticsScene() {
 
 const SCENES = [MatchingScene, WorkflowScene, EscrowScene, AnalyticsScene];
 
-/** The 600 × 440 gradient card (Figma "Card") with a cross-fading scene per feature. */
+/** The 600 × 480 near-black panel (Figma "Card") with one product card scene and progress bar. */
 export function WhyCard({ index }: { index: number }) {
   const Scene = SCENES[index] ?? MatchingScene;
   return (
     <div
-      className="relative overflow-hidden rounded-[28px] border border-line-subtle"
+      className="relative overflow-hidden rounded-[28px] border border-[#edeff3] bg-[#0d0d10]"
       style={{
         width: WHY_CARD_WIDTH,
         height: WHY_CARD_HEIGHT,
-        backgroundImage:
-          "linear-gradient(143.746deg, rgb(238, 243, 255) 14.286%, rgb(246, 248, 251) 85.714%)",
       }}
     >
-      <motion.div
-        key={index}
-        className="absolute left-[-1px] top-[-1px] h-[440px] w-[600px]"
-        initial={{ opacity: 0, y: 18, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.7, ease: EASE_OUT }}
+      {/* (2) Show only the current feature's card; the four scenes must not be stacked behind each other */}
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={index}
+          className="absolute left-0 top-0 h-[440px] w-[600px]"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] },
+          }}
+          exit={{
+            opacity: 0,
+            y: -16,
+            transition: { duration: 0.15, ease: [0.7, 0, 0.84, 0] },
+          }}
+        >
+          <Scene />
+        </motion.div>
+      </AnimatePresence>
+
+      {/* (3) Progress bar (4 parts) at the bottom of the panel */}
+      <div
+        className="absolute bottom-[22px] left-[218px] flex items-center gap-2"
+        role="progressbar"
+        aria-valuenow={index + 1}
+        aria-valuemin={1}
+        aria-valuemax={4}
       >
-        <Scene />
-      </motion.div>
+        {Array.from({ length: 4 }, (_, i) => {
+          const active = i === index;
+          const visited = i < index;
+          return (
+            <motion.div
+              key={i}
+              className="h-1 rounded-[2px]"
+              animate={{
+                width: active ? 56 : 28,
+                backgroundColor: active
+                  ? "#ffffff"
+                  : visited
+                    ? "rgba(255, 255, 255, 0.5)"
+                    : "rgba(255, 255, 255, 0.18)",
+              }}
+              transition={{ duration: 0.28, ease: "easeOut" }}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }
