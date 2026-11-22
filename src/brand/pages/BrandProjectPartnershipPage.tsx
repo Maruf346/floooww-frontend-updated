@@ -2,19 +2,11 @@ import { useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
-  Check,
-  CheckCircle2,
-  Circle,
-  Clock3,
-  FileText,
   Gift,
-  Info,
-  Landmark,
-  Megaphone,
-  Package,
-  Users,
   WalletCards,
   X,
+  CheckCircle2,
+  Circle,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +18,11 @@ import {
   useProjectFlow,
   type ProjectPartnership,
 } from "@/brand/context/ProjectFlowContext";
+import {
+  ProjectBreadcrumb,
+  ProjectSetupSidebar,
+  ProjectStepper,
+} from "@/brand/components/ProjectWizardShared";
 
 const partnershipOptions: {
   value: ProjectPartnership;
@@ -49,17 +46,22 @@ const partnershipOptions: {
 
 export function BrandProjectPartnershipPage() {
   const navigate = useNavigate();
-  const { partnership, setPartnership } = useProjectFlow();
+  const { objective, projectType, partnership, setPartnership, duration } = useProjectFlow();
   const [saved, setSaved] = useState(false);
+  const stepsCount = getProjectSteps(partnership).length;
 
   return (
     <BrandShell>
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6">
         <header className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-[12px] leading-4 text-tertiary">
-              Projects&nbsp;&nbsp;/&nbsp;&nbsp;New project
-            </p>
+            <ProjectBreadcrumb
+              step="partnership"
+              objective={objective}
+              projectType={projectType}
+              partnership={partnership}
+              duration={duration}
+            />
             <h1 className="mt-1 text-[26px] font-bold leading-[34px] tracking-[-.02em]">
               Create new project
             </h1>
@@ -72,7 +74,7 @@ export function BrandProjectPartnershipPage() {
           </Button>
         </header>
 
-        <ProjectStepper partnership={partnership} />
+        <ProjectStepper partnership={partnership} currentStepIndex={2} />
 
         <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
           <motion.section
@@ -83,7 +85,7 @@ export function BrandProjectPartnershipPage() {
           >
             <div>
               <p className="text-[12px] font-semibold leading-4 tracking-[.06em] text-primary">
-                STEP 2 OF {getProjectSteps(partnership).length}
+                STEP 3 OF {stepsCount}
               </p>
               <h2 className="mt-1.5 text-[26px] font-bold leading-[34px] tracking-[-.02em]">
                 Partnership
@@ -120,7 +122,7 @@ export function BrandProjectPartnershipPage() {
                         className={
                           selected
                             ? "flex-1 text-[14px] font-semibold leading-5 text-primary"
-                            : "flex-1 text-[14px] font-semibold leading-5 text-ink"
+                            : "flex-1 text-[14px] font-semibold leading-5"
                         }
                       >
                         {option.value}
@@ -135,34 +137,19 @@ export function BrandProjectPartnershipPage() {
                       {option.description}
                     </p>
                     {option.hint && (
-                      <p className="mt-auto pt-1.5 text-[12px] leading-4 text-tertiary">
-                        {option.hint}
-                      </p>
+                      <div className="mt-auto pt-3">
+                        <span className="text-[12px] font-medium text-tertiary">{option.hint}</span>
+                      </div>
                     )}
                   </button>
                 );
               })}
             </div>
 
-            {partnership === "Gift exchange" && (
-              <div className="mt-5 flex items-start gap-2.5 rounded-md bg-primary-subtle px-3.5 py-3">
-                <Info size={18} className="mt-0.5 shrink-0 text-primary" />
-                <div>
-                  <p className="text-[14px] font-medium leading-[22px] text-ink">
-                    Gift projects are free: nothing is charged
-                  </p>
-                  <p className="mt-0.5 text-[13px] leading-5 text-body">
-                    No escrow and no fees. You choose the product for each deliverable when you
-                    invite a creator, and add tracking there.
-                  </p>
-                </div>
-              </div>
-            )}
-
             <footer className="mt-5 flex flex-wrap items-center gap-3 border-t border-line pt-5">
               <Button
                 kind="secondary"
-                onClick={() => navigate(ROUTES.brandNewProject)}
+                onClick={() => navigate(ROUTES.brandNewProjectType)}
                 leadingIcon={<ArrowLeft size={16} />}
               >
                 Back
@@ -179,117 +166,15 @@ export function BrandProjectPartnershipPage() {
               </Button>
             </footer>
           </motion.section>
-          <ProjectSetupSummary partnership={partnership} />
+          <ProjectSetupSidebar
+            objective={objective}
+            projectType={projectType}
+            partnership={partnership}
+            duration={duration}
+            stepIndex={2}
+          />
         </div>
       </div>
     </BrandShell>
-  );
-}
-
-function ProjectStepper({ partnership }: { partnership: ProjectPartnership }) {
-  const steps = getProjectSteps(partnership);
-  return (
-    <section className="overflow-x-auto rounded-xl border border-line bg-white px-5 py-4">
-      <div className="flex min-w-[760px] items-start">
-        {steps.map((step, index) => (
-          <div key={step} className="flex flex-1 flex-col items-center gap-1.5">
-            {index === 0 ? (
-              <span className="flex size-7 items-center justify-center rounded-full bg-success text-white">
-                <Check size={14} strokeWidth={2.5} />
-              </span>
-            ) : (
-              <span
-                className={
-                  index === 1
-                    ? "flex size-7 items-center justify-center rounded-full bg-primary text-[12px] font-medium text-white"
-                    : "flex size-7 items-center justify-center rounded-full border border-line-strong bg-white text-[12px] font-medium text-tertiary"
-                }
-              >
-                {index + 1}
-              </span>
-            )}
-            <span
-              className={
-                index === 1
-                  ? "text-[12px] font-medium leading-4 text-primary"
-                  : index === 0
-                    ? "text-[12px] leading-4 text-secondary"
-                    : "text-[12px] leading-4 text-tertiary"
-              }
-            >
-              {step}
-            </span>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function ProjectSetupSummary({ partnership }: { partnership: ProjectPartnership }) {
-  const { projectType } = useProjectFlow();
-  const details = [
-    ["Target", "-"],
-    ["Type", projectType],
-    ["Partnership", partnership],
-    ["Duration", "-"],
-  ];
-  const upcoming = [
-    ["Duration", Clock3],
-    ["Project details", FileText],
-    ["Creator requirements", Users],
-    ["Deliverables", Megaphone],
-    ...(partnership === "Paid"
-      ? [
-          ["Budget", WalletCards],
-          ["Payment method", Landmark],
-        ]
-      : []),
-    ["Review & publish", CheckCircle2],
-  ];
-  return (
-    <aside className="rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6">Project setup</h2>
-      <p className="text-[12px] leading-4 text-secondary">Shapes your dashboard</p>
-      <div className="mt-4 space-y-3">
-        {details.map(([label, value]) => (
-          <div
-            key={label}
-            className="flex items-center justify-between gap-3 text-[13px] leading-5"
-          >
-            <span className="text-secondary">{label}</span>
-            <span
-              className={
-                value === "-"
-                  ? "font-medium text-tertiary"
-                  : "text-[14px] font-medium leading-[22px] text-ink"
-              }
-            >
-              {value}
-            </span>
-          </div>
-        ))}
-      </div>
-      <div className="my-4 h-px bg-line" />
-      <div className="space-y-3">
-        <div className="flex items-center gap-2.5 text-ink">
-          <CheckCircle2 size={16} className="text-success" />
-          <span className="text-[13px] leading-5">Type</span>
-        </div>
-        <div className="flex items-center gap-2.5 text-primary">
-          <CheckCircle2 size={16} />
-          <span className="text-[14px] font-medium leading-[22px]">Partnership</span>
-        </div>
-        {upcoming.map(([label, Icon]) => {
-          const StepIcon = Icon as typeof Package;
-          return (
-            <div key={label} className="flex items-center gap-2.5 text-tertiary">
-              <StepIcon size={16} />
-              <span className="text-[13px] leading-5">{label}</span>
-            </div>
-          );
-        })}
-      </div>
-    </aside>
   );
 }

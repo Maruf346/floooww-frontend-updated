@@ -32,7 +32,7 @@ const projectFilters: [string, string?][] = [
 function Sidebar({ close, onLogout }: { close?: () => void; onLogout: () => void }) {
   const location = useLocation();
   const [projectsOpen, setProjectsOpen] = useState(true);
-  const isNewProject = location.pathname === ROUTES.brandNewProject;
+  const isNewProject = location.pathname.startsWith(ROUTES.brandNewProject);
   const isProjects = location.pathname === ROUTES.brandProjects;
   const isCreatorDiscovery = location.pathname === ROUTES.brandCreatorDiscovery;
   const isContentHub = location.pathname === ROUTES.brandContentHub;

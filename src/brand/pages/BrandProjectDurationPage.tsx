@@ -3,17 +3,9 @@ import {
   ArrowLeft,
   ArrowRight,
   CalendarDays,
-  Check,
   CheckCircle2,
   Circle,
-  Clock3,
-  FileText,
-  Landmark,
-  Megaphone,
-  Package,
   Repeat2,
-  Users,
-  WalletCards,
   X,
 } from "lucide-react";
 import { motion } from "motion/react";
@@ -26,8 +18,12 @@ import {
   getProjectSteps,
   useProjectFlow,
   type ProjectDuration,
-  type ProjectPartnership,
 } from "@/brand/context/ProjectFlowContext";
+import {
+  ProjectBreadcrumb,
+  ProjectSetupSidebar,
+  ProjectStepper,
+} from "@/brand/components/ProjectWizardShared";
 
 const durationOptions: {
   value: ProjectDuration;
@@ -57,18 +53,23 @@ const contractLengths = [
 
 export function BrandProjectDurationPage() {
   const navigate = useNavigate();
-  const { partnership, duration, setDuration } = useProjectFlow();
+  const { objective, projectType, partnership, duration, setDuration } = useProjectFlow();
   const [contractLength, setContractLength] = useState("3 months · 3 monthly cycles");
   const [saved, setSaved] = useState(false);
+  const stepsCount = getProjectSteps(partnership).length;
 
   return (
     <BrandShell>
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6">
         <header className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-[12px] leading-4 text-tertiary">
-              Projects&nbsp;&nbsp;/&nbsp;&nbsp;New project
-            </p>
+            <ProjectBreadcrumb
+              step="duration"
+              objective={objective}
+              projectType={projectType}
+              partnership={partnership}
+              duration={duration}
+            />
             <h1 className="mt-1 text-[26px] font-bold leading-[34px] tracking-[-.02em]">
               Create new project
             </h1>
@@ -81,7 +82,7 @@ export function BrandProjectDurationPage() {
           </Button>
         </header>
 
-        <ProjectStepper partnership={partnership} />
+        <ProjectStepper partnership={partnership} currentStepIndex={3} />
 
         <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
           <motion.section
@@ -92,7 +93,7 @@ export function BrandProjectDurationPage() {
           >
             <div>
               <p className="text-[12px] font-semibold leading-4 tracking-[.06em] text-primary">
-                STEP 3 OF {getProjectSteps(partnership).length}
+                STEP 4 OF {stepsCount}
               </p>
               <h2 className="mt-1.5 text-[26px] font-bold leading-[34px] tracking-[-.02em]">
                 Duration
@@ -129,7 +130,7 @@ export function BrandProjectDurationPage() {
                         className={
                           selected
                             ? "flex-1 text-[14px] font-semibold leading-5 text-primary"
-                            : "flex-1 text-[14px] font-semibold leading-5 text-ink"
+                            : "flex-1 text-[14px] font-semibold leading-5"
                         }
                       >
                         {option.value}
@@ -143,42 +144,24 @@ export function BrandProjectDurationPage() {
                     <p className="mt-2.5 text-[13px] leading-5 text-secondary">
                       {option.description}
                     </p>
-                    <p
-                      className={
-                        selected
-                          ? "mt-auto pt-1.5 text-[12px] leading-4 text-primary"
-                          : "mt-auto pt-1.5 text-[12px] leading-4 text-tertiary"
-                      }
-                    >
-                      {option.hint}
-                    </p>
+                    <div className="mt-auto pt-3">
+                      <span className="text-[12px] font-medium text-tertiary">{option.hint}</span>
+                    </div>
                   </button>
                 );
               })}
             </div>
 
             {duration === "Long-term" && (
-              <div className="relative z-10 mt-5 focus-within:z-20">
-                <p className="mb-1.5 text-[12px] font-medium leading-4 text-ink">Contract length</p>
-                <Dropdown
-                  ariaLabel="Contract length"
-                  className="w-full"
-                  onChange={setContractLength}
-                  options={contractLengths}
-                  value={contractLength}
-                />
-                <p className="mt-1.5 text-[12px] font-medium leading-4 text-secondary">
-                  A cycle starts the day a creator accepts and runs to the same date next month. The
-                  project ends on{" "}
-                  {contractLength.startsWith("3")
-                    ? "6 Jan 2027"
-                    : contractLength.startsWith("1")
-                      ? "6 Nov 2026"
-                      : contractLength.startsWith("6")
-                        ? "6 Apr 2027"
-                        : "6 Oct 2027"}
-                  .
-                </p>
+              <div className="mt-5 rounded-lg border border-line bg-subtle p-4">
+                <label className="text-[13px] font-medium leading-5">Contract length</label>
+                <div className="mt-2">
+                  <Dropdown
+                    value={contractLength}
+                    values={contractLengths}
+                    onChange={setContractLength}
+                  />
+                </div>
               </div>
             )}
 
@@ -202,126 +185,15 @@ export function BrandProjectDurationPage() {
               </Button>
             </footer>
           </motion.section>
-          <ProjectSetupSummary duration={duration} partnership={partnership} />
+          <ProjectSetupSidebar
+            objective={objective}
+            projectType={projectType}
+            partnership={partnership}
+            duration={duration}
+            stepIndex={3}
+          />
         </div>
       </div>
     </BrandShell>
-  );
-}
-
-function ProjectStepper({ partnership }: { partnership: ProjectPartnership }) {
-  const steps = getProjectSteps(partnership);
-  return (
-    <section className="overflow-x-auto rounded-xl border border-line bg-white px-5 py-4">
-      <div className="flex min-w-[760px] items-start">
-        {steps.map((step, index) => (
-          <div key={step} className="flex flex-1 flex-col items-center gap-1.5">
-            {index < 2 ? (
-              <span className="flex size-7 items-center justify-center rounded-full bg-success text-white">
-                <Check size={14} strokeWidth={2.5} />
-              </span>
-            ) : (
-              <span
-                className={
-                  index === 2
-                    ? "flex size-7 items-center justify-center rounded-full bg-primary text-[12px] font-medium text-white"
-                    : "flex size-7 items-center justify-center rounded-full border border-line-strong bg-white text-[12px] font-medium text-tertiary"
-                }
-              >
-                {index + 1}
-              </span>
-            )}
-            <span
-              className={
-                index === 2
-                  ? "text-[12px] font-medium leading-4 text-primary"
-                  : index < 2
-                    ? "text-[12px] leading-4 text-secondary"
-                    : "text-[12px] leading-4 text-tertiary"
-              }
-            >
-              {step}
-            </span>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function ProjectSetupSummary({
-  duration,
-  partnership,
-}: {
-  duration: ProjectDuration;
-  partnership: ProjectPartnership;
-}) {
-  const { projectType } = useProjectFlow();
-  const details = [
-    ["Target", "-"],
-    ["Type", projectType],
-    ["Partnership", partnership],
-    ["Duration", duration],
-  ];
-  const upcoming = [
-    ["Project details", FileText],
-    ["Creator requirements", Users],
-    ["Deliverables", Megaphone],
-    ...(partnership === "Paid"
-      ? [
-          ["Budget", WalletCards],
-          ["Payment method", Landmark],
-        ]
-      : []),
-    ["Review & publish", CheckCircle2],
-  ];
-  return (
-    <aside className="rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6">Project setup</h2>
-      <p className="text-[12px] leading-4 text-secondary">Shapes your dashboard</p>
-      <div className="mt-4 space-y-3">
-        {details.map(([label, value]) => (
-          <div
-            key={label}
-            className="flex items-center justify-between gap-3 text-[13px] leading-5"
-          >
-            <span className="text-secondary">{label}</span>
-            <span
-              className={
-                value === "-"
-                  ? "font-medium text-tertiary"
-                  : "text-[14px] font-medium leading-[22px] text-ink"
-              }
-            >
-              {value}
-            </span>
-          </div>
-        ))}
-      </div>
-      <div className="my-4 h-px bg-line" />
-      <div className="space-y-3">
-        <div className="flex items-center gap-2.5 text-ink">
-          <CheckCircle2 size={16} className="text-success" />
-          <span className="text-[13px] leading-5">Type</span>
-        </div>
-        <div className="flex items-center gap-2.5 text-ink">
-          <CheckCircle2 size={16} className="text-success" />
-          <span className="text-[13px] leading-5">Partnership</span>
-        </div>
-        <div className="flex items-center gap-2.5 text-primary">
-          <CheckCircle2 size={16} className="text-success" />
-          <span className="text-[14px] font-medium leading-[22px]">Duration</span>
-        </div>
-        {upcoming.map(([label, Icon]) => {
-          const StepIcon = Icon as typeof Package;
-          return (
-            <div key={label} className="flex items-center gap-2.5 text-tertiary">
-              <StepIcon size={16} />
-              <span className="text-[13px] leading-5">{label}</span>
-            </div>
-          );
-        })}
-      </div>
-    </aside>
   );
 }

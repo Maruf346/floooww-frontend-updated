@@ -33,6 +33,7 @@ export const ROUTES = {
   brandCustomReports: "/brand/reports",
   brandCustomReportNew: "/brand/reports/new",
   brandNewProject: "/brand/projects/new",
+  brandNewProjectType: "/brand/projects/new/type",
   brandNewProjectPartnership: "/brand/projects/new/partnership",
   brandNewProjectDuration: "/brand/projects/new/duration",
   brandNewProjectDetails: "/brand/projects/new/details",

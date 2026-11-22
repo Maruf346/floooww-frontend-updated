@@ -2,9 +2,6 @@ import { useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
-  Check,
-  CheckCircle2,
-  CircleCheck,
   CreditCard,
   ShieldCheck,
   Smartphone,
@@ -16,10 +13,13 @@ import { BrandShell } from "@/brand/components/BrandShell";
 import { Button } from "@/common/components/ui/Button";
 import { ROUTES } from "@/common/constants/routes";
 import {
-  getProjectDurationLabel,
-  getProjectTarget,
   useProjectFlow,
 } from "@/brand/context/ProjectFlowContext";
+import {
+  ProjectBreadcrumb,
+  ProjectSetupSidebar,
+  ProjectStepper,
+} from "@/brand/components/ProjectWizardShared";
 
 const steps = [
   "Type",
@@ -37,6 +37,7 @@ const input =
 
 export function BrandProjectPaymentPage() {
   const navigate = useNavigate();
+  const { objective, partnership, duration, projectType } = useProjectFlow();
   const [method, setMethod] = useState<"upi" | "card">("card");
   const [saved, setSaved] = useState(false);
   return (
@@ -44,9 +45,13 @@ export function BrandProjectPaymentPage() {
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6">
         <header className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-[12px] leading-4 text-tertiary">
-              Projects&nbsp;&nbsp;/&nbsp;&nbsp;New project
-            </p>
+            <ProjectBreadcrumb
+              step="payment"
+              objective={objective}
+              projectType={projectType}
+              partnership={partnership}
+              duration={duration}
+            />
             <h1 className="mt-1 text-[26px] font-bold leading-[34px] tracking-[-.02em]">
               Create new project
             </h1>
@@ -58,7 +63,7 @@ export function BrandProjectPaymentPage() {
             Exit
           </Button>
         </header>
-        <Stepper />
+        <ProjectStepper partnership={partnership} currentStepIndex={8} />
         <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
           <motion.form
             initial={{ opacity: 0, y: 10 }}
@@ -71,7 +76,7 @@ export function BrandProjectPaymentPage() {
           >
             <div>
               <p className="text-[12px] font-semibold leading-4 tracking-[.06em] text-primary">
-                STEP 8 OF 9
+                STEP 9 OF 10
               </p>
               <h2 className="mt-1.5 text-[26px] font-bold leading-[34px] tracking-[-.02em]">
                 Add your payment details
@@ -188,7 +193,13 @@ export function BrandProjectPaymentPage() {
               </Button>
             </footer>
           </motion.form>
-          <ProjectSetup />
+          <ProjectSetupSidebar
+            objective={objective}
+            projectType={projectType}
+            partnership={partnership}
+            duration={duration}
+            stepIndex={8}
+          />
         </div>
       </div>
     </BrandShell>
@@ -310,91 +321,4 @@ function Field({
     </label>
   );
 }
-function Stepper() {
-  return (
-    <section className="overflow-x-auto rounded-xl border border-line bg-white px-5 py-4">
-      <div className="flex min-w-[760px]">
-        {steps.map((s, i) => (
-          <div className="flex flex-1 flex-col items-center gap-1.5" key={s}>
-            {i < 7 ? (
-              <span className="flex size-7 items-center justify-center rounded-full bg-success text-white">
-                <Check size={14} />
-              </span>
-            ) : (
-              <span
-                className={
-                  i === 7
-                    ? "flex size-7 items-center justify-center rounded-full bg-primary text-[12px] text-white"
-                    : "flex size-7 items-center justify-center rounded-full border border-line-strong text-[12px] text-tertiary"
-                }
-              >
-                {i + 1}
-              </span>
-            )}
-            <span
-              className={
-                i === 7
-                  ? "text-[12px] font-medium text-primary"
-                  : i < 7
-                    ? "text-[12px] text-secondary"
-                    : "text-[12px] text-tertiary"
-              }
-            >
-              {s}
-            </span>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-function ProjectSetup() {
-  const { projectType, partnership, duration } = useProjectFlow();
-  return (
-    <aside className="rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6">Project setup</h2>
-      <p className="text-[12px] text-secondary">Shapes your dashboard</p>
-      <div className="mt-4 space-y-3 text-[13px]">
-        <p className="flex justify-between text-secondary">
-          Target <b className="text-ink">{getProjectTarget(projectType, partnership, duration)}</b>
-        </p>
-        <p className="flex justify-between text-secondary">
-          Type <b className="text-ink">{projectType}</b>
-        </p>
-        <p className="flex justify-between text-secondary">
-          Partnership <b className="text-ink">{partnership}</b>
-        </p>
-        <p className="flex justify-between text-secondary">
-          Duration <b className="text-ink">{getProjectDurationLabel(partnership, duration)}</b>
-        </p>
-      </div>
-      <div className="my-4 h-px bg-line" />
-      <div className="space-y-3">
-        {[
-          "Type",
-          "Partnership",
-          "Duration",
-          "Project details",
-          "Creator requirements",
-          "Deliverables",
-          "Budget",
-        ].map((x) => (
-          <p className="flex gap-2.5 text-[13px]" key={x}>
-            <CheckCircle2 size={16} className="text-success" />
-            {x}
-          </p>
-        ))}
-        <p className="flex gap-2.5 text-[14px] font-medium text-primary">
-          <CircleCheck size={16} />
-          Payment method
-        </p>
-        <p className="flex gap-2.5 text-[13px] text-tertiary">
-          <span className="flex size-4 items-center justify-center rounded-full border border-line-strong text-[10px]">
-            9
-          </span>
-          Review & publish
-        </p>
-      </div>
-    </aside>
-  );
-}
+

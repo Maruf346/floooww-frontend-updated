@@ -1,5 +1,5 @@
-import { useState, type ReactNode } from "react";
-import { ArrowLeft, Check, CheckCircle2, CircleCheck, Pencil, Send, X } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, CircleCheck, Pencil, Send, X } from "lucide-react";
 import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
@@ -7,112 +7,17 @@ import { Button } from "@/common/components/ui/Button";
 import { ROUTES } from "@/common/constants/routes";
 import {
   getProjectDurationLabel,
-  getProjectSteps,
   getProjectTarget,
+  trackingByObjective,
   useProjectFlow,
-  type ProjectDuration,
-  type ProjectPartnership,
-  type ProjectType,
 } from "@/brand/context/ProjectFlowContext";
+import {
+  ProjectBreadcrumb,
+  ProjectSetupSidebar,
+  ProjectStepper,
+} from "@/brand/components/ProjectWizardShared";
 
 type ReviewRow = { label: string; value: string };
-
-const cards: Array<{ title: string; rows: ReviewRow[]; route: string }> = [
-  {
-    title: "Setup",
-    route: ROUTES.brandNewProject,
-    rows: [
-      { label: "Target", value: "20 usable videos" },
-      { label: "Tracked with", value: "Files go to your Content hub · no channel tracking" },
-      { label: "Type", value: "UGC" },
-      { label: "Partnership", value: "Paid" },
-      { label: "Duration", value: "One-time" },
-    ],
-  },
-  {
-    title: "Details",
-    route: ROUTES.brandNewProjectDetails,
-    rows: [
-      { label: "Project name", value: "Glow Edit UGC Pack" },
-      { label: "Platforms", value: "Files · no posting on their channels" },
-      { label: "Language", value: "English, Hindi" },
-      { label: "Dates", value: "7 Oct – 7 Nov 2026" },
-      { label: "Apply by", value: "12 Oct 2026" },
-    ],
-  },
-  {
-    title: "Creators",
-    route: ROUTES.brandNewProjectCreators,
-    rows: [
-      { label: "Creators", value: "16" },
-      { label: "Portfolio", value: "At least 3 UGC videos" },
-      { label: "Turnaround", value: "Within 5 days" },
-      { label: "Niche", value: "Beauty, Skincare" },
-      { label: "Audience", value: "Mostly women · 18–24, 25–34 · India metro cities" },
-    ],
-  },
-  {
-    title: "Deliverables",
-    route: ROUTES.brandNewProjectDeliverables,
-    rows: [
-      { label: "Video file", value: "2 Product demos (30 s)" },
-      { label: "Photo files", value: "1 Product photo set (5)" },
-      { label: "Video file", value: "1 Unboxing (45 s)" },
-      { label: "Approval", value: "You approve each draft" },
-    ],
-  },
-  {
-    title: "Budget",
-    route: ROUTES.brandNewProjectBudget,
-    rows: [
-      { label: "How you’ll pay", value: "Fee range, creators pick a fee inside it" },
-      { label: "Fee range", value: "₹3,000 – ₹12,000" },
-      { label: "Creators", value: "10" },
-      { label: "Creator fees", value: "₹1,00,000 (budget cap)" },
-      { label: "Kreyio fee", value: "Free for brands" },
-      { label: "GST (18%) on creator fees", value: "₹18,000" },
-      { label: "Total", value: "₹1,18,000" },
-    ],
-  },
-  {
-    title: "Payment",
-    route: ROUTES.brandNewProjectPayment,
-    rows: [
-      { label: "Method", value: "UPI AutoPay · minimalist@okicici" },
-      { label: "Billing name", value: "Minimalist Pvt Ltd" },
-      { label: "GSTIN", value: "27AABCG1234M1Z5" },
-      { label: "Place of supply", value: "Maharashtra" },
-      { label: "Invoices to", value: "finance@minimalist.in" },
-    ],
-  },
-];
-
-function Stepper({ partnership }: { partnership: ProjectPartnership }) {
-  const steps = getProjectSteps(partnership);
-  return (
-    <div className="overflow-x-auto rounded-xl border border-line bg-white px-5 py-4">
-      <div className="flex min-w-[720px] items-start justify-between gap-3">
-        {steps.map((step, index) => {
-          const active = index === steps.length - 1;
-          return (
-            <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5" key={step}>
-              <span
-                className={`flex size-7 items-center justify-center rounded-full text-xs font-medium ${active ? "bg-primary text-white" : "bg-success text-white"}`}
-              >
-                {active ? steps.length : <Check size={14} strokeWidth={2.5} />}
-              </span>
-              <span
-                className={`whitespace-nowrap text-center text-xs leading-4 ${active ? "font-medium text-primary" : "text-secondary"}`}
-              >
-                {step}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
 
 function ReviewCard({
   title,
@@ -146,85 +51,103 @@ function ReviewCard({
   );
 }
 
-function SetupItem({ children, active = false }: { children: ReactNode; active?: boolean }) {
-  return (
-    <div
-      className={`flex items-center gap-2.5 text-[13px] leading-5 ${active ? "font-medium text-primary" : "text-ink"}`}
-    >
-      {active ? <CircleCheck size={16} /> : <CheckCircle2 className="text-success" size={16} />}
-      {children}
-    </div>
-  );
-}
-
-function ProjectSetup({
-  partnership,
-  duration,
-  projectType,
-}: {
-  partnership: ProjectPartnership;
-  duration: ProjectDuration;
-  projectType: ProjectType;
-}) {
-  return (
-    <aside className="h-fit rounded-xl border border-line bg-white p-5 xl:w-80">
-      <h2 className="text-base font-semibold leading-6 text-ink">Project setup</h2>
-      <p className="mt-0.5 text-xs leading-4 text-secondary">Shapes your dashboard</p>
-      <dl className="mt-4 space-y-3 text-sm leading-[22px]">
-        <div className="flex justify-between gap-3">
-          <dt className="text-secondary">Target</dt>
-          <dd className="font-medium text-ink">
-            {getProjectTarget(projectType, partnership, duration)}
-          </dd>
-        </div>
-        <div className="flex justify-between gap-3">
-          <dt className="text-secondary">Type</dt>
-          <dd className="font-medium text-ink">{projectType}</dd>
-        </div>
-        <div className="flex justify-between gap-3">
-          <dt className="text-secondary">Partnership</dt>
-          <dd className="font-medium text-ink">{partnership}</dd>
-        </div>
-        <div className="flex justify-between gap-3">
-          <dt className="text-secondary">Duration</dt>
-          <dd className="text-right font-medium text-ink">
-            {getProjectDurationLabel(partnership, duration)}
-          </dd>
-        </div>
-      </dl>
-      <div className="my-4 border-t border-line" />
-      <div className="space-y-3">
-        <SetupItem>Type</SetupItem>
-        <SetupItem>Partnership</SetupItem>
-        <SetupItem>Duration</SetupItem>
-        <SetupItem>Project details</SetupItem>
-        <SetupItem>Creator requirements</SetupItem>
-        <SetupItem>Deliverables</SetupItem>
-        {partnership === "Paid" && (
-          <>
-            <SetupItem>Budget</SetupItem>
-            <SetupItem>Payment method</SetupItem>
-          </>
-        )}
-        <SetupItem active>Review &amp; publish</SetupItem>
-      </div>
-    </aside>
-  );
-}
-
 export function BrandProjectReviewPage() {
   const navigate = useNavigate();
-  const { partnership, duration, projectType } = useProjectFlow();
+  const { objective, partnership, duration, projectType } = useProjectFlow();
   const [agreed, setAgreed] = useState(true);
   const [saved, setSaved] = useState(false);
+
+  const isGift = partnership === "Gift exchange";
+  const stepIndex = isGift ? 7 : 9;
+  const stepText = isGift ? "STEP 8 OF 8" : "STEP 10 OF 10";
+
+  const cards: Array<{ title: string; rows: ReviewRow[]; route: string }> = [
+    {
+      title: "Setup",
+      route: ROUTES.brandNewProject,
+      rows: [
+        { label: "Objective", value: objective },
+        { label: "Target", value: getProjectTarget(projectType, partnership, duration, objective) },
+        { label: "Tracked with", value: trackingByObjective[objective] },
+        { label: "Type", value: projectType },
+        { label: "Partnership", value: partnership },
+        { label: "Duration", value: getProjectDurationLabel(partnership, duration) },
+      ],
+    },
+    {
+      title: "Details",
+      route: ROUTES.brandNewProjectDetails,
+      rows: [
+        { label: "Project name", value: "Glow Edit UGC Pack" },
+        { label: "Platforms", value: "Files · no posting on their channels" },
+        { label: "Language", value: "English, Hindi" },
+        { label: "Dates", value: "7 Oct – 7 Nov 2026" },
+        { label: "Apply by", value: "12 Oct 2026" },
+      ],
+    },
+    {
+      title: "Creators",
+      route: ROUTES.brandNewProjectCreators,
+      rows: [
+        { label: "Creators", value: "16" },
+        { label: "Portfolio", value: "At least 3 UGC videos" },
+        { label: "Turnaround", value: "Within 5 days" },
+        { label: "Niche", value: "Beauty, Skincare" },
+        { label: "Audience", value: "Mostly women · 18–24, 25–34 · India metro cities" },
+      ],
+    },
+    {
+      title: "Deliverables",
+      route: ROUTES.brandNewProjectDeliverables,
+      rows: [
+        { label: "Video file", value: "2 Product demos (30 s)" },
+        { label: "Photo files", value: "1 Product photo set (5)" },
+        { label: "Video file", value: "1 Unboxing (45 s)" },
+        { label: "Approval", value: "You approve each draft" },
+      ],
+    },
+    {
+      title: "Budget",
+      route: ROUTES.brandNewProjectBudget,
+      rows: [
+        { label: "How you’ll pay", value: "Fee range, creators pick a fee inside it" },
+        { label: "Fee range", value: "₹3,000 – ₹12,000" },
+        { label: "Creators", value: "10" },
+        { label: "Creator fees", value: "₹1,00,000 (budget cap)" },
+        { label: "Kreyio fee", value: "Free for brands" },
+        { label: "GST (18%) on creator fees", value: "₹18,000" },
+        { label: "Total", value: "₹1,18,000" },
+      ],
+    },
+    {
+      title: "Payment",
+      route: ROUTES.brandNewProjectPayment,
+      rows: [
+        { label: "Method", value: "UPI AutoPay · minimalist@okicici" },
+        { label: "Billing name", value: "Minimalist Pvt Ltd" },
+        { label: "GSTIN", value: "27AABCG1234M1Z5" },
+        { label: "Place of supply", value: "Maharashtra" },
+        { label: "Invoices to", value: "finance@minimalist.in" },
+      ],
+    },
+  ];
+
+  const visibleCards = cards.filter(
+    (card) => partnership === "Paid" || (card.title !== "Budget" && card.title !== "Payment"),
+  );
+
   return (
     <BrandShell>
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6">
         <header className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-[12px] leading-4 text-tertiary">
-              Projects&nbsp;&nbsp;/&nbsp;&nbsp;New project
-            </p>
+            <ProjectBreadcrumb
+              step="review"
+              objective={objective}
+              projectType={projectType}
+              partnership={partnership}
+              duration={duration}
+            />
             <h1 className="mt-1 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">
               Create new project
             </h1>
@@ -236,7 +159,9 @@ export function BrandProjectReviewPage() {
             Exit
           </Button>
         </header>
-        <Stepper partnership={partnership} />
+
+        <ProjectStepper partnership={partnership} currentStepIndex={stepIndex} />
+
         <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
           <motion.form
             animate={{ opacity: 1, y: 0 }}
@@ -250,7 +175,7 @@ export function BrandProjectReviewPage() {
           >
             <div>
               <p className="text-xs font-semibold leading-4 tracking-[0.72px] text-primary">
-                STEP {partnership === "Gift exchange" ? "7 OF 7" : "9 OF 9"}
+                {stepText}
               </p>
               <h2 className="mt-1.5 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">
                 Review and publish
@@ -259,26 +184,13 @@ export function BrandProjectReviewPage() {
                 Check everything once. Some fields lock after creators apply.
               </p>
             </div>
+
             <div className="mt-5 space-y-3">
-              {cards
-                .map((card) =>
-                  card.title === "Setup"
-                    ? {
-                        ...card,
-                        rows: card.rows.map((row) =>
-                          row.label === "Type" ? { ...row, value: projectType } : row,
-                        ),
-                      }
-                    : card,
-                )
-                .filter(
-                  (card) =>
-                    partnership === "Paid" || (card.title !== "Budget" && card.title !== "Payment"),
-                )
-                .map((card) => (
-                  <ReviewCard {...card} key={card.title} onEdit={() => navigate(card.route)} />
-                ))}
+              {visibleCards.map((card) => (
+                <ReviewCard {...card} key={card.title} onEdit={() => navigate(card.route)} />
+              ))}
             </div>
+
             {partnership === "Gift exchange" && (
               <section className="mt-5 flex items-start gap-2.5 rounded-md bg-success-bg px-3.5 py-3">
                 <CircleCheck size={18} className="mt-0.5 shrink-0 text-success" />
@@ -293,6 +205,7 @@ export function BrandProjectReviewPage() {
                 </div>
               </section>
             )}
+
             <label className="mt-5 flex cursor-pointer items-center gap-2 text-[13px] leading-5 text-ink">
               <input
                 aria-label="Agree to project terms"
@@ -303,6 +216,7 @@ export function BrandProjectReviewPage() {
               />
               <span>I agree to the project terms and creator code of conduct</span>
             </label>
+
             <footer className="mt-5 flex flex-wrap items-center gap-3 border-t border-line pt-5">
               <Button
                 kind="secondary"
@@ -332,7 +246,14 @@ export function BrandProjectReviewPage() {
               </Button>
             </footer>
           </motion.form>
-          <ProjectSetup partnership={partnership} duration={duration} projectType={projectType} />
+
+          <ProjectSetupSidebar
+            objective={objective}
+            projectType={projectType}
+            partnership={partnership}
+            duration={duration}
+            stepIndex={stepIndex}
+          />
         </div>
       </div>
     </BrandShell>

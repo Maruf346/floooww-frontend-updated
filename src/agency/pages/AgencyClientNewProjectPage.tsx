@@ -40,12 +40,35 @@ import { Button } from "@/common/components/ui/Button";
 import { Dropdown, MultiDropdown } from "@/common/components/ui/Dropdown";
 import {
   getProjectDurationLabel,
-  getProjectSteps,
   getProjectTarget,
   type ProjectDuration,
   type ProjectPartnership,
   type ProjectType,
 } from "@/brand/context/ProjectFlowContext";
+
+const agencyPaidSteps = [
+  "Type",
+  "Partnership",
+  "Duration",
+  "Details",
+  "Creators",
+  "Deliverables",
+  "Budget",
+  "Payment",
+  "Review",
+];
+const agencyGiftSteps = [
+  "Type",
+  "Partnership",
+  "Duration",
+  "Details",
+  "Creators",
+  "Deliverables",
+  "Review",
+];
+function getAgencySteps(partnership: ProjectPartnership) {
+  return partnership === "Gift exchange" ? agencyGiftSteps : agencyPaidSteps;
+}
 
 const NICHES = ["Beauty", "Skincare", "Fashion", "Lifestyle", "Wellness", "Fitness", "Other"];
 const GENDER_OPTIONS = ["Any", "Mostly women", "Mostly men", "Balanced"];
@@ -153,7 +176,7 @@ export function AgencyClientNewProjectPage() {
 
   // Stepper calculations (Gift exchange skips Budget & Payment)
   const isGift = partnership === "Gift exchange";
-  const activeSteps = getProjectSteps(partnership);
+  const activeSteps = getAgencySteps(partnership);
   const totalStepsCount = activeSteps.length;
 
   const handleExit = () => {

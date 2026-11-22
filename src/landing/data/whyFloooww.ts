@@ -72,7 +72,7 @@ export const WHY_SCENES = {
   workflow: {
     live: "Meera Iyer accepted · just now",
     title: "Vitamin-C Serum",
-    subtitle: "Brief · sales & conversions",
+    subtitle: "Brief · sales",
     status: "Draft",
     rows: [
       { label: "Posts", value: "2 Reels · 1 Story" },

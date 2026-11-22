@@ -5,12 +5,7 @@ import {
   Camera,
   CheckCircle2,
   Circle,
-  Clock3,
-  FileText,
-  Landmark,
-  Megaphone,
   Users,
-  WalletCards,
   X,
 } from "lucide-react";
 import { motion } from "motion/react";
@@ -18,19 +13,16 @@ import { useNavigate } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
 import { ROUTES } from "@/common/constants/routes";
 import { Button } from "@/common/components/ui/Button";
-import { useProjectFlow, type ProjectType } from "@/brand/context/ProjectFlowContext";
-
-const steps = [
-  "Type",
-  "Partnership",
-  "Duration",
-  "Details",
-  "Creators",
-  "Deliverables",
-  "Budget",
-  "Payment",
-  "Review",
-];
+import {
+  getProjectSteps,
+  useProjectFlow,
+  type ProjectType,
+} from "@/brand/context/ProjectFlowContext";
+import {
+  ProjectBreadcrumb,
+  ProjectSetupSidebar,
+  ProjectStepper,
+} from "@/brand/components/ProjectWizardShared";
 
 const typeOptions: {
   value: ProjectType;
@@ -55,18 +47,22 @@ const typeOptions: {
 
 export function BrandProjectTypePage() {
   const navigate = useNavigate();
-  const { projectType, setProjectType } = useProjectFlow();
+  const { objective, projectType, setProjectType, partnership, duration } = useProjectFlow();
   const [saved, setSaved] = useState(false);
-  const activeOption = typeOptions.find((option) => option.value === projectType)!;
+  const stepsCount = getProjectSteps(partnership).length;
 
   return (
     <BrandShell>
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6">
         <header className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-[12px] leading-4 text-tertiary">
-              Projects&nbsp;&nbsp;/&nbsp;&nbsp;New project
-            </p>
+            <ProjectBreadcrumb
+              step="type"
+              objective={objective}
+              projectType={projectType}
+              partnership={partnership}
+              duration={duration}
+            />
             <h1 className="mt-1 text-[26px] font-bold leading-[34px] tracking-[-.02em]">
               Create new project
             </h1>
@@ -79,7 +75,7 @@ export function BrandProjectTypePage() {
           </Button>
         </header>
 
-        <ProjectStepper />
+        <ProjectStepper partnership={partnership} currentStepIndex={1} />
 
         <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
           <motion.section
@@ -90,7 +86,7 @@ export function BrandProjectTypePage() {
           >
             <div>
               <p className="text-[12px] font-semibold leading-4 tracking-[.06em] text-primary">
-                STEP 1 OF 9
+                STEP 2 OF {stepsCount}
               </p>
               <h2 className="mt-1.5 text-[26px] font-bold leading-[34px] tracking-[-.02em]">
                 Project type
@@ -152,7 +148,7 @@ export function BrandProjectTypePage() {
             <footer className="mt-5 flex flex-wrap items-center gap-3 border-t border-line pt-5">
               <Button
                 kind="secondary"
-                onClick={() => navigate(ROUTES.brand)}
+                onClick={() => navigate(ROUTES.brandNewProject)}
                 leadingIcon={<ArrowLeft size={16} />}
               >
                 Back
@@ -169,100 +165,15 @@ export function BrandProjectTypePage() {
               </Button>
             </footer>
           </motion.section>
-          <ProjectSetupSummary selected={projectType} />
+          <ProjectSetupSidebar
+            objective={objective}
+            projectType={projectType}
+            partnership={partnership}
+            duration={duration}
+            stepIndex={1}
+          />
         </div>
       </div>
     </BrandShell>
-  );
-}
-
-function ProjectStepper() {
-  return (
-    <section className="overflow-x-auto rounded-xl border border-line bg-white px-5 py-4">
-      <div className="flex min-w-[760px] items-start">
-        {steps.map((step, index) => (
-          <div key={step} className="flex flex-1 flex-col items-center gap-1.5">
-            <span
-              className={
-                index === 0
-                  ? "flex size-7 items-center justify-center rounded-full bg-primary text-[12px] font-medium text-white"
-                  : "flex size-7 items-center justify-center rounded-full border border-line-strong bg-white text-[12px] font-medium text-tertiary"
-              }
-            >
-              {index + 1}
-            </span>
-            <span
-              className={
-                index === 0
-                  ? "text-[12px] font-medium leading-4 text-primary"
-                  : "text-[12px] leading-4 text-tertiary"
-              }
-            >
-              {step}
-            </span>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function ProjectSetupSummary({ selected }: { selected: ProjectType }) {
-  const details = [
-    ["Target", "-"],
-    ["Type", selected],
-    ["Partnership", "-"],
-    ["Duration", "-"],
-  ];
-  const remaining = [
-    ["Partnership", Users],
-    ["Duration", Clock3],
-    ["Project details", FileText],
-    ["Creator requirements", Users],
-    ["Deliverables", Megaphone],
-    ["Budget", WalletCards],
-    ["Payment method", Landmark],
-    ["Review & publish", CheckCircle2],
-  ];
-  return (
-    <aside className="rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6">Project setup</h2>
-      <p className="text-[12px] leading-4 text-secondary">Shapes your dashboard</p>
-      <div className="mt-4 space-y-3">
-        {details.map(([label, value]) => (
-          <div
-            key={label}
-            className="flex items-center justify-between gap-3 text-[13px] leading-5"
-          >
-            <span className="text-secondary">{label}</span>
-            <span
-              className={
-                value === "-"
-                  ? "font-medium text-tertiary"
-                  : "text-[14px] font-medium leading-[22px]"
-              }
-            >
-              {value}
-            </span>
-          </div>
-        ))}
-      </div>
-      <div className="my-4 h-px bg-line" />
-      <div className="space-y-3">
-        <div className="flex items-center gap-2.5 text-primary">
-          <CheckCircle2 size={16} className="text-success" />
-          <span className="text-[14px] font-medium leading-[22px]">Type</span>
-        </div>
-        {remaining.map(([label, Icon]) => {
-          const StepIcon = Icon as typeof Users;
-          return (
-            <div key={label} className="flex items-center gap-2.5 text-tertiary">
-              <StepIcon size={16} />
-              <span className="text-[13px] leading-5">{label}</span>
-            </div>
-          );
-        })}
-      </div>
-    </aside>
   );
 }

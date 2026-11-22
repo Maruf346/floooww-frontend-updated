@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, CircleCheck, Info, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Info, X } from "lucide-react";
 import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
@@ -7,12 +7,14 @@ import { Button } from "@/common/components/ui/Button";
 import { Dropdown, MultiDropdown } from "@/common/components/ui/Dropdown";
 import { ROUTES } from "@/common/constants/routes";
 import {
-  getProjectDurationLabel,
   getProjectSteps,
-  getProjectTarget,
   useProjectFlow,
-  type ProjectPartnership,
 } from "@/brand/context/ProjectFlowContext";
+import {
+  ProjectBreadcrumb,
+  ProjectSetupSidebar,
+  ProjectStepper,
+} from "@/brand/components/ProjectWizardShared";
 
 const niches = ["Beauty", "Skincare", "Fashion", "Lifestyle", "Wellness", "Fitness", "Other"];
 const genderOptions = ["Any", "Mostly women", "Mostly men", "Balanced"];
@@ -21,7 +23,8 @@ const locationOptions = ["Bengaluru", "Mumbai", "Delhi", "Andhra Pradesh", "Tami
 
 export function BrandProjectCreatorsPage() {
   const navigate = useNavigate();
-  const { partnership, projectType } = useProjectFlow();
+  const { objective, partnership, duration, projectType } = useProjectFlow();
+  const stepsCount = getProjectSteps(partnership).length;
   const influencer = projectType === "Influencer marketing";
   const [saved, setSaved] = useState(false);
   const [selectedNiches, setSelectedNiches] = useState(["Beauty", "Skincare"]);
@@ -34,9 +37,13 @@ export function BrandProjectCreatorsPage() {
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6">
         <header className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-[12px] leading-4 text-tertiary">
-              Projects&nbsp;&nbsp;/&nbsp;&nbsp;New project
-            </p>
+            <ProjectBreadcrumb
+              step="creators"
+              objective={objective}
+              projectType={projectType}
+              partnership={partnership}
+              duration={duration}
+            />
             <h1 className="mt-1 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">
               Creator requirements
             </h1>
@@ -48,7 +55,7 @@ export function BrandProjectCreatorsPage() {
             Exit
           </Button>
         </header>
-        <Stepper partnership={partnership} />
+        <ProjectStepper partnership={partnership} currentStepIndex={5} />
         <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
           <motion.form
             animate={{ opacity: 1, y: 0 }}
@@ -62,7 +69,7 @@ export function BrandProjectCreatorsPage() {
           >
             <div>
               <p className="text-[12px] font-semibold leading-4 tracking-[.06em] text-primary">
-                STEP 5 OF 9
+                STEP 6 OF {stepsCount}
               </p>
               <h2 className="mt-1.5 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">
                 Creator requirements
@@ -158,7 +165,13 @@ export function BrandProjectCreatorsPage() {
               </Button>
             </footer>
           </motion.form>
-          <ProjectSetup />
+          <ProjectSetupSidebar
+            objective={objective}
+            projectType={projectType}
+            partnership={partnership}
+            duration={duration}
+            stepIndex={5}
+          />
         </div>
       </div>
     </BrandShell>
@@ -316,104 +329,6 @@ function SelectField({ label, children }: { label: string; children: React.React
     <div className="relative">
       <p className="mb-1.5 text-[12px] font-medium leading-4 text-ink">{label}</p>
       {children}
-    </div>
-  );
-}
-function Stepper({ partnership }: { partnership: ProjectPartnership }) {
-  const steps = getProjectSteps(partnership);
-  return (
-    <section className="overflow-x-auto rounded-xl border border-line bg-white px-5 py-4">
-      <div className="flex min-w-[760px]">
-        {steps.map((step, index) => (
-          <div className="flex flex-1 flex-col items-center gap-1.5" key={step}>
-            {index < 4 ? (
-              <span className="flex size-7 items-center justify-center rounded-full bg-success text-white">
-                <Check size={14} strokeWidth={2.5} />
-              </span>
-            ) : (
-              <span
-                className={
-                  index === 4
-                    ? "flex size-7 items-center justify-center rounded-full bg-primary text-[12px] font-medium text-white"
-                    : "flex size-7 items-center justify-center rounded-full border border-line-strong text-[12px] font-medium text-tertiary"
-                }
-              >
-                {index + 1}
-              </span>
-            )}
-            <span
-              className={
-                index === 4
-                  ? "text-[12px] font-medium leading-4 text-primary"
-                  : index < 4
-                    ? "text-[12px] leading-4 text-secondary"
-                    : "text-[12px] leading-4 text-tertiary"
-              }
-            >
-              {step}
-            </span>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-function ProjectSetup() {
-  const { projectType, partnership, duration } = useProjectFlow();
-  const details = [
-    ["Target", getProjectTarget(projectType, partnership, duration)],
-    ["Type", projectType],
-    ["Partnership", partnership],
-    ["Duration", getProjectDurationLabel(partnership, duration)],
-  ];
-  const upcoming =
-    partnership === "Paid"
-      ? ["Deliverables", "Budget", "Payment method", "Review & publish"]
-      : ["Deliverables", "Review & publish"];
-  return (
-    <aside className="rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Project setup</h2>
-      <p className="text-[12px] leading-4 text-secondary">Shapes your dashboard</p>
-      <div className="mt-4 space-y-3">
-        {details.map(([label, value]) => (
-          <div className="flex items-center gap-2 text-[13px] leading-5" key={label}>
-            <span className="flex-1 text-secondary">{label}</span>
-            <span className="text-right text-[14px] font-medium leading-[22px] text-ink">
-              {value}
-            </span>
-          </div>
-        ))}
-      </div>
-      <div className="my-4 h-px bg-line" />
-      <div className="space-y-3">
-        <Completed label="Type" />
-        <Completed label="Partnership" />
-        <Completed label="Duration" />
-        <Completed label="Project details" />
-        <div className="flex items-center gap-2.5 text-[14px] font-medium leading-[22px] text-primary">
-          <CircleCheck size={16} />
-          Creator requirements
-        </div>
-        {upcoming.map((label, index) => (
-          <div
-            className="flex items-center gap-2.5 text-[13px] leading-5 text-tertiary"
-            key={label}
-          >
-            <span className="flex size-4 items-center justify-center rounded-full border border-line-strong text-[10px]">
-              {index + 6}
-            </span>
-            {label}
-          </div>
-        ))}
-      </div>
-    </aside>
-  );
-}
-function Completed({ label }: { label: string }) {
-  return (
-    <div className="flex items-center gap-2.5 text-[13px] leading-5 text-ink">
-      <CheckCircle2 size={16} className="text-success" />
-      {label}
     </div>
   );
 }
