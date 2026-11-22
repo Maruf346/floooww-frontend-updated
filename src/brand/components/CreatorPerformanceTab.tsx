@@ -1,988 +1,1560 @@
-import { motion } from "motion/react";
-import type { ReactNode } from "react";
+import { useState, useMemo } from "react";
 import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import type { Platform } from "@/common/types";
+import type { Project, ProjectObjective } from "@/brand/data/projects";
 
-type CreatorPerformanceTabProps = {
-  creatorName: string;
-  platform: Platform;
+export type ObjectiveType = "Awareness" | "Engagement" | "Traffic" | "Lead generation" | "Sales";
+export type TypeCategory = "Influencer Paid" | "Influencer Gift exchange" | "UGC";
+
+export interface CreatorPerformanceTabProps {
+  creatorName?: string;
+  platform?: Platform;
   showCustomReport?: boolean;
+  project?: Project;
+  overrideObjective?: ObjectiveType;
+  overrideTypeCategory?: TypeCategory;
+}
+
+interface ScorecardItem {
+  label: string;
+  value: string;
+  detail: string;
+  isPositive?: boolean;
+}
+
+interface DeliverableBar {
+  name: string;
+  valStr: string;
+  pct: number; // 0 to 100
+}
+
+interface CreatorDeliverableRow {
+  name: string;
+  dateOrNote: string;
+  platform: string;
+  codeOrFormat: string;
+  status: "Approved" | "Scheduled" | "Completed" | "In review";
+  feeOrProduct: string;
+  views: string;
+  engRate: string;
+  clicks: string;
+  ordersOrLeads: string;
+  result: string;
+  resultSub?: string;
+}
+
+interface CreatorVariantData {
+  creatorDisplayName: string;
+  campaignName: string;
+  objective: ObjectiveType;
+  typeCategory: TypeCategory;
+  scorecards: ScorecardItem[];
+  trendTitle: string;
+  trendSub: string;
+  platformTitle: string;
+  platformSub: string;
+  platformHero: string;
+  platformHeroSub: string;
+  platformBars: { label: string; pct: string; sub?: string }[];
+  platformDisclaimer: string;
+  deliverablesChartTitle: string;
+  deliverablesChartSub: string;
+  deliverableBars: DeliverableBar[];
+  deliverablesFooterNote: string;
+  sideCardTitle: string;
+  sideCardSub: string;
+  sideCardStats: { label: string; value: string; detail?: string }[];
+  tableHeaders: string[];
+  tableRows: CreatorDeliverableRow[];
+}
+
+// 15 distinct variants for a single creator inside a project
+export const CREATOR_PERFORMANCE_VARIANTS: Record<string, CreatorVariantData> = {
+  // 1. Awareness · Influencer Paid
+  "Awareness_Influencer Paid": {
+    creatorDisplayName: "Riya Sen",
+    campaignName: "Glow Squad",
+    objective: "Awareness",
+    typeCategory: "Influencer Paid",
+    scorecards: [
+      { label: "Reach", value: "9.9 L", detail: "▲ 22% vs prev.", isPositive: true },
+      { label: "Impressions", value: "23.2 L", detail: "▲ 18% vs prev.", isPositive: true },
+      { label: "Video views", value: "7.8 L", detail: "▲ 25% vs prev.", isPositive: true },
+      { label: "Frequency", value: "2.3×", detail: "healthy · 2–3× is ideal" },
+      { label: "Engagement rate", value: "6.1%", detail: "▲ 0.3 pt vs prev.", isPositive: true },
+      { label: "Earned media value", value: "₹74,400", detail: "Estimate · not a cost" },
+    ],
+    trendTitle: "Reach over time",
+    trendSub: "Riya Sen · all deliverables · Glow Squad",
+    platformTitle: "By platform",
+    platformSub: "Share of reach · reach per creator",
+    platformHero: "78%",
+    platformHeroSub: "of reach came from Instagram",
+    platformBars: [
+      { label: "Instagram Reels", pct: "62%" },
+      { label: "Instagram Stories", pct: "16%" },
+      { label: "YouTube Shorts", pct: "22%" },
+    ],
+    platformDisclaimer: "Reels reached 6.1 L new non-followers with 2.3× average repeat exposure.",
+    deliverablesChartTitle: "Reach by deliverable",
+    deliverablesChartSub: "Which posts drove Riya Sen’s result",
+    deliverableBars: [
+      { name: "Reel · routine", valStr: "4.8 L · 48%", pct: 96 },
+      { name: "Reel · review", valStr: "3.2 L · 32%", pct: 64 },
+      { name: "Story · routine", valStr: "1.9 L · 20%", pct: 38 },
+      { name: "Story · reminder", valStr: "due 30 Oct", pct: 10 },
+    ],
+    deliverablesFooterNote: "Reels drove 80% of Riya Sen's reach; the final reminder story goes live 30 Oct.",
+    sideCardTitle: "Reach",
+    sideCardSub: "Audience discovery and viewer quality",
+    sideCardStats: [
+      { label: "Total reach", value: "9.9 L", detail: "22% of campaign total" },
+      { label: "Total impressions", value: "23.2 L", detail: "2.3x frequency" },
+      { label: "Effective CPM", value: "₹46", detail: "per 1,000 reached" },
+      { label: "Target reach", value: "7.5 L", detail: "+32% above goal" },
+    ],
+    tableHeaders: ["DELIVERABLE", "PLATFORM", "STATUS", "FEE", "REACH", "IMPR.", "VIEWS", "FREQ.", "CPM"],
+    tableRows: [
+      {
+        name: "Reel · routine",
+        dateOrNote: "Posted 12 Oct",
+        platform: "Instagram",
+        codeOrFormat: "Reel 9:16",
+        status: "Approved",
+        feeOrProduct: "₹15,000/mo",
+        views: "4.8 L",
+        engRate: "6.2%",
+        clicks: "11.2 L",
+        ordersOrLeads: "3.8 L",
+        result: "₹42 CPM",
+      },
+      {
+        name: "Reel · review",
+        dateOrNote: "Posted 15 Oct",
+        platform: "Instagram",
+        codeOrFormat: "Reel 9:16",
+        status: "Approved",
+        feeOrProduct: "Included",
+        views: "3.2 L",
+        engRate: "6.0%",
+        clicks: "7.4 L",
+        ordersOrLeads: "2.5 L",
+        result: "₹48 CPM",
+      },
+      {
+        name: "Story · routine",
+        dateOrNote: "Posted 18 Oct",
+        platform: "Instagram",
+        codeOrFormat: "Story 9:16",
+        status: "Approved",
+        feeOrProduct: "Included",
+        views: "1.9 L",
+        engRate: "5.8%",
+        clicks: "4.6 L",
+        ordersOrLeads: "1.5 L",
+        result: "₹52 CPM",
+      },
+      {
+        name: "Story · reminder",
+        dateOrNote: "Not posted yet",
+        platform: "Instagram",
+        codeOrFormat: "Story 9:16",
+        status: "Scheduled",
+        feeOrProduct: "Included",
+        views: "—",
+        engRate: "—",
+        clicks: "—",
+        ordersOrLeads: "—",
+        result: "Due 30 Oct",
+      },
+    ],
+  },
+
+  // 2. Awareness · Influencer Gift exchange
+  "Awareness_Influencer Gift exchange": {
+    creatorDisplayName: "Riya Sen",
+    campaignName: "SPF Mini Kit Seeding",
+    objective: "Awareness",
+    typeCategory: "Influencer Gift exchange",
+    scorecards: [
+      { label: "Reach", value: "2.3 L", detail: "▲ 9% vs prev.", isPositive: true },
+      { label: "Impressions", value: "5.0 L", detail: "▲ 7% vs prev.", isPositive: true },
+      { label: "Video views", value: "1.9 L", detail: "▲ 12% vs prev.", isPositive: true },
+      { label: "Frequency", value: "2.1×", detail: "healthy · 2–3× is ideal" },
+      { label: "Engagement rate", value: "6.8%", detail: "▲ 0.5 pt vs prev.", isPositive: true },
+      { label: "Earned media value", value: "₹17,600", detail: "Estimate · not a cost" },
+    ],
+    trendTitle: "Reach over time",
+    trendSub: "Riya Sen · all deliverables · SPF Mini Kit Seeding",
+    platformTitle: "By platform",
+    platformSub: "Share of reach · reach per creator",
+    platformHero: "82%",
+    platformHeroSub: "of reach came from Instagram",
+    platformBars: [
+      { label: "Instagram Reels", pct: "68%" },
+      { label: "Instagram Stories", pct: "14%" },
+      { label: "YouTube Shorts", pct: "18%" },
+    ],
+    platformDisclaimer: "Gifted unboxing video drove high reach with 94% authentic organic feedback.",
+    deliverablesChartTitle: "Reach by deliverable",
+    deliverablesChartSub: "Which posts drove Riya Sen’s result",
+    deliverableBars: [
+      { name: "Reel · unboxing", valStr: "1.4 L · 61%", pct: 85 },
+      { name: "Story · first impression", valStr: "0.9 L · 39%", pct: 55 },
+    ],
+    deliverablesFooterNote: "All gifted deliverables posted on time with verified brand mentions.",
+    sideCardTitle: "Reach",
+    sideCardSub: "Organic product seeding reach",
+    sideCardStats: [
+      { label: "Total reach", value: "2.3 L", detail: "16% of seeding campaign" },
+      { label: "Impressions", value: "5.0 L", detail: "2.1x frequency" },
+      { label: "Est. CPM", value: "₹21", detail: "product value ÷ reach" },
+      { label: "Target reach", value: "1.25 L", detail: "+84% above target" },
+    ],
+    tableHeaders: ["DELIVERABLE", "PLATFORM", "STATUS", "PRODUCT", "REACH", "IMPR.", "VIEWS", "FREQ.", "CPM"],
+    tableRows: [
+      {
+        name: "Reel · unboxing",
+        dateOrNote: "Posted 14 Oct",
+        platform: "Instagram",
+        codeOrFormat: "SPF Kit · 1 unit",
+        status: "Approved",
+        feeOrProduct: "SPF Kit",
+        views: "1.4 L",
+        engRate: "7.1%",
+        clicks: "3.1 L",
+        ordersOrLeads: "1.1 L",
+        result: "₹19 CPM",
+      },
+      {
+        name: "Story · first impression",
+        dateOrNote: "Posted 16 Oct",
+        platform: "Instagram",
+        codeOrFormat: "SPF Kit · 1 unit",
+        status: "Approved",
+        feeOrProduct: "SPF Kit",
+        views: "0.9 L",
+        engRate: "6.4%",
+        clicks: "1.9 L",
+        ordersOrLeads: "0.8 L",
+        result: "₹24 CPM",
+      },
+    ],
+  },
+
+  // 3. Awareness · UGC
+  "Awareness_UGC": {
+    creatorDisplayName: "Aditi Joshi",
+    campaignName: "Sunscreen UGC Pack",
+    objective: "Awareness",
+    typeCategory: "UGC",
+    scorecards: [
+      { label: "Usable videos", value: "4 of 4", detail: "100% of the brief" },
+      { label: "Approval rate", value: "100%", detail: "approved first time", isPositive: true },
+      { label: "Revisions", value: "0", detail: "none needed", isPositive: true },
+      { label: "Turnaround", value: "3 days", detail: "▼ 1.2 days vs average", isPositive: true },
+      { label: "Files delivered", value: "4", detail: "4 approved · 0 in review" },
+      { label: "Cost per usable video", value: "₹2,500", detail: "₹10,000 fee ÷ 4" },
+    ],
+    trendTitle: "Files delivered over time",
+    trendSub: "Aditi Joshi · files delivered vs 4 in the brief",
+    platformTitle: "By platform",
+    platformSub: "Where this creator’s files are made for",
+    platformHero: "4 of 4",
+    platformHeroSub: "files delivered on first submission",
+    platformBars: [
+      { label: "Instagram · Reels 9:16", pct: "75%", sub: "3 files" },
+      { label: "Instagram · Feed 4:5", pct: "25%", sub: "1 file" },
+    ],
+    platformDisclaimer: "All raw and color-graded source files archived in Content hub.",
+    deliverablesChartTitle: "Files by deliverable",
+    deliverablesChartSub: "Each file in Aditi Joshi’s brief",
+    deliverableBars: [
+      { name: "Video 1 · Problem hook", valStr: "Approved · 9:16", pct: 100 },
+      { name: "Video 2 · Routine demo", valStr: "Approved · 9:16", pct: 100 },
+      { name: "Video 3 · Texture closeup", valStr: "Approved · 9:16", pct: 100 },
+      { name: "Video 4 · Daily wear", valStr: "Approved · 4:5", pct: 100 },
+    ],
+    deliverablesFooterNote: "All 4 files approved on initial review; 0 revision requests required.",
+    sideCardTitle: "Content library",
+    sideCardSub: "Production pace and quality metrics",
+    sideCardStats: [
+      { label: "Delivered files", value: "4", detail: "100% of contract" },
+      { label: "Avg. turnaround", value: "3.0 d", detail: "48 h ahead of SLA" },
+      { label: "Cost per video", value: "₹2,500", detail: "fixed contract rate" },
+      { label: "Ad ready", value: "4 of 4", detail: "whitelisted rights" },
+    ],
+    tableHeaders: ["DELIVERABLE", "FORMAT", "STATUS", "FEE", "FILES", "APPROVED", "FIXES", "TIME", "COST / VIDEO"],
+    tableRows: [
+      {
+        name: "Problem hook video",
+        dateOrNote: "Delivered 12 Oct",
+        platform: "Video 9:16",
+        codeOrFormat: "4K · MP4",
+        status: "Approved",
+        feeOrProduct: "₹2,500",
+        views: "1",
+        engRate: "1",
+        clicks: "0",
+        ordersOrLeads: "3 days",
+        result: "₹2,500",
+      },
+      {
+        name: "Routine demo video",
+        dateOrNote: "Delivered 14 Oct",
+        platform: "Video 9:16",
+        codeOrFormat: "4K · MP4",
+        status: "Approved",
+        feeOrProduct: "₹2,500",
+        views: "1",
+        engRate: "1",
+        clicks: "0",
+        ordersOrLeads: "3 days",
+        result: "₹2,500",
+      },
+      {
+        name: "Texture closeup video",
+        dateOrNote: "Delivered 16 Oct",
+        platform: "Video 9:16",
+        codeOrFormat: "4K · MP4",
+        status: "Approved",
+        feeOrProduct: "₹2,500",
+        views: "1",
+        engRate: "1",
+        clicks: "0",
+        ordersOrLeads: "3 days",
+        result: "₹2,500",
+      },
+      {
+        name: "Daily wear feed video",
+        dateOrNote: "Delivered 18 Oct",
+        platform: "Video 4:5",
+        codeOrFormat: "4K · MP4",
+        status: "Approved",
+        feeOrProduct: "₹2,500",
+        views: "1",
+        engRate: "1",
+        clicks: "0",
+        ordersOrLeads: "3 days",
+        result: "₹2,500",
+      },
+    ],
+  },
+
+  // 4. Engagement · Influencer Paid
+  "Engagement_Influencer Paid": {
+    creatorDisplayName: "Nisha Verma",
+    campaignName: "Niacinamide Serum",
+    objective: "Engagement",
+    typeCategory: "Influencer Paid",
+    scorecards: [
+      { label: "Total Engagement", value: "42,340", detail: "▲ 12% vs prev.", isPositive: true },
+      { label: "Engagement rate", value: "5.8%", detail: "▲ 1.3 pt vs 4.5% target", isPositive: true },
+      { label: "Saves", value: "3.6K", detail: "▲ 21% vs prev.", isPositive: true },
+      { label: "Shares", value: "1,986", detail: "▲ 9% vs prev.", isPositive: true },
+      { label: "Comments", value: "2,703", detail: "▲ 15% vs prev.", isPositive: true },
+      { label: "Views", value: "7.3 L", detail: "▲ 10% vs prev.", isPositive: true },
+    ],
+    trendTitle: "Engagements over time",
+    trendSub: "Nisha Verma · all deliverables · Niacinamide Serum",
+    platformTitle: "By platform",
+    platformSub: "Share of engagements · engagement rate",
+    platformHero: "84%",
+    platformHeroSub: "of engagements came from Instagram",
+    platformBars: [
+      { label: "Instagram Reels", pct: "62%", sub: "6.4% ER" },
+      { label: "Instagram Stories", pct: "22%", sub: "4.1% ER" },
+      { label: "YouTube Shorts", pct: "16%", sub: "5.2% ER" },
+    ],
+    platformDisclaimer: "Saves & shares represent 24% of interactions, signaling high intent save-for-later value.",
+    deliverablesChartTitle: "Total Engagement by deliverable",
+    deliverablesChartSub: "Which posts drove Nisha Verma’s result",
+    deliverableBars: [
+      { name: "Reel · texture test", valStr: "24,120 · 57%", pct: 95 },
+      { name: "Reel · 7-day routine", valStr: "12,840 · 30%", pct: 52 },
+      { name: "Story · Q&A sticker", valStr: "5,380 · 13%", pct: 24 },
+    ],
+    deliverablesFooterNote: "Texture test Reel generated 2,100 saves, highest in campaign.",
+    sideCardTitle: "Engagement quality",
+    sideCardSub: "High-intent interaction analysis",
+    sideCardStats: [
+      { label: "Save & share rate", value: "24%", detail: "benchmark 12%" },
+      { label: "Cost per engagement", value: "₹0.33", detail: "₹14,000 ÷ 42,340" },
+      { label: "Positive comment ratio", value: "96%", detail: "verified sentiment" },
+      { label: "Target ER", value: "4.5%", detail: "currently 5.8% (+1.3 pt)" },
+    ],
+    tableHeaders: ["DELIVERABLE", "PLATFORM", "STATUS", "FEE", "ENGAGE.", "ENG. RATE", "SAVES", "POSTS", "COST / ENG."],
+    tableRows: [
+      {
+        name: "Reel · texture test",
+        dateOrNote: "Posted 12 Oct",
+        platform: "Instagram",
+        codeOrFormat: "Reel 9:16",
+        status: "Approved",
+        feeOrProduct: "₹7,000",
+        views: "24,120",
+        engRate: "7.6%",
+        clicks: "2,100",
+        ordersOrLeads: "1",
+        result: "₹0.29",
+      },
+      {
+        name: "Reel · 7-day routine",
+        dateOrNote: "Posted 15 Oct",
+        platform: "Instagram",
+        codeOrFormat: "Reel 9:16",
+        status: "Approved",
+        feeOrProduct: "₹7,000",
+        views: "12,840",
+        engRate: "6.8%",
+        clicks: "1,120",
+        ordersOrLeads: "1",
+        result: "₹0.38",
+      },
+      {
+        name: "Story · Q&A sticker",
+        dateOrNote: "Posted 18 Oct",
+        platform: "Instagram",
+        codeOrFormat: "Story 9:16",
+        status: "Approved",
+        feeOrProduct: "Included",
+        views: "5,380",
+        engRate: "4.2%",
+        clicks: "380",
+        ordersOrLeads: "1",
+        result: "₹0.42",
+      },
+    ],
+  },
+
+  // 5. Engagement · Influencer Gift exchange
+  "Engagement_Influencer Gift exchange": {
+    creatorDisplayName: "Nisha Verma",
+    campaignName: "Hydration Bundle",
+    objective: "Engagement",
+    typeCategory: "Influencer Gift exchange",
+    scorecards: [
+      { label: "Total Engagement", value: "42,340", detail: "▲ 12% vs prev.", isPositive: true },
+      { label: "Engagement rate", value: "5.8%", detail: "▲ 1.3 pt vs 4.5% target", isPositive: true },
+      { label: "Saves", value: "3.6K", detail: "▲ 21% vs prev.", isPositive: true },
+      { label: "Shares", value: "1,986", detail: "▲ 9% vs prev.", isPositive: true },
+      { label: "Comments", value: "2,703", detail: "▲ 15% vs prev.", isPositive: true },
+      { label: "Views", value: "7.3 L", detail: "▲ 10% vs prev.", isPositive: true },
+    ],
+    trendTitle: "Engagements over time",
+    trendSub: "Nisha Verma · all deliverables · Hydration Bundle",
+    platformTitle: "By platform",
+    platformSub: "Share of engagements · engagement rate",
+    platformHero: "84%",
+    platformHeroSub: "of engagements came from Instagram",
+    platformBars: [
+      { label: "Instagram Reels", pct: "62%", sub: "6.4% ER" },
+      { label: "Instagram Stories", pct: "22%", sub: "4.1% ER" },
+      { label: "YouTube Shorts", pct: "16%", sub: "5.2% ER" },
+    ],
+    platformDisclaimer: "Gifted unboxing routine generated high save rates across skincare enthusiasts.",
+    deliverablesChartTitle: "Total Engagement by deliverable",
+    deliverablesChartSub: "Which posts drove Nisha Verma’s result",
+    deliverableBars: [
+      { name: "Reel · routine walkthrough", valStr: "25,400 · 60%", pct: 95 },
+      { name: "Story · routine", valStr: "16,940 · 40%", pct: 65 },
+    ],
+    deliverablesFooterNote: "All gifted deliverables posted on time with verified brand tags.",
+    sideCardTitle: "Engagement quality",
+    sideCardSub: "Organic interaction metrics for gifted box",
+    sideCardStats: [
+      { label: "Total interactions", value: "42,340", detail: "29% of campaign" },
+      { label: "Save rate", value: "8.5%", detail: "high purchase intent" },
+      { label: "Est. cost / eng.", value: "₹0.31", detail: "product value ÷ eng." },
+      { label: "Target ER", value: "4.5%", detail: "exceeded by +1.3 pt" },
+    ],
+    tableHeaders: ["DELIVERABLE", "PLATFORM", "STATUS", "PRODUCT", "ENGAGE.", "ENG. RATE", "SAVES", "ON TIME", "COST / ENG."],
+    tableRows: [
+      {
+        name: "Reel · routine walkthrough",
+        dateOrNote: "Posted 10 Oct",
+        platform: "Instagram",
+        codeOrFormat: "Hydration Box",
+        status: "Approved",
+        feeOrProduct: "Hydration Box",
+        views: "25,400",
+        engRate: "7.4%",
+        clicks: "2,200",
+        ordersOrLeads: "Yes",
+        result: "₹0.28",
+      },
+      {
+        name: "Story · routine",
+        dateOrNote: "Posted 12 Oct",
+        platform: "Instagram",
+        codeOrFormat: "Hydration Box",
+        status: "Approved",
+        feeOrProduct: "Hydration Box",
+        views: "16,940",
+        engRate: "5.8%",
+        clicks: "1,400",
+        ordersOrLeads: "Yes",
+        result: "₹0.35",
+      },
+    ],
+  },
+
+  // 6. Engagement · UGC
+  "Engagement_UGC": {
+    creatorDisplayName: "Aditi Joshi",
+    campaignName: "Hydration Mist UGC",
+    objective: "Engagement",
+    typeCategory: "UGC",
+    scorecards: [
+      { label: "Usable videos", value: "4 of 4", detail: "100% of the brief" },
+      { label: "Approval rate", value: "100%", detail: "approved first time", isPositive: true },
+      { label: "Revisions", value: "0", detail: "none needed", isPositive: true },
+      { label: "Turnaround", value: "3 days", detail: "▼ 1.2 days vs average", isPositive: true },
+      { label: "Files delivered", value: "4", detail: "4 approved · 0 in review" },
+      { label: "Cost per usable video", value: "₹2,500", detail: "₹10,000 fee ÷ 4" },
+    ],
+    trendTitle: "Files delivered over time",
+    trendSub: "Aditi Joshi · files delivered vs 4 in the brief",
+    platformTitle: "By platform",
+    platformSub: "Where this creator’s files are made for",
+    platformHero: "4 of 4",
+    platformHeroSub: "approved files for ad creatives",
+    platformBars: [
+      { label: "Instagram · Reels 9:16", pct: "75%", sub: "3 files" },
+      { label: "Instagram · Feed 4:5", pct: "25%", sub: "1 file" },
+    ],
+    platformDisclaimer: "Hook-optimized UGC files designed for high video watch-time and comment interactions.",
+    deliverablesChartTitle: "Files by deliverable",
+    deliverablesChartSub: "Each file in Aditi Joshi’s brief",
+    deliverableBars: [
+      { name: "Video 1 · Hydration test", valStr: "Approved · 9:16", pct: 100 },
+      { name: "Video 2 · Mist application", valStr: "Approved · 9:16", pct: 100 },
+      { name: "Video 3 · Desk routine", valStr: "Approved · 9:16", pct: 100 },
+      { name: "Video 4 · Evening glow", valStr: "Approved · 4:5", pct: 100 },
+    ],
+    deliverablesFooterNote: "All 4 files ready for ad boosting with zero revision cycles.",
+    sideCardTitle: "Content library",
+    sideCardSub: "UGC deliverable approval pipeline",
+    sideCardStats: [
+      { label: "Delivered files", value: "4", detail: "100% complete" },
+      { label: "Avg. review time", value: "1.2 d", detail: "within SLA" },
+      { label: "Cost per video", value: "₹2,500", detail: "standard rate" },
+      { label: "Ad ready", value: "4 of 4", detail: "commercial license" },
+    ],
+    tableHeaders: ["DELIVERABLE", "FORMAT", "STATUS", "FEE", "FILES", "APPROVED", "FIXES", "TIME", "COST / VIDEO"],
+    tableRows: [
+      {
+        name: "Hydration test video",
+        dateOrNote: "Delivered 10 Oct",
+        platform: "Video 9:16",
+        codeOrFormat: "4K · MP4",
+        status: "Approved",
+        feeOrProduct: "₹2,500",
+        views: "1",
+        engRate: "1",
+        clicks: "0",
+        ordersOrLeads: "3 days",
+        result: "₹2,500",
+      },
+    ],
+  },
+
+  // 7. Traffic · Influencer Paid
+  "Traffic_Influencer Paid": {
+    creatorDisplayName: "Riya Sen",
+    campaignName: "Sunscreen Stick Launch",
+    objective: "Traffic",
+    typeCategory: "Influencer Paid",
+    scorecards: [
+      { label: "Link clicks", value: "6,858", detail: "▲ 31% vs prev.", isPositive: true },
+      { label: "CTR", value: "1.6%", detail: "▲ 0.3 pt vs prev.", isPositive: true },
+      { label: "Page views", value: "5,346", detail: "78% of clicks" },
+      { label: "Avg. time on site", value: "1m 12s", detail: "▲ 8s vs prev.", isPositive: true },
+      { label: "Views", value: "4.3 L", detail: "▲ 12% vs prev.", isPositive: true },
+      { label: "Engagement rate", value: "4.9%", detail: "▲ 0.2 pt vs prev.", isPositive: true },
+    ],
+    trendTitle: "Link clicks over time",
+    trendSub: "Riya Sen · all deliverables · Sunscreen Stick Launch",
+    platformTitle: "By platform",
+    platformSub: "Share of link clicks · CTR",
+    platformHero: "71%",
+    platformHeroSub: "of clicks came from Instagram Stories links",
+    platformBars: [
+      { label: "Instagram Stories · link sticker", pct: "71%", sub: "2.1% CTR" },
+      { label: "Instagram Reels · bio link", pct: "17%", sub: "0.9% CTR" },
+      { label: "YouTube · description link", pct: "12%", sub: "1.4% CTR" },
+    ],
+    platformDisclaimer: "Story link stickers drove 71% of all clicks with highest click-to-load conversion.",
+    deliverablesChartTitle: "Link clicks by deliverable",
+    deliverablesChartSub: "Which posts drove Riya Sen’s result",
+    deliverableBars: [
+      { name: "Story · link sticker", valStr: "4,870 · 71%", pct: 95 },
+      { name: "Reel · bio link", valStr: "1,180 · 17%", pct: 28 },
+      { name: "YouTube Shorts link", valStr: "808 · 12%", pct: 18 },
+    ],
+    deliverablesFooterNote: "Story link stickers generated 71% of Riya Sen's clicks with 34% low bounce rate.",
+    sideCardTitle: "Traffic",
+    sideCardSub: "Visitor acquisition and on-site behavior",
+    sideCardStats: [
+      { label: "Total link clicks", value: "6,858", detail: "27% of campaign" },
+      { label: "Landing views", value: "5,346", detail: "78% click-to-load" },
+      { label: "Cost per click (CPC)", value: "₹2.62", detail: "fee ÷ clicks" },
+      { label: "Avg time on site", value: "1m 12s", detail: "+8s vs avg" },
+    ],
+    tableHeaders: ["DELIVERABLE", "PLATFORM", "STATUS", "FEE", "CLICKS", "CTR", "LANDING", "BOUNCE", "CPC"],
+    tableRows: [
+      {
+        name: "Story · link sticker",
+        dateOrNote: "Posted 12 Oct",
+        platform: "Instagram",
+        codeOrFormat: "1 link",
+        status: "Approved",
+        feeOrProduct: "₹18,000",
+        views: "4,870",
+        engRate: "2.1%",
+        clicks: "3,896",
+        ordersOrLeads: "34%",
+        result: "₹2.45",
+      },
+      {
+        name: "Reel · bio link",
+        dateOrNote: "Posted 15 Oct",
+        platform: "Instagram",
+        codeOrFormat: "1 link",
+        status: "Approved",
+        feeOrProduct: "Included",
+        views: "1,180",
+        engRate: "1.4%",
+        clicks: "920",
+        ordersOrLeads: "38%",
+        result: "₹3.10",
+      },
+    ],
+  },
+
+  // 8. Traffic · Influencer Gift exchange
+  "Traffic_Influencer Gift exchange": {
+    creatorDisplayName: "Riya Sen",
+    campaignName: "Lip Balm Seeding",
+    objective: "Traffic",
+    typeCategory: "Influencer Gift exchange",
+    scorecards: [
+      { label: "Link clicks", value: "1,918", detail: "▲ 18% vs prev.", isPositive: true },
+      { label: "CTR", value: "1.9%", detail: "▲ 0.2 pt vs prev.", isPositive: true },
+      { label: "Landing page views", value: "1,534", detail: "80% of clicks" },
+      { label: "Avg. time on site", value: "58s", detail: "▲ 5s vs prev.", isPositive: true },
+      { label: "Views", value: "1.0 L", detail: "▲ 10% vs prev.", isPositive: true },
+      { label: "Engagement rate", value: "6.2%", detail: "▲ 0.4 pt vs prev.", isPositive: true },
+    ],
+    trendTitle: "Link clicks over time",
+    trendSub: "Riya Sen · all deliverables · Lip Balm Seeding",
+    platformTitle: "By platform",
+    platformSub: "Share of link clicks · CTR",
+    platformHero: "71%",
+    platformHeroSub: "of clicks came from Instagram Stories links",
+    platformBars: [
+      { label: "Instagram Stories · link", pct: "71%", sub: "1.9% CTR" },
+      { label: "Instagram Bio link", pct: "29%", sub: "1.1% CTR" },
+    ],
+    platformDisclaimer: "Seeded balm review drove 1,918 organic clicks with zero ad spend.",
+    deliverablesChartTitle: "Link clicks by deliverable",
+    deliverablesChartSub: "Which posts drove Riya Sen’s result",
+    deliverableBars: [
+      { name: "Story · sticker link", valStr: "1,360 · 71%", pct: 85 },
+      { name: "Bio link", valStr: "558 · 29%", pct: 40 },
+    ],
+    deliverablesFooterNote: "High CTR routine sticker drove 1,360 clicks within first 24 hours.",
+    sideCardTitle: "Traffic",
+    sideCardSub: "Organic product seeding clicks",
+    sideCardStats: [
+      { label: "Total link clicks", value: "1,918", detail: "28% of campaign" },
+      { label: "Landing page views", value: "1,534", detail: "80% load rate" },
+      { label: "Est. value / click", value: "₹2.20", detail: "vs paid ad ₹4.50" },
+      { label: "Bounce rate", value: "38%", detail: "strong intent" },
+    ],
+    tableHeaders: ["DELIVERABLE", "PLATFORM", "STATUS", "PRODUCT", "CLICKS", "CTR", "LANDING", "BOUNCE", "CPC"],
+    tableRows: [
+      {
+        name: "Story · sticker link",
+        dateOrNote: "Posted 11 Oct",
+        platform: "Instagram",
+        codeOrFormat: "Balm Box",
+        status: "Approved",
+        feeOrProduct: "Balm Box",
+        views: "1,360",
+        engRate: "2.1%",
+        clicks: "1,088",
+        ordersOrLeads: "36%",
+        result: "₹1.80",
+      },
+    ],
+  },
+
+  // 9. Traffic · UGC
+  "Traffic_UGC": {
+    creatorDisplayName: "Aditi Joshi",
+    campaignName: "Lip Tint Drop",
+    objective: "Traffic",
+    typeCategory: "UGC",
+    scorecards: [
+      { label: "Usable videos", value: "4 of 4", detail: "100% of the brief" },
+      { label: "Approval rate", value: "100%", detail: "approved first time", isPositive: true },
+      { label: "Revisions", value: "0", detail: "none needed", isPositive: true },
+      { label: "Turnaround", value: "3 days", detail: "▼ 1.2 days vs average", isPositive: true },
+      { label: "Files delivered", value: "4", detail: "4 approved · 0 in review" },
+      { label: "Cost per usable video", value: "₹2,500", detail: "₹10,000 fee ÷ 4" },
+    ],
+    trendTitle: "Files delivered over time",
+    trendSub: "Aditi Joshi · files delivered vs 4 in the brief",
+    platformTitle: "By platform",
+    platformSub: "Where this creator’s files are made for",
+    platformHero: "4 of 4",
+    platformHeroSub: "approved traffic ad creatives",
+    platformBars: [
+      { label: "Instagram · Reels 9:16", pct: "75%", sub: "3 files" },
+      { label: "Instagram · Feed 4:5", pct: "25%", sub: "1 file" },
+    ],
+    platformDisclaimer: "Content formatted for swipe-up and landing page video backgrounds.",
+    deliverablesChartTitle: "Files by deliverable",
+    deliverablesChartSub: "Each file in Aditi Joshi’s brief",
+    deliverableBars: [
+      { name: "Video 1 · Color swatch", valStr: "Approved · 9:16", pct: 100 },
+      { name: "Video 2 · Lip application", valStr: "Approved · 9:16", pct: 100 },
+      { name: "Video 3 · Wear test", valStr: "Approved · 9:16", pct: 100 },
+      { name: "Video 4 · Shades preview", valStr: "Approved · 4:5", pct: 100 },
+    ],
+    deliverablesFooterNote: "All 4 files delivered within 3 days and approved on first pass.",
+    sideCardTitle: "Content library",
+    sideCardSub: "Production pace and review metrics",
+    sideCardStats: [
+      { label: "Delivered files", value: "4", detail: "100% complete" },
+      { label: "Avg. review time", value: "1.2 d", detail: "fast approval" },
+      { label: "Cost per video", value: "₹2,500", detail: "standard rate" },
+      { label: "Whitelisted", value: "Yes", detail: "full ad rights" },
+    ],
+    tableHeaders: ["DELIVERABLE", "FORMAT", "STATUS", "FEE", "FILES", "APPROVED", "FIXES", "TIME", "COST / VIDEO"],
+    tableRows: [
+      {
+        name: "Color swatch video",
+        dateOrNote: "Delivered 11 Oct",
+        platform: "Video 9:16",
+        codeOrFormat: "4K · MP4",
+        status: "Approved",
+        feeOrProduct: "₹2,500",
+        views: "1",
+        engRate: "1",
+        clicks: "0",
+        ordersOrLeads: "3 days",
+        result: "₹2,500",
+      },
+    ],
+  },
+
+  // 10. Lead generation · Influencer Paid
+  "Lead generation_Influencer Paid": {
+    creatorDisplayName: "Meera Iyer",
+    campaignName: "Skin Type Quiz",
+    objective: "Lead generation",
+    typeCategory: "Influencer Paid",
+    scorecards: [
+      { label: "Leads", value: "972", detail: "▲ 24% vs prev.", isPositive: true },
+      { label: "Sign-up rate", value: "18.6%", detail: "of link clicks" },
+      { label: "Link clicks", value: "5,220", detail: "▲ 15% vs prev.", isPositive: true },
+      { label: "Qualified leads", value: "633", detail: "65% of leads" },
+      { label: "Views", value: "3.8 L", detail: "▲ 9% vs prev.", isPositive: true },
+      { label: "Engagement rate", value: "5.1%", detail: "▲ 0.3 pt vs prev.", isPositive: true },
+    ],
+    trendTitle: "Leads over time",
+    trendSub: "Meera Iyer · all deliverables · Skin Type Quiz",
+    platformTitle: "By platform",
+    platformSub: "Share of leads · sign-up rate",
+    platformHero: "82%",
+    platformHeroSub: "of leads came from Instagram",
+    platformBars: [
+      { label: "Instagram Stories · quiz link", pct: "58%", sub: "21% sign-up" },
+      { label: "Instagram Reels · code", pct: "24%", sub: "16% sign-up" },
+      { label: "YouTube · description link", pct: "18%", sub: "15% sign-up" },
+    ],
+    platformDisclaimer: "Stories with interactive quiz stickers converted 21% of link clicks to leads.",
+    deliverablesChartTitle: "Leads by deliverable",
+    deliverablesChartSub: "Which posts drove Meera Iyer’s result",
+    deliverableBars: [
+      { name: "Story · quiz sticker", valStr: "564 · 58%", pct: 95 },
+      { name: "Reel · routine walkthrough", valStr: "233 · 24%", pct: 45 },
+      { name: "YouTube link", valStr: "175 · 18%", pct: 32 },
+    ],
+    deliverablesFooterNote: "Quiz link sticker delivered 564 leads at an exceptional ₹18 CPL.",
+    sideCardTitle: "Leads",
+    sideCardSub: "Lead qualification and acquisition economics",
+    sideCardStats: [
+      { label: "Total sign-ups", value: "972", detail: "30% of campaign" },
+      { label: "Qualified rate", value: "65%", detail: "verified skin profile" },
+      { label: "Cost per lead (CPL)", value: "₹18.51", detail: "₹18,000 ÷ 972" },
+      { label: "Target leads", value: "375", detail: "+159% over goal" },
+    ],
+    tableHeaders: ["DELIVERABLE", "PLATFORM", "STATUS", "FEE", "CLICKS", "LEADS", "SIGN-UP", "QUALIFIED", "CPL"],
+    tableRows: [
+      {
+        name: "Story · quiz sticker",
+        dateOrNote: "Posted 12 Oct",
+        platform: "Instagram",
+        codeOrFormat: "1 quiz link",
+        status: "Approved",
+        feeOrProduct: "₹18,000",
+        views: "2,680",
+        engRate: "564",
+        clicks: "21%",
+        ordersOrLeads: "395",
+        result: "₹18",
+      },
+      {
+        name: "Reel · routine walkthrough",
+        dateOrNote: "Posted 15 Oct",
+        platform: "Instagram",
+        codeOrFormat: "1 quiz link",
+        status: "Approved",
+        feeOrProduct: "Included",
+        views: "1,520",
+        engRate: "233",
+        clicks: "16%",
+        ordersOrLeads: "152",
+        result: "₹22",
+      },
+    ],
+  },
+
+  // 11. Lead generation · Influencer Gift exchange
+  "Lead generation_Influencer Gift exchange": {
+    creatorDisplayName: "Meera Iyer",
+    campaignName: "Skin Quiz Seeding",
+    objective: "Lead generation",
+    typeCategory: "Influencer Gift exchange",
+    scorecards: [
+      { label: "Leads", value: "920", detail: "▲ 16% vs prev.", isPositive: true },
+      { label: "Sign-up rate", value: "17.2%", detail: "of link clicks" },
+      { label: "Link clicks", value: "1,498", detail: "▲ 11% vs prev.", isPositive: true },
+      { label: "Qualified leads", value: "590", detail: "64% of leads" },
+      { label: "Views", value: "86,800", detail: "▲ 8% vs prev.", isPositive: true },
+      { label: "Engagement rate", value: "5.9%", detail: "▲ 0.3 pt vs prev.", isPositive: true },
+    ],
+    trendTitle: "Leads over time",
+    trendSub: "Meera Iyer · all deliverables · Skin Quiz Seeding",
+    platformTitle: "By platform",
+    platformSub: "Share of leads · sign-up rate",
+    platformHero: "82%",
+    platformHeroSub: "of leads came from Instagram",
+    platformBars: [
+      { label: "Instagram Stories · link", pct: "64%", sub: "18% sign-up" },
+      { label: "Instagram Bio link", pct: "18%", sub: "14% sign-up" },
+      { label: "YouTube Shorts", pct: "18%", sub: "15% sign-up" },
+    ],
+    platformDisclaimer: "Gifted creators took quiz live on stories and recommended viewers get their score.",
+    deliverablesChartTitle: "Leads by deliverable",
+    deliverablesChartSub: "Which posts drove Meera Iyer’s result",
+    deliverableBars: [
+      { name: "Story · live quiz", valStr: "588 · 64%", pct: 90 },
+      { name: "Bio link", valStr: "332 · 36%", pct: 50 },
+    ],
+    deliverablesFooterNote: "Live quiz demonstration generated 588 leads with zero ad cost.",
+    sideCardTitle: "Leads",
+    sideCardSub: "Organic product seeding lead acquisition",
+    sideCardStats: [
+      { label: "Total sign-ups", value: "920", detail: "100% organic" },
+      { label: "Qualified rate", value: "64%", detail: "accurate survey" },
+      { label: "Estimated CPL", value: "₹17.00", detail: "gift cost ÷ leads" },
+      { label: "Target leads", value: "880", detail: "target achieved" },
+    ],
+    tableHeaders: ["DELIVERABLE", "PLATFORM", "STATUS", "PRODUCT", "CLICKS", "LEADS", "SIGN-UP", "QUALIFIED", "CPL"],
+    tableRows: [
+      {
+        name: "Story · live quiz",
+        dateOrNote: "Posted 12 Oct",
+        platform: "Instagram",
+        codeOrFormat: "Quiz Kit",
+        status: "Approved",
+        feeOrProduct: "Quiz Kit",
+        views: "980",
+        engRate: "588",
+        clicks: "19%",
+        ordersOrLeads: "390",
+        result: "₹17",
+      },
+    ],
+  },
+
+  // 12. Lead generation · UGC
+  "Lead generation_UGC": {
+    creatorDisplayName: "Aditi Joshi",
+    campaignName: "Quiz Explainer UGC",
+    objective: "Lead generation",
+    typeCategory: "UGC",
+    scorecards: [
+      { label: "Usable videos", value: "4 of 4", detail: "100% of the brief" },
+      { label: "Approval rate", value: "100%", detail: "approved first time", isPositive: true },
+      { label: "Revisions", value: "0", detail: "none needed", isPositive: true },
+      { label: "Turnaround", value: "3 days", detail: "▼ 1.2 days vs average", isPositive: true },
+      { label: "Files delivered", value: "4", detail: "4 approved · 0 in review" },
+      { label: "Cost per usable video", value: "₹2,500", detail: "₹10,000 fee ÷ 4" },
+    ],
+    trendTitle: "Files delivered over time",
+    trendSub: "Aditi Joshi · files delivered vs 4 in the brief",
+    platformTitle: "By platform",
+    platformSub: "Where this creator’s files are made for",
+    platformHero: "4 of 4",
+    platformHeroSub: "approved lead gen ad videos",
+    platformBars: [
+      { label: "Instagram · Reels 9:16", pct: "75%", sub: "3 files" },
+      { label: "Instagram · Feed 4:5", pct: "25%", sub: "1 file" },
+    ],
+    platformDisclaimer: "Interactive screen-recording and face-to-camera quiz reviews.",
+    deliverablesChartTitle: "Files by deliverable",
+    deliverablesChartSub: "Each file in Aditi Joshi’s brief",
+    deliverableBars: [
+      { name: "Video 1 · Quiz walkthrough", valStr: "Approved · 9:16", pct: 100 },
+      { name: "Video 2 · Skin result reveal", valStr: "Approved · 9:16", pct: 100 },
+      { name: "Video 3 · Recommendation hook", valStr: "Approved · 9:16", pct: 100 },
+      { name: "Video 4 · Feed testimonial", valStr: "Approved · 4:5", pct: 100 },
+    ],
+    deliverablesFooterNote: "All 4 videos approved without revision; ready for lead generation ad funnels.",
+    sideCardTitle: "Content library",
+    sideCardSub: "Lead generation creative assets",
+    sideCardStats: [
+      { label: "Delivered files", value: "4", detail: "100% complete" },
+      { label: "Avg. review time", value: "1.2 d", detail: "within SLA" },
+      { label: "Cost per video", value: "₹2,500", detail: "fixed contract rate" },
+      { label: "Ad ready", value: "4 of 4", detail: "whitelisted" },
+    ],
+    tableHeaders: ["DELIVERABLE", "FORMAT", "STATUS", "FEE", "FILES", "APPROVED", "FIXES", "TIME", "COST / VIDEO"],
+    tableRows: [
+      {
+        name: "Quiz walkthrough video",
+        dateOrNote: "Delivered 12 Oct",
+        platform: "Video 9:16",
+        codeOrFormat: "4K · MP4",
+        status: "Approved",
+        feeOrProduct: "₹2,500",
+        views: "1",
+        engRate: "1",
+        clicks: "0",
+        ordersOrLeads: "3 days",
+        result: "₹2,500",
+      },
+    ],
+  },
+
+  // 13. Sales · Influencer Paid
+  "Sales_Influencer Paid": {
+    creatorDisplayName: "Meera Iyer",
+    campaignName: "Vitamin-C Serum",
+    objective: "Sales",
+    typeCategory: "Influencer Paid",
+    scorecards: [
+      { label: "Net sales", value: "₹1,68,020", detail: "▲ 18% vs prev.", isPositive: true },
+      { label: "Orders", value: "408", detail: "▲ 14% vs prev.", isPositive: true },
+      { label: "Link clicks", value: "4,588", detail: "▲ 9% vs prev. · CTR 0.8%", isPositive: true },
+      { label: "Engagement rate", value: "5.4%", detail: "▲ 0.4 pt vs prev.", isPositive: true },
+      { label: "Views", value: "5.7 L", detail: "▲ 19% vs prev.", isPositive: true },
+      { label: "Earned media value", value: "₹70,680", detail: "Estimate · not in ROAS" },
+    ],
+    trendTitle: "Net sales over time",
+    trendSub: "Meera Iyer · all deliverables · Vitamin-C Serum",
+    platformTitle: "By platform",
+    platformSub: "Share of net sales · orders",
+    platformHero: "74%",
+    platformHeroSub: "of net sales came from Instagram",
+    platformBars: [
+      { label: "Instagram Reels · code", pct: "52%", sub: "212 orders" },
+      { label: "Instagram Stories · link", pct: "22%", sub: "90 orders" },
+      { label: "YouTube · description link", pct: "26%", sub: "106 orders" },
+    ],
+    platformDisclaimer: "Codes in Reels drove highest order volume; YouTube description links had highest AOV.",
+    deliverablesChartTitle: "Net sales by deliverable",
+    deliverablesChartSub: "Which posts drove Meera Iyer’s result",
+    deliverableBars: [
+      { name: "Reel · routine", valStr: "₹84,010 · 50%", pct: 95 },
+      { name: "Reel · review", valStr: "₹56,007 · 33%", pct: 65 },
+      { name: "Story · link sticker", valStr: "₹28,003 · 17%", pct: 35 },
+      { name: "Story · reminder", valStr: "due 30 Oct", pct: 10 },
+    ],
+    deliverablesFooterNote: "Reels drove 83% of the sales result; final reminder story posts by 30 Oct.",
+    sideCardTitle: "Revenue",
+    sideCardSub: "Gross to net sales · Shopify attribution",
+    sideCardStats: [
+      { label: "Gross sales", value: "₹1,84,760", detail: "408 orders" },
+      { label: "Returns", value: "− ₹16,740", detail: "9.0% return rate" },
+      { label: "Net sales", value: "₹1,68,020", detail: "31% of campaign sales" },
+      { label: "ROAS", value: "7.6×", detail: "₹1,68,020 ÷ ₹22,000" },
+    ],
+    tableHeaders: ["DELIVERABLE", "PLATFORM · CODE", "STATUS", "FEE", "VIEWS", "ENG. RATE", "CLICKS", "ORDERS", "NET SALES"],
+    tableRows: [
+      {
+        name: "Reel · routine",
+        dateOrNote: "Posted 12 Oct",
+        platform: "Instagram",
+        codeOrFormat: "MEERA15 · 1 link",
+        status: "Approved",
+        feeOrProduct: "₹11,000",
+        views: "2.6 L",
+        engRate: "5.9%",
+        clicks: "3,120",
+        ordersOrLeads: "212",
+        result: "₹84,010",
+        resultSub: "ROAS 7.6×",
+      },
+      {
+        name: "Reel · review",
+        dateOrNote: "Posted 15 Oct",
+        platform: "Instagram",
+        codeOrFormat: "MEERA15 · 1 link",
+        status: "Approved",
+        feeOrProduct: "₹7,333",
+        views: "1.7 L",
+        engRate: "5.9%",
+        clicks: "2,080",
+        ordersOrLeads: "140",
+        result: "₹56,007",
+        resultSub: "ROAS 7.6×",
+      },
+      {
+        name: "Story · link sticker",
+        dateOrNote: "Posted 18 Oct",
+        platform: "Instagram",
+        codeOrFormat: "MEERA15 · 1 link",
+        status: "Approved",
+        feeOrProduct: "₹3,667",
+        views: "86,667",
+        engRate: "5.9%",
+        clicks: "1,040",
+        ordersOrLeads: "56",
+        result: "₹28,003",
+        resultSub: "ROAS 7.6×",
+      },
+      {
+        name: "Story · reminder",
+        dateOrNote: "Not posted yet",
+        platform: "Instagram",
+        codeOrFormat: "MEERA15 · 1 link",
+        status: "Scheduled",
+        feeOrProduct: "Included",
+        views: "—",
+        engRate: "—",
+        clicks: "—",
+        ordersOrLeads: "—",
+        result: "Due 30 Oct",
+      },
+    ],
+  },
+
+  // 14. Sales · Influencer Gift exchange
+  "Sales_Influencer Gift exchange": {
+    creatorDisplayName: "Meera Iyer",
+    campaignName: "Vitamin-C Gifting",
+    objective: "Sales",
+    typeCategory: "Influencer Gift exchange",
+    scorecards: [
+      { label: "Net sales", value: "₹33,480", detail: "▲ 12% vs prev.", isPositive: true },
+      { label: "Orders", value: "82", detail: "▲ 9% vs prev.", isPositive: true },
+      { label: "Link clicks", value: "1,053", detail: "▲ 7% vs prev. · CTR 1.1%", isPositive: true },
+      { label: "Engagement rate", value: "6.0%", detail: "▲ 0.3 pt vs prev.", isPositive: true },
+      { label: "Views", value: "94,500", detail: "▲ 11% vs prev.", isPositive: true },
+      { label: "Earned media value", value: "₹16,740", detail: "Estimate · not in return" },
+    ],
+    trendTitle: "Net sales over time",
+    trendSub: "Meera Iyer · all deliverables · Vitamin-C Gifting",
+    platformTitle: "By platform",
+    platformSub: "Share of net sales · orders",
+    platformHero: "74%",
+    platformHeroSub: "of net sales came from Instagram",
+    platformBars: [
+      { label: "Instagram Reels · code", pct: "60%", sub: "49 orders" },
+      { label: "Instagram Stories · link", pct: "40%", sub: "33 orders" },
+    ],
+    platformDisclaimer: "Gifted affiliate code MEERA15 drove ₹33,480 in sales with zero creator fee.",
+    deliverablesChartTitle: "Net sales by deliverable",
+    deliverablesChartSub: "Which posts drove Meera Iyer’s result",
+    deliverableBars: [
+      { name: "Reel · routine", valStr: "₹20,088 · 60%", pct: 90 },
+      { name: "Story · routine", valStr: "₹13,392 · 40%", pct: 60 },
+    ],
+    deliverablesFooterNote: "Reel routine drove 60% of total revenue with verified affiliate cookie tracking.",
+    sideCardTitle: "Revenue",
+    sideCardSub: "Affiliate gift conversions via Shopify",
+    sideCardStats: [
+      { label: "Gross sales", value: "₹36,700", detail: "82 orders" },
+      { label: "Returns", value: "− ₹3,220", detail: "8.7% return rate" },
+      { label: "Net sales", value: "₹33,480", detail: "27% of gifted campaign" },
+      { label: "AOV", value: "₹408", detail: "average order value" },
+    ],
+    tableHeaders: ["DELIVERABLE", "PLATFORM · CODE", "STATUS", "PRODUCT", "VIEWS", "ENG. RATE", "CLICKS", "ORDERS", "NET SALES"],
+    tableRows: [
+      {
+        name: "Reel · routine",
+        dateOrNote: "Posted 12 Oct",
+        platform: "Instagram",
+        codeOrFormat: "MEERA15",
+        status: "Approved",
+        feeOrProduct: "Serum Bottle",
+        views: "58,000",
+        engRate: "6.2%",
+        clicks: "640",
+        ordersOrLeads: "49",
+        result: "₹20,088",
+      },
+      {
+        name: "Story · routine",
+        dateOrNote: "Posted 15 Oct",
+        platform: "Instagram",
+        codeOrFormat: "MEERA15",
+        status: "Approved",
+        feeOrProduct: "Serum Bottle",
+        views: "36,500",
+        engRate: "5.8%",
+        clicks: "413",
+        ordersOrLeads: "33",
+        result: "₹13,392",
+      },
+    ],
+  },
+
+  // 15. Sales · UGC
+  "Sales_UGC": {
+    creatorDisplayName: "Aditi Joshi",
+    campaignName: "Serum Ad Creatives UGC",
+    objective: "Sales",
+    typeCategory: "UGC",
+    scorecards: [
+      { label: "Usable videos", value: "4 of 4", detail: "100% of the brief" },
+      { label: "Approval rate", value: "100%", detail: "approved first time", isPositive: true },
+      { label: "Revisions", value: "0", detail: "none needed", isPositive: true },
+      { label: "Turnaround", value: "3 days", detail: "▼ 1.2 days vs average", isPositive: true },
+      { label: "Files delivered", value: "4", detail: "4 approved · 0 in review" },
+      { label: "Cost per usable video", value: "₹2,500", detail: "₹10,000 fee ÷ 4" },
+    ],
+    trendTitle: "Files delivered over time",
+    trendSub: "Aditi Joshi · files delivered vs 4 in the brief",
+    platformTitle: "By platform",
+    platformSub: "Where this creator’s files are made for",
+    platformHero: "4 of 4",
+    platformHeroSub: "direct response ad videos",
+    platformBars: [
+      { label: "Instagram · Reels 9:16", pct: "75%", sub: "3 files" },
+      { label: "Instagram · Feed 4:5", pct: "25%", sub: "1 file" },
+    ],
+    platformDisclaimer: "Direct response videos crafted for Meta & YouTube conversion ad campaigns.",
+    deliverablesChartTitle: "Files by deliverable",
+    deliverablesChartSub: "Each file in Aditi Joshi’s brief",
+    deliverableBars: [
+      { name: "Video 1 · Unboxing & glow", valStr: "Approved · 9:16", pct: 100 },
+      { name: "Video 2 · Dark spot before/after", valStr: "Approved · 9:16", pct: 100 },
+      { name: "Video 3 · Why I switched", valStr: "Approved · 9:16", pct: 100 },
+      { name: "Video 4 · 30-day proof", valStr: "Approved · 4:5", pct: 100 },
+    ],
+    deliverablesFooterNote: "All 4 videos approved on first pass; ready for Meta Ads Manager import.",
+    sideCardTitle: "Content library",
+    sideCardSub: "Direct response UGC asset pipeline",
+    sideCardStats: [
+      { label: "Delivered files", value: "4", detail: "100% complete" },
+      { label: "Avg. review time", value: "1.2 d", detail: "fast approval" },
+      { label: "Cost per video", value: "₹2,500", detail: "fixed contract rate" },
+      { label: "Whitelisted", value: "Yes", detail: "commercial license" },
+    ],
+    tableHeaders: ["DELIVERABLE", "FORMAT", "STATUS", "FEE", "FILES", "APPROVED", "FIXES", "TIME", "COST / VIDEO"],
+    tableRows: [
+      {
+        name: "Unboxing & glow video",
+        dateOrNote: "Delivered 12 Oct",
+        platform: "Video 9:16",
+        codeOrFormat: "4K · MP4",
+        status: "Approved",
+        feeOrProduct: "₹2,500",
+        views: "1",
+        engRate: "1",
+        clicks: "0",
+        ordersOrLeads: "3 days",
+        result: "₹2,500",
+      },
+      {
+        name: "Dark spot before/after",
+        dateOrNote: "Delivered 14 Oct",
+        platform: "Video 9:16",
+        codeOrFormat: "4K · MP4",
+        status: "Approved",
+        feeOrProduct: "₹2,500",
+        views: "1",
+        engRate: "1",
+        clicks: "0",
+        ordersOrLeads: "3 days",
+        result: "₹2,500",
+      },
+    ],
+  },
 };
-
-const ease = [0.22, 1, 0.36, 1] as const;
-
-function Reveal({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.16 }}
-      transition={{ duration: 0.7, delay, ease }}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-function Scorecards() {
-  const cards = [
-    ["Net sales", "₹1,21,400", "▲ 15% vs prev."],
-    ["Orders", "318", "▲ 12% vs prev."],
-    ["Link clicks", "2,040", "▲ 13% vs prev. · CTR 0.5%"],
-    ["Engagement rate", "6.8%", "▲ 0.6 pt vs prev."],
-    ["Views", "4.1 L", "▲ 19% vs prev."],
-    ["Earned media value", "₹51,250", "Estimate · not in ROAS"],
-  ] as const;
-  return (
-    <section className="grid h-[119px] overflow-hidden rounded-xl border border-line bg-white sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-      {cards.map(([label, value, detail], index) => (
-        <motion.article
-          key={label}
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.58, delay: index * 0.07, ease }}
-          className={`relative h-full border-line px-[18px] pt-[18px] ${index === 0 ? "bg-[#f1f4ff]" : "bg-white"} ${index < cards.length - 1 ? "border-r" : ""}`}
-        >
-          <p className="text-[14px] leading-5 text-secondary">{label}</p>
-          <p
-            className={`font-semibold text-ink ${index === 5 ? "mt-0.5 text-[24px] leading-8" : "mt-[6px] text-[20px] leading-6"}`}
-          >
-            {value}
-          </p>
-          <p
-            className={`text-[12px] leading-4 ${index === 5 ? "mt-0.5 text-secondary" : "mt-[6px] text-success"}`}
-          >
-            {detail}
-          </p>
-          {index === 0 ? (
-            <motion.span
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.85, delay: 0.35, ease: "easeOut" }}
-              className="absolute bottom-[18px] left-[18px] right-[18px] h-[3px] origin-left rounded-full bg-primary"
-            />
-          ) : null}
-        </motion.article>
-      ))}
-    </section>
-  );
-}
-
-function SalesTrend() {
-  const values = [22, 36, 49, 67, 79, 93, 108, 121];
-  const dates = ["14 Oct", "17 Oct", "20 Oct", "23 Oct", "26 Oct", "29 Oct", "1 Nov", "4 Nov"];
-  const x = (index: number) => 44 + index * (988 / 7);
-  const y = (value: number) => 198 - (value / 130) * 174;
-  const path = values
-    .map((value, index) => `${index ? "L" : "M"}${x(index)} ${y(value)}`)
-    .join(" ");
-  return (
-    <section className="min-h-[348px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-5 text-ink">Net sales over time</h2>
-      <p className="mt-1 text-[12px] leading-4 text-secondary">Vitamin-C Serum</p>
-      <div className="mt-4 overflow-x-auto">
-        <svg
-          viewBox="0 0 1080 244"
-          className="block min-w-[700px] w-full"
-          role="img"
-          aria-label="Net sales over time"
-        >
-          {[0, 30, 60, 90, 120].map((tick) => (
-            <g key={tick}>
-              <line x1="44" x2="1038" y1={y(tick)} y2={y(tick)} stroke="#e8edf3" />
-              <text x="32" y={y(tick) + 4} textAnchor="end" fill="#8491a3" fontSize="11">
-                {tick ? `₹${tick}K` : "₹0"}
-              </text>
-            </g>
-          ))}
-          {values.map((_, index) => (
-            <line key={index} x1={x(index)} x2={x(index)} y1="24" y2="198" stroke="#f1f4f8" />
-          ))}
-          <defs>
-            <linearGradient id="creator-sales-fill" x1="0" x2="0" y1="0" y2="1">
-              <stop stopColor="#4f61e8" stopOpacity=".18" />
-              <stop offset="1" stopColor="#4f61e8" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <motion.path
-            d={`${path} L1038 198 L44 198 Z`}
-            fill="url(#creator-sales-fill)"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          />
-          <motion.path
-            d={path}
-            fill="none"
-            stroke="#4f61e8"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            initial={{ pathLength: 0 }}
-            whileInView={{ pathLength: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.3, ease: "easeInOut" }}
-          />
-          {values.map((value, index) => (
-            <motion.circle
-              key={index}
-              cx={x(index)}
-              cy={y(value)}
-              r="3"
-              fill="#4f61e8"
-              initial={{ opacity: 0, scale: 0 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: 0.45 + index * 0.07 }}
-            />
-          ))}
-          {dates.map((date, index) => (
-            <text
-              key={date}
-              x={x(index)}
-              y="238"
-              textAnchor={index === 0 ? "start" : index === dates.length - 1 ? "end" : "middle"}
-              fill="#8491a3"
-              fontSize="11"
-            >
-              {date}
-            </text>
-          ))}
-        </svg>
-      </div>
-    </section>
-  );
-}
-
-function Funnel() {
-  const rows = [
-    ["Views 4.1 L", "", 420, "#4b5edd"],
-    ["Link clicks 2,040", "CTR 0.5%", 340, "#566bea"],
-    ["Add to cart 720", "Add-to-cart rate 35%", 270, "#7290f5"],
-    ["Checkouts initiated 410", "Checkout rate 57%", 215, "#9db8fb"],
-    ["Orders 318", "Purchase rate 78% · Conversion rate 15.6%", 170, "#22974f"],
-  ] as const;
-  return (
-    <section className="min-h-[407px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Conversion funnel</h2>
-      <p className="mt-1 text-[12px] leading-4 text-secondary">
-        From views to orders · conversion rate at each step
-      </p>
-      <div className="mt-4 space-y-1.5">
-        {rows.map(([label, note, width, color], index) => (
-          <div
-            className="grid grid-cols-[minmax(454px,1fr)_162px] items-center gap-4 max-[680px]:grid-cols-1"
-            key={label}
-          >
-            <motion.svg
-              className="mx-auto h-[52px] max-w-full origin-center"
-              style={{ width }}
-              viewBox={`0 0 ${width} 52`}
-              role="img"
-              aria-label={label}
-              initial={{ opacity: 0, scaleX: 0.35 }}
-              whileInView={{ opacity: 1, scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.75, delay: index * 0.12, ease }}
-            >
-              <path
-                d={`M5 0 H${width - 5} Q${width} 0 ${width - 2} 5 L${width - 21} 47 Q${width - 20} 52 ${width - 25} 52 H25 Q20 52 19 47 L2 5 Q0 0 5 0 Z`}
-                fill={color}
-              />
-              <text
-                x={width / 2}
-                y="30"
-                textAnchor="middle"
-                fill="white"
-                fontSize="12"
-                fontWeight="500"
-              >
-                {label}
-              </text>
-            </motion.svg>
-            <motion.p
-              className="text-[12px] leading-4 text-secondary"
-              initial={{ opacity: 0, x: -8 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 0.2 + index * 0.12 }}
-            >
-              {note}
-            </motion.p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Revenue() {
-  const bars = [
-    ["₹1,32,000", "Gross sales", "#dbe4ff", 120, "text-ink"],
-    ["− ₹10,600", "Returns", "#dc2626", 10, "text-[#dc2626]"],
-    ["₹1,21,400", "Net sales", "#4f61e8", 110, "text-[#4f61e8]"],
-  ] as const;
-  const rows = [
-    ["Orders · coupon code", "201"],
-    ["Orders · UTM link", "117"],
-    ["Average order value (AOV)", "₹382"],
-    ["ROAS (net sales ÷ fee)", "7.1×"],
-  ] as const;
-  return (
-    <section className="min-h-[407px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Revenue</h2>
-      <p className="mt-1 text-[12px] leading-4 text-secondary">Gross to net sales · Shopify</p>
-      <div className="mt-4 flex h-[190px] items-end justify-around border-b border-line px-2">
-        {bars.map(([amount, label, color, height, tone], index) => (
-          <div className="flex h-full w-20 flex-col justify-end text-center" key={label}>
-            <motion.b
-              className={`mb-2 text-[12px] font-semibold ${tone}`}
-              initial={{ opacity: 0, y: 7 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 0.25 + index * 0.12 }}
-            >
-              {amount}
-            </motion.b>
-            <motion.span
-              className="origin-bottom rounded-t-[4px]"
-              style={{ backgroundColor: color }}
-              initial={{ height: 0 }}
-              whileInView={{ height }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.9, delay: index * 0.14, ease }}
-            />
-            <small className="mt-2 text-[11px] text-secondary">{label}</small>
-          </div>
-        ))}
-      </div>
-      <dl className="mt-5 space-y-[10px]">
-        {rows.map(([label, value]) => (
-          <div className="flex justify-between gap-4 text-[12px] leading-[19px]" key={label}>
-            <dt className="text-secondary">{label}</dt>
-            <dd
-              className={`font-semibold ${label.startsWith("ROAS") ? "text-[#188a52]" : "text-ink"}`}
-            >
-              {value}
-            </dd>
-          </div>
-        ))}
-      </dl>
-    </section>
-  );
-}
-
-function DeliverableBreakdown({ platform }: { platform: Platform }) {
-  const rows = [
-    [
-      "Festive GRWM",
-      "Reel",
-      "live 18 Oct",
-      "Approved",
-      "₹8,500",
-      "1.6 L",
-      "7.1%",
-      "820",
-      "132",
-      "₹50,400",
-    ],
-    [
-      "Launch day",
-      "Story",
-      "live 20 Oct",
-      "Approved",
-      "₹4,250",
-      "1.4 L",
-      "6.9%",
-      "710",
-      "108",
-      "₹41,200",
-    ],
-    [
-      "Results after 7 days",
-      "Reel",
-      "sent 26 Oct",
-      "Waiting for approval",
-      "₹3,000",
-      "1.1 L",
-      "6.2%",
-      "510",
-      "78",
-      "₹29,800",
-    ],
-    ["Last-day reminder", "Story", "due 30 Oct", "Not started", "₹1,250", "–", "–", "–", "–", "–"],
-  ] as const;
-  const headers = [
-    "DELIVERABLE",
-    "COUPON · UTM LINK",
-    "STATUS",
-    "FEE",
-    "VIEWS ↓",
-    "ENG. RATE",
-    "CLICKS",
-    "ORDERS",
-    "NET SALES",
-  ];
-  return (
-    <section className="overflow-hidden rounded-xl border border-line bg-white">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[1116px] table-fixed">
-          <colgroup>
-            <col className="w-[244px]" />
-            <col className="w-[180px]" />
-            <col className="w-[120px]" />
-            <col className="w-[90px]" />
-            <col className="w-[90px]" />
-            <col className="w-[90px]" />
-            <col className="w-[80px]" />
-            <col className="w-[80px]" />
-            <col className="w-[100px]" />
-          </colgroup>
-          <thead className="h-[34px] border-b border-line bg-subtle text-[10px] font-semibold tracking-[.06em] text-secondary">
-            <tr>
-              {headers.map((label, index) => (
-                <th key={label} className={`px-5 ${index < 2 ? "text-left" : "text-right"}`}>
-                  {label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map(
-              ([name, type, detail, status, fee, views, rate, clicks, orders, sales], index) => (
-                <tr key={name} className="h-[93px] border-b border-line-subtle last:border-0">
-                  <td className="px-5">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={`/assets/creators/${index % 2 ? "meera-iyer" : "ishita-rao"}.png`}
-                        alt=""
-                        className="h-[52px] w-10 rounded-md object-cover"
-                      />
-                      <div>
-                        <p className="text-[13px] font-medium leading-5 text-ink">
-                          {name} · {type}
-                        </p>
-                        <p className="text-[11px] leading-4 text-secondary">
-                          <PlatformLogo
-                            platform={platform}
-                            className="mr-1 inline-block size-3 align-[-2px]"
-                          />
-                          Instagram · {detail}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-5 text-[12px] leading-5">
-                    <p className="font-medium text-ink">Coupon</p>
-                    <p className="text-secondary">UTM link</p>
-                  </td>
-                  <td className="px-5 text-right">
-                    <span
-                      className={`inline-flex whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium ${status === "Approved" ? "bg-success-bg text-success" : status === "Waiting for approval" ? "bg-warning-bg text-warning" : "bg-muted text-secondary"}`}
-                    >
-                      {status}
-                    </span>
-                  </td>
-                  {[fee, views, rate, clicks, orders, sales].map((value) => (
-                    <td
-                      key={`${name}-${value}`}
-                      className="px-5 text-right text-[12px] font-medium leading-5 text-ink"
-                    >
-                      {value}
-                    </td>
-                  ))}
-                </tr>
-              ),
-            )}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  );
-}
-
-function ViewsCard() {
-  return (
-    <section className="h-[250px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Views</h2>
-      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-        Followers vs non-followers (new audience reach)
-      </p>
-      <div className="mt-4 flex items-center gap-4">
-        <motion.div
-          className="relative grid size-[150px] shrink-0 place-items-center rounded-full"
-          style={{ background: "conic-gradient(#5164e7 0 39%, #dbe4ff 39% 100%)" }}
-          initial={{ opacity: 0, scale: 0.65, rotate: -45 }}
-          whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, ease }}
-        >
-          <div className="grid size-[102px] place-items-center rounded-full bg-white text-center">
-            <b className="text-[20px] leading-6 text-ink">4.1 L</b>
-            <span className="text-[12px] leading-4 text-secondary">views</span>
-          </div>
-        </motion.div>
-        <div className="min-w-0 space-y-2.5 text-[13px] leading-[19px]">
-          <div className="flex items-center gap-2">
-            <i className="size-2.5 rounded-full bg-[#5164e7]" />
-            <span className="text-secondary">Followers</span>
-            <b className="ml-auto whitespace-nowrap font-medium text-ink">1.6 L · 39%</b>
-          </div>
-          <div className="flex items-center gap-2">
-            <i className="size-2.5 rounded-full bg-[#dbe4ff]" />
-            <span className="text-secondary">Non-followers</span>
-            <b className="ml-auto whitespace-nowrap font-medium text-ink">2.5 L · 61%</b>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function EngagementCard() {
-  const parts = [
-    ["Likes", "8,400 · 30%", "#5164e7", "30%"],
-    ["Comments", "2,200 · 8%", "#9caef8", "8%"],
-    ["Saves", "10,500 · 38%", "#49ba8b", "38%"],
-    ["Shares", "6,800 · 24%", "#eea24a", "24%"],
-  ] as const;
-  return (
-    <section className="h-[250px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Engagement breakdown</h2>
-      <p className="mt-0.5 truncate text-[12px] leading-4 text-secondary">
-        What the 6.8% engagement rate is made of · 27,900
-      </p>
-      <div className="mt-4 flex h-4 overflow-hidden rounded-full">
-        {parts.map(([, , color, width], index) => (
-          <motion.span
-            key={color}
-            className="h-full"
-            style={{ backgroundColor: color }}
-            initial={{ width: 0 }}
-            whileInView={{ width }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.75, delay: index * 0.1, ease }}
-          />
-        ))}
-      </div>
-      <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-2 text-[13px] leading-[19px]">
-        {parts.map(([label, value, color]) => (
-          <div className="flex items-center gap-2" key={label}>
-            <i className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
-            <span className="text-secondary">{label}</span>
-            <b className="ml-auto whitespace-nowrap font-medium text-ink">{value}</b>
-          </div>
-        ))}
-      </div>
-      <div className="mt-4 space-y-2.5 border-t border-line-subtle pt-3 text-[12px] leading-4">
-        <div className="flex justify-between">
-          <span className="text-secondary">Total interactions</span>
-          <b className="font-medium text-ink">27,900</b>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-secondary">Save and share rate</span>
-          <b className="font-medium text-ink">4.2%</b>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FormatCard() {
-  const formats = [
-    ["Festive GRWM · Reel", 65],
-    ["Launch day · Story", 62],
-    ["Results after 7 days · Reel", 54],
-  ] as const;
-  return (
-    <section className="h-[250px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">By Format</h2>
-      <p className="mt-0.5 min-h-8 text-[12px] leading-4 text-secondary">
-        Share of views from people who don’t follow her
-      </p>
-      <div className="mt-4 space-y-3 text-[13px] leading-[19px]">
-        {formats.map(([label, value], index) => (
-          <div className="grid grid-cols-[1fr_110px_28px] items-center gap-3" key={label}>
-            <span className="text-secondary">{label}</span>
-            <span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]">
-              <motion.span
-                className="block h-full rounded-full bg-[#5164e7]"
-                initial={{ width: 0 }}
-                whileInView={{ width: `${value}%` }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: index * 0.12, ease }}
-              />
-            </span>
-            <b className="text-right font-medium text-ink">{value}%</b>
-          </div>
-        ))}
-      </div>
-      <p className="mt-4 text-[12px] leading-[17px] text-secondary">
-        1.04 L, 0.87 L and 0.59 L views from new people. On YouTube: not subscribed.
-      </p>
-    </section>
-  );
-}
-
-function CountriesCard() {
-  const countries = [
-    ["India", "78%"],
-    ["UAE", "6%"],
-    ["United States", "5%"],
-    ["United Kingdom", "4%"],
-    ["Singapore", "3%"],
-    ["Other", "4%"],
-  ] as const;
-  const land = [
-    "M47 58l17-20 47-10 35 10 10 20-18 15-17 1-10 19-24 5-19-16-25-4-6-19z",
-    "M138 125l22 8 20 34-12 61-16 21-13-37 4-35-15-23z",
-    "M249 48l47-19 56 5 34 21-5 24-27 7-17 19-44-3-9-22-35-9z",
-    "M293 101l39 7 31 31-11 61-26 34-27-23-13-51z",
-    "M374 52l43-8 54 19 34 34-13 26-28-8-27 15-31-6-26-31z",
-    "M434 151l24 10 20 36-17 47-25-26-4-34z",
-    "M484 196l29-10 31 12 5 27-33 17-28-19z",
-  ];
-  return (
-    <section className="h-[375px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Countries</h2>
-      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-        Where her followers live · Instagram insights
-      </p>
-      <div className="mt-4 grid h-[275px] lg:grid-cols-[minmax(0,645px)_minmax(0,1fr)]">
-        <div className="relative overflow-hidden border-b border-line-subtle pr-6 lg:border-b-0 lg:border-r">
-          <svg
-            viewBox="0 0 560 275"
-            className="mx-auto h-full max-w-full"
-            role="img"
-            aria-label="Dotted world map showing audience countries"
-          >
-            <defs>
-              <pattern
-                id="creator-audience-dots"
-                width="8"
-                height="8"
-                patternUnits="userSpaceOnUse"
-              >
-                <circle cx="4" cy="4" r="2" fill="#d6def1" />
-              </pattern>
-              <clipPath id="creator-audience-land">
-                {land.map((path) => (
-                  <path key={path} d={path} />
-                ))}
-              </clipPath>
-            </defs>
-            <rect
-              width="560"
-              height="275"
-              fill="url(#creator-audience-dots)"
-              clipPath="url(#creator-audience-land)"
-            />
-            <g fill="#7186f2">
-              {[
-                [106, 68],
-                [114, 68],
-                [122, 68],
-                [130, 60],
-                [138, 60],
-                [146, 52],
-                [306, 59],
-                [314, 59],
-                [322, 59],
-                [498, 206],
-              ].map(([cx, cy]) => (
-                <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="4" />
-              ))}
-            </g>
-            <g fill="#3f57e8">
-              {[
-                [341, 97],
-                [349, 97],
-                [357, 97],
-                [333, 105],
-                [341, 105],
-                [349, 105],
-                [357, 105],
-                [365, 105],
-                [341, 113],
-                [349, 113],
-                [357, 113],
-                [349, 121],
-              ].map(([cx, cy]) => (
-                <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="4" />
-              ))}
-            </g>
-          </svg>
-          <span className="absolute left-[42%] top-[18px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">
-            United Kingdom <b className="ml-1 font-medium text-ink">4%</b>
-          </span>
-          <span className="absolute left-[20%] top-[106px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">
-            United States <b className="ml-1 font-medium text-ink">5%</b>
-          </span>
-          <span className="absolute left-[57%] top-[130px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">
-            UAE <b className="ml-1 font-medium text-ink">6%</b>
-          </span>
-          <span className="absolute left-[74%] top-[121px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">
-            India <b className="ml-1 font-medium text-ink">78%</b>
-          </span>
-          <span className="absolute right-[17%] top-[164px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">
-            Singapore <b className="ml-1 font-medium text-ink">3%</b>
-          </span>
-        </div>
-        <div className="pt-6 lg:pl-6">
-          <h3 className="text-[18px] font-semibold leading-6 text-ink">Top countries</h3>
-          <p className="mt-1 text-[12px] leading-4 text-secondary">
-            Share of her followers · Instagram insights
-          </p>
-          <div className="mt-5 space-y-3.5">
-            {countries.map(([country, share], index) => (
-              <div
-                key={country}
-                className="grid grid-cols-[122px_minmax(80px,1fr)_30px] items-center gap-3 text-[13px] leading-[19px]"
-              >
-                <span className="text-secondary">{country}</span>
-                <span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]">
-                  <motion.span
-                    className="block h-full rounded-full bg-[#4f61e8]"
-                    initial={{ width: 0 }}
-                    whileInView={{ width: share }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.75, delay: index * 0.07, ease }}
-                  />
-                </span>
-                <b className="text-right font-medium text-ink">{share}</b>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function CitiesCard() {
-  const cities = [
-    ["Bengaluru", "21%", 185],
-    ["Mumbai", "17%", 150],
-    ["Delhi NCR", "12%", 106],
-    ["Chennai", "8%", 70],
-    ["Hyderabad", "7%", 62],
-    ["Pune", "6%", 53],
-    ["Other cities", "29%", 220],
-  ] as const;
-  return (
-    <section className="h-[316px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Cities</h2>
-      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-        Top cities of her followers · Instagram insights
-      </p>
-      <div className="mt-4 space-y-3 text-[13px] leading-[19px]">
-        {cities.map(([city, share, width], index) => (
-          <div className="grid grid-cols-[110px_220px_28px] items-center gap-3" key={city}>
-            <span className="text-secondary">{city}</span>
-            <span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]">
-              <motion.span
-                className="block h-full rounded-full bg-[#4f61e8]"
-                initial={{ width: 0 }}
-                whileInView={{ width }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.75, delay: index * 0.07, ease }}
-              />
-            </span>
-            <b className="font-medium text-ink">{share}</b>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function AgeGenderCard() {
-  const groups = [
-    ["13–17", "3%", "0%", 10, 2],
-    ["18–24", "30%", "4%", 95, 13],
-    ["25–34", "41%", "5%", 130, 16],
-    ["35–44", "9%", "3%", 29, 10],
-    ["45+", "3%", "2%", 10, 6],
-  ] as const;
-  return (
-    <section className="h-[316px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-5 text-ink">Age and gender</h2>
-      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-        Share of her followers · Instagram insights
-      </p>
-      <div className="relative mt-4 h-[190px] border-b border-line">
-        <div className="absolute inset-x-2 bottom-0 flex h-[160px] justify-between">
-          {groups.map(([age, women, men, womenHeight, menHeight], index) => (
-            <div className="flex w-[60px] flex-col justify-end text-center" key={age}>
-              <div className="flex h-[146px] items-end justify-center gap-1">
-                <div className="relative flex w-7 flex-col justify-end">
-                  <span className="absolute -top-4 w-full text-center text-[11px] leading-[13px] text-secondary">
-                    {women}
-                  </span>
-                  <motion.span
-                    className="w-7 rounded-t-[3px] bg-[#4f61e8]"
-                    initial={{ height: 0 }}
-                    whileInView={{ height: womenHeight }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: index * 0.1, ease }}
-                  />
-                </div>
-                <div className="relative flex w-7 flex-col justify-end">
-                  <span className="absolute -top-4 w-full text-center text-[11px] leading-[13px] text-secondary">
-                    {men}
-                  </span>
-                  <motion.span
-                    className="w-7 rounded-t-[3px] bg-[#afbef8]"
-                    initial={{ height: 0 }}
-                    whileInView={{ height: menHeight }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: 0.08 + index * 0.1, ease }}
-                  />
-                </div>
-              </div>
-              <span className="mt-2 text-[11px] leading-[13px] text-secondary">{age}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="mt-4 flex items-center gap-4 text-[12px] leading-[15px]">
-        <span className="flex items-center gap-1.5 text-secondary">
-          <i className="size-2 rounded-full bg-[#4f61e8]" />
-          Women <b className="font-medium text-ink">86%</b>
-        </span>
-        <span className="flex items-center gap-1.5 text-secondary">
-          <i className="size-2 rounded-full bg-[#afbef8]" />
-          Men <b className="font-medium text-ink">14%</b>
-        </span>
-      </div>
-    </section>
-  );
-}
-
-function BudgetCard({ creatorName }: { creatorName: string }) {
-  const items = [
-    [
-      `Paid to ${creatorName.split(" ")[0]}`,
-      "released after you approved content",
-      "₹12,750",
-      "75%",
-      "#4f61e8",
-    ],
-    [
-      "Held in escrow",
-      "₹3,000 on Reel approval · ₹1,250 on the last Story",
-      "₹4,250",
-      "25%",
-      "#9eaff7",
-    ],
-    ["Not funded yet", "fully funded", "₹0", "0%", "#e6ebf4"],
-  ] as const;
-  return (
-    <section className="relative h-[434px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[18px] font-semibold leading-6 text-ink">Budget</h2>
-      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-        One-time collab · {creatorName} · ₹17,000 fee
-      </p>
-      <motion.div
-        className="relative mx-auto mt-4 grid size-[132px] place-items-center rounded-full"
-        style={{ background: "conic-gradient(#4f61e8 0 75%, #9eaff7 75% 100%)" }}
-        initial={{ opacity: 0, scale: 0.65, rotate: -45 }}
-        whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1, ease }}
-      >
-        <div className="grid size-[92px] place-items-center rounded-full bg-white text-center">
-          <b className="whitespace-nowrap text-[18px] leading-6 tracking-[-.03em] text-ink">
-            ₹17,000
-          </b>
-          <span className="text-[12px] leading-4 text-secondary">fee</span>
-        </div>
-      </motion.div>
-      <div className="mt-4 space-y-2.5">
-        {items.map(([title, detail, amount, share, color], index) => (
-          <motion.div
-            key={title}
-            className="grid grid-cols-[10px_minmax(0,1fr)_75px] gap-2 text-[13px] leading-5"
-            initial={{ opacity: 0, x: -8 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.45, delay: 0.2 + index * 0.08 }}
-          >
-            <i className="mt-1 size-2.5 rounded-full" style={{ backgroundColor: color }} />
-            <div>
-              <p className="font-medium text-ink">{title}</p>
-              <p className="text-[12px] leading-4 text-secondary">{detail}</p>
-            </div>
-            <div className="text-right">
-              <p className="font-medium text-ink">{amount}</p>
-              <p className="text-[12px] leading-4 text-secondary">{share}</p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-      <div className="absolute bottom-[58px] left-5 right-5 h-px bg-line" />
-      <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between text-[14px] leading-5">
-        <span className="text-secondary">Total fee</span>
-        <b className="text-[16px] font-semibold text-ink">₹17,000</b>
-      </div>
-    </section>
-  );
-}
-
-function CostEfficiencyCard() {
-  const metrics = [
-    ["Cost per order", "CPA", "₹53", "vs ₹97", "−45%", 93],
-    ["Cost per link click", "CPC", "₹8.33", "vs ₹13.60", "−39%", 104],
-    ["Cost per 1,000 views", "CPM", "₹41", "vs ₹67", "−39%", 104],
-    ["Cost per engagement", "CPE", "₹0.61", "vs ₹1.02", "−40%", 102],
-  ] as const;
-  return (
-    <section className="h-[434px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-[19px] text-ink">Cost efficiency</h2>
-      <div className="mt-4">
-        <p className="text-[12px] leading-[15px] text-secondary">Return on ad spend (ROAS)</p>
-        <div className="mt-1 flex items-center gap-2">
-          <motion.b
-            className="text-[32px] font-semibold leading-[39px] text-ink"
-            initial={{ opacity: 0, scale: 0.75 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, ease }}
-          >
-            7.1×
-          </motion.b>
-          <span className="rounded-full bg-success-bg px-2 py-0.5 text-[11px] font-medium leading-[13px] text-success">
-            ▲ 61% above project 4.4×
-          </span>
-        </div>
-        <p className="mt-1 text-[12px] leading-[15px] text-secondary">
-          ₹7.10 in net sales for every ₹1 of fee
-        </p>
-      </div>
-      <div className="mt-4 h-px bg-line" />
-      <div className="mt-4 flex items-center gap-3">
-        <p className="text-[13px] font-medium leading-4 text-ink">Cost per result</p>
-        <span className="h-px flex-1 bg-line" />
-      </div>
-      <div className="mt-4 space-y-3.5">
-        {metrics.map(([label, code, value, previous, change, width], index) => (
-          <div
-            className="grid grid-cols-[140px_170px_minmax(0,1fr)_48px] items-center gap-3"
-            key={code}
-          >
-            <div>
-              <p className="text-[12px] leading-4 text-ink">{label}</p>
-              <p className="text-[11px] leading-[13px] text-secondary">{code}</p>
-            </div>
-            <div className="space-y-1">
-              <motion.span
-                className="block h-[7px] rounded-full bg-[#4f61e8]"
-                initial={{ width: 0 }}
-                whileInView={{ width }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: index * 0.1, ease }}
-              />
-              <span className="block h-[7px] w-[170px] rounded-full bg-[#e5eaf3]" />
-            </div>
-            <div className="whitespace-nowrap text-[12px] leading-[18px]">
-              <b className="font-medium text-ink">{value}</b>
-              <span className="ml-1 text-[11px] text-secondary">{previous}</span>
-            </div>
-            <span className="rounded-full bg-success-bg px-2 py-0.5 text-center text-[11px] font-medium leading-[13px] text-success">
-              {change}
-            </span>
-          </div>
-        ))}
-      </div>
-      <p className="mt-4 text-[11px] leading-[15px] text-tertiary">
-        For costs, lower is better. Project average covers the 6 live creators in Vitamin-C Serum.
-      </p>
-    </section>
-  );
-}
-
-function CustomReport() {
-  return (
-    <section className="flex min-h-[86px] flex-wrap items-center justify-between gap-4 rounded-xl border border-line bg-white px-5 py-4">
-      <div>
-        <h2 className="text-[16px] font-semibold leading-6 text-ink">
-          Need a deeper breakdown? Make a custom report
-        </h2>
-        <p className="mt-1 text-[12px] leading-4 text-secondary">
-          Split any number by format, platform, date, coupon vs link or audience, then save it or
-          export it as a PDF or CSV.
-        </p>
-      </div>
-      <button
-        type="button"
-        className="h-10 w-[200px] rounded-md bg-primary text-[14px] font-medium text-white transition-colors hover:bg-[#2949e9]"
-      >
-        Make custom report
-      </button>
-    </section>
-  );
-}
 
 export function CreatorPerformanceTab({
   creatorName,
   platform,
-  showCustomReport = true,
+  project,
+  overrideObjective,
+  overrideTypeCategory,
 }: CreatorPerformanceTabProps) {
+  // Determine initial objective & type from project or override
+  const initialObjective: ObjectiveType = useMemo(() => {
+    if (overrideObjective) return overrideObjective;
+    if (project?.objective) {
+      if (project.objective === "Awareness") return "Awareness";
+      if (project.objective === "Engagement") return "Engagement";
+      if (project.objective === "Traffic") return "Traffic";
+      if (project.objective === "Lead generation") return "Lead generation";
+      if (project.objective === "Sales") return "Sales";
+    }
+    return "Sales";
+  }, [project, overrideObjective]);
+
+  const initialTypeCategory: TypeCategory = useMemo(() => {
+    if (overrideTypeCategory) return overrideTypeCategory;
+    if (project?.projectType === "UGC") return "UGC";
+    if (project?.partnership?.toLowerCase().includes("gift")) return "Influencer Gift exchange";
+    return "Influencer Paid";
+  }, [project, overrideTypeCategory]);
+
+  const [activeObjective, setActiveObjective] = useState<ObjectiveType>(initialObjective);
+  const [activeTypeCategory, setActiveTypeCategory] = useState<TypeCategory>(initialTypeCategory);
+
+  const variantKey = `${activeObjective}_${activeTypeCategory}`;
+  const data =
+    CREATOR_PERFORMANCE_VARIANTS[variantKey] ||
+    CREATOR_PERFORMANCE_VARIANTS["Sales_Influencer Paid"];
+
+  const effectiveCreatorName = creatorName || data.creatorDisplayName;
+
   return (
-    <div className="mt-6 space-y-6">
-      <Scorecards />
-      <Reveal>
-        <SalesTrend />
-      </Reveal>
-      <section className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-        <Reveal>
-          <Funnel />
-        </Reveal>
-        <Reveal delay={0.08}>
-          <Revenue />
-        </Reveal>
-      </section>
-      <Reveal>
-        <DeliverableBreakdown platform={platform} />
-      </Reveal>
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.185fr)_minmax(0,1.153fr)_minmax(0,1fr)]">
-        <Reveal>
-          <ViewsCard />
-        </Reveal>
-        <Reveal delay={0.08}>
-          <EngagementCard />
-        </Reveal>
-        <Reveal delay={0.16}>
-          <FormatCard />
-        </Reveal>
-      </section>
-      <Reveal>
-        <CountriesCard />
-      </Reveal>
-      <section className="grid gap-6 lg:grid-cols-2">
-        <Reveal>
-          <CitiesCard />
-        </Reveal>
-        <Reveal delay={0.08}>
-          <AgeGenderCard />
-        </Reveal>
-      </section>
-      <section className="grid gap-6 lg:grid-cols-2">
-        <Reveal>
-          <BudgetCard creatorName={creatorName} />
-        </Reveal>
-        <Reveal delay={0.08}>
-          <CostEfficiencyCard />
-        </Reveal>
-      </section>
-      {showCustomReport && (
-        <Reveal>
-          <CustomReport />
-        </Reveal>
-      )}
+    <div className="space-y-6 mt-4">
+      {/* 15-Version Interactive Switcher Bar (Same grid as campaign page) */}
+      <div className="rounded-xl border border-neutral-200 bg-neutral-50/70 p-3.5 shadow-xs">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+              Objective:
+            </span>
+            <div className="flex flex-wrap gap-1">
+              {(["Awareness", "Engagement", "Traffic", "Lead generation", "Sales"] as ObjectiveType[]).map(
+                (obj) => (
+                  <button
+                    key={obj}
+                    type="button"
+                    onClick={() => setActiveObjective(obj)}
+                    className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${
+                      activeObjective === obj
+                        ? "bg-neutral-900 text-white shadow-xs"
+                        : "bg-white text-neutral-700 border border-neutral-200 hover:bg-neutral-100"
+                    }`}
+                  >
+                    {obj}
+                  </button>
+                ),
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+              Type:
+            </span>
+            <div className="flex flex-wrap gap-1">
+              {(
+                [
+                  "Influencer Paid",
+                  "Influencer Gift exchange",
+                  "UGC",
+                ] as TypeCategory[]
+              ).map((typeCat) => (
+                <button
+                  key={typeCat}
+                  type="button"
+                  onClick={() => setActiveTypeCategory(typeCat)}
+                  className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${
+                    activeTypeCategory === typeCat
+                      ? "bg-neutral-900 text-white shadow-xs"
+                      : "bg-white text-neutral-700 border border-neutral-200 hover:bg-neutral-100"
+                  }`}
+                >
+                  {typeCat}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Scorecards Row (6 Cards) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        {data.scorecards.map((sc, idx) => (
+          <div
+            key={idx}
+            className="rounded-xl border border-neutral-200 bg-white p-4 shadow-xs hover:border-neutral-300 transition-colors"
+          >
+            <div className="text-xs font-medium text-neutral-500">{sc.label}</div>
+            <div className="mt-2 text-xl sm:text-2xl font-bold tracking-tight text-neutral-950">
+              {sc.value}
+            </div>
+            <div
+              className={`mt-1 text-xs font-medium ${
+                sc.isPositive ? "text-emerald-600" : "text-neutral-500"
+              }`}
+            >
+              {sc.detail}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Row 1 · Trend & Platform */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Trend Card */}
+        <div className="lg:col-span-2 rounded-xl border border-neutral-200 bg-white p-5 shadow-xs">
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="text-base font-semibold text-neutral-900">{data.trendTitle}</h3>
+              <p className="text-xs text-neutral-500 mt-0.5">
+                {effectiveCreatorName} · all deliverables · {data.campaignName}
+              </p>
+            </div>
+          </div>
+
+          {/* Line Chart (SVG) */}
+          <div className="mt-6 h-56 w-full">
+            <svg className="w-full h-full overflow-visible" viewBox="0 0 680 180">
+              <defs>
+                <linearGradient id="creatorTrendGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#3B5BFF" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="#3B5BFF" stopOpacity="0.0" />
+                </linearGradient>
+              </defs>
+
+              <line x1="0" y1="30" x2="680" y2="30" stroke="#f1f5f9" strokeWidth="1" />
+              <line x1="0" y1="75" x2="680" y2="75" stroke="#f1f5f9" strokeWidth="1" />
+              <line x1="0" y1="120" x2="680" y2="120" stroke="#f1f5f9" strokeWidth="1" />
+              <line x1="0" y1="165" x2="680" y2="165" stroke="#f1f5f9" strokeWidth="1" />
+
+              <path
+                d="M 20 148 C 90 138, 160 122, 230 108 C 300 92, 370 68, 440 52 C 510 38, 580 30, 670 24 L 670 165 L 20 165 Z"
+                fill="url(#creatorTrendGrad)"
+              />
+              <path
+                d="M 20 148 C 90 138, 160 122, 230 108 C 300 92, 370 68, 440 52 C 510 38, 580 30, 670 24"
+                fill="none"
+                stroke="#3B5BFF"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+              <circle cx="440" cy="52" r="4.5" fill="#3B5BFF" stroke="#fff" strokeWidth="2" />
+              <circle cx="670" cy="24" r="4.5" fill="#3B5BFF" stroke="#fff" strokeWidth="2" />
+            </svg>
+
+            <div className="flex justify-between text-[11px] text-neutral-400 mt-2 px-1">
+              <span>14 Oct</span>
+              <span>17 Oct</span>
+              <span>20 Oct</span>
+              <span>23 Oct</span>
+              <span>26 Oct</span>
+              <span>29 Oct</span>
+              <span>1 Nov</span>
+              <span>4 Nov</span>
+            </div>
+          </div>
+        </div>
+
+        {/* By Platform Card */}
+        <div className="rounded-xl border border-neutral-200 bg-white p-5 shadow-xs flex flex-col justify-between">
+          <div>
+            <h3 className="text-base font-semibold text-neutral-900">{data.platformTitle}</h3>
+            <p className="text-xs text-neutral-500 mt-0.5">{data.platformSub}</p>
+
+            <div className="mt-5">
+              <div className="text-3xl font-extrabold tracking-tight text-neutral-950">
+                {data.platformHero}
+              </div>
+              <div className="text-xs text-neutral-600 mt-0.5 font-medium">
+                {data.platformHeroSub}
+              </div>
+            </div>
+
+            <div className="mt-6 space-y-3.5">
+              {data.platformBars.map((bar, idx) => (
+                <div key={idx}>
+                  <div className="flex justify-between text-xs font-medium text-neutral-700 mb-1">
+                    <span>{bar.label}</span>
+                    <span className="font-semibold text-neutral-900">
+                      {bar.pct} {bar.sub ? ` · ${bar.sub}` : ""}
+                    </span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-neutral-100 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${
+                        idx === 0 ? "bg-neutral-900" : idx === 1 ? "bg-neutral-700" : "bg-neutral-400"
+                      }`}
+                      style={{ width: bar.pct }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 border-t border-neutral-100 pt-3 text-[11px] text-neutral-500 leading-normal">
+            {data.platformDisclaimer}
+          </div>
+        </div>
+      </div>
+
+      {/* Row 2 · Deliverables Bar Chart & Objective Details (NO FUNNELS!) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left: Deliverables Bar Chart */}
+        <div className="rounded-xl border border-neutral-200 bg-white p-5 shadow-xs flex flex-col justify-between">
+          <div>
+            <h3 className="text-base font-semibold text-neutral-900">
+              {data.deliverablesChartTitle}
+            </h3>
+            <p className="text-xs text-neutral-500 mt-0.5">{data.deliverablesChartSub}</p>
+
+            {/* Bars List */}
+            <div className="mt-6 space-y-4">
+              {data.deliverableBars.map((b, idx) => (
+                <div key={idx}>
+                  <div className="flex justify-between text-xs font-medium">
+                    <span className="text-neutral-900">{b.name}</span>
+                    <span className="font-semibold text-neutral-950">{b.valStr}</span>
+                  </div>
+                  <div className="mt-1.5 h-2 w-full rounded-full bg-neutral-100 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${
+                        idx === 0 ? "bg-neutral-900" : idx === 1 ? "bg-neutral-700" : "bg-neutral-500"
+                      }`}
+                      style={{ width: `${Math.min(100, Math.max(8, b.pct))}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 border-t border-neutral-100 pt-3 text-[11px] text-neutral-500">
+            {data.deliverablesFooterNote}
+          </div>
+        </div>
+
+        {/* Right: Objective Breakdown Card */}
+        <div className="rounded-xl border border-neutral-200 bg-white p-5 shadow-xs flex flex-col justify-between">
+          <div>
+            <h3 className="text-base font-semibold text-neutral-900">{data.sideCardTitle}</h3>
+            <p className="text-xs text-neutral-500 mt-0.5">{data.sideCardSub}</p>
+
+            <div className="mt-5 grid grid-cols-2 gap-4">
+              {data.sideCardStats.map((st, idx) => (
+                <div key={idx} className="rounded-lg bg-neutral-50/80 p-3.5 border border-neutral-100">
+                  <div className="text-xs text-neutral-500">{st.label}</div>
+                  <div className="text-xl font-bold text-neutral-950 mt-1">{st.value}</div>
+                  {st.detail && (
+                    <div className="text-[11px] text-neutral-600 mt-0.5 font-medium">
+                      {st.detail}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-5 border-t border-neutral-100 pt-3 text-[11px] text-neutral-500">
+            Metrics reflect verified deliverable tracking for {effectiveCreatorName}.
+          </div>
+        </div>
+      </div>
+
+      {/* Row 3 · Deliverables Breakdown Table */}
+      <div className="rounded-xl border border-neutral-200 bg-white shadow-xs overflow-hidden">
+        <div className="p-5 border-b border-neutral-200">
+          <h3 className="text-base font-semibold text-neutral-900">Deliverables performance</h3>
+          <p className="text-xs text-neutral-500 mt-0.5">
+            Individual deliverable status and tracking metrics
+          </p>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-neutral-50/80 text-[11px] font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200">
+              <tr>
+                {data.tableHeaders.map((head, idx) => (
+                  <th
+                    key={idx}
+                    className={`py-3 px-4 ${
+                      idx === 0
+                        ? "text-left"
+                        : idx === 1 || idx === 2
+                          ? "text-left"
+                          : "text-right"
+                    }`}
+                  >
+                    {head}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-200">
+              {data.tableRows.map((row, idx) => (
+                <tr key={idx} className="hover:bg-neutral-50/80 transition-colors">
+                  <td className="py-3.5 px-4">
+                    <div className="font-semibold text-neutral-900">{row.name}</div>
+                    <div className="text-[11px] text-neutral-500">{row.dateOrNote}</div>
+                  </td>
+                  <td className="py-3.5 px-4">
+                    <div className="font-medium text-neutral-900">{row.platform}</div>
+                    <div className="text-[11px] text-neutral-500">{row.codeOrFormat}</div>
+                  </td>
+                  <td className="py-3.5 px-4">
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                        row.status === "Approved" || row.status === "Completed"
+                          ? "bg-neutral-100 text-neutral-700"
+                          : row.status === "Scheduled"
+                            ? "bg-amber-50 text-amber-700"
+                            : "bg-blue-50 text-blue-700"
+                      }`}
+                    >
+                      <span
+                        className={`size-1.5 rounded-full ${
+                          row.status === "Approved" || row.status === "Completed"
+                            ? "bg-neutral-500"
+                            : row.status === "Scheduled"
+                              ? "bg-amber-500"
+                              : "bg-blue-500"
+                        }`}
+                      />
+                      {row.status}
+                    </span>
+                  </td>
+                  <td className="py-3.5 px-4 text-right font-medium text-neutral-900">
+                    {row.feeOrProduct}
+                  </td>
+                  <td className="py-3.5 px-4 text-right font-semibold text-neutral-900">
+                    {row.views}
+                  </td>
+                  <td className="py-3.5 px-4 text-right text-neutral-800">{row.engRate}</td>
+                  <td className="py-3.5 px-4 text-right text-neutral-800">{row.clicks}</td>
+                  <td className="py-3.5 px-4 text-right text-neutral-800">{row.ordersOrLeads}</td>
+                  <td className="py-3.5 px-4 text-right">
+                    <div className="font-semibold text-neutral-900">{row.result}</div>
+                    {row.resultSub && (
+                      <div className="text-[11px] text-neutral-500 font-medium">
+                        {row.resultSub}
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

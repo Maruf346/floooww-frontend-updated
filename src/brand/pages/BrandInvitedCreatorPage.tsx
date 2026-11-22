@@ -2157,11 +2157,7 @@ export function BrandInvitedCreatorPage() {
         ) : tab === "Review" ? (
           <ReviewTab creator={creator} project={project} />
         ) : tab === "Performance" ? (
-          creator.hasPerformance ? (
-            <CreatorPerformanceTab creatorName={creator.name} platform={creator.platform} />
-          ) : (
-            <PerformanceEmptyTab onViewDeliverables={() => setTab("Deliverables")} />
-          )
+          <CreatorPerformanceTab creatorName={creator.name} platform={creator.platform} project={project} />
         ) : tab !== "Overview" ? (
           <section className="mt-4 rounded-xl border border-line bg-white p-5">
             <h2 className="!m-0 text-[15px] font-bold leading-tight text-ink">{tab}</h2>
