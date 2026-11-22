@@ -103,6 +103,9 @@ export const ASSETS = {
     avatarRiya: asset("fa5d0.png"),
     avatarSneha: asset("c6abe.png"),
     avatarPriya: asset("fa5d0.png"),
+    campaignVitaminc: asset("campaign-vitaminc.png"),
+    campaignVelvet: asset("campaign-velvet.png"),
+    campaignDewdrop: asset("campaign-dewdrop.png"),
   },
   mcp: {
     glow: asset("001d1.svg"),

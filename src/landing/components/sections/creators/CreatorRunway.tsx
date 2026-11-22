@@ -1,21 +1,19 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, useInView } from "motion/react";
+import { useEffect, useRef } from "react";
+import { motion } from "motion/react";
 import { ASSETS } from "@/common/constants/assets";
 import { EASE_OUT } from "@/common/constants/motion";
-import { useAutoCycle } from "@/common/hooks/useAutoCycle";
 import { useElementWidth } from "@/common/hooks/useElementWidth";
-import { RUNWAY, type Creator } from "@/landing/data/creators";
+import { RUNWAY, type RunwayItem } from "@/landing/data/creators";
 import { RunwayCard } from "./CreatorCard";
 
 const CARD_SIZE = {
-  feature: { width: 860, height: 420 },
-  quote: { width: 440, height: 400 },
+  creator: { width: 860, height: 420 },
+  campaign: { width: 645, height: 315 },
 } as const;
 
 /**
- * Slot of a card relative to the spotlight. The next creators wait lower-left (negative
- * slots) and the previous one exits upper-right (+1), exactly as in the Figma states.
- * For 4+ cards slots wrap into [-4, 1] so the loop never rewinds across the stage.
+ * Slot of a card relative to the spotlight. The next cards wait lower-left (negative
+ * slots) and the previous one exits upper-right (+1), exactly as in Figma.
  */
 function slotOffset(index: number, active: number, count: number) {
   const raw = active - index;
@@ -28,44 +26,42 @@ function slotTarget(offset: number, visible: boolean) {
     x: RUNWAY.centerX + RUNWAY.stepX * offset,
     y: RUNWAY.centerY + RUNWAY.stepY * offset,
     rotate: RUNWAY.stepRotate * offset,
+    scale: offset === 0 ? 1 : Math.max(0.72, 1 - Math.abs(offset) * 0.12),
     opacity: visible ? 1 : 0,
   };
 }
 
 interface CreatorRunwayProps {
-  creators: Creator[];
+  items: RunwayItem[];
+  active: number;
+  onSelect: (index: number) => void;
 }
 
 /**
- * Figma "Stage": cards ride a diagonal runway. The centre card is the spotlight;
- * it auto-advances while visible (paused on hover) and can be dragged either way.
+ * Figma "Stage": cards ride a diagonal runway alternating creators and brand campaigns.
+ * The centre card is full size and level; ones before and after sit tilted and smaller.
  */
-export function CreatorRunway({ creators }: CreatorRunwayProps) {
+export function CreatorRunway({ items, active, onSelect }: CreatorRunwayProps) {
   const ref = useRef<HTMLDivElement>(null);
   const width = useElementWidth(ref);
-  const inView = useInView(ref, { amount: 0.35 });
-  const [hovered, setHovered] = useState(false);
-  const [active, setActive] = useAutoCycle(creators.length, RUNWAY.interval, inView && !hovered);
   const scale = width > 0 ? Math.min(1, width / RUNWAY.width) : 1;
   const previousOffsets = useRef(new Map<string, number>());
-  const offsets = creators.map((creator, index) => slotOffset(index, active, creators.length));
+  const offsets = items.map((item, index) => slotOffset(index, active, items.length));
 
   useEffect(() => {
-    creators.forEach((creator, index) =>
-      previousOffsets.current.set(creator.id, offsets[index] ?? 0),
+    items.forEach((item, index) =>
+      previousOffsets.current.set(item.id, offsets[index] ?? 0),
     );
   });
 
   return (
     <div
       ref={ref}
-      className="relative w-full overflow-hidden"
+      className="relative w-full overflow-hidden select-none"
       style={{ height: RUNWAY.height * scale }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       role="region"
       aria-roledescription="carousel"
-      aria-label="Top creators"
+      aria-label="Creators and campaigns runway"
     >
       <div
         className="absolute left-1/2 top-0 origin-top"
@@ -81,8 +77,11 @@ export function CreatorRunway({ creators }: CreatorRunwayProps) {
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={0.08}
           onDragEnd={(_, info) => {
-            if (info.offset.x < -50 || info.velocity.x < -400) setActive(active + 1);
-            else if (info.offset.x > 50 || info.velocity.x > 400) setActive(active - 1);
+            if (info.offset.x < -50 || info.velocity.x < -400) {
+              onSelect(Math.min(items.length - 1, active + 1));
+            } else if (info.offset.x > 50 || info.velocity.x > 400) {
+              onSelect(Math.max(0, active - 1));
+            }
           }}
         >
           <div
@@ -94,16 +93,17 @@ export function CreatorRunway({ creators }: CreatorRunwayProps) {
             </div>
           </div>
 
-          {creators.map((creator, index) => {
+          {items.map((item, index) => {
             const offset = offsets[index] ?? 0;
-            const size = CARD_SIZE[creator.layout];
-            // Only the creator just shown may sit upper-right; anything wrapping round stays hidden.
+            const size = CARD_SIZE[item.kind];
+            // Only previous item sits upper-right; items wrapping round stay hidden
             const visible = (offset >= -2 && offset <= 0) || (offset === 1 && index < active);
-            const previous = previousOffsets.current.get(creator.id) ?? offset;
+            const previous = previousOffsets.current.get(item.id) ?? offset;
             const jump = Math.abs(offset - previous) > 2;
+
             return (
               <motion.div
-                key={creator.id}
+                key={item.id}
                 className="absolute left-0 top-0"
                 style={{
                   width: size.width,
@@ -114,12 +114,12 @@ export function CreatorRunway({ creators }: CreatorRunwayProps) {
                 }}
                 initial={false}
                 animate={slotTarget(offset, visible)}
-                transition={jump ? { duration: 0 } : { duration: 1.05, ease: EASE_OUT }}
+                transition={jump ? { duration: 0 } : { duration: 0.85, ease: EASE_OUT }}
                 aria-hidden={offset !== 0}
-                onClick={() => offset !== 0 && setActive(index)}
+                onClick={() => offset !== 0 && onSelect(index)}
               >
                 <div className={offset === 0 ? undefined : "pointer-events-none"}>
-                  <RunwayCard creator={creator} interactive={offset === 0} />
+                  <RunwayCard item={item} interactive={offset === 0} />
                 </div>
               </motion.div>
             );
