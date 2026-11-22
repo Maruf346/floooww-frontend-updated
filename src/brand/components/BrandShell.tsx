@@ -166,7 +166,7 @@ function Sidebar({ close, onLogout }: { close?: () => void; onLogout: () => void
           }
         >
           <FileBarChart size={18} />
-          Custom reports
+          Reports
         </Link>
         <p className="px-3 pb-1.5 pt-4 text-[12px] font-semibold leading-4 tracking-[.06em] text-tertiary">
           ACCOUNT
@@ -241,7 +241,7 @@ function CollapsedSidebar({ onLogout }: { onLogout: () => void }) {
     [ROUTES.brandProjects, "Projects", ClipboardList],
     [ROUTES.brandCreatorDiscovery, "Creator discovery", Search],
     [ROUTES.brandContentHub, "Content hub", Image],
-    [ROUTES.brandCustomReports, "Custom reports", FileBarChart],
+    [ROUTES.brandCustomReports, "Reports", FileBarChart],
     [ROUTES.brandPayments, "Payments", Wallet],
     [ROUTES.brandMessages, "Messages", MessageSquare],
     [ROUTES.brandSettings, "Settings", Settings],

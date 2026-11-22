@@ -1,11 +1,14 @@
 import {
   AlertTriangle,
-  CircleDollarSign,
+  Calendar,
   FileCheck2,
+  Folder,
   Gift,
   Plus,
   Scale,
-  UserCheck,
+  Truck,
+  Users,
+  Video,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ContentAwaitingReview } from "@/brand/components/ContentAwaitingReview";
@@ -53,6 +56,7 @@ const projects = [
   [
     "Vitamin-C Serum",
     "Influencer - Paid - One-time",
+    "Sales",
     "On track",
     "8 of 16",
     "\u20B92,00,000",
@@ -61,6 +65,7 @@ const projects = [
   [
     "Glow Squad - Month 3 of 6",
     "Influencer - Paid - Long-term",
+    "Awareness",
     "On track",
     "6 of 6",
     "\u20B92,25,000",
@@ -69,6 +74,7 @@ const projects = [
   [
     "Monsoon Sunscreen",
     "Influencer - Paid - One-time",
+    "Traffic",
     "On track",
     "10 of 12",
     "\u20B91,20,000",
@@ -77,6 +83,7 @@ const projects = [
   [
     "Lip Tint Drop",
     "UGC - Paid - One-time",
+    "Engagement",
     "Ahead",
     "6 of 6",
     "\u20B960,000",
@@ -85,6 +92,7 @@ const projects = [
   [
     "Hydration Bundle",
     "Influencer - Gift exchange - One-time",
+    "Awareness",
     "Behind",
     "5 of 8",
     "\u20B952,000 value",
@@ -93,6 +101,7 @@ const projects = [
   [
     "Skin Quiz Leads",
     "UGC - Paid - One-time",
+    "Lead generation",
     "Upcoming",
     "3 accepted",
     "Not funded",
@@ -130,19 +139,20 @@ export function BrandOverviewWithCampaigns() {
         </div>
       </header>
       <section className="rounded-xl border border-line bg-white p-5">
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {[
-            [CircleDollarSign, "Active projects", "5", "1 starting 4 Nov"],
-            [UserCheck, "Creators accepted", "38", "Across 6 projects"],
-            [FileCheck2, "Deliverables due this week", "14", "3 overdue"],
-            [Gift, "Shipments in transit", "4", "2 delivered this week"],
-          ].map(([Icon, label, value, detail]) => {
-            const MetricIcon = Icon as typeof Gift;
+            [Folder, "Active projects", "5", "1 starting 4 Nov", "bg-[#0d0d10]"],
+            [Users, "Creators accepted", "38", "Across 6 projects", "bg-[#3B5BFF]"],
+            [Calendar, "Due this week", "14", "3 overdue", "bg-[#f59e0b]"],
+            [Truck, "In transit", "4", "2 delivered this week", "bg-[#f59e0b]"],
+            [Video, "Content published", "35", "7 this week", "bg-[#16a34a]"],
+          ].map(([Icon, label, value, detail, iconBg]) => {
+            const MetricIcon = Icon as typeof Folder;
             return (
               <KpiTile
                 key={label as string}
                 icon={MetricIcon}
-                iconBg="bg-primary"
+                iconBg={iconBg as string}
                 label={label as string}
                 value={value as string}
                 detail={detail as string}
@@ -238,13 +248,14 @@ function Projects() {
           <thead className="bg-subtle text-[12px] leading-4 text-secondary">
             <tr>
               <th className="rounded-l-md p-3 font-semibold">Project</th>
+              <th className="font-semibold">Objective</th>
               <th className="font-semibold">Status</th>
               <th className="font-semibold">Accepted</th>
               <th className="rounded-r-md font-semibold">Committed spend</th>
             </tr>
           </thead>
           <tbody>
-            {projects.map(([name, meta, status, accepted, spend, image]) => (
+            {projects.map(([name, meta, objective, status, accepted, spend, image]) => (
               <tr key={name} className="border-b border-line-subtle">
                 <td className="p-3">
                   <div className="flex min-w-[250px] items-center gap-3">
@@ -255,6 +266,7 @@ function Projects() {
                     </div>
                   </div>
                 </td>
+                <td className="text-[13px] font-medium text-ink">{objective}</td>
                 <td>
                   <span
                     className={`rounded-full px-2 py-1 text-[12px] font-medium ${status === "Behind" ? "bg-danger-bg text-danger" : status === "Upcoming" ? "bg-primary-subtle text-primary" : "bg-success-bg text-success"}`}
