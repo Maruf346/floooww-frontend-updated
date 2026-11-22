@@ -60,7 +60,7 @@ const contentItems: ContentItem[] = [
     format: "Reel",
     status: "Live",
     metrics: "1.4 L views · 6.4% ER · 194 orders",
-    rights: "Organic · until 7 Dec",
+    rights: "3 months · until 7 Dec",
     duration: "0:41",
     image: media.festive,
     avatar: "meera-iyer",
@@ -74,7 +74,7 @@ const contentItems: ContentItem[] = [
     format: "Dedicated video",
     status: "Approved",
     metrics: "72K views · ₹3.2 L GMV",
-    rights: "Paid ads · until 15 Jan",
+    rights: "6 months · until 15 Jan",
     duration: "8:24",
     image: media.results,
     avatar: "rohan-desai",
@@ -88,7 +88,7 @@ const contentItems: ContentItem[] = [
     format: "Reel",
     status: "To review",
     metrics: "Waiting review · uploaded 3 h ago",
-    rights: "Organic + Paid · 90 days",
+    rights: "3 months · until 25 Jan",
     duration: "0:32",
     image: media.routine,
     avatar: "ishita-rao",
@@ -102,7 +102,7 @@ const contentItems: ContentItem[] = [
     format: "Raw footage",
     status: "To review",
     metrics: "4 files · uploaded 1 d ago",
-    rights: "Paid ads only · perpetual",
+    rights: "1 year · until 31 Oct",
     duration: "1:15",
     image: media.demo,
     avatar: "tara-bose",
@@ -116,7 +116,7 @@ const contentItems: ContentItem[] = [
     format: "Reel",
     status: "Changes requested",
     metrics: "Revised cut requested 26 Oct",
-    rights: "Organic · until 30 Nov",
+    rights: "1 month · until 30 Nov",
     duration: "0:28",
     image: media.launch,
     avatar: "kavya-reddy",
@@ -130,7 +130,7 @@ const contentItems: ContentItem[] = [
     format: "Static post",
     status: "Live",
     metrics: "28K likes · 1,420 saves",
-    rights: "Organic · until 30 Nov",
+    rights: "1 month · until 30 Nov",
     image: media.spf,
     avatar: "tara-bose",
   },
@@ -143,7 +143,7 @@ const contentItems: ContentItem[] = [
     format: "Short",
     status: "Ad-ready",
     metrics: "Meta Ad #40882 running",
-    rights: "Paid ads · ends in 12 days",
+    rights: "30 days · until 8 Nov",
     warning: true,
     duration: "0:45",
     image: media.ingredients,
@@ -158,7 +158,7 @@ const contentItems: ContentItem[] = [
     format: "Reel",
     status: "To review",
     metrics: "Waiting review · uploaded 5 h ago",
-    rights: "Organic · until 28 Feb",
+    rights: "4 months · until 28 Feb",
     duration: "0:52",
     image: media.hindi,
     avatar: "meera-iyer",
@@ -172,7 +172,7 @@ const contentItems: ContentItem[] = [
     format: "Reel",
     status: "Ad-ready",
     metrics: "Meta Ad #41204 · 3.4× ROAS",
-    rights: "Paid ads · ends in 4 days",
+    rights: "30 days · until 31 Oct",
     warning: true,
     duration: "0:24",
     image: media.lip,
@@ -187,7 +187,7 @@ const contentItems: ContentItem[] = [
     format: "Reel",
     status: "Live",
     metrics: "88K views · 41 orders",
-    rights: "Organic · until 31 Jan",
+    rights: "3 months · until 31 Jan",
     duration: "0:38",
     image: media.festive,
     avatar: "meera-iyer",
@@ -201,7 +201,7 @@ const contentItems: ContentItem[] = [
     format: "File",
     status: "Approved",
     metrics: "UGC file · ready to download",
-    rights: "Paid ads · until 14 Feb",
+    rights: "6 months · until 14 Feb",
     duration: "0:31",
     image: media.demo,
     avatar: "ishita-rao",
@@ -215,7 +215,7 @@ const contentItems: ContentItem[] = [
     format: "Reel",
     status: "Live",
     metrics: "44K views · 1,860 visits",
-    rights: "Organic · until 10 Dec",
+    rights: "3 months · until 10 Dec",
     duration: "0:29",
     image: media.results,
     avatar: "kavya-reddy",
@@ -433,10 +433,9 @@ export function AgencyClientContentHubPage({
         (platform === "All" || item.platform === platform) &&
         (format === "All" || item.format === format) &&
         (rights === "All" ||
-          (rights === "Organic" && item.rights.startsWith("Organic")) ||
-          (rights === "Paid ads" && item.rights.startsWith("Paid ads")) ||
+          item.rights === rights ||
           (rights === "Ends in 30 days" && item.warning) ||
-          (rights === "Expired" && item.rights.includes("Expired")))
+          item.rights.toLowerCase().includes(rights.toLowerCase()))
       );
     });
 
@@ -585,10 +584,13 @@ export function AgencyClientContentHubPage({
             value={rights}
             options={[
               { label: "All", value: "All" },
-              { label: "Organic only", value: "Organic" },
-              { label: "Paid ads allowed", value: "Paid ads" },
+              { label: "3 months · until 7 Dec", value: "3 months · until 7 Dec" },
+              { label: "6 months · until 15 Jan", value: "6 months · until 15 Jan" },
+              { label: "3 months · until 31 Jan", value: "3 months · until 31 Jan" },
+              { label: "3 months · until 10 Dec", value: "3 months · until 10 Dec" },
+              { label: "1 month · until 30 Nov", value: "1 month · until 30 Nov" },
+              { label: "6 months · until 14 Feb", value: "6 months · until 14 Feb" },
               { label: "Ends in 30 days", value: "Ends in 30 days" },
-              { label: "Expired", value: "Expired" },
             ]}
             other
             open={openFilter === "rights"}

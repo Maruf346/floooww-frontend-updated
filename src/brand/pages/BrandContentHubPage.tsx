@@ -56,7 +56,7 @@ const contentItems: ContentItem[] = [
     format: "Reel",
     status: "Live",
     metrics: "1.4 L views · 6.4% ER · 194 orders",
-    rights: "Organic · until 7 Dec",
+    rights: "3 months · until 7 Dec",
     duration: "0:41",
     image: media.festive,
     avatar: "meera-iyer",
@@ -70,7 +70,7 @@ const contentItems: ContentItem[] = [
     format: "Reel",
     status: "To review",
     metrics: "Sent 26 Oct · ₹3,000 held",
-    rights: "Organic · 30 days",
+    rights: "3 months · until 25 Nov",
     duration: "0:41",
     image: media.results,
     avatar: "ishita-rao",
@@ -84,7 +84,7 @@ const contentItems: ContentItem[] = [
     format: "Short",
     status: "To review",
     metrics: "Sent today · ₹6,000 held",
-    rights: "Organic · 30 days",
+    rights: "3 months · until 27 Nov",
     duration: "0:52",
     image: media.routine,
     avatar: "tara-bose",
@@ -98,7 +98,7 @@ const contentItems: ContentItem[] = [
     format: "File",
     status: "Ad-ready",
     metrics: "UGC file · 1080 × 1920 · no watermark",
-    rights: "Paid ads · until 14 Feb",
+    rights: "6 months · until 14 Feb",
     duration: "0:28",
     image: media.demo,
     avatar: "kavya-reddy",
@@ -112,7 +112,7 @@ const contentItems: ContentItem[] = [
     format: "Story",
     status: "Live",
     metrics: "38K views · 27 orders",
-    rights: "Organic · until 19 Nov",
+    rights: "1 month · until 19 Nov",
     image: media.launch,
     avatar: "ishita-rao",
   },
@@ -125,7 +125,7 @@ const contentItems: ContentItem[] = [
     format: "Reel",
     status: "Changes requested",
     metrics: "“Show the SPF label” · due 30 Oct",
-    rights: "Organic · 30 days",
+    rights: "30 days · until 30 Nov",
     duration: "0:33",
     image: media.spf,
     avatar: "tara-bose",
@@ -139,7 +139,7 @@ const contentItems: ContentItem[] = [
     format: "Carousel",
     status: "Approved",
     metrics: "Goes live 30 Oct",
-    rights: "Organic · 30 days",
+    rights: "3 months · until 30 Nov",
     image: media.ingredients,
     avatar: "kavya-reddy",
   },
@@ -152,7 +152,7 @@ const contentItems: ContentItem[] = [
     format: "Video",
     status: "Ad-ready",
     metrics: "AI video · 15 s · Hindi",
-    rights: "Paid ads · 90 days",
+    rights: "3 months · until 25 Jan",
     duration: "0:15",
     image: media.hindi,
     avatar: "kavya-reddy",
@@ -166,7 +166,7 @@ const contentItems: ContentItem[] = [
     format: "Reel",
     status: "Live",
     metrics: "62K views · 5.1% ER",
-    rights: "Organic · ends in 9 days",
+    rights: "1 month · until 7 Nov",
     warning: true,
     duration: "0:24",
     image: media.lip,
@@ -181,7 +181,7 @@ const contentItems: ContentItem[] = [
     format: "Reel",
     status: "Live",
     metrics: "88K views · 41 orders",
-    rights: "Organic · until 31 Jan",
+    rights: "3 months · until 31 Jan",
     duration: "0:38",
     image: media.festive,
     avatar: "meera-iyer",
@@ -195,7 +195,7 @@ const contentItems: ContentItem[] = [
     format: "File",
     status: "Approved",
     metrics: "UGC file · ready to download",
-    rights: "Paid ads · until 14 Feb",
+    rights: "6 months · until 14 Feb",
     duration: "0:31",
     image: media.demo,
     avatar: "ishita-rao",
@@ -209,7 +209,7 @@ const contentItems: ContentItem[] = [
     format: "Reel",
     status: "Live",
     metrics: "44K views · 1,860 visits",
-    rights: "Organic · until 10 Dec",
+    rights: "3 months · until 10 Dec",
     duration: "0:29",
     image: media.results,
     avatar: "kavya-reddy",
@@ -413,10 +413,9 @@ export function BrandContentHubPage() {
         (platform === "All" || item.platform === platform) &&
         (format === "All" || item.format === format) &&
         (rights === "All" ||
-          (rights === "Organic" && item.rights.startsWith("Organic")) ||
-          (rights === "Paid ads" && item.rights.startsWith("Paid ads")) ||
+          item.rights === rights ||
           (rights === "Ends in 30 days" && item.warning) ||
-          (rights === "Expired" && item.rights.includes("Expired")))
+          item.rights.toLowerCase().includes(rights.toLowerCase()))
       );
     });
 
@@ -564,10 +563,13 @@ export function BrandContentHubPage() {
             value={rights}
             options={[
               { label: "All", value: "All" },
-              { label: "Organic only", value: "Organic" },
-              { label: "Paid ads allowed", value: "Paid ads" },
+              { label: "3 months · until 7 Dec", value: "3 months · until 7 Dec" },
+              { label: "6 months · until 14 Feb", value: "6 months · until 14 Feb" },
+              { label: "3 months · until 31 Jan", value: "3 months · until 31 Jan" },
+              { label: "3 months · until 10 Dec", value: "3 months · until 10 Dec" },
+              { label: "1 month · until 19 Nov", value: "1 month · until 19 Nov" },
+              { label: "30 days · until 30 Nov", value: "30 days · until 30 Nov" },
               { label: "Ends in 30 days", value: "Ends in 30 days" },
-              { label: "Expired", value: "Expired" },
             ]}
             other
             open={openFilter === "rights"}
