@@ -47,7 +47,7 @@ function FeatureCopy({
           !onSelect && "pointer-events-none",
         )}
       >
-        <span className="font-inter-semibold font-semibold tracking-[0.78px] text-primary">
+        <span className="font-inter-semibold font-semibold tracking-[0.78px] text-secondary">
           {feature.number}
         </span>
         <span className="h-px w-6 bg-line-strong" />

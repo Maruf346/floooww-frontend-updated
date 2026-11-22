@@ -23,7 +23,7 @@ const COUNT = HOW_IT_WORKS_STEP_COUNT;
 
 function Eyebrow() {
   return (
-    <p className="font-inter-semibold text-[12px] font-semibold leading-normal tracking-[1.44px] text-primary whitespace-nowrap">
+    <p className="font-inter-semibold text-[12px] font-semibold leading-normal tracking-[1.44px] text-secondary whitespace-nowrap">
       {HOW_IT_WORKS_COPY.eyebrow}
     </p>
   );

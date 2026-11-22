@@ -140,7 +140,7 @@ export function StepDetail({
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
     >
-      <p className="font-inter-semibold text-[13px] font-semibold leading-normal tracking-[1.12px] text-primary whitespace-nowrap">
+      <p className="font-inter-semibold text-[13px] font-semibold leading-normal tracking-[1.12px] text-secondary whitespace-nowrap">
         {String(index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
       </p>
       <h3 className="font-inter-bold text-[28px] font-bold leading-[34px] tracking-[-0.5px] text-ink xl:text-[34px] xl:leading-[40px]">

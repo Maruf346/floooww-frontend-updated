@@ -280,23 +280,20 @@
 }
 
 @utility text-gradient-brand {
-  background-image: linear-gradient(to right, var(--color-brand-from), var(--color-brand-to));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--color-ink);
 }
 
-/* Landing keeps its original blue visual language. Product CTAs opt into black locally. */
+/* Landing brand guide: blue (#3B5BFF) only on links and actions; no blue gradients on headings. */
 .landing-theme {
-  --color-link: #0f5af2;
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4edb;
+  --color-link: #3b5bff;
+  --color-primary: #3b5bff;
+  --color-primary-hover: #2949e9;
   --color-primary-subtle: #f1f4ff;
   --color-primary-muted: #dee8fe;
   --color-primary-tint: #eef3ff;
   --color-primary-soft: #7399f2;
-  --color-brand-from: #014ef6;
-  --color-brand-to: #1eb2fd;
+  --color-brand-from: #070b13;
+  --color-brand-to: #070b13;
 }
 
 @utility scrollbar-none {

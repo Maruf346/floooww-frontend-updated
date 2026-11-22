@@ -1,7 +1,5 @@
 import { Link } from "react-router-dom";
-import { motion } from "motion/react";
 import { RevealGroup, RevealItem } from "@/common/components/motion/Reveal";
-import { EASE_OUT } from "@/common/constants/motion";
 import { ROUTES } from "@/common/constants/routes";
 import { CTA_COPY } from "@/landing/data/blog";
 
@@ -10,19 +8,8 @@ export function CtaSection() {
   return (
     <section
       aria-labelledby="cta-title"
-      className="relative isolate overflow-hidden bg-[#2563eb] py-16 text-center sm:py-[72px]"
-      style={{ backgroundImage: "linear-gradient(166.904deg, #7399f2 14.286%, #2563eb 85.714%)" }}
+      className="relative isolate overflow-hidden bg-[#070b13] py-16 text-center sm:py-[72px]"
     >
-      <motion.img
-        aria-hidden="true"
-        src={CTA_COPY.glow}
-        alt=""
-        className="pointer-events-none absolute inset-0 size-full object-cover"
-        initial={{ opacity: 0, scale: 0.96 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.9, ease: EASE_OUT }}
-      />
       <RevealGroup
         stagger={0.12}
         className="relative mx-auto flex max-w-[760px] flex-col items-center gap-[18px] px-5 sm:px-8"
@@ -37,20 +24,20 @@ export function CtaSection() {
         </RevealItem>
         <RevealItem
           as="p"
-          className="max-w-[680px] text-[16px] leading-[27px] text-white/90 sm:text-[17px]"
+          className="max-w-[680px] text-[16px] leading-[27px] text-white/80 sm:text-[17px]"
         >
           {CTA_COPY.body}
         </RevealItem>
         <RevealItem className="flex flex-wrap justify-center gap-3">
           <Link
             to={ROUTES.signup}
-            className="rounded-[12px] bg-white px-[22px] py-[14px] font-inter-semibold text-[15px] font-semibold text-ink transition-transform hover:-translate-y-0.5"
+            className="rounded-[12px] bg-[#3B5BFF] px-[22px] py-[14px] font-inter-semibold text-[15px] font-semibold text-white transition-all hover:bg-[#2a4be6] hover:-translate-y-0.5 shadow-[0_4px_16px_rgba(59,91,255,0.25)]"
           >
             Join Kreyio →
           </Link>
           <Link
             to={ROUTES.howItWorks}
-            className="rounded-[12px] border border-white/60 px-[22px] py-[14px] font-inter-semibold text-[15px] font-semibold text-white transition-colors hover:bg-white/10"
+            className="rounded-[12px] border border-white/20 bg-white/5 px-[22px] py-[14px] font-inter-semibold text-[15px] font-semibold text-white transition-colors hover:bg-white/10"
           >
             ▶ Watch demo
           </Link>

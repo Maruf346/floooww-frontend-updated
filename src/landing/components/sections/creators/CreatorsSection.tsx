@@ -113,7 +113,7 @@ export function CreatorsSection() {
         <RevealGroup stagger={0.1} className="flex flex-col items-start">
           <RevealItem
             as="p"
-            className="font-inter-semibold text-[13px] font-semibold leading-normal tracking-[1.82px] text-primary"
+            className="font-inter-semibold text-[13px] font-semibold leading-normal tracking-[1.82px] text-secondary"
           >
             {CREATORS_COPY.eyebrow}
           </RevealItem>
@@ -123,7 +123,7 @@ export function CreatorsSection() {
               className="mt-3.5 font-inter-bold text-[34px] font-bold leading-[40px] tracking-[-0.85px] text-ink text-balance sm:text-[44px] sm:leading-[52px] lg:text-[52px] lg:leading-[60px] lg:tracking-[-1.3px]"
             >
               {CREATORS_COPY.title.before}
-              <span className="text-gradient-brand">{CREATORS_COPY.title.highlight}</span>
+              {CREATORS_COPY.title.highlight}
               {CREATORS_COPY.title.after}
             </h2>
           </RevealItem>

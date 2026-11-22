@@ -36,7 +36,7 @@ export function SectionHeading({
       {eyebrow && (
         <RevealItem
           as="p"
-          className="font-inter-semibold text-[13px] font-semibold leading-normal tracking-[1.82px] text-primary"
+          className="font-inter-semibold text-[13px] font-semibold leading-normal tracking-[1.82px] text-secondary"
         >
           {eyebrow}
         </RevealItem>
@@ -51,7 +51,7 @@ export function SectionHeading({
           )}
         >
           {title.before}
-          <span className="text-gradient-brand">{title.highlight}</span>
+          {title.highlight}
           {title.after}
         </h2>
       </RevealItem>

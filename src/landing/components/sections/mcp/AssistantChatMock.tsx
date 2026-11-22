@@ -5,8 +5,8 @@ import { cn } from "@/common/utils/cn";
 import { ASSETS } from "@/common/constants/assets";
 import { MCP_CHAT } from "@/landing/data/mcp";
 
-export const MCP_CARD_WIDTH = 600;
-export const MCP_CARD_HEIGHT = 439;
+export const MCP_CARD_WIDTH = 720;
+export const MCP_CARD_HEIGHT = 520;
 
 const COLUMN_WIDTHS = [107.805, 69.756, 57.073, 44.39, 38.049];
 
@@ -47,20 +47,22 @@ function Mark({ src, width, height }: { src: string; width: number; height: numb
   );
 }
 
-/** Figma MCP card (2050:2615): gradient frame with the dark assistant window inside. */
+/** AI assistant mock sits on a near-black panel and is scaled ~25% larger. */
 export function AssistantChatMock({ play }: { play: boolean }) {
   const chat = MCP_CHAT;
   return (
     <div
-      className="relative overflow-hidden rounded-[28px] border border-line-subtle"
+      className="relative flex items-center justify-center overflow-hidden rounded-[28px] border border-white/10 bg-[#070b13] shadow-[0_24px_50px_rgba(0,0,0,0.3)]"
       style={{
         width: MCP_CARD_WIDTH,
         height: MCP_CARD_HEIGHT,
-        backgroundImage:
-          "linear-gradient(143.808deg, rgb(238, 243, 255) 14.286%, rgb(246, 248, 251) 85.714%)",
       }}
     >
-      <div className="absolute left-[39px] top-[39px] flex w-[520px] items-start overflow-hidden rounded-[10.146px] border-[0.634px] border-mock-frame bg-mock-bg leading-normal shadow-[0_14px_36px_0_rgba(13,20,51,0.22)]">
+      <div className="relative shrink-0" style={{ width: 650, height: 452 }}>
+        <div
+          className="origin-top-left flex w-[520px] items-start overflow-hidden rounded-[10.146px] border-[0.634px] border-mock-frame bg-mock-bg leading-normal shadow-[0_20px_45px_0_rgba(0,0,0,0.5)]"
+          style={{ transform: "scale(1.25)" }}
+        >
         {/* Sidebar */}
         <div className="flex w-[135.707px] shrink-0 flex-col items-start gap-[1.268px] self-stretch overflow-hidden border-r-[0.634px] border-mock-divider bg-mock-sidebar px-[5.707px] py-[8.878px]">
           {chat.nav.map((item) => (
@@ -262,5 +264,6 @@ export function AssistantChatMock({ play }: { play: boolean }) {
         </div>
       </div>
     </div>
+  </div>
   );
 }

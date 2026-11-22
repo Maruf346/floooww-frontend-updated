@@ -31,7 +31,7 @@ export function TrustedBrandsSection() {
   return (
     <section
       aria-label="Trusted by leading brands"
-      className="flex flex-col items-center gap-9 overflow-hidden bg-gradient-to-b from-warm to-white pb-12 pt-14"
+      className="flex flex-col items-center gap-9 overflow-hidden bg-white pb-12 pt-14"
     >
       <Reveal>
         <p className="px-5 text-center font-inter-semibold text-[12px] font-semibold leading-normal tracking-[1.68px] text-secondary">

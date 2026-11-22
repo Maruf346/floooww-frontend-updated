@@ -7,7 +7,7 @@ import { BLOG_COPY, BLOG_POSTS, type BlogPost } from "@/landing/data/blog";
 
 function Category({ children }: { children: string }) {
   return (
-    <span className="inline-flex self-start rounded-full bg-[#f1f4ff] px-[11px] py-1 font-inter-semibold text-[11px] font-semibold tracking-[0.66px] text-primary">
+    <span className="inline-flex self-start rounded-full bg-subtle px-[11px] py-1 font-inter-semibold text-[11px] font-semibold tracking-[0.66px] text-secondary">
       {children}
     </span>
   );
@@ -78,11 +78,11 @@ export function BlogSection() {
     setStart((current) => (current + direction + BLOG_POSTS.length) % BLOG_POSTS.length);
 
   return (
-    <section aria-labelledby="blog-title" className="bg-[#f3f5f7] py-20 sm:py-24 lg:py-[104px]">
+    <section aria-labelledby="blog-title" className="bg-white py-20 sm:py-24 lg:py-[104px]">
       <Container>
         <Reveal className="flex items-end gap-2">
           <div className="flex-1">
-            <p className="font-inter-semibold text-[12px] font-semibold tracking-[1.44px] text-primary">
+            <p className="font-inter-semibold text-[12px] font-semibold tracking-[1.44px] text-secondary">
               {BLOG_COPY.eyebrow}
             </p>
             <h2

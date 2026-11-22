@@ -4,7 +4,6 @@ import { useInView } from "motion/react";
 import { ScaledFrame } from "@/common/components/layout/ScaledFrame";
 import { Container } from "@/common/components/ui/Container";
 import { Reveal, RevealGroup, RevealItem } from "@/common/components/motion/Reveal";
-import { ASSETS } from "@/common/constants/assets";
 import { scaleIn } from "@/common/constants/motion";
 import { ROUTES } from "@/common/constants/routes";
 import { LANDING_SECTIONS } from "@/landing/constants/sections";
@@ -31,19 +30,10 @@ export function McpSection() {
           className="max-w-[1022px]"
         />
 
-        <div className="mt-12 grid w-full grid-cols-1 items-center gap-12 lg:mt-[56px] lg:grid-cols-[minmax(0,600px)_minmax(0,460px)] lg:justify-center xl:gap-[100px]">
-          <Reveal variants={scaleIn} className="relative mx-auto w-full max-w-[600px]">
+        <div className="mt-12 grid w-full grid-cols-1 items-center gap-12 lg:mt-[56px] lg:grid-cols-[minmax(0,720px)_minmax(0,460px)] lg:justify-center xl:gap-[80px]">
+          <Reveal variants={scaleIn} className="relative mx-auto w-full max-w-[720px]">
             <div ref={cardRef}>
               <ScaledFrame width={MCP_CARD_WIDTH} height={MCP_CARD_HEIGHT}>
-                {/* Glow sits behind the card in Figma coordinates (20, 219), so it scales with it. */}
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute left-5 top-[219px] h-[300px] w-[560px]"
-                >
-                  <div className="absolute inset-[-30%_-16.07%]">
-                    <img src={ASSETS.mcp.glow} alt="" className="block size-full max-w-none" />
-                  </div>
-                </div>
                 <AssistantChatMock play={play} />
               </ScaledFrame>
             </div>
@@ -55,7 +45,7 @@ export function McpSection() {
           >
             <RevealItem
               as="p"
-              className="font-inter-medium text-[13px] font-medium leading-normal text-neutral"
+              className="font-inter-medium text-[13px] font-medium leading-normal text-secondary"
             >
               {MCP_COPY.assistants}
             </RevealItem>
@@ -73,7 +63,7 @@ export function McpSection() {
             <RevealItem className="mt-6 flex w-full flex-col items-start gap-3">
               {MCP_COPY.steps.map((step, index) => (
                 <div key={step} className="flex items-center gap-3 leading-normal">
-                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-tint font-inter-bold text-[12px] font-bold text-primary">
+                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-subtle font-inter-bold text-[12px] font-bold text-ink">
                     {index + 1}
                   </span>
                   <p className="font-inter-medium text-[15px] font-medium text-ink">{step}</p>
@@ -83,7 +73,7 @@ export function McpSection() {
             <RevealItem className="mt-6">
               <Link
                 to={`${ROUTES.signup}?role=brand`}
-                className="group inline-flex items-center font-inter-semibold text-[14px] font-semibold leading-normal text-primary transition-colors hover:text-primary-hover"
+                className="group inline-flex items-center font-inter-semibold text-[14px] font-semibold leading-normal text-[#3B5BFF] transition-colors hover:text-[#2949e9]"
               >
                 <span className="transition-transform duration-300 ease-out group-hover:translate-x-0.5">
                   {MCP_COPY.docs}

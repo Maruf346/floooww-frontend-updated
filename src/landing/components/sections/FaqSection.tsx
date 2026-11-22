@@ -122,7 +122,7 @@ export function FaqSection() {
           <RevealGroup stagger={0.1}>
             <RevealItem
               as="p"
-              className="font-inter-semibold text-[12px] font-semibold uppercase leading-4 tracking-[1.68px] text-primary"
+              className="font-inter-semibold text-[12px] font-semibold uppercase leading-4 tracking-[1.68px] text-secondary"
             >
               {FAQ_COPY.eyebrow}
             </RevealItem>
