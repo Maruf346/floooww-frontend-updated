@@ -42,7 +42,7 @@ const kpiTiles = [
     value: "41",
     subtext: "in live projects · across clients",
     icon: "/assets/agency/icons/creators.svg",
-    iconBg: "bg-[#8ec5ff]",
+    iconBg: "bg-[#3b5bff]",
   },
   {
     label: "Content",

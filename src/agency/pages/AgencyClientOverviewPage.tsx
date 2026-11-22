@@ -295,7 +295,7 @@ function AgencyClientOverviewDashboard({ clientId }: { clientId: string }) {
                 {/* Tile 3: Deliverables due this week */}
                 <div className="flex flex-col gap-3 rounded-lg border border-[#e3e5ec] p-4 bg-white">
                   <div className="flex items-center gap-2.5">
-                    <div className="grid size-9 place-items-center rounded-lg bg-[#3b5bff] text-white">
+                    <div className="grid size-9 place-items-center rounded-lg bg-[#f59e0b] text-white">
                       <Calendar size={18} />
                     </div>
                     <span className="text-[13px] font-medium text-[#71717a]">Deliverables due this week</span>
@@ -309,7 +309,7 @@ function AgencyClientOverviewDashboard({ clientId }: { clientId: string }) {
                 {/* Tile 4: Shipments in transit */}
                 <div className="flex flex-col gap-3 rounded-lg border border-[#e3e5ec] p-4 bg-white">
                   <div className="flex items-center gap-2.5">
-                    <div className="grid size-9 place-items-center rounded-lg bg-[#3b5bff] text-white">
+                    <div className="grid size-9 place-items-center rounded-lg bg-[#f59e0b] text-white">
                       <Gift size={18} />
                     </div>
                     <span className="text-[13px] font-medium text-[#71717a]">Shipments in transit</span>
