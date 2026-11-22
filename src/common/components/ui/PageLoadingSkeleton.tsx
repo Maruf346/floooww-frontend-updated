@@ -1,7 +1,21 @@
 import { useEffect, useState } from "react";
-import { useNavigation } from "react-router-dom";
+import { useLocation, useNavigation, useSearchParams } from "react-router-dom";
 import { Footer } from "@/landing/components/layout/Footer";
 import { Header } from "@/landing/components/layout/Header";
+import { DashboardLoadingScreen } from "./DashboardLoadingScreen";
+
+export { DashboardLoadingScreen };
+
+export function isDashboardPath(path?: string): boolean {
+  if (!path) return false;
+  return (
+    path.startsWith("/brand") ||
+    path.startsWith("/creator") ||
+    path.startsWith("/agency") ||
+    path.startsWith("/dashboard") ||
+    path.includes("dashboard")
+  );
+}
 
 interface SkeletonProps {
   className?: string;
@@ -55,18 +69,18 @@ export function PageLoadingSkeleton() {
 }
 
 /**
- * Router fallback that remains visually quiet for fast transitions. A skeleton
- * appears only when the pending page has exceeded the 300 ms design threshold.
+ * Loading page route component that renders either:
+ * - DashboardLoadingScreen (Figma 2007:230) for dashboards or when type=dashboard
+ * - PageLoadingSkeleton for marketing / public pages
  */
-export function DelayedPageLoading() {
-  const [visible, setVisible] = useState(false);
+export function AppLoadingRoute() {
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const type = searchParams.get("type");
 
-  useEffect(() => {
-    const timer = window.setTimeout(() => setVisible(true), 300);
-    return () => window.clearTimeout(timer);
-  }, []);
-
-  if (!visible) return <div className="min-h-dvh bg-white" aria-hidden="true" />;
+  if (type === "dashboard" || type === "app" || isDashboardPath(location.pathname)) {
+    return <DashboardLoadingScreen />;
+  }
 
   return (
     <div className="flex min-h-dvh flex-col bg-white">
@@ -79,9 +93,43 @@ export function DelayedPageLoading() {
   );
 }
 
-/** Displays the same fallback for lazy route transitions after the 300 ms threshold. */
+/**
+ * Router fallback that remains visually quiet for fast transitions. A skeleton
+ * appears only when the pending page has exceeded the 300 ms design threshold.
+ */
+export function DelayedPageLoading() {
+  const [visible, setVisible] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setVisible(true), 250);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  if (!visible) {
+    const isDash = isDashboardPath(location.pathname);
+    return <div className={`min-h-dvh ${isDash ? "bg-[#f6f8fb]" : "bg-white"}`} aria-hidden="true" />;
+  }
+
+  if (isDashboardPath(location.pathname)) {
+    return <DashboardLoadingScreen />;
+  }
+
+  return (
+    <div className="flex min-h-dvh flex-col bg-white">
+      <Header />
+      <main className="flex-1">
+        <PageLoadingSkeleton />
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+/** Displays the appropriate loading fallback for lazy route transitions after the 250 ms threshold. */
 export function NavigationLoadingOverlay() {
   const navigation = useNavigation();
+  const location = useLocation();
   const isLoading = navigation.state === "loading";
   const [visible, setVisible] = useState(false);
 
@@ -91,11 +139,22 @@ export function NavigationLoadingOverlay() {
       return;
     }
 
-    const timer = window.setTimeout(() => setVisible(true), 300);
+    const timer = window.setTimeout(() => setVisible(true), 250);
     return () => window.clearTimeout(timer);
   }, [isLoading]);
 
   if (!visible) return null;
+
+  // Check target navigation path, fallback to current path
+  const targetPath = navigation.location?.pathname || location.pathname;
+
+  if (isDashboardPath(targetPath)) {
+    return (
+      <div className="fixed inset-0 z-[100] overflow-y-auto bg-[#f6f8fb]">
+        <DashboardLoadingScreen />
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-[100] overflow-y-auto bg-white">

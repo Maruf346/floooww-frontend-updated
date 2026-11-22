@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { ROUTES } from "@/common/constants/routes";
 import { WebErrorPage } from "@/common/pages/WebErrorPage";
-import { PageLoadingSkeleton } from "@/common/components/ui/PageLoadingSkeleton";
+import { AppLoadingRoute, DashboardLoadingScreen, PageLoadingSkeleton } from "@/common/components/ui/PageLoadingSkeleton";
 import { LandingLayout } from "@/landing/layouts/LandingLayout";
 import { LandingPage } from "@/landing/pages/LandingPage";
 import { FaqDocsPage } from "@/landing/pages/FaqDocsPage";
@@ -48,7 +48,8 @@ export const router = createBrowserRouter(
               path: ROUTES.maintenance,
               element: <WebErrorPage kind="maintenance" />,
             },
-            { path: ROUTES.loading, element: <PageLoadingSkeleton /> },
+            { path: ROUTES.loading, element: <AppLoadingRoute /> },
+            { path: ROUTES.dashboardLoading, element: <DashboardLoadingScreen /> },
             { path: "/:section?", element: <LandingPage /> },
             { path: "*", element: <WebErrorPage kind="not-found" /> },
           ],

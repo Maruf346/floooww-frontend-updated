@@ -16,6 +16,7 @@ export const ROUTES = {
   serverError: "/500",
   maintenance: "/maintenance",
   loading: "/loading",
+  dashboardLoading: "/dashboard-loading",
   login: "/login",
   signup: "/signup",
   verifyEmail: "/verify-email",
