@@ -94,7 +94,7 @@ export function OnboardingPage() {
   const next = () => (step === 3 ? navigate(ROLE_HOME[role]) : setStep((value) => value + 1));
   const back = () => (step === 1 ? navigate(ROUTES.home) : setStep((value) => value - 1));
   return (
-    <AuthLayout visual={role === "creator" ? "creator-onboarding" : "onboarding"}>
+    <AuthLayout visual={role === "brand" ? "brand-onboarding" : role}>
       <form
         className="w-full max-w-[440px]"
         onSubmit={(event: FormEvent) => {

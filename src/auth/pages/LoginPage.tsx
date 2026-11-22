@@ -31,7 +31,7 @@ export function LoginPage() {
     if (!Object.keys(next).length) navigate(ROLE_HOME[role]);
   };
   return (
-    <AuthLayout>
+    <AuthLayout visual={role}>
       <form noValidate onSubmit={onSubmit} className="w-full max-w-[440px]">
         <h1 className="font-inter-bold text-[30px] font-bold leading-[38px] tracking-[-.6px] text-ink">
           Log in

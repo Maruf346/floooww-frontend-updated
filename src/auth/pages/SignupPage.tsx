@@ -75,7 +75,7 @@ export function SignupPage() {
     navigate(`${ROUTES.verifyEmail}?role=${role}&email=${encodeURIComponent(email)}`);
   };
   return (
-    <AuthLayout>
+    <AuthLayout visual={role ?? "brand"}>
       <div className="w-full max-w-[440px]">
         <Progress step={step} />
         {step === 1 ? (

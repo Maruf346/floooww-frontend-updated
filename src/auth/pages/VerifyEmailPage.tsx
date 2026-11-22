@@ -14,7 +14,7 @@ export function VerifyEmailPage() {
   const email = params.get("email") ?? "ananya@minimalist.in";
   const complete = () => navigate(`/onboarding/${role}`);
   return (
-    <AuthLayout>
+    <AuthLayout visual={role}>
       <div className="w-full max-w-[440px]">
         <Progress step={3} />
         <p className="mt-3 text-[12px] font-semibold tracking-[1px] text-primary">

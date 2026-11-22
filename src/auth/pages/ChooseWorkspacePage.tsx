@@ -24,7 +24,7 @@ export function ChooseWorkspacePage() {
   const options = isAgency ? agencyOptions : brandOptions;
   const [selected, setSelected] = useState(0);
   return (
-    <AuthLayout>
+    <AuthLayout visual={isAgency ? "agency" : "brand"}>
       <div className="w-full max-w-[440px]">
         <h1 className="font-inter-bold text-[30px] font-bold leading-[38px] tracking-[-.6px] text-ink">
           Choose a workspace
