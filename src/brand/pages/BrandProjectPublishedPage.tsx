@@ -2304,16 +2304,28 @@ export function BrandProjectPublishedPage({
       <main className="w-full pb-10">
         <header className="flex flex-col justify-between gap-4 lg:h-[122px] lg:flex-row">
           <div>
-            <div className="flex items-center gap-2 text-[12px] leading-4 text-tertiary">
+            <div className="flex flex-wrap items-center gap-1.5 text-[12px] leading-4 text-tertiary">
               <button
                 type="button"
                 onClick={() => navigate(projectHomeRoute)}
-                className="hover:text-ink transition-colors cursor-pointer"
+                className="hover:text-ink transition-colors cursor-pointer text-[#3B5BFF] font-medium"
               >
                 Projects
               </button>
               <span>/</span>
-              <span className="text-secondary">{project.name}</span>
+              <span className="text-ink font-medium">{project.name}</span>
+              <span>/</span>
+              <span>{objective}</span>
+              <span>/</span>
+              <span>{project.projectType === "UGC" ? "UGC" : "Influencer"}</span>
+              <span>/</span>
+              <span>{project.partnership?.toLowerCase().includes("gift") ? "Gift exchange" : "Paid"}</span>
+              <span>/</span>
+              <span>
+                {project.duration?.toLowerCase().includes("long") || project.duration?.toLowerCase().includes("month")
+                  ? "Long-term"
+                  : "One-time"}
+              </span>
             </div>
             <h1 className="mt-1 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">
               {project.name}
@@ -2727,12 +2739,7 @@ export function BrandProjectPublishedPage({
           </section>
         ) : tab === "Performance" ? (
           <div className="mt-6 space-y-6">
-            <PerformanceReportBlocks focusMetric="Net sales" />
-            <Reveal>
-              <CustomReportCard
-                onMakeReport={() => navigate(ROUTES.brandCustomReportNew)}
-              />
-            </Reveal>
+            <PerformanceReportBlocks project={project} />
           </div>
         ) : tab !== "Overview" ? (
           <section className="mt-6 rounded-xl border border-line bg-white px-10 py-20 text-center">

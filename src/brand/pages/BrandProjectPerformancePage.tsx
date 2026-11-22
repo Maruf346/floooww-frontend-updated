@@ -1,75 +1,1430 @@
-import { type ReactNode, useState } from "react";
-import { Download, MoreHorizontal, Share2, Users } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { type ReactNode, useState, useMemo } from "react";
+import {
+  Download,
+  MoreHorizontal,
+  Share2,
+  Users,
+  ExternalLink,
+  ChevronRight,
+  TrendingUp,
+  TrendingDown,
+  Sparkles,
+} from "lucide-react";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { motion } from "motion/react";
 import { BrandShell } from "@/brand/components/BrandShell";
-import { getProject } from "@/brand/data/projects";
+import { getProject, type ProjectObjective, type Project } from "@/brand/data/projects";
 import { Button } from "@/common/components/ui/Button";
-import { Dropdown } from "@/common/components/ui/Dropdown";
-import { brandProjectPerformanceRoute, brandProjectRoute } from "@/common/constants/routes";
+import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
+import { ROUTES } from "@/common/constants/routes";
 
-const scorecards = [
-  ["Net sales", "₹5,42,000", "▲ 18% vs prev."],
-  ["Orders", "1,315", "▲ 14% vs prev."],
-  ["Link clicks", "14,800", "▲ 9% vs prev. · CTR 0.8%"],
-  ["Engagement rate", "5.4%", "▲ 0.4 pt vs prev."],
-  ["Views", "18.4 L", "▲ 19% vs prev."],
-  ["Earned media value", "₹2,28,000", "Estimate · not in ROAS"],
-] as const;
-const creatorRows = [
-  [
-    "Meera Iyer",
-    "@meerabeauty · 4 of 4 delivered",
-    "meera-iyer",
-    "Instagram",
-    "Completed",
-    "₹22,000",
-    "5.2 L",
-    "5.9%",
-    "3,820",
-    "414",
-    "₹1,71,000",
-  ],
-  [
-    "Ishita Rao",
-    "@ishitarao · 4 of 4 delivered",
-    "ishita-rao",
-    "Instagram",
-    "Completed",
-    "₹18,000",
-    "4.8 L",
-    "5.6%",
-    "3,110",
-    "352",
-    "₹1,45,000",
-  ],
-  [
-    "Emma Clarke",
-    "@emmaclarke · 3 of 4 delivered",
-    "emma-clarke",
-    "TikTok",
-    "Posting",
-    "₹16,000",
-    "3.6 L",
-    "5.2%",
-    "2,842",
-    "276",
-    "₹1,10,000",
-  ],
-  [
-    "Kavya Reddy",
-    "@kavyareddy · 2 of 4 delivered",
-    "kavya-reddy",
-    "Instagram",
-    "Review",
-    "₹14,000",
-    "2.9 L",
-    "4.8%",
-    "2,108",
-    "181",
-    "₹72,000",
-  ],
-] as const;
+// --- Types for the 15 Performance Variants ---
+export type ObjectiveType = "Awareness" | "Engagement" | "Traffic" | "Lead generation" | "Sales";
+export type TypeCategory = "Influencer Paid" | "Influencer Gift exchange" | "UGC";
+
+export interface ScorecardItem {
+  label: string;
+  value: string;
+  detail: string;
+  isPositive?: boolean;
+}
+
+export interface CreatorRowItem {
+  name: string;
+  handle: string;
+  deliverables: string;
+  warning?: string;
+  col2: string; // Platform, Product, or Format
+  col2Sub?: string;
+  status: "Completed" | "Behind" | "In review" | "Posting";
+  feeOrProduct: string;
+  m1: string;
+  m2: string;
+  m3: string;
+  m4: string;
+  m5: string;
+  m5Sub?: string;
+}
+
+export interface ByCreatorBar {
+  name: string;
+  value: number; // 0 to 100 for width
+  label: string;
+  isAboveTarget: boolean;
+}
+
+export interface VariantData {
+  campaignName: string;
+  objective: ObjectiveType;
+  projectType: "Influencer" | "UGC";
+  partnership: "Paid" | "Gift exchange";
+  duration: "One-time" | "Long-term";
+  periodText: string;
+  scorecards: ScorecardItem[];
+  trendTitle: string;
+  trendSub: string;
+  platformTitle: string;
+  platformSub: string;
+  platformHero: string;
+  platformHeroSub: string;
+  platformBars: { label: string; pct: string; sub?: string }[];
+  platformDisclaimer: string;
+  creatorChartTitle: string;
+  creatorChartSub: string;
+  targetLineLabel: string;
+  creatorBars: ByCreatorBar[];
+  sideCardTitle: string;
+  sideCardSub: string;
+  sideCardStats: { label: string; value: string; detail?: string }[];
+  tableHeaders: string[];
+  tableRows: CreatorRowItem[];
+}
+
+// Complete data dictionary for all 15 variants
+export const PERFORMANCE_VARIANTS: Record<string, VariantData> = {
+  // 1. Awareness · Influencer Paid
+  "Awareness_Influencer Paid": {
+    campaignName: "Glow Squad",
+    objective: "Awareness",
+    projectType: "Influencer",
+    partnership: "Paid",
+    duration: "Long-term",
+    periodText: "Month 3 of 6 · 7 Oct 2026 – 6 Jan 2027",
+    scorecards: [
+      { label: "Reach", value: "41.2 L", detail: "▲ 22% vs prev.", isPositive: true },
+      { label: "Impressions", value: "96.8 L", detail: "▲ 18% vs prev.", isPositive: true },
+      { label: "Video views", value: "32.5 L", detail: "▲ 25% vs prev.", isPositive: true },
+      { label: "Frequency", value: "2.3×", detail: "healthy · 2–3× is ideal" },
+      { label: "Engagement rate", value: "6.1%", detail: "▲ 0.3 pt vs prev.", isPositive: true },
+      { label: "Earned media value", value: "₹3,10,000", detail: "Estimate · not a cost" },
+    ],
+    trendTitle: "Reach over time",
+    trendSub: "All 6 creators · cumulative reach vs the 45 L target",
+    platformTitle: "By platform",
+    platformSub: "Share of reach · reach per creator",
+    platformHero: "78%",
+    platformHeroSub: "of reach came from Instagram",
+    platformBars: [
+      { label: "Instagram Reels", pct: "62%" },
+      { label: "Instagram Stories", pct: "16%" },
+      { label: "YouTube Shorts", pct: "22%" },
+    ],
+    platformDisclaimer: "Reels drove 62% of all awareness; Shorts had 1.8x higher average duration.",
+    creatorChartTitle: "Reach by creator",
+    creatorChartSub: "Bar = reach · dashed line = 7.5 L target per creator",
+    targetLineLabel: "┆ Target 7.5 L per creator · 45 L total",
+    creatorBars: [
+      { name: "Riya Sen", value: 100, label: "9.8 L · 22%", isAboveTarget: true },
+      { name: "Meera Iyer", value: 88, label: "8.6 L · 21%", isAboveTarget: true },
+      { name: "Nisha Verma", value: 76, label: "7.4 L · 18%", isAboveTarget: false },
+      { name: "Diya Kapoor", value: 62, label: "6.1 L · 15%", isAboveTarget: false },
+      { name: "Aditi Joshi", value: 53, label: "5.2 L · 13%", isAboveTarget: false },
+    ],
+    sideCardTitle: "Reach",
+    sideCardSub: "Reach quality and unique viewer volume",
+    sideCardStats: [
+      { label: "Unique viewers", value: "41.2 L", detail: "92% of target" },
+      { label: "Impressions", value: "96.8 L", detail: "2.3x frequency" },
+      { label: "CPM", value: "₹55", detail: "per 1,000 reached" },
+      { label: "Target reach", value: "45.0 L", detail: "3.8 L remaining" },
+    ],
+    tableHeaders: ["CREATOR", "PLATFORM", "STATUS", "FEE", "REACH ↓", "IMPR.", "VIEWS", "FREQ.", "CPM"],
+    tableRows: [
+      {
+        name: "Riya Sen",
+        handle: "@riyasen.glow",
+        deliverables: "3 of 3 delivered",
+        col2: "Instagram · YouTube",
+        col2Sub: "3 posts · month 3",
+        status: "Completed",
+        feeOrProduct: "₹15,000/mo",
+        m1: "9.8 L",
+        m2: "22.1 L",
+        m3: "7.6 L",
+        m4: "2.3×",
+        m5: "₹46",
+        m5Sub: "₹45,000 ÷ 9.8 L",
+      },
+      {
+        name: "Meera Iyer",
+        handle: "@meerabeauty",
+        deliverables: "3 of 3 delivered",
+        col2: "Instagram",
+        col2Sub: "3 posts · month 3",
+        status: "Completed",
+        feeOrProduct: "₹15,000/mo",
+        m1: "8.6 L",
+        m2: "19.4 L",
+        m3: "6.9 L",
+        m4: "2.3×",
+        m5: "₹52",
+        m5Sub: "₹45,000 ÷ 8.6 L",
+      },
+      {
+        name: "Nisha Verma",
+        handle: "@nishaverma",
+        deliverables: "3 of 3 delivered",
+        col2: "Instagram",
+        col2Sub: "3 posts · month 3",
+        status: "Completed",
+        feeOrProduct: "₹12,000/mo",
+        m1: "7.4 L",
+        m2: "17.0 L",
+        m3: "5.8 L",
+        m4: "2.3×",
+        m5: "₹49",
+        m5Sub: "₹36,000 ÷ 7.4 L",
+      },
+      {
+        name: "Kavya Reddy",
+        handle: "@kavyareddy",
+        deliverables: "2 of 3 delivered",
+        warning: "1 post due 30 Oct",
+        col2: "Instagram",
+        col2Sub: "3 posts · month 3",
+        status: "Behind",
+        feeOrProduct: "₹10,000/mo",
+        m1: "4.1 L",
+        m2: "9.0 L",
+        m3: "3.2 L",
+        m4: "2.2×",
+        m5: "₹73",
+      },
+    ],
+  },
+
+  // 2. Awareness · Influencer Gift exchange
+  "Awareness_Influencer Gift exchange": {
+    campaignName: "SPF Mini Kit Seeding",
+    objective: "Awareness",
+    projectType: "Influencer",
+    partnership: "Gift exchange",
+    duration: "One-time",
+    periodText: "8 Oct – 8 Nov 2026 · 11 days left",
+    scorecards: [
+      { label: "Reach", value: "14.6 L", detail: "▲ 9% vs prev.", isPositive: true },
+      { label: "Impressions", value: "31.2 L", detail: "▲ 7% vs prev.", isPositive: true },
+      { label: "Video views", value: "11.8 L", detail: "▲ 12% vs prev.", isPositive: true },
+      { label: "Frequency", value: "2.1×", detail: "healthy · 2–3× is ideal" },
+      { label: "Engagement rate", value: "6.8%", detail: "▲ 0.5 pt vs prev.", isPositive: true },
+      { label: "Earned media value", value: "₹1,10,000", detail: "Estimate · not a cost" },
+    ],
+    trendTitle: "Reach over time",
+    trendSub: "All 12 creators · cumulative reach vs the 15 L target",
+    platformTitle: "By platform",
+    platformSub: "Share of reach · reach per creator",
+    platformHero: "82%",
+    platformHeroSub: "of reach came from Instagram",
+    platformBars: [
+      { label: "Instagram Reels", pct: "68%" },
+      { label: "Instagram Stories", pct: "14%" },
+      { label: "YouTube Shorts", pct: "18%" },
+    ],
+    platformDisclaimer: "Unboxing stories drove fast organic views; Reels had highest repeat reach.",
+    creatorChartTitle: "Reach by creator",
+    creatorChartSub: "Bar = reach · dashed line = 1.25 L target per creator",
+    targetLineLabel: "┆ Target 1.25 L per creator · 15 L total",
+    creatorBars: [
+      { name: "Riya Sen", value: 100, label: "2.4 L · 16%", isAboveTarget: true },
+      { name: "Meera Iyer", value: 85, label: "2.0 L · 14%", isAboveTarget: true },
+      { name: "Nisha Verma", value: 72, label: "1.7 L · 12%", isAboveTarget: true },
+      { name: "Diya Kapoor", value: 50, label: "1.2 L · 8%", isAboveTarget: false },
+      { name: "Aditi Joshi", value: 42, label: "1.0 L · 7%", isAboveTarget: false },
+    ],
+    sideCardTitle: "Reach",
+    sideCardSub: "Organic seeding reach and reach per kit sent",
+    sideCardStats: [
+      { label: "Kits shipped", value: "12", detail: "100% delivered" },
+      { label: "Posted rate", value: "83%", detail: "10 of 12 posted" },
+      { label: "Cost per reached", value: "₹0.04", detail: "product value ÷ reach" },
+      { label: "Target reach", value: "15.0 L", detail: "97% achieved" },
+    ],
+    tableHeaders: ["CREATOR", "PLATFORM", "STATUS", "PRODUCT", "REACH ↓", "IMPR.", "VIEWS", "FREQ.", "CPM"],
+    tableRows: [
+      {
+        name: "Riya Sen",
+        handle: "@riyasen.glow",
+        deliverables: "1 Reel · 1 Story",
+        col2: "Instagram",
+        col2Sub: "SPF Kit · 1 unit",
+        status: "Completed",
+        feeOrProduct: "SPF Kit",
+        m1: "2.4 L",
+        m2: "5.1 L",
+        m3: "1.9 L",
+        m4: "2.1×",
+        m5: "₹21",
+      },
+      {
+        name: "Meera Iyer",
+        handle: "@meerabeauty",
+        deliverables: "1 Reel",
+        col2: "Instagram",
+        col2Sub: "SPF Kit · 1 unit",
+        status: "Completed",
+        feeOrProduct: "SPF Kit",
+        m1: "2.0 L",
+        m2: "4.3 L",
+        m3: "1.6 L",
+        m4: "2.2×",
+        m5: "₹25",
+      },
+    ],
+  },
+
+  // 3. Awareness · UGC
+  "Awareness_UGC": {
+    campaignName: "Sunscreen UGC Pack",
+    objective: "Awareness",
+    projectType: "UGC",
+    partnership: "Paid",
+    duration: "One-time",
+    periodText: "5 Oct – 5 Nov 2026 · 8 days left",
+    scorecards: [
+      { label: "Usable videos", value: "16 of 18", detail: "89% of target" },
+      { label: "Approval rate", value: "84%", detail: "▲ 6 pt vs prev.", isPositive: true },
+      { label: "Revisions", value: "3", detail: "1 open with Tanvi Shah" },
+      { label: "Avg. turnaround", value: "4.2 days", detail: "▼ 0.8 days vs prev.", isPositive: true },
+      { label: "Files delivered", value: "19", detail: "16 approved · 3 in review" },
+      { label: "Cost per usable video", value: "₹3,750", detail: "₹60,000 in fees ÷ 16" },
+    ],
+    trendTitle: "Files delivered over time",
+    trendSub: "All 6 creators · approved files vs the 18-video target",
+    platformTitle: "By platform",
+    platformSub: "Where the approved files are made for",
+    platformHero: "12 of 16",
+    platformHeroSub: "approved files are made for Instagram",
+    platformBars: [
+      { label: "Instagram · Reels 9:16", pct: "62%", sub: "10 files" },
+      { label: "Instagram · Feed 4:5", pct: "13%", sub: "2 files" },
+      { label: "YouTube · Shorts 9:16", pct: "25%", sub: "4 files" },
+    ],
+    platformDisclaimer: "All approved high-res source files are synced to your Content hub with full rights.",
+    creatorChartTitle: "Usable videos by creator",
+    creatorChartSub: "Approved files per creator · dashed line = 3 videos each",
+    targetLineLabel: "┆ Target 3 per creator · 18 total",
+    creatorBars: [
+      { name: "Aditi Joshi", value: 100, label: "4 of 4 · 100%", isAboveTarget: true },
+      { name: "Prachi Das", value: 100, label: "3 of 3 · 100%", isAboveTarget: true },
+      { name: "Neha Gupta", value: 100, label: "3 of 3 · 100%", isAboveTarget: true },
+      { name: "Tanvi Shah", value: 67, label: "2 of 3 · 1 in fix", isAboveTarget: false },
+      { name: "Sneha Pai", value: 67, label: "2 of 3 · 1 in review", isAboveTarget: false },
+    ],
+    sideCardTitle: "Content library",
+    sideCardSub: "UGC production pace and delivery status",
+    sideCardStats: [
+      { label: "Usable files", value: "16", detail: "of 18 contracted" },
+      { label: "Approved rate", value: "84%", detail: "target >80%" },
+      { label: "Avg. review time", value: "1.4 d", detail: "within 48 h SLA" },
+      { label: "Raw files archived", value: "19", detail: "ready for ads" },
+    ],
+    tableHeaders: ["CREATOR", "FORMAT", "STATUS", "FEE", "FILES ↓", "APPROVED", "FIXES", "TIME", "COST / VIDEO"],
+    tableRows: [
+      {
+        name: "Aditi Joshi",
+        handle: "@aditiglow",
+        deliverables: "4 of 4 delivered",
+        col2: "Video files",
+        col2Sub: "3 videos · 1 photo set",
+        status: "Completed",
+        feeOrProduct: "₹10,000",
+        m1: "4",
+        m2: "4",
+        m3: "0",
+        m4: "3 days",
+        m5: "₹2,500",
+        m5Sub: "₹10,000 ÷ 4",
+      },
+      {
+        name: "Prachi Das",
+        handle: "@prachidas",
+        deliverables: "3 of 3 delivered",
+        col2: "Video files",
+        col2Sub: "3 videos",
+        status: "Completed",
+        feeOrProduct: "₹10,000",
+        m1: "3",
+        m2: "3",
+        m3: "1",
+        m4: "4 days",
+        m5: "₹3,333",
+        m5Sub: "₹10,000 ÷ 3",
+      },
+      {
+        name: "Tanvi Shah",
+        handle: "@tanvishah",
+        deliverables: "3 of 3 delivered",
+        col2: "Video files",
+        col2Sub: "3 videos",
+        status: "In review",
+        feeOrProduct: "₹10,000",
+        m1: "3",
+        m2: "2",
+        m3: "1 open",
+        m4: "5 days",
+        m5: "₹5,000",
+        m5Sub: "₹10,000 ÷ 2",
+      },
+      {
+        name: "Kritika Sharma",
+        handle: "@kritikaskincare",
+        deliverables: "1 of 3 delivered",
+        warning: "2 videos due 30 Oct",
+        col2: "Video files",
+        col2Sub: "3 videos",
+        status: "Behind",
+        feeOrProduct: "₹10,000",
+        m1: "—",
+        m2: "—",
+        m3: "—",
+        m4: "—",
+        m5: "—",
+      },
+    ],
+  },
+
+  // 4. Engagement · Influencer Paid
+  "Engagement_Influencer Paid": {
+    campaignName: "Niacinamide Serum",
+    objective: "Engagement",
+    projectType: "Influencer",
+    partnership: "Paid",
+    duration: "One-time",
+    periodText: "5 Oct – 5 Nov 2026 · 8 days left",
+    scorecards: [
+      { label: "Total Engagement", value: "1.46 L", detail: "▲ 12% vs prev.", isPositive: true },
+      { label: "Engagement rate", value: "5.8%", detail: "▲ 1.3 pt vs 4.5% target", isPositive: true },
+      { label: "Saves", value: "12.4K", detail: "▲ 21% vs prev.", isPositive: true },
+      { label: "Shares", value: "6,850", detail: "▲ 9% vs prev.", isPositive: true },
+      { label: "Comments", value: "9,320", detail: "▲ 15% vs prev.", isPositive: true },
+      { label: "Views", value: "25.2 L", detail: "▲ 10% vs prev.", isPositive: true },
+    ],
+    trendTitle: "Engagements over time",
+    trendSub: "All 8 creators · daily engagements with the engagement-rate line",
+    platformTitle: "By platform",
+    platformSub: "Share of engagements · engagement rate",
+    platformHero: "84%",
+    platformHeroSub: "of engagements came from Instagram",
+    platformBars: [
+      { label: "Instagram Reels", pct: "62%", sub: "6.4% ER" },
+      { label: "Instagram Stories", pct: "22%", sub: "4.1% ER" },
+      { label: "YouTube Shorts", pct: "16%", sub: "5.2% ER" },
+    ],
+    platformDisclaimer: "Saves & shares represent 22% of interactions, signaling high intent save-for-later value.",
+    creatorChartTitle: "Engagement rate by creator",
+    creatorChartSub: "Who drove engagement · bar = engagement rate, dashed line = 4.5% target",
+    targetLineLabel: "┆ Target 4.5% · category avg. 3.1%",
+    creatorBars: [
+      { name: "Nisha Verma", value: 100, label: "7.4% · 42.3K", isAboveTarget: true },
+      { name: "Riya Sen", value: 93, label: "6.9% · 36.8K", isAboveTarget: true },
+      { name: "Meera Iyer", value: 76, label: "5.6% · 28.4K", isAboveTarget: true },
+      { name: "Diya Kapoor", value: 69, label: "5.1% · 22.6K", isAboveTarget: true },
+      { name: "Aditi Joshi", value: 57, label: "4.2% · 15.9K", isAboveTarget: false },
+    ],
+    sideCardTitle: "Engagement quality",
+    sideCardSub: "High-intent interaction analysis",
+    sideCardStats: [
+      { label: "Save & share rate", value: "22%", detail: "industry benchmark 12%" },
+      { label: "Cost per engagement", value: "₹0.37", detail: "▼ ₹0.05 vs prev." },
+      { label: "Positive comment ratio", value: "94%", detail: "sentiment check" },
+      { label: "Target ER", value: "4.5%", detail: "currently 5.8% (+1.3 pt)" },
+    ],
+    tableHeaders: ["CREATOR", "PLATFORM", "STATUS", "FEE", "ENGAGE. ↓", "ENG. RATE", "SAVES", "POSTS", "COST / ENG."],
+    tableRows: [
+      {
+        name: "Nisha Verma",
+        handle: "@nishaverma",
+        deliverables: "2 of 2 posted",
+        col2: "Instagram",
+        col2Sub: "1 Reel · 1 Story",
+        status: "Completed",
+        feeOrProduct: "₹14,000",
+        m1: "42,300",
+        m2: "7.4%",
+        m3: "3,900",
+        m4: "2 of 2",
+        m5: "₹0.33",
+        m5Sub: "fee ÷ eng.",
+      },
+      {
+        name: "Riya Sen",
+        handle: "@riyasen.glow",
+        deliverables: "2 of 2 posted",
+        col2: "Instagram",
+        col2Sub: "1 Reel · 1 Story",
+        status: "Completed",
+        feeOrProduct: "₹14,000",
+        m1: "36,800",
+        m2: "6.9%",
+        m3: "3,120",
+        m4: "2 of 2",
+        m5: "₹0.38",
+        m5Sub: "fee ÷ eng.",
+      },
+      {
+        name: "Meera Iyer",
+        handle: "@meerabeauty",
+        deliverables: "2 of 2 posted",
+        col2: "Instagram",
+        col2Sub: "1 Reel · 1 Story",
+        status: "Completed",
+        feeOrProduct: "₹14,000",
+        m1: "28,400",
+        m2: "5.6%",
+        m3: "2,410",
+        m4: "2 of 2",
+        m5: "₹0.49",
+        m5Sub: "fee ÷ eng.",
+      },
+      {
+        name: "Ishita Rao",
+        handle: "@ishitarao",
+        deliverables: "1 of 2 posted",
+        warning: "Reel due 30 Oct",
+        col2: "Instagram",
+        col2Sub: "1 Reel · 1 Story",
+        status: "Behind",
+        feeOrProduct: "₹14,000",
+        m1: "—",
+        m2: "—",
+        m3: "—",
+        m4: "—",
+        m5: "—",
+      },
+    ],
+  },
+
+  // 5. Engagement · Influencer Gift exchange
+  "Engagement_Influencer Gift exchange": {
+    campaignName: "Hydration Bundle",
+    objective: "Engagement",
+    projectType: "Influencer",
+    partnership: "Gift exchange",
+    duration: "One-time",
+    periodText: "1 Oct – 31 Oct 2026 · 3 days left",
+    scorecards: [
+      { label: "Total Engagement", value: "1.46 L", detail: "▲ 12% vs prev.", isPositive: true },
+      { label: "Engagement rate", value: "5.8%", detail: "▲ 1.3 pt vs 4.5% target", isPositive: true },
+      { label: "Saves", value: "12.4K", detail: "▲ 21% vs prev.", isPositive: true },
+      { label: "Shares", value: "6,850", detail: "▲ 9% vs prev.", isPositive: true },
+      { label: "Comments", value: "9,320", detail: "▲ 15% vs prev.", isPositive: true },
+      { label: "Views", value: "25.2 L", detail: "▲ 10% vs prev.", isPositive: true },
+    ],
+    trendTitle: "Engagements over time",
+    trendSub: "All 8 creators · daily engagements with the engagement-rate line",
+    platformTitle: "By platform",
+    platformSub: "Share of engagements · engagement rate",
+    platformHero: "84%",
+    platformHeroSub: "of engagements came from Instagram",
+    platformBars: [
+      { label: "Instagram Reels", pct: "62%", sub: "6.4% ER" },
+      { label: "Instagram Stories", pct: "22%", sub: "4.1% ER" },
+      { label: "YouTube Shorts", pct: "16%", sub: "5.2% ER" },
+    ],
+    platformDisclaimer: "Gifted creators posted authentic routine reviews with 42% higher comment engagement.",
+    creatorChartTitle: "Engagement rate by creator",
+    creatorChartSub: "Who drove engagement · bar = engagement rate, dashed line = 4.5% target",
+    targetLineLabel: "┆ Target 4.5% · category avg. 3.1%",
+    creatorBars: [
+      { name: "Nisha Verma", value: 100, label: "7.4% · 42.3K", isAboveTarget: true },
+      { name: "Riya Sen", value: 93, label: "6.9% · 36.8K", isAboveTarget: true },
+      { name: "Meera Iyer", value: 76, label: "5.6% · 28.4K", isAboveTarget: true },
+      { name: "Diya Kapoor", value: 69, label: "5.1% · 22.6K", isAboveTarget: true },
+      { name: "Aditi Joshi", value: 57, label: "4.2% · 15.9K", isAboveTarget: false },
+    ],
+    sideCardTitle: "Engagement quality",
+    sideCardSub: "High-intent interaction analysis for gifted seeding",
+    sideCardStats: [
+      { label: "Save & share rate", value: "22%", detail: "industry benchmark 12%" },
+      { label: "Cost per engagement", value: "₹0.36", detail: "product value ÷ eng." },
+      { label: "Positive comment ratio", value: "96%", detail: "routine authenticity" },
+      { label: "Target ER", value: "4.5%", detail: "currently 5.8% (+1.3 pt)" },
+    ],
+    tableHeaders: ["CREATOR", "PLATFORM", "STATUS", "PRODUCT", "ENGAGE. ↓", "ENG. RATE", "SAVES", "ON TIME", "COST / ENG."],
+    tableRows: [
+      {
+        name: "Nisha Verma",
+        handle: "@nishaverma",
+        deliverables: "2 of 2 posted",
+        col2: "Instagram",
+        col2Sub: "Bundle Box · 1 unit",
+        status: "Completed",
+        feeOrProduct: "Hydration Box",
+        m1: "42,300",
+        m2: "7.4%",
+        m3: "3,900",
+        m4: "Yes",
+        m5: "₹0.31",
+      },
+      {
+        name: "Riya Sen",
+        handle: "@riyasen.glow",
+        deliverables: "2 of 2 posted",
+        col2: "Instagram",
+        col2Sub: "Bundle Box · 1 unit",
+        status: "Completed",
+        feeOrProduct: "Hydration Box",
+        m1: "36,800",
+        m2: "6.9%",
+        m3: "3,120",
+        m4: "Yes",
+        m5: "₹0.35",
+      },
+    ],
+  },
+
+  // 6. Engagement · UGC
+  "Engagement_UGC": {
+    campaignName: "Hydration Mist UGC",
+    objective: "Engagement",
+    projectType: "UGC",
+    partnership: "Paid",
+    duration: "One-time",
+    periodText: "5 Oct – 5 Nov 2026 · 8 days left",
+    scorecards: [
+      { label: "Usable videos", value: "16 of 18", detail: "89% of target" },
+      { label: "Approval rate", value: "84%", detail: "▲ 6 pt vs prev.", isPositive: true },
+      { label: "Revisions", value: "3", detail: "1 open with Tanvi Shah" },
+      { label: "Avg. turnaround", value: "4.2 days", detail: "▼ 0.8 days vs prev.", isPositive: true },
+      { label: "Files delivered", value: "19", detail: "16 approved · 3 in review" },
+      { label: "Cost per usable video", value: "₹3,750", detail: "₹60,000 in fees ÷ 16" },
+    ],
+    trendTitle: "Files delivered over time",
+    trendSub: "All 6 creators · approved files vs the 18-video target",
+    platformTitle: "By platform",
+    platformSub: "Where the approved files are made for",
+    platformHero: "12 of 16",
+    platformHeroSub: "approved files are made for Instagram",
+    platformBars: [
+      { label: "Instagram · Reels 9:16", pct: "62%", sub: "10 files" },
+      { label: "Instagram · Feed 4:5", pct: "13%", sub: "2 files" },
+      { label: "YouTube · Shorts 9:16", pct: "25%", sub: "4 files" },
+    ],
+    platformDisclaimer: "Files optimized for social ad engagement hooks and user-interaction overlays.",
+    creatorChartTitle: "Usable videos by creator",
+    creatorChartSub: "Approved files per creator · dashed line = 3 videos each",
+    targetLineLabel: "┆ Target 3 per creator · 18 total",
+    creatorBars: [
+      { name: "Aditi Joshi", value: 100, label: "4 of 4 · 100%", isAboveTarget: true },
+      { name: "Prachi Das", value: 100, label: "3 of 3 · 100%", isAboveTarget: true },
+      { name: "Neha Gupta", value: 100, label: "3 of 3 · 100%", isAboveTarget: true },
+      { name: "Tanvi Shah", value: 67, label: "2 of 3 · 1 in fix", isAboveTarget: false },
+      { name: "Sneha Pai", value: 67, label: "2 of 3 · 1 in review", isAboveTarget: false },
+    ],
+    sideCardTitle: "Content library",
+    sideCardSub: "UGC production pace and delivery status",
+    sideCardStats: [
+      { label: "Usable files", value: "16", detail: "of 18 contracted" },
+      { label: "Approved rate", value: "84%", detail: "target >80%" },
+      { label: "Avg. review time", value: "1.4 d", detail: "within 48 h SLA" },
+      { label: "Raw files archived", value: "19", detail: "ready for ads" },
+    ],
+    tableHeaders: ["CREATOR", "FORMAT", "STATUS", "FEE", "FILES ↓", "APPROVED", "FIXES", "TIME", "COST / VIDEO"],
+    tableRows: [
+      {
+        name: "Aditi Joshi",
+        handle: "@aditiglow",
+        deliverables: "4 of 4 delivered",
+        col2: "Video files",
+        col2Sub: "3 videos · 1 photo set",
+        status: "Completed",
+        feeOrProduct: "₹10,000",
+        m1: "4",
+        m2: "4",
+        m3: "0",
+        m4: "3 days",
+        m5: "₹2,500",
+        m5Sub: "₹10,000 ÷ 4",
+      },
+      {
+        name: "Prachi Das",
+        handle: "@prachidas",
+        deliverables: "3 of 3 delivered",
+        col2: "Video files",
+        col2Sub: "3 videos",
+        status: "Completed",
+        feeOrProduct: "₹10,000",
+        m1: "3",
+        m2: "3",
+        m3: "1",
+        m4: "4 days",
+        m5: "₹3,333",
+        m5Sub: "₹10,000 ÷ 3",
+      },
+    ],
+  },
+
+  // 7. Traffic · Influencer Paid
+  "Traffic_Influencer Paid": {
+    campaignName: "Sunscreen Stick Launch",
+    objective: "Traffic",
+    projectType: "Influencer",
+    partnership: "Paid",
+    duration: "One-time",
+    periodText: "10 Oct – 10 Nov 2026 · 13 days left",
+    scorecards: [
+      { label: "Link clicks", value: "25,400", detail: "▲ 31% vs prev.", isPositive: true },
+      { label: "CTR", value: "1.6%", detail: "▲ 0.3 pt vs prev.", isPositive: true },
+      { label: "Page views", value: "19,800", detail: "78% of clicks" },
+      { label: "Avg. time on site", value: "1m 12s", detail: "▲ 8s vs prev.", isPositive: true },
+      { label: "Views", value: "15.9 L", detail: "▲ 12% vs prev.", isPositive: true },
+      { label: "Engagement rate", value: "4.9%", detail: "▲ 0.2 pt vs prev.", isPositive: true },
+    ],
+    trendTitle: "Link clicks over time",
+    trendSub: "All 10 creators · daily clicks with the CTR line",
+    platformTitle: "By platform",
+    platformSub: "Share of link clicks · CTR",
+    platformHero: "71%",
+    platformHeroSub: "of clicks came from Instagram Stories links",
+    platformBars: [
+      { label: "Instagram Stories · link sticker", pct: "71%", sub: "2.1% CTR" },
+      { label: "Instagram Reels · bio link", pct: "11%", sub: "0.8% CTR" },
+      { label: "YouTube · description link", pct: "18%", sub: "1.4% CTR" },
+    ],
+    platformDisclaimer: "Story link stickers had 2.6x higher click volume than bio links with 1m 12s on-site dwell.",
+    creatorChartTitle: "Link clicks by creator",
+    creatorChartSub: "Clicks per creator · dashed line = 2,500 each",
+    targetLineLabel: "┆ Target 2,500 per creator · 25,000 total",
+    creatorBars: [
+      { name: "Riya Sen", value: 100, label: "6,900 · 2.1% CTR", isAboveTarget: true },
+      { name: "Meera Iyer", value: 84, label: "5,800 · 1.8% CTR", isAboveTarget: true },
+      { name: "Nisha Verma", value: 59, label: "4,100 · 1.5% CTR", isAboveTarget: true },
+      { name: "Aditi Joshi", value: 46, label: "3,200 · 1.4% CTR", isAboveTarget: true },
+      { name: "Kavya Reddy", value: 33, label: "2,300 · 1.2% CTR", isAboveTarget: false },
+    ],
+    sideCardTitle: "Traffic",
+    sideCardSub: "Visitor acquisition and on-site behavior",
+    sideCardStats: [
+      { label: "Landing page views", value: "19,800", detail: "78% click-to-load" },
+      { label: "Bounce rate", value: "38%", detail: "▼ 4 pt vs prev." },
+      { label: "Cost per click (CPC)", value: "₹3.15", detail: "▼ ₹0.30 vs prev." },
+      { label: "Target clicks", value: "25,000", detail: "101.6% achieved" },
+    ],
+    tableHeaders: ["CREATOR", "PLATFORM", "STATUS", "FEE", "CLICKS ↓", "CTR", "LANDING", "BOUNCE", "CPC"],
+    tableRows: [
+      {
+        name: "Riya Sen",
+        handle: "@riyasen.glow",
+        deliverables: "3 of 3 delivered",
+        col2: "Instagram",
+        col2Sub: "1 link · story sticker",
+        status: "Completed",
+        feeOrProduct: "₹18,000",
+        m1: "6,900",
+        m2: "2.1%",
+        m3: "5,520",
+        m4: "34%",
+        m5: "₹2.61",
+        m5Sub: "₹18,000 ÷ 6,900",
+      },
+      {
+        name: "Meera Iyer",
+        handle: "@meerabeauty",
+        deliverables: "3 of 3 delivered",
+        col2: "Instagram · YouTube",
+        col2Sub: "2 links",
+        status: "Completed",
+        feeOrProduct: "₹20,000",
+        m1: "5,800",
+        m2: "1.8%",
+        m3: "4,410",
+        m4: "36%",
+        m5: "₹3.45",
+        m5Sub: "₹20,000 ÷ 5,800",
+      },
+      {
+        name: "Nisha Verma",
+        handle: "@nishaverma",
+        deliverables: "3 of 3 delivered",
+        col2: "Instagram",
+        col2Sub: "1 link",
+        status: "Completed",
+        feeOrProduct: "₹15,000",
+        m1: "4,100",
+        m2: "1.5%",
+        m3: "3,200",
+        m4: "41%",
+        m5: "₹3.66",
+        m5Sub: "₹15,000 ÷ 4,100",
+      },
+      {
+        name: "Diya Kapoor",
+        handle: "@diyakapoor",
+        deliverables: "1 of 3 delivered",
+        warning: "2 posts due 2 Nov",
+        col2: "Instagram",
+        col2Sub: "1 link",
+        status: "Behind",
+        feeOrProduct: "₹12,000",
+        m1: "—",
+        m2: "—",
+        m3: "—",
+        m4: "—",
+        m5: "—",
+      },
+    ],
+  },
+
+  // 8. Traffic · Influencer Gift exchange
+  "Traffic_Influencer Gift exchange": {
+    campaignName: "Lip Balm Seeding",
+    objective: "Traffic",
+    projectType: "Influencer",
+    partnership: "Gift exchange",
+    duration: "One-time",
+    periodText: "9 Oct – 9 Nov 2026 · 12 days left",
+    scorecards: [
+      { label: "Link clicks", value: "6,850", detail: "▲ 18% vs prev.", isPositive: true },
+      { label: "CTR", value: "1.9%", detail: "▲ 0.2 pt vs prev.", isPositive: true },
+      { label: "Landing page views", value: "5,480", detail: "80% of clicks" },
+      { label: "Avg. time on site", value: "58s", detail: "▲ 5s vs prev.", isPositive: true },
+      { label: "Views", value: "3.6 L", detail: "▲ 10% vs prev.", isPositive: true },
+      { label: "Engagement rate", value: "6.2%", detail: "▲ 0.4 pt vs prev.", isPositive: true },
+    ],
+    trendTitle: "Link clicks over time",
+    trendSub: "All 10 creators · daily clicks with the CTR line",
+    platformTitle: "By platform",
+    platformSub: "Share of link clicks · CTR",
+    platformHero: "71%",
+    platformHeroSub: "of clicks came from Instagram Stories links",
+    platformBars: [
+      { label: "Instagram Stories · link", pct: "71%", sub: "1.9% CTR" },
+      { label: "Instagram Bio link", pct: "14%", sub: "0.9% CTR" },
+      { label: "YouTube Shorts link", pct: "15%", sub: "1.2% CTR" },
+    ],
+    platformDisclaimer: "Seeded creators tagged product links in morning routine stories.",
+    creatorChartTitle: "Link clicks by creator",
+    creatorChartSub: "Clicks per creator · dashed line = 650 each",
+    targetLineLabel: "┆ Target 650 per creator · 6,500 total",
+    creatorBars: [
+      { name: "Riya Sen", value: 100, label: "1,900 · 2.1% CTR", isAboveTarget: true },
+      { name: "Meera Iyer", value: 78, label: "1,480 · 1.9% CTR", isAboveTarget: true },
+      { name: "Nisha Verma", value: 63, label: "1,200 · 1.7% CTR", isAboveTarget: true },
+      { name: "Diya Kapoor", value: 44, label: "840 · 1.5% CTR", isAboveTarget: true },
+      { name: "Aditi Joshi", value: 31, label: "600 · 1.3% CTR", isAboveTarget: false },
+    ],
+    sideCardTitle: "Traffic",
+    sideCardSub: "Organic link clicks from seeded product gifting",
+    sideCardStats: [
+      { label: "Landing page views", value: "5,480", detail: "80% of clicks" },
+      { label: "Bounce rate", value: "42%", detail: "organic intent" },
+      { label: "Est. value / click", value: "₹2.20", detail: "vs paid ads ₹4.50" },
+      { label: "Target clicks", value: "6,500", detail: "105% achieved" },
+    ],
+    tableHeaders: ["CREATOR", "PLATFORM", "STATUS", "PRODUCT", "CLICKS ↓", "CTR", "LANDING", "BOUNCE", "CPC"],
+    tableRows: [
+      {
+        name: "Riya Sen",
+        handle: "@riyasen.glow",
+        deliverables: "1 Story link",
+        col2: "Instagram",
+        col2Sub: "Balm Box · 1 unit",
+        status: "Completed",
+        feeOrProduct: "Lip Balm Box",
+        m1: "1,900",
+        m2: "2.1%",
+        m3: "1,520",
+        m4: "38%",
+        m5: "₹1.80",
+      },
+    ],
+  },
+
+  // 9. Traffic · UGC
+  "Traffic_UGC": {
+    campaignName: "Lip Tint Drop",
+    objective: "Traffic",
+    projectType: "UGC",
+    partnership: "Paid",
+    duration: "One-time",
+    periodText: "5 Oct – 5 Nov 2026 · 8 days left",
+    scorecards: [
+      { label: "Usable videos", value: "16 of 18", detail: "89% of target" },
+      { label: "Approval rate", value: "84%", detail: "▲ 6 pt vs prev.", isPositive: true },
+      { label: "Revisions", value: "3", detail: "1 open with Tanvi Shah" },
+      { label: "Avg. turnaround", value: "4.2 days", detail: "▼ 0.8 days vs prev.", isPositive: true },
+      { label: "Files delivered", value: "19", detail: "16 approved · 3 in review" },
+      { label: "Cost per usable video", value: "₹3,750", detail: "₹60,000 in fees ÷ 16" },
+    ],
+    trendTitle: "Files delivered over time",
+    trendSub: "All 6 creators · approved files vs the 18-video target",
+    platformTitle: "By platform",
+    platformSub: "Where the approved files are made for",
+    platformHero: "12 of 16",
+    platformHeroSub: "approved files are made for Instagram",
+    platformBars: [
+      { label: "Instagram · Reels 9:16", pct: "62%", sub: "10 files" },
+      { label: "Instagram · Feed 4:5", pct: "13%", sub: "2 files" },
+      { label: "YouTube · Shorts 9:16", pct: "25%", sub: "4 files" },
+    ],
+    platformDisclaimer: "Content produced specifically for ad click-through optimizations and landing swipes.",
+    creatorChartTitle: "Usable videos by creator",
+    creatorChartSub: "Approved files per creator · dashed line = 3 videos each",
+    targetLineLabel: "┆ Target 3 per creator · 18 total",
+    creatorBars: [
+      { name: "Aditi Joshi", value: 100, label: "4 of 4 · 100%", isAboveTarget: true },
+      { name: "Prachi Das", value: 100, label: "3 of 3 · 100%", isAboveTarget: true },
+      { name: "Neha Gupta", value: 100, label: "3 of 3 · 100%", isAboveTarget: true },
+      { name: "Tanvi Shah", value: 67, label: "2 of 3 · 1 in fix", isAboveTarget: false },
+      { name: "Sneha Pai", value: 67, label: "2 of 3 · 1 in review", isAboveTarget: false },
+    ],
+    sideCardTitle: "Content library",
+    sideCardSub: "Traffic ad asset production and review turnaround",
+    sideCardStats: [
+      { label: "Usable files", value: "16", detail: "of 18 contracted" },
+      { label: "Approved rate", value: "84%", detail: "target >80%" },
+      { label: "Avg. review time", value: "1.4 d", detail: "within 48 h SLA" },
+      { label: "Raw files archived", value: "19", detail: "ready for ads" },
+    ],
+    tableHeaders: ["CREATOR", "FORMAT", "STATUS", "FEE", "FILES ↓", "APPROVED", "FIXES", "TIME", "COST / VIDEO"],
+    tableRows: [
+      {
+        name: "Aditi Joshi",
+        handle: "@aditiglow",
+        deliverables: "4 of 4 delivered",
+        col2: "Video files",
+        col2Sub: "3 videos · 1 photo set",
+        status: "Completed",
+        feeOrProduct: "₹10,000",
+        m1: "4",
+        m2: "4",
+        m3: "0",
+        m4: "3 days",
+        m5: "₹2,500",
+        m5Sub: "₹10,000 ÷ 4",
+      },
+      {
+        name: "Prachi Das",
+        handle: "@prachidas",
+        deliverables: "3 of 3 delivered",
+        col2: "Video files",
+        col2Sub: "3 videos",
+        status: "Completed",
+        feeOrProduct: "₹10,000",
+        m1: "3",
+        m2: "3",
+        m3: "1",
+        m4: "4 days",
+        m5: "₹3,333",
+        m5Sub: "₹10,000 ÷ 3",
+      },
+    ],
+  },
+
+  // 10. Lead generation · Influencer Paid
+  "Lead generation_Influencer Paid": {
+    campaignName: "Skin Type Quiz",
+    objective: "Lead generation",
+    projectType: "Influencer",
+    partnership: "Paid",
+    duration: "One-time",
+    periodText: "12 Oct – 12 Nov 2026 · 15 days left",
+    scorecards: [
+      { label: "Leads", value: "3,240", detail: "▲ 24% vs prev.", isPositive: true },
+      { label: "Sign-up rate", value: "18.6%", detail: "of link clicks" },
+      { label: "Link clicks", value: "17,400", detail: "▲ 15% vs prev.", isPositive: true },
+      { label: "Qualified leads", value: "2,110", detail: "65% of leads" },
+      { label: "Views", value: "12.6 L", detail: "▲ 9% vs prev.", isPositive: true },
+      { label: "Engagement rate", value: "5.1%", detail: "▲ 0.3 pt vs prev.", isPositive: true },
+    ],
+    trendTitle: "Leads over time",
+    trendSub: "All 8 creators · daily quiz sign-ups",
+    platformTitle: "By platform",
+    platformSub: "Share of leads · sign-up rate",
+    platformHero: "82%",
+    platformHeroSub: "of leads came from Instagram",
+    platformBars: [
+      { label: "Instagram Stories · quiz link", pct: "58%", sub: "21% sign-up" },
+      { label: "Instagram Reels · code NISHA10", pct: "24%", sub: "16% sign-up" },
+      { label: "YouTube · description link", pct: "18%", sub: "15% sign-up" },
+    ],
+    platformDisclaimer: "Interactive quiz stories achieved 21% completion rate with verified phone/email capture.",
+    creatorChartTitle: "Leads by creator",
+    creatorChartSub: "Sign-ups per creator · dashed line = 375 each",
+    targetLineLabel: "┆ Target 375 per creator · 3,000 total",
+    creatorBars: [
+      { name: "Meera Iyer", value: 100, label: "980 · 21% sign-up", isAboveTarget: true },
+      { name: "Nisha Verma", value: 73, label: "720 · 18% sign-up", isAboveTarget: true },
+      { name: "Riya Sen", value: 57, label: "560 · 18% sign-up", isAboveTarget: true },
+      { name: "Kavya Reddy", value: 43, label: "420 · 17% sign-up", isAboveTarget: true },
+      { name: "Diya Kapoor", value: 34, label: "330 · 15% sign-up", isAboveTarget: false },
+    ],
+    sideCardTitle: "Leads",
+    sideCardSub: "Lead qualification and acquisition economics",
+    sideCardStats: [
+      { label: "Total sign-ups", value: "3,240", detail: "108% of target" },
+      { label: "Qualified rate", value: "65%", detail: "passed skin quiz" },
+      { label: "Cost per lead (CPL)", value: "₹37.04", detail: "▼ ₹4.20 vs prev." },
+      { label: "Target leads", value: "3,000", detail: "+240 above goal" },
+    ],
+    tableHeaders: ["CREATOR", "PLATFORM", "STATUS", "FEE", "CLICKS", "LEADS ↓", "SIGN-UP", "QUALIFIED", "CPL"],
+    tableRows: [
+      {
+        name: "Meera Iyer",
+        handle: "@meerabeauty",
+        deliverables: "2 of 2 delivered",
+        col2: "Instagram",
+        col2Sub: "1 quiz link",
+        status: "Completed",
+        feeOrProduct: "₹18,000",
+        m1: "4,600",
+        m2: "980",
+        m3: "21%",
+        m4: "690",
+        m5: "₹18",
+        m5Sub: "₹18,000 ÷ 980",
+      },
+      {
+        name: "Nisha Verma",
+        handle: "@nishaverma",
+        deliverables: "2 of 2 delivered",
+        col2: "Instagram · YouTube",
+        col2Sub: "2 links · NISHA10",
+        status: "Completed",
+        feeOrProduct: "₹16,000",
+        m1: "3,900",
+        m2: "720",
+        m3: "18%",
+        m4: "470",
+        m5: "₹22",
+        m5Sub: "₹16,000 ÷ 720",
+      },
+      {
+        name: "Riya Sen",
+        handle: "@riyasen.glow",
+        deliverables: "2 of 2 delivered",
+        col2: "Instagram",
+        col2Sub: "1 quiz link",
+        status: "Completed",
+        feeOrProduct: "₹15,000",
+        m1: "3,100",
+        m2: "560",
+        m3: "18%",
+        m4: "350",
+        m5: "₹27",
+        m5Sub: "₹15,000 ÷ 560",
+      },
+      {
+        name: "Aditi Joshi",
+        handle: "@aditiglow",
+        deliverables: "0 of 2 delivered",
+        warning: "Draft in review",
+        col2: "Instagram",
+        col2Sub: "1 quiz link",
+        status: "Behind",
+        feeOrProduct: "₹12,000",
+        m1: "—",
+        m2: "—",
+        m3: "—",
+        m4: "—",
+        m5: "—",
+      },
+    ],
+  },
+
+  // 11. Lead generation · Influencer Gift exchange
+  "Lead generation_Influencer Gift exchange": {
+    campaignName: "Skin Quiz Seeding",
+    objective: "Lead generation",
+    projectType: "Influencer",
+    partnership: "Gift exchange",
+    duration: "One-time",
+    periodText: "11 Oct – 11 Nov 2026 · 14 days left",
+    scorecards: [
+      { label: "Leads", value: "920", detail: "▲ 16% vs prev.", isPositive: true },
+      { label: "Sign-up rate", value: "17.2%", detail: "of link clicks" },
+      { label: "Link clicks", value: "5,350", detail: "▲ 11% vs prev.", isPositive: true },
+      { label: "Qualified leads", value: "590", detail: "64% of leads" },
+      { label: "Views", value: "3.1 L", detail: "▲ 8% vs prev.", isPositive: true },
+      { label: "Engagement rate", value: "5.9%", detail: "▲ 0.3 pt vs prev.", isPositive: true },
+    ],
+    trendTitle: "Leads over time",
+    trendSub: "All 8 creators · daily quiz sign-ups",
+    platformTitle: "By platform",
+    platformSub: "Share of leads · sign-up rate",
+    platformHero: "82%",
+    platformHeroSub: "of leads came from Instagram",
+    platformBars: [
+      { label: "Instagram Stories · link", pct: "64%", sub: "18% sign-up" },
+      { label: "Instagram Bio link", pct: "18%", sub: "14% sign-up" },
+      { label: "YouTube Shorts", pct: "18%", sub: "15% sign-up" },
+    ],
+    platformDisclaimer: "Gifted creators took the skin quiz on video and shared personalized routine results.",
+    creatorChartTitle: "Leads by creator",
+    creatorChartSub: "Sign-ups per creator · dashed line = 110 each",
+    targetLineLabel: "┆ Target 110 per creator · 880 total",
+    creatorBars: [
+      { name: "Meera Iyer", value: 100, label: "290 · 19% sign-up", isAboveTarget: true },
+      { name: "Nisha Verma", value: 76, label: "220 · 17% sign-up", isAboveTarget: true },
+      { name: "Riya Sen", value: 62, label: "180 · 17% sign-up", isAboveTarget: true },
+      { name: "Kavya Reddy", value: 41, label: "120 · 16% sign-up", isAboveTarget: true },
+      { name: "Diya Kapoor", value: 31, label: "90 · 14% sign-up", isAboveTarget: false },
+    ],
+    sideCardTitle: "Leads",
+    sideCardSub: "Organic product seeding lead acquisition",
+    sideCardStats: [
+      { label: "Total sign-ups", value: "920", detail: "104% of goal" },
+      { label: "Qualified rate", value: "64%", detail: "verified profile" },
+      { label: "Estimated CPL", value: "₹18.50", detail: "gift cost ÷ leads" },
+      { label: "Target leads", value: "880", detail: "achieved" },
+    ],
+    tableHeaders: ["CREATOR", "PLATFORM", "STATUS", "PRODUCT", "CLICKS", "LEADS ↓", "SIGN-UP", "QUALIFIED", "CPL"],
+    tableRows: [
+      {
+        name: "Meera Iyer",
+        handle: "@meerabeauty",
+        deliverables: "1 quiz story",
+        col2: "Instagram",
+        col2Sub: "Quiz Kit · 1 unit",
+        status: "Completed",
+        feeOrProduct: "Quiz Kit",
+        m1: "1,520",
+        m2: "290",
+        m3: "19%",
+        m4: "195",
+        m5: "₹17",
+      },
+    ],
+  },
+
+  // 12. Lead generation · UGC
+  "Lead generation_UGC": {
+    campaignName: "Quiz Explainer UGC",
+    objective: "Lead generation",
+    projectType: "UGC",
+    partnership: "Paid",
+    duration: "One-time",
+    periodText: "5 Oct – 5 Nov 2026 · 8 days left",
+    scorecards: [
+      { label: "Usable videos", value: "16 of 18", detail: "89% of target" },
+      { label: "Approval rate", value: "84%", detail: "▲ 6 pt vs prev.", isPositive: true },
+      { label: "Revisions", value: "3", detail: "1 open with Tanvi Shah" },
+      { label: "Avg. turnaround", value: "4.2 days", detail: "▼ 0.8 days vs prev.", isPositive: true },
+      { label: "Files delivered", value: "19", detail: "16 approved · 3 in review" },
+      { label: "Cost per usable video", value: "₹3,750", detail: "₹60,000 in fees ÷ 16" },
+    ],
+    trendTitle: "Files delivered over time",
+    trendSub: "All 6 creators · approved files vs the 18-video target",
+    platformTitle: "By platform",
+    platformSub: "Where the approved files are made for",
+    platformHero: "12 of 16",
+    platformHeroSub: "approved files are made for Instagram",
+    platformBars: [
+      { label: "Instagram · Reels 9:16", pct: "62%", sub: "10 files" },
+      { label: "Instagram · Feed 4:5", pct: "13%", sub: "2 files" },
+      { label: "YouTube · Shorts 9:16", pct: "25%", sub: "4 files" },
+    ],
+    platformDisclaimer: "Explainer creatives showing quiz walkthrough with dynamic lead hooks.",
+    creatorChartTitle: "Usable videos by creator",
+    creatorChartSub: "Approved files per creator · dashed line = 3 videos each",
+    targetLineLabel: "┆ Target 3 per creator · 18 total",
+    creatorBars: [
+      { name: "Aditi Joshi", value: 100, label: "4 of 4 · 100%", isAboveTarget: true },
+      { name: "Prachi Das", value: 100, label: "3 of 3 · 100%", isAboveTarget: true },
+      { name: "Neha Gupta", value: 100, label: "3 of 3 · 100%", isAboveTarget: true },
+      { name: "Tanvi Shah", value: 67, label: "2 of 3 · 1 in fix", isAboveTarget: false },
+      { name: "Sneha Pai", value: 67, label: "2 of 3 · 1 in review", isAboveTarget: false },
+    ],
+    sideCardTitle: "Content library",
+    sideCardSub: "Lead generation UGC creative production",
+    sideCardStats: [
+      { label: "Usable files", value: "16", detail: "of 18 contracted" },
+      { label: "Approved rate", value: "84%", detail: "target >80%" },
+      { label: "Avg. review time", value: "1.4 d", detail: "within 48 h SLA" },
+      { label: "Raw files archived", value: "19", detail: "ready for ads" },
+    ],
+    tableHeaders: ["CREATOR", "FORMAT", "STATUS", "FEE", "FILES ↓", "APPROVED", "FIXES", "TIME", "COST / VIDEO"],
+    tableRows: [
+      {
+        name: "Aditi Joshi",
+        handle: "@aditiglow",
+        deliverables: "4 of 4 delivered",
+        col2: "Video files",
+        col2Sub: "3 videos · 1 photo set",
+        status: "Completed",
+        feeOrProduct: "₹10,000",
+        m1: "4",
+        m2: "4",
+        m3: "0",
+        m4: "3 days",
+        m5: "₹2,500",
+        m5Sub: "₹10,000 ÷ 4",
+      },
+      {
+        name: "Prachi Das",
+        handle: "@prachidas",
+        deliverables: "3 of 3 delivered",
+        col2: "Video files",
+        col2Sub: "3 videos",
+        status: "Completed",
+        feeOrProduct: "₹10,000",
+        m1: "3",
+        m2: "3",
+        m3: "1",
+        m4: "4 days",
+        m5: "₹3,333",
+        m5Sub: "₹10,000 ÷ 3",
+      },
+    ],
+  },
+
+  // 13. Sales · Influencer Paid
+  "Sales_Influencer Paid": {
+    campaignName: "Vitamin-C Serum",
+    objective: "Sales",
+    projectType: "Influencer",
+    partnership: "Paid",
+    duration: "One-time",
+    periodText: "7 Oct – 7 Nov 2026 · 10 days left",
+    scorecards: [
+      { label: "Net sales", value: "₹5,42,000", detail: "▲ 18% vs prev.", isPositive: true },
+      { label: "Orders", value: "1,315", detail: "▲ 14% vs prev.", isPositive: true },
+      { label: "Link clicks", value: "14,800", detail: "▲ 9% vs prev. · CTR 0.8%", isPositive: true },
+      { label: "Engagement rate", value: "5.4%", detail: "▲ 0.4 pt vs prev.", isPositive: true },
+      { label: "Views", value: "18.4 L", detail: "▲ 19% vs prev.", isPositive: true },
+      { label: "Earned media value", value: "₹2,28,000", detail: "Estimate · not in ROAS" },
+    ],
+    trendTitle: "Net sales over time",
+    trendSub: "All 16 creators · Shopify codes and links",
+    platformTitle: "By platform",
+    platformSub: "Share of net sales · orders",
+    platformHero: "74%",
+    platformHeroSub: "of net sales came from Instagram",
+    platformBars: [
+      { label: "Instagram Reels · code", pct: "52%", sub: "410 orders" },
+      { label: "Instagram Stories · link", pct: "22%", sub: "184 orders" },
+      { label: "YouTube · description link", pct: "26%", sub: "318 orders" },
+    ],
+    platformDisclaimer: "Codes in Reels drove highest order volume; YouTube links generated highest average basket.",
+    creatorChartTitle: "Net sales by creator",
+    creatorChartSub: "Net sales per creator · dashed line = ₹50,000 each",
+    targetLineLabel: "┆ Target ₹50,000 per creator · ₹8 L total",
+    creatorBars: [
+      { name: "Meera Iyer", value: 100, label: "₹1,68,000 · 7.6×", isAboveTarget: true },
+      { name: "Ishita Rao", value: 72, label: "₹1,21,400 · 7.1×", isAboveTarget: true },
+      { name: "Emma Clarke", value: 45, label: "₹76,000 · 5.1×", isAboveTarget: true },
+      { name: "Riya Sen", value: 32, label: "₹54,000 · 4.2×", isAboveTarget: true },
+      { name: "Nisha Verma", value: 24, label: "₹41,000 · 3.4×", isAboveTarget: false },
+    ],
+    sideCardTitle: "Revenue",
+    sideCardSub: "Gross to net sales · Shopify attribution",
+    sideCardStats: [
+      { label: "Gross sales", value: "₹5,96,000", detail: "total checkout" },
+      { label: "Returns", value: "− ₹54,000", detail: "9.1% return rate" },
+      { label: "Net sales", value: "₹5,42,000", detail: "68% of ₹8 L target" },
+      { label: "ROAS", value: "3.8×", detail: "net sales ÷ fees" },
+    ],
+    tableHeaders: ["CREATOR", "PLATFORM · CODE", "STATUS", "FEE", "VIEWS ↓", "ENG. RATE", "CLICKS", "ORDERS", "NET SALES"],
+    tableRows: [
+      {
+        name: "Meera Iyer",
+        handle: "@meerabeauty",
+        deliverables: "4 of 4 delivered",
+        col2: "Instagram",
+        col2Sub: "MEERA15 · 1 link",
+        status: "Completed",
+        feeOrProduct: "₹22,000",
+        m1: "5.2 L",
+        m2: "5.9%",
+        m3: "6,240",
+        m4: "410",
+        m5: "₹1,68,000",
+        m5Sub: "ROAS 7.6×",
+      },
+      {
+        name: "Ishita Rao",
+        handle: "@ishitarao",
+        deliverables: "3 of 4 delivered",
+        col2: "Instagram · YouTube",
+        col2Sub: "ISHITA15 · 2 links",
+        status: "Completed",
+        feeOrProduct: "₹22,000",
+        m1: "4.1 L",
+        m2: "6.8%",
+        m3: "2,040",
+        m4: "318",
+        m5: "₹1,21,400",
+        m5Sub: "ROAS 7.1×",
+      },
+      {
+        name: "Emma Clarke",
+        handle: "@emmaclarke",
+        deliverables: "3 of 4 delivered",
+        col2: "Instagram",
+        col2Sub: "EMMA15 · 1 link",
+        status: "Completed",
+        feeOrProduct: "₹15,000",
+        m1: "2.6 L",
+        m2: "4.6%",
+        m3: "1,320",
+        m4: "184",
+        m5: "₹76,000",
+        m5Sub: "ROAS 5.1×",
+      },
+      {
+        name: "Kavya Reddy",
+        handle: "@kavyareddy",
+        deliverables: "3 of 4 delivered",
+        warning: "1 deliverable overdue",
+        col2: "Instagram",
+        col2Sub: "KAVYA15 · 1 link",
+        status: "Behind",
+        feeOrProduct: "₹12,000",
+        m1: "—",
+        m2: "—",
+        m3: "—",
+        m4: "—",
+        m5: "—",
+      },
+    ],
+  },
+
+  // 14. Sales · Influencer Gift exchange
+  "Sales_Influencer Gift exchange": {
+    campaignName: "Vitamin-C Gifting",
+    objective: "Sales",
+    projectType: "Influencer",
+    partnership: "Gift exchange",
+    duration: "One-time",
+    periodText: "6 Oct – 6 Nov 2026 · 9 days left",
+    scorecards: [
+      { label: "Net sales", value: "₹1,24,000", detail: "▲ 12% vs prev.", isPositive: true },
+      { label: "Orders", value: "301", detail: "▲ 9% vs prev.", isPositive: true },
+      { label: "Link clicks", value: "3,900", detail: "▲ 7% vs prev. · CTR 1.1%", isPositive: true },
+      { label: "Engagement rate", value: "6.0%", detail: "▲ 0.3 pt vs prev.", isPositive: true },
+      { label: "Views", value: "3.5 L", detail: "▲ 11% vs prev.", isPositive: true },
+      { label: "Earned media value", value: "₹62,000", detail: "Estimate · not in return" },
+    ],
+    trendTitle: "Net sales over time",
+    trendSub: "All 10 creators · Shopify codes and links",
+    platformTitle: "By platform",
+    platformSub: "Share of net sales · orders",
+    platformHero: "74%",
+    platformHeroSub: "of net sales came from Instagram",
+    platformBars: [
+      { label: "Instagram Reels · code", pct: "55%", sub: "165 orders" },
+      { label: "Instagram Stories · link", pct: "25%", sub: "75 orders" },
+      { label: "YouTube Shorts · link", pct: "20%", sub: "61 orders" },
+    ],
+    platformDisclaimer: "Seeded creators shared affiliate codes with zero upfront creator fees.",
+    creatorChartTitle: "Net sales by creator",
+    creatorChartSub: "Net sales per creator · dashed line = ₹15,000 each",
+    targetLineLabel: "┆ Target ₹15,000 per creator · ₹1.5 L total",
+    creatorBars: [
+      { name: "Meera Iyer", value: 100, label: "₹38,000 · 31%", isAboveTarget: true },
+      { name: "Ishita Rao", value: 76, label: "₹29,000 · 23%", isAboveTarget: true },
+      { name: "Emma Clarke", value: 50, label: "₹19,000 · 15%", isAboveTarget: true },
+      { name: "Riya Sen", value: 37, label: "₹14,000 · 11%", isAboveTarget: false },
+      { name: "Nisha Verma", value: 29, label: "₹11,000 · 9%", isAboveTarget: false },
+    ],
+    sideCardTitle: "Revenue",
+    sideCardSub: "Affiliate gift conversions via Shopify",
+    sideCardStats: [
+      { label: "Gross sales", value: "₹1,36,000", detail: "301 orders" },
+      { label: "Returns", value: "− ₹12,000", detail: "8.8% return rate" },
+      { label: "Net sales", value: "₹1,24,000", detail: "82% of target" },
+      { label: "Avg order value", value: "₹412", detail: "healthy cart size" },
+    ],
+    tableHeaders: ["CREATOR", "PLATFORM · CODE", "STATUS", "PRODUCT", "VIEWS ↓", "ENG. RATE", "CLICKS", "ORDERS", "NET SALES"],
+    tableRows: [
+      {
+        name: "Meera Iyer",
+        handle: "@meerabeauty",
+        deliverables: "1 Reel · 1 Story",
+        col2: "Instagram",
+        col2Sub: "MEERA15 · 1 link",
+        status: "Completed",
+        feeOrProduct: "Serum Bottle",
+        m1: "1.2 L",
+        m2: "6.2%",
+        m3: "1,240",
+        m4: "92",
+        m5: "₹38,000",
+      },
+    ],
+  },
+
+  // 15. Sales · UGC
+  "Sales_UGC": {
+    campaignName: "Serum Ad Creatives UGC",
+    objective: "Sales",
+    projectType: "UGC",
+    partnership: "Paid",
+    duration: "One-time",
+    periodText: "5 Oct – 5 Nov 2026 · 8 days left",
+    scorecards: [
+      { label: "Usable videos", value: "16 of 18", detail: "89% of target" },
+      { label: "Approval rate", value: "84%", detail: "▲ 6 pt vs prev.", isPositive: true },
+      { label: "Revisions", value: "3", detail: "1 open with Tanvi Shah" },
+      { label: "Avg. turnaround", value: "4.2 days", detail: "▼ 0.8 days vs prev.", isPositive: true },
+      { label: "Files delivered", value: "19", detail: "16 approved · 3 in review" },
+      { label: "Cost per usable video", value: "₹3,750", detail: "₹60,000 in fees ÷ 16" },
+    ],
+    trendTitle: "Files delivered over time",
+    trendSub: "All 6 creators · approved files vs the 18-video target",
+    platformTitle: "By platform",
+    platformSub: "Where the approved files are made for",
+    platformHero: "12 of 16",
+    platformHeroSub: "approved files are made for Instagram",
+    platformBars: [
+      { label: "Instagram · Reels 9:16", pct: "62%", sub: "10 files" },
+      { label: "Instagram · Feed 4:5", pct: "13%", sub: "2 files" },
+      { label: "YouTube · Shorts 9:16", pct: "25%", sub: "4 files" },
+    ],
+    platformDisclaimer: "Direct conversion ad UGC videos featuring problem-solution & before-after formats.",
+    creatorChartTitle: "Usable videos by creator",
+    creatorChartSub: "Approved files per creator · dashed line = 3 videos each",
+    targetLineLabel: "┆ Target 3 per creator · 18 total",
+    creatorBars: [
+      { name: "Aditi Joshi", value: 100, label: "4 of 4 · 100%", isAboveTarget: true },
+      { name: "Prachi Das", value: 100, label: "3 of 3 · 100%", isAboveTarget: true },
+      { name: "Neha Gupta", value: 100, label: "3 of 3 · 100%", isAboveTarget: true },
+      { name: "Tanvi Shah", value: 67, label: "2 of 3 · 1 in fix", isAboveTarget: false },
+      { name: "Sneha Pai", value: 67, label: "2 of 3 · 1 in review", isAboveTarget: false },
+    ],
+    sideCardTitle: "Content library",
+    sideCardSub: "Direct response sales UGC production pipeline",
+    sideCardStats: [
+      { label: "Usable files", value: "16", detail: "of 18 contracted" },
+      { label: "Approved rate", value: "84%", detail: "target >80%" },
+      { label: "Avg. review time", value: "1.4 d", detail: "within 48 h SLA" },
+      { label: "Raw files archived", value: "19", detail: "ready for Meta ads" },
+    ],
+    tableHeaders: ["CREATOR", "FORMAT", "STATUS", "FEE", "FILES ↓", "APPROVED", "FIXES", "TIME", "COST / VIDEO"],
+    tableRows: [
+      {
+        name: "Aditi Joshi",
+        handle: "@aditiglow",
+        deliverables: "4 of 4 delivered",
+        col2: "Video files",
+        col2Sub: "3 videos · 1 photo set",
+        status: "Completed",
+        feeOrProduct: "₹10,000",
+        m1: "4",
+        m2: "4",
+        m3: "0",
+        m4: "3 days",
+        m5: "₹2,500",
+        m5Sub: "₹10,000 ÷ 4",
+      },
+      {
+        name: "Prachi Das",
+        handle: "@prachidas",
+        deliverables: "3 of 3 delivered",
+        col2: "Video files",
+        col2Sub: "3 videos",
+        status: "Completed",
+        feeOrProduct: "₹10,000",
+        m1: "3",
+        m2: "3",
+        m3: "1",
+        m4: "4 days",
+        m5: "₹3,333",
+        m5Sub: "₹10,000 ÷ 3",
+      },
+    ],
+  },
+};
 
 export function Reveal({
   children,
@@ -83,1600 +1438,562 @@ export function Reveal({
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y: 18 }}
+      initial={{ opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.16 }}
-      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
     </motion.div>
   );
 }
 
-function ProjectTabs({ projectId }: { projectId: number }) {
-  const navigate = useNavigate();
-  const [platform, setPlatform] = useState("All platforms");
-  const tabs = [
-    ["Overview", undefined],
-    ["Applications", "12"],
-    ["Invited creators", "16"],
-    ["Content", "22"],
-    ["Payments", undefined],
-    ["Performance", undefined],
-    ["Brief", undefined],
-  ] as const;
-  return (
-    <nav className="flex min-h-[37px] flex-wrap items-end justify-between gap-3 border-b border-line">
-      <div className="flex max-w-full gap-6 overflow-x-auto">
-        {tabs.map(([label, count]) => (
-          <button
-            type="button"
-            key={label}
-            onClick={() =>
-              label === "Performance"
-                ? navigate(brandProjectPerformanceRoute(projectId))
-                : navigate(brandProjectRoute(projectId))
-            }
-            className={`h-9 shrink-0 border-b-2 bg-transparent text-[14px] leading-[22px] ${label === "Performance" ? "border-primary font-medium text-primary" : "border-transparent text-secondary hover:text-ink"}`}
-          >
-            {label}
-            {count && (
-              <span className="ml-1.5 inline-flex h-[18px] items-center rounded-full bg-muted px-[7px] text-[12px] leading-4 text-secondary">
-                {count}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
-      <div className="mb-0.5 flex items-center gap-2">
-        <span className="hidden text-[12px] text-tertiary sm:block">View by platform</span>
-        <Dropdown
-          compact
-          ariaLabel="View by platform"
-          className="w-[118px]"
-          value={platform}
-          onChange={setPlatform}
-          options={["All platforms", "Instagram", "TikTok", "YouTube"]}
-        />
-        <button
-          type="button"
-          aria-label="Download report"
-          className="grid size-8 place-items-center rounded-md border border-line bg-white text-secondary transition hover:bg-subtle"
-        >
-          <Download size={16} />
-        </button>
-      </div>
-    </nav>
-  );
+export function CustomReportCard({ onMakeReport }: { onMakeReport?: () => void }) {
+  return null; // Legacy report builder card removed per requirements
 }
 
-function SalesTrend() {
-  const values = [112, 176, 204, 274, 328, 376, 470, 542];
-  const dates = ["14 Oct", "17 Oct", "20 Oct", "23 Oct", "26 Oct", "29 Oct", "1 Nov", "4 Nov"];
-  const x = (index: number) => 42 + index * (996 / 7);
-  const y = (value: number) => 204 - (value / 600) * 184;
-  const line = values
-    .map((value, index) => `${index ? "L" : "M"}${x(index)} ${y(value)}`)
-    .join(" ");
-  return (
-    <section className="min-h-[348px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-5 text-ink">Net sales over time</h2>
-      <p className="mt-1 text-[12px] leading-4 text-secondary">
-        All 16 creators · Shopify codes and links
-      </p>
-      <div className="mt-4 overflow-x-auto">
-        <svg
-          viewBox="0 0 1080 244"
-          className="block min-w-[700px] w-full"
-          role="img"
-          aria-label="Net sales from 14 October to 4 November"
-        >
-          {[0, 150, 300, 450, 600].map((tick) => (
-            <g key={tick}>
-              <line x1="42" x2="1038" y1={y(tick)} y2={y(tick)} stroke="#E8EDF3" />
-              <text x="32" y={y(tick) + 4} textAnchor="end" fill="#8491A3" fontSize="11">
-                {tick ? `₹${tick / 100}L` : "₹0"}
-              </text>
-            </g>
-          ))}
-          {values.map((_, index) => (
-            <line key={index} x1={x(index)} x2={x(index)} y1="20" y2="204" stroke="#F1F4F8" />
-          ))}
-          <path d={`${line} L1038 204 L42 204 Z`} fill="url(#sales-fill)" />
-          <path
-            d={line}
-            fill="none"
-            stroke="#2563EB"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <defs>
-            <linearGradient id="sales-fill" x1="0" x2="0" y1="0" y2="1">
-              <stop stopColor="#2563EB" stopOpacity=".16" />
-              <stop offset="1" stopColor="#2563EB" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          {values.map((value, index) => (
-            <circle key={index} cx={x(index)} cy={y(value)} r="3" fill="#2563EB" />
-          ))}
-          {dates.map((date, index) => (
-            <text
-              key={date}
-              x={x(index)}
-              y="238"
-              textAnchor={index === 0 ? "start" : index === dates.length - 1 ? "end" : "middle"}
-              fill="#8491A3"
-              fontSize="11"
-            >
-              {date}
-            </text>
-          ))}
-        </svg>
-      </div>
-    </section>
-  );
-}
-
-function AnimatedSalesTrend() {
-  const values = [112, 176, 204, 274, 328, 376, 470, 542];
-  const dates = ["14 Oct", "17 Oct", "20 Oct", "23 Oct", "26 Oct", "29 Oct", "1 Nov", "4 Nov"];
-  const x = (index: number) => 42 + index * (996 / 7);
-  const y = (value: number) => 204 - (value / 600) * 184;
-  const line = values
-    .map((value, index) => `${index ? "L" : "M"}${x(index)} ${y(value)}`)
-    .join(" ");
-  return (
-    <section className="min-h-[348px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-5 text-ink">Net sales over time</h2>
-      <p className="mt-1 text-[12px] leading-4 text-secondary">
-        All 16 creators · Shopify codes and links
-      </p>
-      <div className="mt-4 overflow-x-auto">
-        <svg
-          viewBox="0 0 1080 244"
-          className="block min-w-[700px] w-full"
-          role="img"
-          aria-label="Animated net sales from 14 October to 4 November"
-        >
-          {[0, 150, 300, 450, 600].map((tick) => (
-            <g key={tick}>
-              <line x1="42" x2="1038" y1={y(tick)} y2={y(tick)} stroke="#E8EDF3" />
-              <text x="32" y={y(tick) + 4} textAnchor="end" fill="#8491A3" fontSize="11">
-                {tick ? `₹${tick / 100}L` : "₹0"}
-              </text>
-            </g>
-          ))}
-          {values.map((_, index) => (
-            <line key={index} x1={x(index)} x2={x(index)} y1="20" y2="204" stroke="#F1F4F8" />
-          ))}
-          <motion.path
-            d={`${line} L1038 204 L42 204 Z`}
-            fill="url(#animated-sales-fill)"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.9, ease: "easeOut" }}
-          />
-          <motion.path
-            d={line}
-            fill="none"
-            stroke="#2563EB"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            initial={{ pathLength: 0 }}
-            whileInView={{ pathLength: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.35, ease: "easeInOut" }}
-          />
-          <defs>
-            <linearGradient id="animated-sales-fill" x1="0" x2="0" y1="0" y2="1">
-              <stop stopColor="#2563EB" stopOpacity=".16" />
-              <stop offset="1" stopColor="#2563EB" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          {values.map((value, index) => (
-            <motion.circle
-              key={index}
-              cx={x(index)}
-              cy={y(value)}
-              r="3"
-              fill="#2563EB"
-              initial={{ opacity: 0, scale: 0 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.35, delay: 0.45 + index * 0.08 }}
-            />
-          ))}
-          {dates.map((date, index) => (
-            <text
-              key={date}
-              x={x(index)}
-              y="238"
-              textAnchor={index === 0 ? "start" : index === dates.length - 1 ? "end" : "middle"}
-              fill="#8491A3"
-              fontSize="11"
-            >
-              {date}
-            </text>
-          ))}
-        </svg>
-      </div>
-    </section>
-  );
-}
-
-function AnimatedConversionFunnel() {
-  const rows = [
-    ["Views 18.4 L", "", 420, "#4b5edd"],
-    ["Link clicks 14,800", "CTR 0.8%", 340, "#566bea"],
-    ["Add to cart 3,400", "Add-to-cart rate 23%", 270, "#7290f5"],
-    ["Checkouts initiated 1,910", "Checkout rate 56%", 215, "#9db8fb"],
-    ["Orders 1,315", "Purchase rate 69% · Conversion rate 8.9%", 170, "#22974f"],
-  ] as const;
-  return (
-    <section className="min-h-[407px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Conversion funnel</h2>
-      <p className="mt-1 text-[12px] leading-4 text-secondary">
-        From views to orders · conversion rate at each step
-      </p>
-      <div className="mt-4 space-y-1.5">
-        {rows.map(([label, note, width, color], index) => (
-          <div
-            className="grid grid-cols-[minmax(454px,1fr)_162px] items-center gap-4 max-[680px]:grid-cols-1"
-            key={label}
-          >
-            <motion.svg
-              className="mx-auto h-[52px] max-w-full origin-center"
-              style={{ width }}
-              viewBox={`0 0 ${width} 52`}
-              role="img"
-              aria-label={label}
-              initial={{ opacity: 0, scaleX: 0.35 }}
-              whileInView={{ opacity: 1, scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.75, delay: index * 0.13, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <path
-                d={`M5 0 H${width - 5} Q${width} 0 ${width - 2} 5 L${width - 21} 47 Q${width - 20} 52 ${width - 25} 52 H25 Q20 52 19 47 L2 5 Q0 0 5 0 Z`}
-                fill={color}
-              />
-              <text
-                x={width / 2}
-                y="30"
-                textAnchor="middle"
-                fill="white"
-                fontSize="12"
-                fontWeight="500"
-              >
-                {label}
-              </text>
-            </motion.svg>
-            <motion.p
-              className="text-[12px] leading-4 text-secondary"
-              initial={{ opacity: 0, x: -8 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.45, delay: 0.25 + index * 0.13 }}
-            >
-              {note}
-            </motion.p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function AnimatedRevenue() {
-  const rows = [
-    ["Orders · coupon code", "824"],
-    ["Orders · UTM link", "491"],
-    ["Average order value (AOV)", "₹412"],
-    ["ROAS (net sales ÷ fees)", "3.8×"],
-  ] as const;
-  const bars = [
-    ["₹5,96,000", "Gross sales", "#dbe4ff", 120, "text-ink"],
-    ["− ₹54,000", "Returns", "#dc2626", 10, "text-[#dc2626]"],
-    ["₹5,42,000", "Net sales", "#4f61e8", 110, "text-[#4f61e8]"],
-  ] as const;
-  return (
-    <section className="min-h-[407px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Revenue</h2>
-      <p className="mt-1 text-[12px] leading-4 text-secondary">
-        Gross to net sales · Shopify · all creators
-      </p>
-      <div className="mt-4 flex h-[190px] items-end justify-around border-b border-line px-2">
-        {bars.map(([amount, label, color, height, textColor], index) => (
-          <div key={label} className="flex h-full w-20 flex-col justify-end text-center">
-            <motion.b
-              className={`mb-2 text-[12px] font-semibold ${textColor}`}
-              initial={{ opacity: 0, y: 7 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.45, delay: 0.25 + index * 0.12 }}
-            >
-              {amount}
-            </motion.b>
-            <motion.span
-              className="origin-bottom rounded-t-[4px]"
-              style={{ backgroundColor: color }}
-              initial={{ height: 0 }}
-              whileInView={{ height }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.95, delay: index * 0.14, ease: [0.22, 1, 0.36, 1] }}
-            />
-            <small className="mt-2 text-[11px] text-secondary">{label}</small>
-          </div>
-        ))}
-      </div>
-      <dl className="mt-5 space-y-[10px]">
-        {rows.map(([label, value]) => (
-          <div className="flex justify-between gap-4 text-[12px] leading-[19px]" key={label}>
-            <dt className="text-secondary">{label}</dt>
-            <dd
-              className={`font-semibold ${label.startsWith("ROAS") ? "text-[#188a52]" : "text-ink"}`}
-            >
-              {value}
-            </dd>
-          </div>
-        ))}
-      </dl>
-    </section>
-  );
-}
-
-function ConversionFunnel() {
-  const rows = [
-    ["Views 18.4 L", "", 420, "#4b5edd"],
-    ["Link clicks 14,800", "CTR 0.8%", 340, "#566bea"],
-    ["Add to cart 3,400", "Add-to-cart rate 23%", 270, "#7290f5"],
-    ["Checkouts initiated 1,910", "Checkout rate 56%", 215, "#9db8fb"],
-    ["Orders 1,315", "Purchase rate 69% · Conversion rate 8.9%", 170, "#22974f"],
-  ] as const;
-  return (
-    <section className="min-h-[407px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Conversion funnel</h2>
-      <p className="mt-1 text-[12px] leading-4 text-secondary">
-        From views to orders · conversion rate at each step
-      </p>
-      <div className="mt-4 space-y-1.5">
-        {rows.map(([label, note, width, color]) => (
-          <div
-            className="grid grid-cols-[minmax(454px,1fr)_162px] items-center gap-4 max-[680px]:grid-cols-1"
-            key={label}
-          >
-            <svg
-              className="mx-auto h-[52px] max-w-full"
-              style={{ width }}
-              viewBox={`0 0 ${width} 52`}
-              role="img"
-              aria-label={label}
-            >
-              <path
-                d={`M5 0 H${width - 5} Q${width} 0 ${width - 2} 5 L${width - 21} 47 Q${width - 20} 52 ${width - 25} 52 H25 Q20 52 19 47 L2 5 Q0 0 5 0 Z`}
-                fill={color}
-              />
-              <text
-                x={width / 2}
-                y="30"
-                textAnchor="middle"
-                fill="white"
-                fontSize="12"
-                fontWeight="500"
-              >
-                {label}
-              </text>
-            </svg>
-            <p className="text-[12px] leading-4 text-secondary">{note}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Revenue() {
-  const rows = [
-    ["Orders · coupon code", "824"],
-    ["Orders · UTM link", "491"],
-    ["Average order value (AOV)", "₹412"],
-    ["ROAS (net sales ÷ fees)", "3.8×"],
-  ] as const;
-  return (
-    <section className="min-h-[407px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Revenue</h2>
-      <p className="mt-1 text-[12px] leading-4 text-secondary">
-        Gross to net sales · Shopify · all creators
-      </p>
-      <div className="mt-4 flex h-[190px] items-end justify-around border-b border-line px-2">
-        <div className="flex h-full w-20 flex-col justify-end text-center">
-          <b className="mb-2 text-[12px] font-semibold text-ink">₹5,96,000</b>
-          <span className="h-[120px] rounded-t-[4px] bg-[#dbe4ff]" />
-          <small className="mt-2 text-[11px] text-secondary">Gross sales</small>
-        </div>
-        <div className="flex h-full w-20 flex-col justify-end text-center">
-          <b className="mb-2 text-[12px] font-semibold text-[#dc2626]">− ₹54,000</b>
-          <span className="h-[10px] rounded-t-[4px] bg-[#dc2626]" />
-          <small className="mt-2 text-[11px] text-secondary">Returns</small>
-        </div>
-        <div className="flex h-full w-20 flex-col justify-end text-center">
-          <b className="mb-2 text-[12px] font-semibold text-[#4f61e8]">₹5,42,000</b>
-          <span className="h-[110px] rounded-t-[4px] bg-[#4f61e8]" />
-          <small className="mt-2 text-[11px] text-secondary">Net sales</small>
-        </div>
-      </div>
-      <dl className="mt-5 space-y-[10px]">
-        {rows.map(([label, value]) => (
-          <div className="flex justify-between gap-4 text-[12px] leading-[19px]" key={label}>
-            <dt className="text-secondary">{label}</dt>
-            <dd
-              className={`font-semibold ${label.startsWith("ROAS") ? "text-[#188a52]" : "text-ink"}`}
-            >
-              {value}
-            </dd>
-          </div>
-        ))}
-      </dl>
-    </section>
-  );
-}
-
-function CreatorBreakdown({ selectedCreators }: { selectedCreators?: string[] }) {
-  const headers = [
-    "CREATOR",
-    "PLATFORM · CODE",
-    "STATUS",
-    "FEE",
-    "VIEWS ↓",
-    "ENG. RATE",
-    "CLICKS",
-    "ORDERS",
-    "NET SALES",
-  ];
-  const visibleCreators =
-    selectedCreators && selectedCreators.length
-      ? creatorRows.filter(([name]) =>
-          selectedCreators.some((creator) => name.toLowerCase().includes(creator.toLowerCase())),
-        )
-      : creatorRows;
-
-  return (
-    <section className="overflow-hidden rounded-xl border border-line bg-white">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[1116px] table-fixed">
-          <colgroup>
-            <col className="w-[244px]" />
-            <col className="w-[180px]" />
-            <col className="w-[120px]" />
-            <col className="w-[90px]" />
-            <col className="w-[90px]" />
-            <col className="w-[90px]" />
-            <col className="w-[80px]" />
-            <col className="w-[80px]" />
-            <col className="w-[100px]" />
-          </colgroup>
-          <thead className="h-[33px] border-b border-line bg-subtle text-[10px] font-semibold tracking-[.06em] text-secondary">
-            <tr>
-              {headers.map((header, index) => (
-                <th key={header} className={`px-3 ${index < 2 ? "text-left" : "text-right"}`}>
-                  {header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {visibleCreators.length ? (
-              visibleCreators.map(
-                ([
-                  name,
-                  detail,
-                  image,
-                  platform,
-                  status,
-                  fee,
-                  views,
-                  rate,
-                  clicks,
-                  orders,
-                  sales,
-                ]) => (
-                  <tr key={name} className="h-[77px] border-b border-line-subtle last:border-0">
-                    <td className="px-3">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={`/assets/creators/${image}.png`}
-                          alt=""
-                          className="h-[52px] w-10 rounded-md object-cover"
-                        />
-                        <div className="min-w-0">
-                          <p className="truncate text-[13px] font-medium leading-5 text-ink">
-                            {name}
-                          </p>
-                          <p className="mt-0.5 truncate text-[11px] leading-4 text-secondary">
-                            {detail}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-3 text-[12px] leading-5 text-ink">
-                      <p>{platform}</p>
-                      <p className="text-[11px] leading-4 text-secondary">Coupon · UTM link</p>
-                    </td>
-                    <td className="px-3 text-right">
-                      <span
-                        className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${status === "Completed" ? "bg-success-bg text-success" : status === "Posting" ? "bg-primary-subtle text-primary" : "bg-warning-bg text-warning"}`}
-                      >
-                        {status}
-                      </span>
-                    </td>
-                    {[fee, views, rate, clicks, orders, sales].map((value) => (
-                      <td
-                        key={value}
-                        className="px-3 text-right text-[12px] font-medium leading-5 text-ink"
-                      >
-                        {value}
-                      </td>
-                    ))}
-                  </tr>
-                ),
-              )
-            ) : (
-              <tr>
-                <td
-                  className="px-3 py-8 text-center text-[12px] leading-4 text-secondary"
-                  colSpan={headers.length}
-                >
-                  No creator performance matches the filters you selected.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  );
-}
-
-function ViewsCard() {
-  return (
-    <section className="h-[250px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Views</h2>
-      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-        Followers vs non-followers · all creators
-      </p>
-      <div className="mt-4 flex items-center gap-4">
-        <div
-          className="relative grid size-[150px] shrink-0 place-items-center rounded-full"
-          style={{ background: "conic-gradient(#5164e7 0 39%, #dbe4ff 39% 100%)" }}
-        >
-          <div className="grid size-[102px] place-items-center rounded-full bg-white text-center">
-            <b className="text-[20px] leading-6 text-ink">18.4 L</b>
-            <span className="text-[12px] leading-4 text-secondary">views</span>
-          </div>
-        </div>
-        <div className="min-w-0 space-y-2.5 text-[13px] leading-[19px]">
-          <div className="flex items-center gap-2">
-            <span className="size-2.5 rounded-full bg-[#5164e7]" />
-            <span className="text-secondary">Followers</span>
-            <b className="ml-auto whitespace-nowrap font-medium text-ink">7.2 L · 39%</b>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="size-2.5 rounded-full bg-[#dbe4ff]" />
-            <span className="text-secondary">Non-followers</span>
-            <b className="ml-auto whitespace-nowrap font-medium text-ink">11.2 L · 61%</b>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function AnimatedViewsCard() {
-  return (
-    <section className="h-[250px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Views</h2>
-      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-        Followers vs non-followers · all creators
-      </p>
-      <div className="mt-4 flex items-center gap-4">
-        <motion.div
-          className="relative grid size-[150px] shrink-0 place-items-center rounded-full"
-          style={{ background: "conic-gradient(#5164e7 0 39%, #dbe4ff 39% 100%)" }}
-          initial={{ opacity: 0, scale: 0.65, rotate: -45 }}
-          whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <div className="grid size-[102px] place-items-center rounded-full bg-white text-center">
-            <b className="text-[20px] leading-6 text-ink">18.4 L</b>
-            <span className="text-[12px] leading-4 text-secondary">views</span>
-          </div>
-        </motion.div>
-        <div className="min-w-0 space-y-2.5 text-[13px] leading-[19px]">
-          <div className="flex items-center gap-2">
-            <span className="size-2.5 rounded-full bg-[#5164e7]" />
-            <span className="text-secondary">Followers</span>
-            <b className="ml-auto whitespace-nowrap font-medium text-ink">7.2 L · 39%</b>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="size-2.5 rounded-full bg-[#dbe4ff]" />
-            <span className="text-secondary">Non-followers</span>
-            <b className="ml-auto whitespace-nowrap font-medium text-ink">11.2 L · 61%</b>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function AnimatedEngagementCard() {
-  const parts = [
-    ["Likes", "36,600 · 31%", "#5164e7", "31%"],
-    ["Comments", "9,400 · 8%", "#9caef8", "8%"],
-    ["Saves", "44,800 · 38%", "#49ba8b", "38%"],
-    ["Shares", "27,200 · 23%", "#eea24a", "23%"],
-  ] as const;
-  return (
-    <section className="h-[250px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Engagement breakdown</h2>
-      <p className="mt-0.5 truncate text-[12px] leading-4 text-secondary">
-        What the 5.4% engagement rate is made of · 1,18,000
-      </p>
-      <div className="mt-4 flex h-4 overflow-hidden rounded-full">
-        {parts.map(([, , color, width], index) => (
-          <motion.span
-            key={color}
-            className="h-full"
-            style={{ backgroundColor: color }}
-            initial={{ width: 0 }}
-            whileInView={{ width }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.75, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-          />
-        ))}
-      </div>
-      <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-2 text-[13px] leading-[19px]">
-        {parts.map(([label, value, color]) => (
-          <div className="flex items-center gap-2" key={label}>
-            <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
-            <span className="text-secondary">{label}</span>
-            <b className="ml-auto whitespace-nowrap font-medium text-ink">{value}</b>
-          </div>
-        ))}
-      </div>
-      <div className="mt-4 space-y-2.5 border-t border-line-subtle pt-3 text-[12px] leading-4">
-        <div className="flex justify-between">
-          <span className="text-secondary">Total interactions</span>
-          <b className="font-medium text-ink">1,18,000</b>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-secondary">Save and share rate</span>
-          <b className="font-medium text-ink">3.9%</b>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function AnimatedFormatCard() {
-  const formats = [
-    ["Reels", 63],
-    ["Shorts", 58],
-    ["Stories", 41],
-  ] as const;
-  return (
-    <section className="h-[250px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">By Format</h2>
-      <p className="mt-0.5 min-h-8 text-[12px] leading-4 text-secondary">
-        Share of views from people who don’t follow the creator
-      </p>
-      <div className="mt-4 space-y-3 text-[13px] leading-[19px]">
-        {formats.map(([label, value], index) => (
-          <div className="grid grid-cols-[1fr_110px_28px] items-center gap-3" key={label}>
-            <span className="text-secondary">{label}</span>
-            <span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]">
-              <motion.span
-                className="block h-full rounded-full bg-[#5164e7]"
-                initial={{ width: 0 }}
-                whileInView={{ width: `${value}%` }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
-              />
-            </span>
-            <b className="text-right font-medium text-ink">{value}%</b>
-          </div>
-        ))}
-      </div>
-      <p className="mt-4 text-[12px] leading-[17px] text-secondary">
-        Reels reach the most new people. On YouTube: not subscribed.
-      </p>
-    </section>
-  );
-}
-
-function EngagementCard() {
-  const parts = [
-    ["Likes", "36,600 · 31%", "#5164e7", "31%"],
-    ["Comments", "9,400 · 8%", "#9caef8", "8%"],
-    ["Saves", "44,800 · 38%", "#49ba8b", "38%"],
-    ["Shares", "27,200 · 23%", "#eea24a", "23%"],
-  ] as const;
-  return (
-    <section className="h-[250px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Engagement breakdown</h2>
-      <p className="mt-0.5 truncate text-[12px] leading-4 text-secondary">
-        What the 5.4% engagement rate is made of · 1,18,000
-      </p>
-      <div className="mt-4 flex h-4 overflow-hidden rounded-full">
-        {parts.map(([, , color, width]) => (
-          <span key={color} style={{ width, backgroundColor: color }} />
-        ))}
-      </div>
-      <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-2 text-[13px] leading-[19px]">
-        {parts.map(([label, value, color]) => (
-          <div className="flex items-center gap-2" key={label}>
-            <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
-            <span className="text-secondary">{label}</span>
-            <b className="ml-auto whitespace-nowrap font-medium text-ink">{value}</b>
-          </div>
-        ))}
-      </div>
-      <div className="mt-4 space-y-2.5 border-t border-line-subtle pt-3 text-[12px] leading-4">
-        <div className="flex justify-between">
-          <span className="text-secondary">Total interactions</span>
-          <b className="font-medium text-ink">1,18,000</b>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-secondary">Save and share rate</span>
-          <b className="font-medium text-ink">3.9%</b>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FormatCard() {
-  const formats = [
-    ["Reels", 63],
-    ["Shorts", 58],
-    ["Stories", 41],
-  ] as const;
-  return (
-    <section className="h-[250px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">By Format</h2>
-      <p className="mt-0.5 min-h-8 text-[12px] leading-4 text-secondary">
-        Share of views from people who don’t follow the creator
-      </p>
-      <div className="mt-4 space-y-3 text-[13px] leading-[19px]">
-        {formats.map(([label, value]) => (
-          <div className="grid grid-cols-[1fr_110px_28px] items-center gap-3" key={label}>
-            <span className="text-secondary">{label}</span>
-            <span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]">
-              <span
-                className="block h-full rounded-full bg-[#5164e7]"
-                style={{ width: `${value}%` }}
-              />
-            </span>
-            <b className="text-right font-medium text-ink">{value}%</b>
-          </div>
-        ))}
-      </div>
-      <p className="mt-4 text-[12px] leading-[17px] text-secondary">
-        Reels reach the most new people. On YouTube: not subscribed.
-      </p>
-    </section>
-  );
-}
-
-function CountriesCard() {
-  const countries = [
-    ["India", "78%"],
-    ["UAE", "6%"],
-    ["United States", "5%"],
-    ["United Kingdom", "4%"],
-    ["Singapore", "3%"],
-    ["Other", "4%"],
-  ] as const;
-  const land = [
-    "M47 58l17-20 47-10 35 10 10 20-18 15-17 1-10 19-24 5-19-16-25-4-6-19z",
-    "M138 125l22 8 20 34-12 61-16 21-13-37 4-35-15-23z",
-    "M249 48l47-19 56 5 34 21-5 24-27 7-17 19-44-3-9-22-35-9z",
-    "M293 101l39 7 31 31-11 61-26 34-27-23-13-51z",
-    "M374 52l43-8 54 19 34 34-13 26-28-8-27 15-31-6-26-31z",
-    "M434 151l24 10 20 36-17 47-25-26-4-34z",
-    "M484 196l29-10 31 12 5 27-33 17-28-19z",
-  ];
-  return (
-    <section className="h-[375px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Countries</h2>
-      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-        Where viewers live · Instagram + YouTube insights
-      </p>
-      <div className="mt-4 grid h-[275px] lg:grid-cols-[minmax(0,645px)_minmax(0,1fr)]">
-        <div className="relative overflow-hidden border-b border-line-subtle pr-6 lg:border-b-0 lg:border-r">
-          <svg
-            viewBox="0 0 560 275"
-            className="mx-auto h-full max-w-full"
-            role="img"
-            aria-label="Dotted world map showing audience countries"
-          >
-            <defs>
-              <pattern id="audience-dots" width="8" height="8" patternUnits="userSpaceOnUse">
-                <circle cx="4" cy="4" r="2" fill="#d6def1" />
-              </pattern>
-              <clipPath id="audience-land">
-                {land.map((path) => (
-                  <path key={path} d={path} />
-                ))}
-              </clipPath>
-            </defs>
-            <rect
-              width="560"
-              height="275"
-              fill="url(#audience-dots)"
-              clipPath="url(#audience-land)"
-            />
-            <g fill="#7186f2">
-              <circle cx="106" cy="68" r="4" />
-              <circle cx="114" cy="68" r="4" />
-              <circle cx="122" cy="68" r="4" />
-              <circle cx="130" cy="60" r="4" />
-              <circle cx="138" cy="60" r="4" />
-              <circle cx="146" cy="52" r="4" />
-              <circle cx="306" cy="59" r="4" />
-              <circle cx="314" cy="59" r="4" />
-              <circle cx="322" cy="59" r="4" />
-              <circle cx="498" cy="206" r="4" />
-            </g>
-            <g fill="#3f57e8">
-              {[
-                [341, 97],
-                [349, 97],
-                [357, 97],
-                [333, 105],
-                [341, 105],
-                [349, 105],
-                [357, 105],
-                [365, 105],
-                [341, 113],
-                [349, 113],
-                [357, 113],
-                [349, 121],
-              ].map(([cx, cy]) => (
-                <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="4" />
-              ))}
-            </g>
-          </svg>
-          <span className="absolute left-[42%] top-[18px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">
-            United Kingdom <b className="ml-1 font-medium text-ink">4%</b>
-          </span>
-          <span className="absolute left-[20%] top-[106px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">
-            United States <b className="ml-1 font-medium text-ink">5%</b>
-          </span>
-          <span className="absolute left-[57%] top-[130px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">
-            UAE <b className="ml-1 font-medium text-ink">6%</b>
-          </span>
-          <span className="absolute left-[74%] top-[121px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">
-            India <b className="ml-1 font-medium text-ink">78%</b>
-          </span>
-          <span className="absolute right-[17%] top-[164px] rounded-md border border-line bg-white px-2 py-1 text-[11px] text-secondary">
-            Singapore <b className="ml-1 font-medium text-ink">3%</b>
-          </span>
-        </div>
-        <div className="pt-6 lg:pl-6">
-          <h3 className="text-[18px] font-semibold leading-6 text-ink">Top countries</h3>
-          <p className="mt-1 text-[12px] leading-4 text-secondary">
-            Share of viewers · Instagram + YouTube insights
-          </p>
-          <div className="mt-5 space-y-3.5">
-            {countries.map(([country, share]) => (
-              <div
-                key={country}
-                className="grid grid-cols-[122px_minmax(80px,1fr)_30px] items-center gap-3 text-[13px] leading-[19px]"
-              >
-                <span className="text-secondary">{country}</span>
-                <span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]">
-                  <span
-                    className="block h-full rounded-full bg-[#4f61e8]"
-                    style={{ width: share }}
-                  />
-                </span>
-                <b className="text-right font-medium text-ink">{share}</b>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function CitiesCard() {
-  const cities = [
-    ["Bengaluru", "21%", 185],
-    ["Mumbai", "17%", 150],
-    ["Delhi NCR", "12%", 106],
-    ["Chennai", "8%", 70],
-    ["Hyderabad", "7%", 62],
-    ["Pune", "6%", 53],
-    ["Other cities", "29%", 220],
-  ] as const;
-  return (
-    <section className="h-[316px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Cities</h2>
-      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-        Top cities of viewers · Instagram + YouTube insights
-      </p>
-      <div className="mt-4 space-y-3 text-[13px] leading-[19px]">
-        {cities.map(([city, share, width]) => (
-          <div className="grid grid-cols-[110px_220px_28px] items-center gap-3" key={city}>
-            <span className="text-secondary">{city}</span>
-            <span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]">
-              <span className="block h-full rounded-full bg-[#4f61e8]" style={{ width }} />
-            </span>
-            <b className="font-medium text-ink">{share}</b>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function AnimatedCitiesCard() {
-  const cities = [
-    ["Bengaluru", "21%", 185],
-    ["Mumbai", "17%", 150],
-    ["Delhi NCR", "12%", 106],
-    ["Chennai", "8%", 70],
-    ["Hyderabad", "7%", 62],
-    ["Pune", "6%", 53],
-    ["Other cities", "29%", 220],
-  ] as const;
-  return (
-    <section className="h-[316px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Cities</h2>
-      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-        Top cities of viewers · Instagram + YouTube insights
-      </p>
-      <div className="mt-4 space-y-3 text-[13px] leading-[19px]">
-        {cities.map(([city, share, width], index) => (
-          <div className="grid grid-cols-[110px_220px_28px] items-center gap-3" key={city}>
-            <span className="text-secondary">{city}</span>
-            <span className="h-2 overflow-hidden rounded-full bg-[#edf0f7]">
-              <motion.span
-                className="block h-full rounded-full bg-[#4f61e8]"
-                initial={{ width: 0 }}
-                whileInView={{ width }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.75, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
-              />
-            </span>
-            <b className="font-medium text-ink">{share}</b>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function AgeGenderCard() {
-  const groups = [
-    ["13–17", "3%", "0%", 9.5, 2],
-    ["18–24", "30%", "4%", 95, 12.7],
-    ["25–34", "41%", "5%", 130, 15.85],
-    ["35–44", "9%", "3%", 28.5, 9.5],
-    ["45+", "3%", "2%", 9.5, 6.35],
-  ] as const;
-  return (
-    <section className="h-[316px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Age and gender</h2>
-      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-        Share of viewers · Instagram + YouTube insights
-      </p>
-      <div className="relative mt-4 h-[190px] border-b border-line">
-        <div className="absolute inset-x-2 bottom-0 flex h-[160px] justify-between">
-          {groups.map(([age, women, men, womenHeight, menHeight]) => (
-            <div className="flex w-[60px] flex-col justify-end text-center" key={age}>
-              <div className="flex h-[146px] items-end justify-center gap-1">
-                <div className="relative flex w-7 flex-col justify-end">
-                  <span className="absolute -top-4 w-full text-center text-[11px] leading-[13px] text-secondary">
-                    {women}
-                  </span>
-                  <span
-                    className="w-7 rounded-t-[3px] bg-[#4f61e8]"
-                    style={{ height: womenHeight }}
-                  />
-                </div>
-                <div className="relative flex w-7 flex-col justify-end">
-                  <span className="absolute -top-4 w-full text-center text-[11px] leading-[13px] text-secondary">
-                    {men}
-                  </span>
-                  <span
-                    className="w-7 rounded-t-[3px] bg-[#afbef8]"
-                    style={{ height: menHeight }}
-                  />
-                </div>
-              </div>
-              <span className="mt-2 text-[11px] leading-[13px] text-secondary">{age}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="mt-4 flex items-center gap-4 text-[12px] leading-[15px]">
-        <span className="flex items-center gap-1.5 text-secondary">
-          <i className="size-2 rounded-full bg-[#4f61e8]" />
-          Women <b className="font-medium text-ink">86%</b>
-        </span>
-        <span className="flex items-center gap-1.5 text-secondary">
-          <i className="size-2 rounded-full bg-[#afbef8]" />
-          Men <b className="font-medium text-ink">14%</b>
-        </span>
-      </div>
-    </section>
-  );
-}
-
-function AnimatedAgeGenderCard() {
-  const groups = [
-    ["13–17", "3%", "0%", 9.5, 2],
-    ["18–24", "30%", "4%", 95, 12.7],
-    ["25–34", "41%", "5%", 130, 15.85],
-    ["35–44", "9%", "3%", 28.5, 9.5],
-    ["45+", "3%", "2%", 9.5, 6.35],
-  ] as const;
-  return (
-    <section className="h-[316px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-6 text-ink">Age and gender</h2>
-      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-        Share of viewers · Instagram + YouTube insights
-      </p>
-      <div className="relative mt-4 h-[190px] border-b border-line">
-        <div className="absolute inset-x-2 bottom-0 flex h-[160px] justify-between">
-          {groups.map(([age, women, men, womenHeight, menHeight], index) => (
-            <div className="flex w-[60px] flex-col justify-end text-center" key={age}>
-              <div className="flex h-[146px] items-end justify-center gap-1">
-                <div className="relative flex w-7 flex-col justify-end">
-                  <span className="absolute -top-4 w-full text-center text-[11px] leading-[13px] text-secondary">
-                    {women}
-                  </span>
-                  <motion.span
-                    className="w-7 rounded-t-[3px] bg-[#4f61e8]"
-                    initial={{ height: 0 }}
-                    whileInView={{ height: womenHeight }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                  />
-                </div>
-                <div className="relative flex w-7 flex-col justify-end">
-                  <span className="absolute -top-4 w-full text-center text-[11px] leading-[13px] text-secondary">
-                    {men}
-                  </span>
-                  <motion.span
-                    className="w-7 rounded-t-[3px] bg-[#afbef8]"
-                    initial={{ height: 0 }}
-                    whileInView={{ height: menHeight }}
-                    viewport={{ once: true }}
-                    transition={{
-                      duration: 0.8,
-                      delay: 0.08 + index * 0.1,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
-                  />
-                </div>
-              </div>
-              <span className="mt-2 text-[11px] leading-[13px] text-secondary">{age}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="mt-4 flex items-center gap-4 text-[12px] leading-[15px]">
-        <span className="flex items-center gap-1.5 text-secondary">
-          <i className="size-2 rounded-full bg-[#4f61e8]" />
-          Women <b className="font-medium text-ink">86%</b>
-        </span>
-        <span className="flex items-center gap-1.5 text-secondary">
-          <i className="size-2 rounded-full bg-[#afbef8]" />
-          Men <b className="font-medium text-ink">14%</b>
-        </span>
-      </div>
-    </section>
-  );
-}
-
-function BudgetCard() {
-  const items = [
-    ["Paid to creators", "released after you approved content", "₹1,42,800", "71%", "#4f61e8"],
-    ["Held in escrow", "releases as you approve", "₹57,200", "29%", "#9eaff7"],
-    ["Not yet committed", "fully funded", "₹0", "0%", "#e6ebf4"],
-  ] as const;
-  return (
-    <section className="relative h-[434px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[18px] font-semibold leading-6 text-ink">Budget</h2>
-      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-        Paid · one-time · 16 creators · ₹2,00,000 funded
-      </p>
-      <div
-        className="relative mx-auto mt-4 grid size-[132px] place-items-center rounded-full"
-        style={{ background: "conic-gradient(#4f61e8 0 71%, #9eaff7 71% 100%)" }}
-      >
-        <div className="grid size-[92px] place-items-center rounded-full bg-white text-center">
-          <b className="whitespace-nowrap text-[18px] leading-6 tracking-[-.03em] text-ink">
-            ₹2,00,000
-          </b>
-          <span className="text-[12px] leading-4 text-secondary">committed</span>
-        </div>
-      </div>
-      <div className="mt-4 space-y-2.5">
-        {items.map(([title, detail, amount, share, color]) => (
-          <div
-            className="grid grid-cols-[10px_minmax(0,1fr)_75px] gap-2 text-[13px] leading-5"
-            key={title}
-          >
-            <span className="mt-1 size-2.5 rounded-full" style={{ backgroundColor: color }} />
-            <div>
-              <p className="font-medium text-ink">{title}</p>
-              <p className="text-[12px] leading-4 text-secondary">{detail}</p>
-            </div>
-            <div className="text-right">
-              <p className="font-medium text-ink">{amount}</p>
-              <p className="text-[12px] leading-4 text-secondary">{share}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="absolute bottom-[58px] left-5 right-5 h-px bg-line" />
-      <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between text-[14px] leading-5">
-        <span className="text-secondary">Total committed</span>
-        <b className="text-[16px] font-semibold text-ink">₹2,00,000</b>
-      </div>
-    </section>
-  );
-}
-
-function CostEfficiencyCard() {
-  const metrics = [
-    ["Cost per order", "CPA", "₹109", "vs ₹120 prev.", "−9%", 93],
-    ["Cost per link click", "CPC", "₹9.65", "vs ₹10.05 prev.", "−4%", 104],
-    ["Cost per 1,000 views", "CPM", "₹329", "vs ₹319 prev.", "−4%", 104],
-    ["Cost per engagement", "CPE", "₹5.31", "vs ₹5.42 prev.", "−2%", 102],
-  ] as const;
-  return (
-    <section className="h-[434px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-[19px] text-ink">Cost efficiency</h2>
-      <div className="mt-4">
-        <p className="text-[12px] leading-[15px] text-secondary">Return on ad spend (ROAS)</p>
-        <div className="mt-1 flex items-center gap-2">
-          <b className="text-[32px] font-semibold leading-[39px] text-ink">3.8×</b>
-          <span className="rounded-full bg-success-bg px-2 py-0.5 text-[11px] font-medium leading-[13px] text-success">
-            ▲ 0.5× vs previous period
-          </span>
-        </div>
-        <p className="mt-1 text-[12px] leading-[15px] text-secondary">
-          ₹3.80 in net sales for every ₹1 of fees
-        </p>
-      </div>
-      <div className="mt-4 h-px bg-line" />
-      <div className="mt-4 flex items-center gap-3">
-        <p className="text-[13px] font-medium leading-4 text-ink">Cost per result</p>
-        <span className="h-px flex-1 bg-line" />
-      </div>
-      <div className="mt-4 space-y-3.5">
-        {metrics.map(([label, code, value, previous, change, width]) => (
-          <div
-            className="grid grid-cols-[140px_170px_minmax(0,1fr)_40px] items-center gap-3"
-            key={code}
-          >
-            <div>
-              <p className="text-[12px] leading-4 text-ink">{label}</p>
-              <p className="text-[11px] leading-[13px] text-secondary">{code}</p>
-            </div>
-            <div className="space-y-1">
-              <span className="block h-[7px] rounded-full bg-[#4f61e8]" style={{ width }} />
-              <span className="block h-[7px] w-[170px] rounded-full bg-[#e5eaf3]" />
-            </div>
-            <div className="whitespace-nowrap text-[12px] leading-[18px]">
-              <b className="font-medium text-ink">{value}</b>
-              <span className="ml-1 text-[11px] text-secondary">{previous}</span>
-            </div>
-            <span className="rounded-full bg-success-bg px-2 py-0.5 text-center text-[11px] font-medium leading-[13px] text-success">
-              {change}
-            </span>
-          </div>
-        ))}
-      </div>
-      <p className="mt-4 text-[11px] leading-[15px] text-tertiary">
-        For costs, lower is better. Compared with the previous period of the same length.
-      </p>
-    </section>
-  );
-}
-
-function AnimatedBudgetCard() {
-  const items = [
-    ["Paid to creators", "released after you approved content", "₹1,42,800", "71%", "#4f61e8"],
-    ["Held in escrow", "releases as you approve", "₹57,200", "29%", "#9eaff7"],
-    ["Not yet committed", "fully funded", "₹0", "0%", "#e6ebf4"],
-  ] as const;
-  return (
-    <section className="relative h-[434px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[18px] font-semibold leading-6 text-ink">Budget</h2>
-      <p className="mt-0.5 text-[12px] leading-4 text-secondary">
-        Paid · one-time · 16 creators · ₹2,00,000 funded
-      </p>
-      <motion.div
-        className="relative mx-auto mt-4 grid size-[132px] place-items-center rounded-full"
-        style={{ background: "conic-gradient(#4f61e8 0 71%, #9eaff7 71% 100%)" }}
-        initial={{ opacity: 0, scale: 0.65, rotate: -45 }}
-        whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-        viewport={{ once: true, amount: 0.25 }}
-        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-      >
-        <div className="grid size-[92px] place-items-center rounded-full bg-white text-center">
-          <b className="whitespace-nowrap text-[18px] leading-6 tracking-[-.03em] text-ink">
-            ₹2,00,000
-          </b>
-          <span className="text-[12px] leading-4 text-secondary">committed</span>
-        </div>
-      </motion.div>
-      <div className="mt-4 space-y-2.5">
-        {items.map(([title, detail, amount, share, color], index) => (
-          <motion.div
-            className="grid grid-cols-[10px_minmax(0,1fr)_75px] gap-2 text-[13px] leading-5"
-            key={title}
-            initial={{ opacity: 0, x: -8 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.45, delay: 0.25 + index * 0.08 }}
-          >
-            <span className="mt-1 size-2.5 rounded-full" style={{ backgroundColor: color }} />
-            <div>
-              <p className="font-medium text-ink">{title}</p>
-              <p className="text-[12px] leading-4 text-secondary">{detail}</p>
-            </div>
-            <div className="text-right">
-              <p className="font-medium text-ink">{amount}</p>
-              <p className="text-[12px] leading-4 text-secondary">{share}</p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-      <div className="absolute bottom-[58px] left-5 right-5 h-px bg-line" />
-      <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between text-[14px] leading-5">
-        <span className="text-secondary">Total committed</span>
-        <b className="text-[16px] font-semibold text-ink">₹2,00,000</b>
-      </div>
-    </section>
-  );
-}
-
-function AnimatedCostEfficiencyCard() {
-  const metrics = [
-    ["Cost per order", "CPA", "₹109", "vs ₹120 prev.", "−9%", 93],
-    ["Cost per link click", "CPC", "₹9.65", "vs ₹10.05 prev.", "−4%", 104],
-    ["Cost per 1,000 views", "CPM", "₹329", "vs ₹319 prev.", "−4%", 104],
-    ["Cost per engagement", "CPE", "₹5.31", "vs ₹5.42 prev.", "−2%", 102],
-  ] as const;
-  return (
-    <section className="h-[434px] rounded-xl border border-line bg-white p-5">
-      <h2 className="text-[16px] font-semibold leading-[19px] text-ink">Cost efficiency</h2>
-      <div className="mt-4">
-        <p className="text-[12px] leading-[15px] text-secondary">Return on ad spend (ROAS)</p>
-        <div className="mt-1 flex items-center gap-2">
-          <motion.b
-            className="text-[32px] font-semibold leading-[39px] text-ink"
-            initial={{ opacity: 0, scale: 0.75 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          >
-            3.8×
-          </motion.b>
-          <span className="rounded-full bg-success-bg px-2 py-0.5 text-[11px] font-medium leading-[13px] text-success">
-            ▲ 0.5× vs previous period
-          </span>
-        </div>
-        <p className="mt-1 text-[12px] leading-[15px] text-secondary">
-          ₹3.80 in net sales for every ₹1 of fees
-        </p>
-      </div>
-      <div className="mt-4 h-px bg-line" />
-      <div className="mt-4 flex items-center gap-3">
-        <p className="text-[13px] font-medium leading-4 text-ink">Cost per result</p>
-        <span className="h-px flex-1 bg-line" />
-      </div>
-      <div className="mt-4 space-y-3.5">
-        {metrics.map(([label, code, value, previous, change, width], index) => (
-          <div
-            className="grid grid-cols-[140px_170px_minmax(0,1fr)_40px] items-center gap-3"
-            key={code}
-          >
-            <div>
-              <p className="text-[12px] leading-4 text-ink">{label}</p>
-              <p className="text-[11px] leading-[13px] text-secondary">{code}</p>
-            </div>
-            <div className="space-y-1">
-              <motion.span
-                className="block h-[7px] rounded-full bg-[#4f61e8]"
-                initial={{ width: 0 }}
-                whileInView={{ width }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-              />
-              <span className="block h-[7px] w-[170px] rounded-full bg-[#e5eaf3]" />
-            </div>
-            <div className="whitespace-nowrap text-[12px] leading-[18px]">
-              <b className="font-medium text-ink">{value}</b>
-              <span className="ml-1 text-[11px] text-secondary">{previous}</span>
-            </div>
-            <span className="rounded-full bg-success-bg px-2 py-0.5 text-center text-[11px] font-medium leading-[13px] text-success">
-              {change}
-            </span>
-          </div>
-        ))}
-      </div>
-      <p className="mt-4 text-[11px] leading-[15px] text-tertiary">
-        For costs, lower is better. Compared with the previous period of the same length.
-      </p>
-    </section>
-  );
-}
-
-export function CustomReportCard({ onMakeReport }: { onMakeReport?: () => void } = {}) {
-  const navigate = useNavigate();
-  return (
-    <section className="flex h-[86px] flex-wrap items-center justify-between gap-4 rounded-xl border border-line bg-white px-5">
-      <div>
-        <h2 className="text-[16px] font-semibold leading-6 text-ink">
-          Need a deeper breakdown? Make a custom report
-        </h2>
-        <p className="mt-1 text-[12px] leading-4 text-secondary">
-          Split any number by format, platform, date, coupon vs link or audience, then save it or
-          export it as a PDF or CSV.
-        </p>
-      </div>
-      <Button
-        onClick={onMakeReport ? onMakeReport : () => navigate("/brand/reports/new")}
-        className="w-[200px] shrink-0"
-      >
-        Make custom report
-      </Button>
-    </section>
-  );
-}
-
-export function PerformanceReportBlocks({
-  focusMetric = "Net sales",
-  scopeLabel,
-  selectedCreators,
-}: {
+interface PerformanceReportBlocksProps {
+  project?: Project;
+  overrideObjective?: ObjectiveType;
+  overrideTypeCategory?: TypeCategory;
   focusMetric?: string;
   scopeLabel?: string;
   selectedCreators?: string[];
-}) {
-  const focusedIndex = Math.max(
-    0,
-    scorecards.findIndex(([label]) => label === focusMetric),
-  );
+}
+
+export function PerformanceReportBlocks({
+  project,
+  overrideObjective,
+  overrideTypeCategory,
+}: PerformanceReportBlocksProps) {
+  // Determine initial objective & type from project, with state for live switcher
+  const initialObjective: ObjectiveType = useMemo(() => {
+    if (overrideObjective) return overrideObjective;
+    if (project?.objective) {
+      if (project.objective === "Awareness") return "Awareness";
+      if (project.objective === "Engagement") return "Engagement";
+      if (project.objective === "Traffic") return "Traffic";
+      if (project.objective === "Lead generation") return "Lead generation";
+      if (project.objective === "Sales") return "Sales";
+    }
+    return "Sales";
+  }, [project, overrideObjective]);
+
+  const initialTypeCategory: TypeCategory = useMemo(() => {
+    if (overrideTypeCategory) return overrideTypeCategory;
+    if (project?.projectType === "UGC") return "UGC";
+    if (project?.partnership?.toLowerCase().includes("gift")) return "Influencer Gift exchange";
+    return "Influencer Paid";
+  }, [project, overrideTypeCategory]);
+
+  const [activeObjective, setActiveObjective] = useState<ObjectiveType>(initialObjective);
+  const [activeTypeCategory, setActiveTypeCategory] = useState<TypeCategory>(initialTypeCategory);
+
+  const variantKey = `${activeObjective}_${activeTypeCategory}`;
+  const data = PERFORMANCE_VARIANTS[variantKey] || PERFORMANCE_VARIANTS["Sales_Influencer Paid"];
+
   return (
-    <div className="space-y-6" data-pdf-report-blocks>
-      {scopeLabel && (
-        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-primary/20 bg-primary-subtle px-3 py-2 text-[12px] leading-4 text-primary">
-          <span className="size-1.5 rounded-full bg-primary" />
-          {scopeLabel}
+    <div className="space-y-6">
+      {/* 15-Version Interactive Switcher Bar (For testing & review) */}
+      <div className="rounded-xl border border-neutral-200 bg-neutral-50/60 p-3.5 shadow-xs">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+              Objective:
+            </span>
+            <div className="flex flex-wrap gap-1">
+              {(["Awareness", "Engagement", "Traffic", "Lead generation", "Sales"] as ObjectiveType[]).map(
+                (obj) => (
+                  <button
+                    key={obj}
+                    type="button"
+                    onClick={() => setActiveObjective(obj)}
+                    className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${
+                      activeObjective === obj
+                        ? "bg-neutral-900 text-white shadow-xs"
+                        : "bg-white text-neutral-700 border border-neutral-200 hover:bg-neutral-100"
+                    }`}
+                  >
+                    {obj}
+                  </button>
+                ),
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+              Type:
+            </span>
+            <div className="flex flex-wrap gap-1">
+              {(
+                [
+                  "Influencer Paid",
+                  "Influencer Gift exchange",
+                  "UGC",
+                ] as TypeCategory[]
+              ).map((typeCat) => (
+                <button
+                  key={typeCat}
+                  type="button"
+                  onClick={() => setActiveTypeCategory(typeCat)}
+                  className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${
+                    activeTypeCategory === typeCat
+                      ? "bg-neutral-900 text-white shadow-xs"
+                      : "bg-white text-neutral-700 border border-neutral-200 hover:bg-neutral-100"
+                  }`}
+                >
+                  {typeCat}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-      )}
-      <section className="grid h-[119px] overflow-hidden rounded-xl border border-line bg-white sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {scorecards.map(([label, value, detail], index) => (
-          <motion.article
-            key={label}
-            initial={{ opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.62, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-            className={`relative h-full border-line px-[18px] pt-[18px] ${index === focusedIndex ? "bg-primary-subtle" : "bg-white"} ${index < scorecards.length - 1 ? "border-r" : ""}`}
-          >
-            <p className="text-[14px] leading-5 text-secondary">{label}</p>
-            <p
-              className={`font-semibold text-ink ${index === 5 ? "mt-0.5 text-[24px] leading-8" : "mt-[6px] text-[20px] leading-6"}`}
-            >
-              {value}
-            </p>
-            <p
-              className={`text-[12px] leading-4 ${index === 5 ? "mt-0.5 text-secondary" : "mt-[6px] text-success"}`}
-            >
-              {detail}
-            </p>
-            {index === focusedIndex && (
-              <motion.span
-                initial={{ scaleX: 0 }}
-                whileInView={{ scaleX: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.9, delay: 0.45, ease: "easeOut" }}
-                className="absolute bottom-[18px] left-[18px] right-[18px] h-[3px] origin-left rounded-full bg-primary"
-              />
-            )}
-          </motion.article>
-        ))}
-      </section>
-      <Reveal>
-        <AnimatedSalesTrend />
-      </Reveal>
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-        <Reveal>
-          <AnimatedConversionFunnel />
-        </Reveal>
-        <Reveal delay={0.1}>
-          <AnimatedRevenue />
-        </Reveal>
       </div>
-      <Reveal>
-        <CreatorBreakdown selectedCreators={selectedCreators} />
-      </Reveal>
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.185fr)_minmax(0,1.153fr)_minmax(0,1fr)]">
-        <Reveal>
-          <AnimatedViewsCard />
-        </Reveal>
-        <Reveal delay={0.08}>
-          <AnimatedEngagementCard />
-        </Reveal>
-        <Reveal delay={0.16}>
-          <AnimatedFormatCard />
-        </Reveal>
-      </section>
-      <Reveal>
-        <CountriesCard />
-      </Reveal>
-      <section className="grid gap-6 lg:grid-cols-2">
-        <Reveal>
-          <AnimatedCitiesCard />
-        </Reveal>
-        <Reveal delay={0.1}>
-          <AnimatedAgeGenderCard />
-        </Reveal>
-      </section>
-      <section className="grid gap-6 lg:grid-cols-2">
-        <Reveal>
-          <AnimatedBudgetCard />
-        </Reveal>
-        <Reveal delay={0.1}>
-          <AnimatedCostEfficiencyCard />
-        </Reveal>
-      </section>
+
+      {/* Scorecards Row (6 Cards) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        {data.scorecards.map((sc, idx) => (
+          <div
+            key={idx}
+            className="rounded-xl border border-neutral-200 bg-white p-4 shadow-xs hover:border-neutral-300 transition-colors"
+          >
+            <div className="text-xs font-medium text-neutral-500">{sc.label}</div>
+            <div className="mt-2 text-xl sm:text-2xl font-bold tracking-tight text-neutral-950">
+              {sc.value}
+            </div>
+            <div
+              className={`mt-1 text-xs font-medium ${
+                sc.isPositive ? "text-emerald-600" : "text-neutral-500"
+              }`}
+            >
+              {sc.detail}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Row 1 · Trend & Platform */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Trend Card */}
+        <div className="lg:col-span-2 rounded-xl border border-neutral-200 bg-white p-5 shadow-xs">
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="text-base font-semibold text-neutral-900">{data.trendTitle}</h3>
+              <p className="text-xs text-neutral-500 mt-0.5">{data.trendSub}</p>
+            </div>
+          </div>
+
+          {/* Line Chart (SVG) */}
+          <div className="mt-6 h-56 w-full">
+            <svg className="w-full h-full overflow-visible" viewBox="0 0 680 180">
+              <defs>
+                <linearGradient id="projTrendGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#3B5BFF" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="#3B5BFF" stopOpacity="0.0" />
+                </linearGradient>
+              </defs>
+
+              <line x1="0" y1="30" x2="680" y2="30" stroke="#f1f5f9" strokeWidth="1" />
+              <line x1="0" y1="75" x2="680" y2="75" stroke="#f1f5f9" strokeWidth="1" />
+              <line x1="0" y1="120" x2="680" y2="120" stroke="#f1f5f9" strokeWidth="1" />
+              <line x1="0" y1="165" x2="680" y2="165" stroke="#f1f5f9" strokeWidth="1" />
+
+              <path
+                d="M 20 150 C 90 140, 160 125, 230 110 C 300 95, 370 70, 440 55 C 510 40, 580 32, 670 25 L 670 165 L 20 165 Z"
+                fill="url(#projTrendGrad)"
+              />
+              <path
+                d="M 20 150 C 90 140, 160 125, 230 110 C 300 95, 370 70, 440 55 C 510 40, 580 32, 670 25"
+                fill="none"
+                stroke="#3B5BFF"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+              <circle cx="440" cy="55" r="4.5" fill="#3B5BFF" stroke="#fff" strokeWidth="2" />
+              <circle cx="670" cy="25" r="4.5" fill="#3B5BFF" stroke="#fff" strokeWidth="2" />
+            </svg>
+
+            <div className="flex justify-between text-[11px] text-neutral-400 mt-2 px-1">
+              <span>14 Oct</span>
+              <span>17 Oct</span>
+              <span>20 Oct</span>
+              <span>23 Oct</span>
+              <span>26 Oct</span>
+              <span>29 Oct</span>
+              <span>1 Nov</span>
+              <span>4 Nov</span>
+            </div>
+          </div>
+        </div>
+
+        {/* By Platform Card */}
+        <div className="rounded-xl border border-neutral-200 bg-white p-5 shadow-xs flex flex-col justify-between">
+          <div>
+            <h3 className="text-base font-semibold text-neutral-900">{data.platformTitle}</h3>
+            <p className="text-xs text-neutral-500 mt-0.5">{data.platformSub}</p>
+
+            <div className="mt-5">
+              <div className="text-3xl font-extrabold tracking-tight text-neutral-950">
+                {data.platformHero}
+              </div>
+              <div className="text-xs text-neutral-600 mt-0.5 font-medium">
+                {data.platformHeroSub}
+              </div>
+            </div>
+
+            <div className="mt-6 space-y-3.5">
+              {data.platformBars.map((bar, idx) => (
+                <div key={idx}>
+                  <div className="flex justify-between text-xs font-medium text-neutral-700 mb-1">
+                    <span>{bar.label}</span>
+                    <span className="font-semibold text-neutral-900">
+                      {bar.pct} {bar.sub ? ` · ${bar.sub}` : ""}
+                    </span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-neutral-100 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${
+                        idx === 0 ? "bg-neutral-900" : idx === 1 ? "bg-neutral-700" : "bg-neutral-400"
+                      }`}
+                      style={{ width: bar.pct }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 border-t border-neutral-100 pt-3 text-[11px] text-neutral-500 leading-normal">
+            {data.platformDisclaimer}
+          </div>
+        </div>
+      </div>
+
+      {/* Row 2 · By Creator Bar Chart & Objective Details (NO FUNNELS!) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left: By Creator Bar Chart */}
+        <div className="rounded-xl border border-neutral-200 bg-white p-5 shadow-xs flex flex-col justify-between">
+          <div>
+            <h3 className="text-base font-semibold text-neutral-900">{data.creatorChartTitle}</h3>
+            <p className="text-xs text-neutral-500 mt-0.5">{data.creatorChartSub}</p>
+
+            {/* Legend */}
+            <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-neutral-600">
+              <span className="flex items-center gap-1.5">
+                <span className="size-2 rounded-full bg-emerald-500" />
+                Above target
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="size-2 rounded-full bg-neutral-400" />
+                Below target
+              </span>
+              <span className="text-neutral-400">{data.targetLineLabel}</span>
+            </div>
+
+            {/* Bars List */}
+            <div className="mt-5 space-y-3.5">
+              {data.creatorBars.map((c, idx) => (
+                <div key={idx}>
+                  <div className="flex justify-between text-xs font-medium">
+                    <span className="text-neutral-900">{c.name}</span>
+                    <span
+                      className={`font-semibold ${
+                        c.isAboveTarget ? "text-emerald-600" : "text-neutral-600"
+                      }`}
+                    >
+                      {c.label}
+                    </span>
+                  </div>
+                  <div className="mt-1 h-2 w-full rounded-full bg-neutral-100 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${
+                        c.isAboveTarget ? "bg-emerald-500" : "bg-neutral-700"
+                      }`}
+                      style={{ width: `${Math.min(100, Math.max(10, c.value))}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-5 border-t border-neutral-100 pt-3 text-[11px] text-neutral-500">
+            {data.targetLineLabel}
+          </div>
+        </div>
+
+        {/* Right: Objective Breakdown Card */}
+        <div className="rounded-xl border border-neutral-200 bg-white p-5 shadow-xs flex flex-col justify-between">
+          <div>
+            <h3 className="text-base font-semibold text-neutral-900">{data.sideCardTitle}</h3>
+            <p className="text-xs text-neutral-500 mt-0.5">{data.sideCardSub}</p>
+
+            <div className="mt-5 grid grid-cols-2 gap-4">
+              {data.sideCardStats.map((st, idx) => (
+                <div key={idx} className="rounded-lg bg-neutral-50/80 p-3.5 border border-neutral-100">
+                  <div className="text-xs text-neutral-500">{st.label}</div>
+                  <div className="text-xl font-bold text-neutral-950 mt-1">{st.value}</div>
+                  {st.detail && (
+                    <div className="text-[11px] text-neutral-600 mt-0.5 font-medium">
+                      {st.detail}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-5 border-t border-neutral-100 pt-3 text-[11px] text-neutral-500">
+            Performance tracks approved content deliverables for {activeObjective.toLowerCase()}.
+          </div>
+        </div>
+      </div>
+
+      {/* Row 3 · Creator Breakdown Table */}
+      <div className="rounded-xl border border-neutral-200 bg-white shadow-xs overflow-hidden">
+        <div className="p-5 border-b border-neutral-200">
+          <h3 className="text-base font-semibold text-neutral-900">Creator breakdown</h3>
+          <p className="text-xs text-neutral-500 mt-0.5">
+            Deliverables and performance metrics per creator
+          </p>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-neutral-50/80 text-[11px] font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200">
+              <tr>
+                {data.tableHeaders.map((head, idx) => (
+                  <th
+                    key={idx}
+                    className={`py-3 px-4 ${
+                      idx === 0
+                        ? "text-left"
+                        : idx === 1 || idx === 2
+                          ? "text-left"
+                          : "text-right"
+                    }`}
+                  >
+                    {head}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-200">
+              {data.tableRows.map((row, idx) => (
+                <tr key={idx} className="hover:bg-neutral-50/80 transition-colors">
+                  <td className="py-3.5 px-4">
+                    <div className="font-semibold text-neutral-900">{row.name}</div>
+                    <div className="text-[11px] text-neutral-500">
+                      {row.handle} · {row.deliverables}
+                    </div>
+                    {row.warning && (
+                      <div className="text-[11px] text-amber-600 font-medium">{row.warning}</div>
+                    )}
+                  </td>
+                  <td className="py-3.5 px-4">
+                    <div className="font-medium text-neutral-900">{row.col2}</div>
+                    {row.col2Sub && (
+                      <div className="text-[11px] text-neutral-500">{row.col2Sub}</div>
+                    )}
+                  </td>
+                  <td className="py-3.5 px-4">
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                        row.status === "Completed"
+                          ? "bg-neutral-100 text-neutral-700"
+                          : row.status === "In review"
+                            ? "bg-blue-50 text-blue-700"
+                            : "bg-amber-50 text-amber-700"
+                      }`}
+                    >
+                      <span
+                        className={`size-1.5 rounded-full ${
+                          row.status === "Completed"
+                            ? "bg-neutral-500"
+                            : row.status === "In review"
+                              ? "bg-blue-500"
+                              : "bg-amber-500"
+                        }`}
+                      />
+                      {row.status}
+                    </span>
+                  </td>
+                  <td className="py-3.5 px-4 text-right font-medium text-neutral-900">
+                    {row.feeOrProduct}
+                  </td>
+                  <td className="py-3.5 px-4 text-right font-semibold text-neutral-900">
+                    {row.m1}
+                  </td>
+                  <td className="py-3.5 px-4 text-right text-neutral-800">{row.m2}</td>
+                  <td className="py-3.5 px-4 text-right text-neutral-800">{row.m3}</td>
+                  <td className="py-3.5 px-4 text-right text-neutral-800">{row.m4}</td>
+                  <td className="py-3.5 px-4 text-right">
+                    <div className="font-semibold text-neutral-900">{row.m5}</div>
+                    {row.m5Sub && (
+                      <div className="text-[11px] text-neutral-500 font-medium">{row.m5Sub}</div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
 
 export function BrandProjectPerformancePage() {
   const navigate = useNavigate();
-  const project = getProject(Number(useParams().projectId));
+  const params = useParams();
+  const projectId = Number(params.projectId) || 1;
+  const project = getProject(projectId);
+
+  // Compute breadcrumb segments: Projects / Campaign / Objective / Type / Partnership / Duration
+  const objective: ObjectiveType = useMemo(() => {
+    if (project?.objective) {
+      if (project.objective === "Awareness") return "Awareness";
+      if (project.objective === "Engagement") return "Engagement";
+      if (project.objective === "Traffic") return "Traffic";
+      if (project.objective === "Lead generation") return "Lead generation";
+      if (project.objective === "Sales") return "Sales";
+    }
+    return "Sales";
+  }, [project]);
+
+  const typeCategory: TypeCategory = useMemo(() => {
+    if (project?.projectType === "UGC") return "UGC";
+    if (project?.partnership?.toLowerCase().includes("gift")) return "Influencer Gift exchange";
+    return "Influencer Paid";
+  }, [project]);
+
+  const projectTypeLabel = project.projectType === "UGC" ? "UGC" : "Influencer";
+  const partnershipLabel = project.partnership?.toLowerCase().includes("gift")
+    ? "Gift exchange"
+    : "Paid";
+  const durationLabel =
+    project.duration?.toLowerCase().includes("long") || project.duration?.toLowerCase().includes("month")
+      ? "Long-term"
+      : "One-time";
+
+  const tabs = [
+    "Overview",
+    "Applications",
+    "Invited creators",
+    "Content",
+    "Payments",
+    "Performance",
+    "Brief",
+  ];
+
   return (
     <BrandShell>
-      <div className="w-full pb-10">
-        <motion.header
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-6 flex min-h-[102px] flex-wrap items-end justify-between gap-4"
-        >
-          <div>
-            <button
-              type="button"
-              onClick={() => navigate("/brand/projects")}
-              className="text-[12px] leading-4 text-tertiary hover:text-primary"
-            >
-              Projects / {project.name}
-            </button>
-            <h1 className="mt-1 text-[28px] font-bold leading-[34px] tracking-[-.02em] text-ink">
-              {project.name}
-            </h1>
-            <span className="mt-1 inline-flex h-5 items-center rounded-full bg-success-bg px-2 text-[11px] font-medium text-success">
-              Live
-            </span>
-            <p className="mt-1 text-[13px] leading-5 text-secondary">
-              7 Oct – 7 Nov 2026 · 10 days left
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button kind="secondary">14 Oct – 4 Nov</Button>
-            <Button kind="secondary" leadingIcon={<Share2 size={16} />}>
-              Share
-            </Button>
-            <Button leadingIcon={<Users size={16} />}>Invite creators</Button>
-            <button
-              type="button"
-              aria-label="More actions"
-              className="grid size-9 place-items-center rounded-md border border-line bg-white"
-            >
-              <MoreHorizontal size={18} />
-            </button>
-          </div>
-        </motion.header>
-        <Reveal>
-          <ProjectTabs projectId={project.id} />
-        </Reveal>
-        <div className="mt-6 space-y-6">
-          <section className="grid h-[119px] overflow-hidden rounded-xl border border-line bg-white sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-            {scorecards.map(([label, value, detail], index) => (
-              <motion.article
-                key={label}
-                initial={{ opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.62, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className={`relative h-full border-line px-[18px] pt-[18px] ${index === 0 ? "bg-primary-subtle" : "bg-white"} ${index < scorecards.length - 1 ? "border-r" : ""}`}
+      <div className="w-full pb-16 bg-white min-h-screen text-neutral-900">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
+          {/* Header with full breadcrumb: Projects / Campaign / Objective / Type / Partnership / Duration */}
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between border-b border-neutral-200 pb-5">
+            <div>
+              {/* Breadcrumb row */}
+              <nav className="flex flex-wrap items-center gap-1.5 text-xs text-neutral-500 mb-2">
+                <Link
+                  to="/brand/projects"
+                  className="hover:text-neutral-900 transition-colors font-medium text-[#3B5BFF]"
+                >
+                  Projects
+                </Link>
+                <span>/</span>
+                <Link
+                  to={`/brand/projects/${project.id}`}
+                  className="hover:text-neutral-900 transition-colors font-medium text-neutral-800"
+                >
+                  {project.name}
+                </Link>
+                <span>/</span>
+                <span className="text-neutral-600">{objective}</span>
+                <span>/</span>
+                <span className="text-neutral-600">{projectTypeLabel}</span>
+                <span>/</span>
+                <span className="text-neutral-600">{partnershipLabel}</span>
+                <span>/</span>
+                <span className="text-neutral-600">{durationLabel}</span>
+              </nav>
+
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-950">
+                {project.name}
+              </h1>
+
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 border border-emerald-200">
+                  <span className="size-1.5 rounded-full bg-emerald-500" />
+                  Live
+                </span>
+                <span className="text-xs text-neutral-500">
+                  {project.duration || "7 Oct – 7 Nov 2026 · 10 days left"}
+                </span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex flex-wrap items-center gap-2.5 pt-1">
+              <DateRangePicker value="14 Oct – 4 Nov" showCompare={false} />
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-xs font-medium text-neutral-700 shadow-xs hover:bg-neutral-50 transition-colors"
               >
-                <p className="text-[14px] leading-5 text-secondary">{label}</p>
-                <p
-                  className={`font-semibold text-ink ${index === 5 ? "mt-0.5 text-[24px] leading-8" : "mt-[6px] text-[20px] leading-6"}`}
-                >
-                  {value}
-                </p>
-                <p
-                  className={`text-[12px] leading-4 ${index === 5 ? "mt-0.5 text-secondary" : "mt-[6px] text-success"}`}
-                >
-                  {detail}
-                </p>
-                {index === 0 && (
-                  <motion.span
-                    initial={{ scaleX: 0 }}
-                    whileInView={{ scaleX: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.9, delay: 0.45, ease: "easeOut" }}
-                    className="absolute bottom-[18px] left-[18px] right-[18px] h-[3px] origin-left rounded-full bg-primary"
-                  />
-                )}
-              </motion.article>
-            ))}
-          </section>
-          <Reveal>
-            <AnimatedSalesTrend />
-          </Reveal>
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-            <Reveal>
-              <AnimatedConversionFunnel />
-            </Reveal>
-            <Reveal delay={0.1}>
-              <AnimatedRevenue />
-            </Reveal>
+                <Share2 size={14} className="text-neutral-500" />
+                Share
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3.5 py-2 text-xs font-medium text-white shadow-xs hover:bg-neutral-800 transition-colors"
+              >
+                <Users size={14} />
+                Invite creators
+              </button>
+              <button
+                type="button"
+                aria-label="More actions"
+                className="grid size-8 place-items-center rounded-lg border border-neutral-300 bg-white text-neutral-600 hover:bg-neutral-50 transition-colors"
+              >
+                <MoreHorizontal size={16} />
+              </button>
+            </div>
           </div>
-          <Reveal>
-            <CreatorBreakdown />
-          </Reveal>
-          <section className="grid gap-6 xl:grid-cols-[minmax(0,1.185fr)_minmax(0,1.153fr)_minmax(0,1fr)]">
-            <Reveal>
-              <AnimatedViewsCard />
-            </Reveal>
-            <Reveal delay={0.08}>
-              <AnimatedEngagementCard />
-            </Reveal>
-            <Reveal delay={0.16}>
-              <AnimatedFormatCard />
-            </Reveal>
-          </section>
-          <Reveal>
-            <CountriesCard />
-          </Reveal>
-          <section className="grid gap-6 lg:grid-cols-2">
-            <Reveal>
-              <AnimatedCitiesCard />
-            </Reveal>
-            <Reveal delay={0.1}>
-              <AnimatedAgeGenderCard />
-            </Reveal>
-          </section>
-          <section className="grid gap-6 lg:grid-cols-2">
-            <Reveal>
-              <AnimatedBudgetCard />
-            </Reveal>
-            <Reveal delay={0.1}>
-              <AnimatedCostEfficiencyCard />
-            </Reveal>
-          </section>
-          <Reveal>
-            <CustomReportCard />
-          </Reveal>
+
+          {/* Project Tabs */}
+          <div className="border-b border-neutral-200">
+            <nav className="flex space-x-6 overflow-x-auto">
+              {tabs.map((tab) => {
+                const isSelected = tab === "Performance";
+                return (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => {
+                      if (tab !== "Performance") {
+                        navigate(`/brand/projects/${project.id}?tab=${encodeURIComponent(tab)}`);
+                      }
+                    }}
+                    className={`py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                      isSelected
+                        ? "border-[#3B5BFF] text-[#3B5BFF]"
+                        : "border-transparent text-neutral-500 hover:text-neutral-800 hover:border-neutral-300"
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+
+          {/* Performance Tab Content */}
+          <PerformanceReportBlocks
+            project={project}
+            overrideObjective={objective}
+            overrideTypeCategory={typeCategory}
+          />
         </div>
       </div>
     </BrandShell>
