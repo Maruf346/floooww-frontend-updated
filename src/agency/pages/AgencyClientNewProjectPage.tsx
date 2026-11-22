@@ -8,18 +8,22 @@ import {
   Circle,
   CircleCheck,
   Clock3,
+  Compass,
   CreditCard,
+  Eye,
   FileImage,
   FileText,
   Gift,
   Info,
   Landmark,
   Megaphone,
+  MessageSquare,
   Package,
   Pencil,
   Plus,
   Send,
   ShieldCheck,
+  ShoppingBag,
   Smartphone,
   Trash2,
   Upload,
@@ -41,12 +45,15 @@ import { Dropdown, MultiDropdown } from "@/common/components/ui/Dropdown";
 import {
   getProjectDurationLabel,
   getProjectTarget,
+  trackingByObjective,
   type ProjectDuration,
+  type ProjectObjective,
   type ProjectPartnership,
   type ProjectType,
 } from "@/brand/context/ProjectFlowContext";
 
 const agencyPaidSteps = [
+  "Objective",
   "Type",
   "Partnership",
   "Duration",
@@ -58,6 +65,7 @@ const agencyPaidSteps = [
   "Review",
 ];
 const agencyGiftSteps = [
+  "Objective",
   "Type",
   "Partnership",
   "Duration",
@@ -69,6 +77,50 @@ const agencyGiftSteps = [
 function getAgencySteps(partnership: ProjectPartnership) {
   return partnership === "Gift exchange" ? agencyGiftSteps : agencyPaidSteps;
 }
+
+const objectiveOptions: {
+  value: ProjectObjective;
+  title: string;
+  description: string;
+  target: string;
+  icon: typeof Eye;
+}[] = [
+  {
+    value: "Awareness",
+    title: "Awareness",
+    description: "Maximize reach and video views to introduce your brand to new consumers.",
+    target: "Target: 12 L reach · Views & impressions",
+    icon: Eye,
+  },
+  {
+    value: "Engagement",
+    title: "Engagement",
+    description: "Drive likes, comments, shares, saves and active conversation around your product.",
+    target: "Target: 48,000 engagements · ER & saves",
+    icon: MessageSquare,
+  },
+  {
+    value: "Traffic",
+    title: "Traffic",
+    description: "Send high-intent visitors directly to your website, product page or store.",
+    target: "Target: 18,000 sessions · UTM links + GA4",
+    icon: Compass,
+  },
+  {
+    value: "Lead generation",
+    title: "Lead generation",
+    description: "Collect qualified leads, email subscribers, quiz completions or form entries.",
+    target: "Target: 1,200 leads · Quiz form + UTM",
+    icon: Users,
+  },
+  {
+    value: "Sales",
+    title: "Sales",
+    description: "Drive orders, attributable revenue and GMV with creator promo codes and tracking links.",
+    target: "Target: ₹6,00,000 net sales · Shopify tracking",
+    icon: ShoppingBag,
+  },
+];
 
 const NICHES = ["Beauty", "Skincare", "Fashion", "Lifestyle", "Wellness", "Fitness", "Other"];
 const GENDER_OPTIONS = ["Any", "Mostly women", "Mostly men", "Balanced"];
@@ -103,18 +155,21 @@ export function AgencyClientNewProjectPage() {
       name: clientId.charAt(0).toUpperCase() + clientId.slice(1),
     };
 
-  // State management across all 9 steps
+  // State management across all steps (Paid = 10 steps, Gift exchange = 8 steps)
+  const [objective, setObjective] = useState<ProjectObjective>("Sales");
   const initialType = searchParams.get("type") === "influencer" ? "Influencer marketing" : "UGC";
   const [currentStep, setCurrentStep] = useState<number>(() => {
     const s = searchParams.get("step");
-    if (s === "partnership" || s === "2") return 1;
-    if (s === "duration" || s === "3") return 2;
-    if (s === "details" || s === "4") return 3;
-    if (s === "creators" || s === "5") return 4;
-    if (s === "deliverables" || s === "6") return 5;
-    if (s === "budget" || s === "7") return 6;
-    if (s === "payment" || s === "8") return 7;
-    if (s === "review" || s === "9") return 8;
+    if (s === "objective" || s === "1") return 0;
+    if (s === "type" || s === "2") return 1;
+    if (s === "partnership" || s === "3") return 2;
+    if (s === "duration" || s === "4") return 3;
+    if (s === "details" || s === "5") return 4;
+    if (s === "creators" || s === "6") return 5;
+    if (s === "deliverables" || s === "7") return 6;
+    if (s === "budget" || s === "8") return 7;
+    if (s === "payment" || s === "9") return 8;
+    if (s === "review" || s === "10") return 9;
     return 0;
   });
 
@@ -122,7 +177,7 @@ export function AgencyClientNewProjectPage() {
   const [partnership, setPartnership] = useState<ProjectPartnership>("Paid");
   const [duration, setDuration] = useState<ProjectDuration>("One-time");
 
-  // Step 4 Details
+  // Step 5 Details
   const [projectName, setProjectName] = useState(
     initialType === "Influencer marketing" ? "Vitamin-C Serum" : "Glow Edit UGC Pack"
   );
@@ -141,7 +196,7 @@ export function AgencyClientNewProjectPage() {
     size: "2.1 MB",
   });
 
-  // Step 5 Creators
+  // Step 6 Creators
   const [creatorCount, setCreatorCount] = useState("10");
   const [selectedNiches, setSelectedNiches] = useState(["Beauty", "Skincare"]);
   const [gender, setGender] = useState("Mostly women");
@@ -149,28 +204,28 @@ export function AgencyClientNewProjectPage() {
   const [location, setLocation] = useState("Bengaluru");
   const [turnaround, setTurnaround] = useState("Within 5 days");
 
-  // Step 6 Deliverables
+  // Step 7 Deliverables
   const [deliverables, setDeliverables] = useState<Deliverable[]>([
     { id: 1, platform: "Instagram", content: "Product demo (30 s)", quantity: 2 },
     { id: 2, platform: "Instagram", content: "Product photo set (5)", quantity: 1 },
     { id: 3, platform: "YouTube", content: "Unboxing (45 s)", quantity: 1 },
   ]);
 
-  // Step 7 Budget (for Paid)
+  // Step 8 Budget (for Paid)
   const [feeRange, setFeeRange] = useState("₹3,000 – ₹12,000");
   const numCreators = Math.max(1, Number(creatorCount.replace(/\D/g, "")) || 10);
   const creatorFees = numCreators * 10000;
   const gst = Math.round(creatorFees * 0.18);
   const totalBudget = creatorFees + gst;
 
-  // Step 8 Payment (for Paid)
+  // Step 9 Payment (for Paid)
   const [paymentMethod, setPaymentMethod] = useState<"card" | "upi">("upi");
   const [billingName, setBillingName] = useState(`${activeClient.name} Pvt Ltd`);
   const [gstin, setGstin] = useState("27AABCG1234M1Z5");
   const [placeOfSupply, setPlaceOfSupply] = useState("Maharashtra");
   const [invoiceEmail, setInvoiceEmail] = useState(`finance@${activeClient.id}.in`);
 
-  // Step 9 Review & Publish
+  // Step 10 (or 8 for Gift) Review & Publish
   const [agreed, setAgreed] = useState(true);
   const [saved, setSaved] = useState(false);
 
@@ -187,9 +242,9 @@ export function AgencyClientNewProjectPage() {
     if (currentStep === 0) {
       navigate(agencyClientRoute(clientId));
     } else {
-      if (isGift && currentStep === 6) {
+      if (isGift && currentStep === 7) {
         // From Review back to Deliverables in Gift
-        setCurrentStep(5);
+        setCurrentStep(6);
       } else {
         setCurrentStep((prev) => prev - 1);
       }
@@ -197,10 +252,10 @@ export function AgencyClientNewProjectPage() {
   };
 
   const handleContinue = () => {
-    if (currentStep === 5 && isGift) {
-      // In Gift mode, step 6 is Review & Publish
-      setCurrentStep(6);
-    } else if (currentStep < (isGift ? 6 : 8)) {
+    if (currentStep === 6 && isGift) {
+      // In Gift mode, step 7 is Review & Publish
+      setCurrentStep(7);
+    } else if (currentStep < (isGift ? 7 : 9)) {
       setCurrentStep((prev) => prev + 1);
     } else {
       handlePublish();
@@ -219,6 +274,7 @@ export function AgencyClientNewProjectPage() {
         `floooww-client-${clientId}-latest-project`,
         JSON.stringify({
           name: projectName,
+          objective,
           type: projectType,
           partnership,
           duration,
@@ -277,12 +333,43 @@ export function AgencyClientNewProjectPage() {
           </div>
         </div>
 
-        {/* Page Header (Figma 1716:6631 & 1716:6705) */}
+        {/* Page Header with dynamic breadcrumb */}
         <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-1">
-            <p className="text-[12px] font-normal leading-4 text-[#71717a]">
-              Projects&nbsp;&nbsp;/&nbsp;&nbsp;New project
-            </p>
+            {(() => {
+              const breadcrumbItems: { label: string; step: number }[] = [
+                { label: "Projects", step: -1 },
+                { label: "Campaign", step: 0 },
+              ];
+              if (currentStep >= 1) breadcrumbItems.push({ label: objective, step: 0 });
+              if (currentStep >= 2) breadcrumbItems.push({ label: projectType, step: 1 });
+              if (currentStep >= 3) breadcrumbItems.push({ label: partnership, step: 2 });
+              if (currentStep >= 4) breadcrumbItems.push({ label: duration, step: 3 });
+
+              return (
+                <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[12px] font-normal leading-4 text-[#71717a]">
+                  {breadcrumbItems.map((item, index) => {
+                    const isLast = index === breadcrumbItems.length - 1;
+                    return (
+                      <span key={`${item.label}-${index}`} className="flex items-center gap-1.5">
+                        {index > 0 && <span className="text-[#d4d7df]">/</span>}
+                        {item.step >= 0 && !isLast ? (
+                          <button
+                            type="button"
+                            onClick={() => setCurrentStep(item.step)}
+                            className="transition-colors hover:text-[#0d0d10] cursor-pointer"
+                          >
+                            {item.label}
+                          </button>
+                        ) : (
+                          <span className={isLast ? "font-medium text-[#0d0d10]" : ""}>{item.label}</span>
+                        )}
+                      </span>
+                    );
+                  })}
+                </nav>
+              );
+            })()}
             <h1 className="text-[26px] font-bold leading-[34px] tracking-[-0.13px] text-[#0d0d10]">
               Create new project
             </h1>
@@ -351,12 +438,78 @@ export function AgencyClientNewProjectPage() {
             transition={{ duration: 0.2 }}
             className="flex flex-col gap-6 rounded-xl border border-[#e3e5ec] bg-white p-6 sm:p-8 shadow-xs"
           >
-            {/* STEP 1: Type (Figma 1716:6626) */}
+            {/* STEP 1: Objective */}
             {currentStep === 0 && (
               <>
                 <div className="flex flex-col gap-1.5">
                   <p className="text-[12px] font-semibold tracking-[0.72px] text-[#0d0d10] uppercase">
                     STEP 1 OF {totalStepsCount}
+                  </p>
+                  <h2 className="text-[26px] font-bold leading-[34px] tracking-[-0.13px] text-[#0d0d10]">
+                    Project objective
+                  </h2>
+                  <p className="text-[14px] leading-[22px] text-[#71717a]">
+                    What is the primary goal for this project? This sets your target metrics and dashboard view.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {objectiveOptions.map((option) => {
+                    const isSelected = option.value === objective;
+                    const Icon = option.icon;
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => setObjective(option.value)}
+                        className={`flex min-h-[140px] flex-col justify-between rounded-xl p-[18px] text-left transition-all cursor-pointer ${
+                          isSelected
+                            ? "border-[1.5px] border-[#0d0d10] bg-[#f1f4ff]"
+                            : "border border-[#e3e5ec] bg-white hover:border-[#0d0d10]"
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`flex size-9 items-center justify-center rounded-lg shrink-0 ${
+                                isSelected ? "bg-[#0d0d10] text-white" : "bg-[#f4f6fb] text-[#0d0d10]"
+                              }`}
+                            >
+                              <Icon size={18} />
+                            </div>
+                            <span className="flex-1 text-[15px] font-semibold text-[#0d0d10]">
+                              {option.title}
+                            </span>
+                            <div
+                              className={`flex size-[18px] items-center justify-center rounded-full shrink-0 ${
+                                isSelected
+                                  ? "border-2 border-[#0d0d10]"
+                                  : "border border-[#d4d7df] bg-white"
+                              }`}
+                            >
+                              {isSelected && <div className="size-2.5 rounded-full bg-[#0d0d10]" />}
+                            </div>
+                          </div>
+                          <p className="mt-2 text-[13px] leading-5 text-[#71717a]">
+                            {option.description}
+                          </p>
+                        </div>
+                        <p className="mt-2 text-[12px] font-medium text-[#71717a]">
+                          {option.target}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+            {/* STEP 2: Type (Figma 1716:6626) */}
+            {currentStep === 1 && (
+              <>
+                <div className="flex flex-col gap-1.5">
+                  <p className="text-[12px] font-semibold tracking-[0.72px] text-[#0d0d10] uppercase">
+                    STEP 2 OF {totalStepsCount}
                   </p>
                   <h2 className="text-[26px] font-bold leading-[34px] tracking-[-0.13px] text-[#0d0d10]">
                     Project type
@@ -423,12 +576,12 @@ export function AgencyClientNewProjectPage() {
               </>
             )}
 
-            {/* STEP 2: Partnership (Figma 1716:6700) */}
-            {currentStep === 1 && (
+            {/* STEP 3: Partnership (Figma 1716:6700) */}
+            {currentStep === 2 && (
               <>
                 <div className="flex flex-col gap-1.5">
                   <p className="text-[12px] font-semibold tracking-[0.72px] text-[#0d0d10] uppercase">
-                    STEP 2 OF {totalStepsCount}
+                    STEP 3 OF {totalStepsCount}
                   </p>
                   <h2 className="text-[26px] font-bold leading-[34px] tracking-[-0.13px] text-[#0d0d10]">
                     Partnership
@@ -500,12 +653,12 @@ export function AgencyClientNewProjectPage() {
               </>
             )}
 
-            {/* STEP 3: Duration */}
-            {currentStep === 2 && (
+            {/* STEP 4: Duration */}
+            {currentStep === 3 && (
               <>
                 <div className="flex flex-col gap-1.5">
                   <p className="text-[12px] font-semibold tracking-[0.72px] text-[#0d0d10] uppercase">
-                    STEP 3 OF {totalStepsCount}
+                    STEP 4 OF {totalStepsCount}
                   </p>
                   <h2 className="text-[26px] font-bold leading-[34px] tracking-[-0.13px] text-[#0d0d10]">
                     Project duration
@@ -569,12 +722,12 @@ export function AgencyClientNewProjectPage() {
               </>
             )}
 
-            {/* STEP 4: Details */}
-            {currentStep === 3 && (
+            {/* STEP 5: Details */}
+            {currentStep === 4 && (
               <>
                 <div className="flex flex-col gap-1.5">
                   <p className="text-[12px] font-semibold tracking-[0.72px] text-[#0d0d10] uppercase">
-                    STEP 4 OF {totalStepsCount}
+                    STEP 5 OF {totalStepsCount}
                   </p>
                   <h2 className="text-[26px] font-bold leading-[34px] tracking-[-0.13px] text-[#0d0d10]">
                     Project details
@@ -666,12 +819,12 @@ export function AgencyClientNewProjectPage() {
               </>
             )}
 
-            {/* STEP 5: Creators */}
-            {currentStep === 4 && (
+            {/* STEP 6: Creators */}
+            {currentStep === 5 && (
               <>
                 <div className="flex flex-col gap-1.5">
                   <p className="text-[12px] font-semibold tracking-[0.72px] text-[#0d0d10] uppercase">
-                    STEP 5 OF {totalStepsCount}
+                    STEP 6 OF {totalStepsCount}
                   </p>
                   <h2 className="text-[26px] font-bold leading-[34px] tracking-[-0.13px] text-[#0d0d10]">
                     Creator requirements
@@ -762,12 +915,12 @@ export function AgencyClientNewProjectPage() {
               </>
             )}
 
-            {/* STEP 6: Deliverables */}
-            {currentStep === 5 && (
+            {/* STEP 7: Deliverables */}
+            {currentStep === 6 && (
               <>
                 <div className="flex flex-col gap-1.5">
                   <p className="text-[12px] font-semibold tracking-[0.72px] text-[#0d0d10] uppercase">
-                    STEP 6 OF {totalStepsCount}
+                    STEP 7 OF {totalStepsCount}
                   </p>
                   <h2 className="text-[26px] font-bold leading-[34px] tracking-[-0.13px] text-[#0d0d10]">
                     Deliverables
@@ -837,12 +990,12 @@ export function AgencyClientNewProjectPage() {
               </>
             )}
 
-            {/* STEP 7: Budget (only if Paid) */}
-            {currentStep === 6 && !isGift && (
+            {/* STEP 8: Budget (only if Paid) */}
+            {currentStep === 7 && !isGift && (
               <>
                 <div className="flex flex-col gap-1.5">
                   <p className="text-[12px] font-semibold tracking-[0.72px] text-[#0d0d10] uppercase">
-                    STEP 7 OF 9
+                    STEP 8 OF 10
                   </p>
                   <h2 className="text-[26px] font-bold leading-[34px] tracking-[-0.13px] text-[#0d0d10]">
                     Project budget
@@ -892,12 +1045,12 @@ export function AgencyClientNewProjectPage() {
               </>
             )}
 
-            {/* STEP 8: Payment (only if Paid) */}
-            {currentStep === 7 && !isGift && (
+            {/* STEP 9: Payment (only if Paid) */}
+            {currentStep === 8 && !isGift && (
               <>
                 <div className="flex flex-col gap-1.5">
                   <p className="text-[12px] font-semibold tracking-[0.72px] text-[#0d0d10] uppercase">
-                    STEP 8 OF 9
+                    STEP 9 OF 10
                   </p>
                   <h2 className="text-[26px] font-bold leading-[34px] tracking-[-0.13px] text-[#0d0d10]">
                     Payment method
@@ -975,8 +1128,8 @@ export function AgencyClientNewProjectPage() {
               </>
             )}
 
-            {/* STEP 9 (or STEP 7 for Gift): Review and Publish */}
-            {((!isGift && currentStep === 8) || (isGift && currentStep === 6)) && (
+            {/* STEP 10 (or STEP 8 for Gift): Review and Publish */}
+            {((!isGift && currentStep === 9) || (isGift && currentStep === 7)) && (
               <>
                 <div className="flex flex-col gap-1.5">
                   <p className="text-[12px] font-semibold tracking-[0.72px] text-[#0d0d10] uppercase">
@@ -998,6 +1151,22 @@ export function AgencyClientNewProjectPage() {
                       <h4 className="text-[14px] font-semibold text-[#0d0d10]">Setup</h4>
                       <dl className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-[12px]">
                         <div>
+                          <dt className="text-[#71717a]">Objective:</dt>
+                          <dd className="font-medium text-[#0d0d10]">{objective}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-[#71717a]">Target:</dt>
+                          <dd className="font-medium text-[#0d0d10]">
+                            {getProjectTarget(projectType, partnership, duration, objective)}
+                          </dd>
+                        </div>
+                        <div className="sm:col-span-2">
+                          <dt className="text-[#71717a]">Tracked with:</dt>
+                          <dd className="font-medium text-[#0d0d10]">
+                            {trackingByObjective[objective]}
+                          </dd>
+                        </div>
+                        <div>
                           <dt className="text-[#71717a]">Type:</dt>
                           <dd className="font-medium text-[#0d0d10]">{projectType}</dd>
                         </div>
@@ -1007,7 +1176,9 @@ export function AgencyClientNewProjectPage() {
                         </div>
                         <div>
                           <dt className="text-[#71717a]">Duration:</dt>
-                          <dd className="font-medium text-[#0d0d10]">{duration}</dd>
+                          <dd className="font-medium text-[#0d0d10]">
+                            {getProjectDurationLabel(partnership, duration)}
+                          </dd>
                         </div>
                       </dl>
                     </div>
@@ -1046,7 +1217,7 @@ export function AgencyClientNewProjectPage() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => goToStep(3)}
+                      onClick={() => goToStep(4)}
                       className="p-1 text-[#71717a] hover:text-[#0d0d10] flex items-center gap-1 text-[12px] font-medium"
                     >
                       <Pencil size={14} />
@@ -1073,7 +1244,7 @@ export function AgencyClientNewProjectPage() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => goToStep(4)}
+                      onClick={() => goToStep(5)}
                       className="p-1 text-[#71717a] hover:text-[#0d0d10] flex items-center gap-1 text-[12px] font-medium"
                     >
                       <Pencil size={14} />
@@ -1095,7 +1266,7 @@ export function AgencyClientNewProjectPage() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => goToStep(5)}
+                      onClick={() => goToStep(6)}
                       className="p-1 text-[#71717a] hover:text-[#0d0d10] flex items-center gap-1 text-[12px] font-medium"
                     >
                       <Pencil size={14} />
@@ -1125,7 +1296,7 @@ export function AgencyClientNewProjectPage() {
                       </div>
                       <button
                         type="button"
-                        onClick={() => goToStep(6)}
+                        onClick={() => goToStep(7)}
                         className="p-1 text-[#71717a] hover:text-[#0d0d10] flex items-center gap-1 text-[12px] font-medium"
                       >
                         <Pencil size={14} />
@@ -1167,7 +1338,7 @@ export function AgencyClientNewProjectPage() {
                 Save draft
               </button>
 
-              {((!isGift && currentStep === 8) || (isGift && currentStep === 6)) ? (
+              {((!isGift && currentStep === 9) || (isGift && currentStep === 7)) ? (
                 <button
                   type="button"
                   disabled={!agreed}
@@ -1201,31 +1372,41 @@ export function AgencyClientNewProjectPage() {
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[#71717a]">Target</span>
                 <span className="font-medium text-[#0d0d10]">
-                  {getProjectTarget(projectType, partnership, duration)}
+                  {getProjectTarget(projectType, partnership, duration, objective)}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[#71717a]">Type</span>
-                <span className="font-medium text-[#0d0d10]">{projectType}</span>
+                <span className="text-[#71717a]">Objective</span>
+                <span className="font-medium text-[#0d0d10]">{objective}</span>
               </div>
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[#71717a]">Partnership</span>
+                <span className="text-[#71717a]">Type</span>
                 <span
                   className={`font-medium ${
                     currentStep >= 1 ? "text-[#0d0d10]" : "text-[#a3a3ac]"
                   }`}
                 >
-                  {currentStep >= 1 ? partnership : "-"}
+                  {currentStep >= 1 ? projectType : "-"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[#71717a]">Partnership</span>
+                <span
+                  className={`font-medium ${
+                    currentStep >= 2 ? "text-[#0d0d10]" : "text-[#a3a3ac]"
+                  }`}
+                >
+                  {currentStep >= 2 ? partnership : "-"}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[#71717a]">Duration</span>
                 <span
                   className={`font-medium ${
-                    currentStep >= 2 ? "text-[#0d0d10]" : "text-[#a3a3ac]"
+                    currentStep >= 3 ? "text-[#0d0d10]" : "text-[#a3a3ac]"
                   }`}
                 >
-                  {currentStep >= 2
+                  {currentStep >= 3
                     ? getProjectDurationLabel(partnership, duration)
                     : "-"}
                 </span>

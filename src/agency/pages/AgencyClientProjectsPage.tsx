@@ -37,35 +37,13 @@ import {
   ROUTES,
 } from "@/common/constants/routes";
 import { asset } from "@/common/utils/asset";
-import { projects } from "@/brand/data/projects";
+import { projects, type Project, type ProjectObjective } from "@/brand/data/projects";
 import {
   ProjectConfirmModal,
   type ProjectConfirmAction,
 } from "@/brand/components/ProjectConfirmModal";
 
 type Status = "Live" | "Upcoming" | "Completed" | "Drafts" | "Paused" | "Archived" | "Deleted";
-type Project = {
-  id: number;
-  name: string;
-  type: string;
-  platform: string;
-  status: Status;
-  apps: number;
-  approved: number;
-  budget: string;
-  budgetNote: string;
-  progress: number;
-  updated: string;
-  image?: string;
-  accent: string;
-  cycle?: string;
-  showPace?: boolean;
-  rowHeight: number;
-  deletedAt?: string;
-  deletedBy?: string;
-  removalAt?: string;
-  removalNote?: string;
-};
 
 const legacyProjects: Project[] = [
   {
@@ -1007,12 +985,12 @@ export function AgencyClientProjectsPage({
               <table className="w-full min-w-[860px] table-fixed border-collapse text-left">
                 <colgroup>
                   <col className="w-[52px]" />
-                  <col />
-                  <col className="w-[88px]" />
+                  <col className="w-[240px]" />
+                  <col className="w-[140px]" />
+                  <col className="w-[92px]" />
                   <col className="w-[108px]" />
                   <col className="w-[152px]" />
                   <col className="w-[172px]" />
-                  <col className="w-[160px]" />
                 </colgroup>
                 <thead className="bg-subtle text-[12px] font-semibold leading-4 tracking-[0.06em] text-secondary">
                   <tr className="h-10">
@@ -1040,11 +1018,11 @@ export function AgencyClientProjectsPage({
                     </th>
                     {[
                       "PROJECT",
+                      "OBJECTIVE",
                       "PLATFORM",
                       "STATUS",
                       "DELETED",
                       "REMOVED FOR GOOD",
-                      "ACTIONS",
                     ].map((heading) => (
                       <th className="pr-3" key={heading}>
                         {heading}
@@ -1055,10 +1033,17 @@ export function AgencyClientProjectsPage({
                 <tbody>
                   {visibleProjects.map((project) => (
                     <tr
-                      className="h-[72px] border-t border-line-subtle text-[13px] leading-5"
+                      className="h-[72px] border-t border-line-subtle text-[13px] leading-5 hover:bg-subtle/60 cursor-pointer"
                       key={project.id}
+                      onClick={() => {
+                        setSelected((current) =>
+                          current.includes(project.id)
+                            ? current.filter((id) => id !== project.id)
+                            : [...current, project.id],
+                        );
+                      }}
                     >
-                      <td className="pl-5">
+                      <td className="pl-5" onClick={(e) => e.stopPropagation()}>
                         <input
                           aria-label={`Select ${project.name}`}
                           checked={selected.includes(project.id)}
@@ -1084,6 +1069,9 @@ export function AgencyClientProjectsPage({
                           </div>
                         </div>
                       </td>
+                      <td className="pr-2 text-[13px] font-medium text-ink">
+                        {project.objective || "Sales"}
+                      </td>
                       <td>
                         <PlatformLogos platform={project.platform} />
                       </td>
@@ -1103,45 +1091,6 @@ export function AgencyClientProjectsPage({
                           {project.removalNote}
                         </p>
                       </td>
-                      <td>
-                        <div className="flex items-center gap-2.5">
-                          <Button
-                            kind="secondary"
-                            size="s"
-                            onClick={() => {
-                              setRestoredProjectIds((ids) => [...ids, project.id]);
-                              setActive("Drafts");
-                              setPage(1);
-                            }}
-                          >
-                            Restore
-                          </Button>
-                          <button
-                            type="button"
-                            aria-label={`More actions for ${project.name}`}
-                            aria-expanded={actionMenuId === project.id}
-                            onClick={(event) => {
-                              setActionMenuAnchor(event.currentTarget.getBoundingClientRect());
-                              setActionMenuId((id) => (id === project.id ? null : project.id));
-                            }}
-                            className="text-secondary hover:text-ink"
-                          >
-                            <MoreHorizontal size={18} />
-                          </button>
-                          {actionMenuId === project.id && actionMenuAnchor && (
-                            <ProjectActionsMenu
-                              project={project}
-                              anchor={actionMenuAnchor}
-                              onView={() => {
-                                navigate(getProjectRoute(project.id));
-                                setActionMenuId(null);
-                              }}
-                              onClose={() => setActionMenuId(null)}
-                              onAction={handleAction}
-                            />
-                          )}
-                        </div>
-                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -1149,18 +1098,16 @@ export function AgencyClientProjectsPage({
             </section>
           ) : (
             <section className="mt-6 overflow-x-auto rounded-xl border border-line bg-white">
-              <table className="w-full min-w-[1114px] table-fixed border-collapse text-left">
+              <table className="w-full min-w-[1000px] table-fixed border-collapse text-left">
                 <colgroup>
                   <col className="w-[51px]" />
-                  <col className="w-[234px]" />
+                  <col className="w-[240px]" />
+                  <col className="w-[140px]" />
+                  <col className="w-[92px]" />
+                  <col className="w-[104px]" />
                   <col className="w-[88px]" />
-                  <col className="w-[108px]" />
-                  <col className="w-[56px]" />
-                  <col className="w-[86px]" />
-                  <col className="w-[142px]" />
                   <col className="w-[148px]" />
-                  <col className="w-[84px]" />
-                  <col className={active === "Live" || active === "Upcoming" ? "w-[170px]" : "w-[116px]"} />
+                  <col className="w-[140px]" />
                 </colgroup>
                 <thead className="bg-subtle text-[11px] font-semibold leading-4 tracking-[0.06em] text-secondary">
                   <tr className="h-[42px]">
@@ -1183,19 +1130,17 @@ export function AgencyClientProjectsPage({
                           )
                         }
                         type="checkbox"
-                        className="size-[18px] rounded border-line"
+                        className="size-[18px] rounded border-line cursor-pointer"
                       />
                     </th>
                     {[
                       "PROJECT",
+                      "OBJECTIVE",
                       "PLATFORM",
                       "STATUS",
-                      "APPS",
                       "APPROVED",
                       "BUDGET",
-                      "PROGRESS",
                       active === "Live" ? "ENDS" : active === "Upcoming" ? "STARTS" : "UPDATED",
-                      "ACTIONS",
                     ].map((heading) => (
                       <th className="pr-2" key={heading}>
                         {heading}
@@ -1209,16 +1154,17 @@ export function AgencyClientProjectsPage({
                     return (
                       <tr
                         style={{ height: project.rowHeight }}
-                        className="border-t border-line-subtle text-[13px] leading-5 hover:bg-subtle/60"
+                        onClick={() => navigate(getProjectRoute(project.id))}
+                        className="border-t border-line-subtle text-[13px] leading-5 hover:bg-subtle/60 cursor-pointer"
                         key={project.id}
                       >
-                        <td className="pl-5">
+                        <td className="pl-5" onClick={(e) => e.stopPropagation()}>
                           <input
                             aria-label={`Select ${project.name}`}
                             checked={selected.includes(project.id)}
                             onChange={() => toggle(project.id)}
                             type="checkbox"
-                            className="size-[18px] rounded border-line"
+                            className="size-[18px] rounded border-line cursor-pointer"
                           />
                         </td>
                         <td className="pr-3">
@@ -1245,6 +1191,9 @@ export function AgencyClientProjectsPage({
                             </div>
                           </div>
                         </td>
+                        <td className="pr-2 text-[13px] font-medium text-ink">
+                          {project.objective || "Sales"}
+                        </td>
                         <td>
                           <PlatformLogos platform={project.platform} />
                         </td>
@@ -1255,7 +1204,6 @@ export function AgencyClientProjectsPage({
                             {status}
                           </span>
                         </td>
-                        <td className="text-ink">{project.apps}</td>
                         <td className="text-ink">
                           {active === "Upcoming" && project.id === 6 ? "3 of 6" : project.approved}
                         </td>
@@ -1264,29 +1212,6 @@ export function AgencyClientProjectsPage({
                           <p className="text-[12px] leading-4 text-secondary">
                             {project.budgetNote}
                           </p>
-                        </td>
-                        <td>
-                          <div className="flex items-center gap-2">
-                            <span className="h-1.5 w-[72px] overflow-hidden rounded-full bg-muted">
-                              <span
-                                className="block h-full rounded-full bg-primary"
-                                style={{ width: `${Math.min(project.progress, 100)}%` }}
-                              />
-                            </span>
-                            <span className="text-[13px] text-ink">{project.progress}%</span>
-                          </div>
-                          {active === "Upcoming" && project.id === 6 ? (
-                            <p className="mt-1 text-[12px] leading-4 text-secondary">Starts 4 Nov</p>
-                          ) : (
-                            project.showPace && (
-                              <p
-                                className={`mt-1 text-[12px] leading-4 ${project.id === 5 ? "text-[#db231f]" : "text-success"
-                                  }`}
-                              >
-                                {project.id === 5 ? "Behind" : "Ahead"}
-                              </p>
-                            )
-                          )}
                         </td>
                         <td>
                           {active === "Live" && liveProjectEnds[project.id] ? (
@@ -1306,66 +1231,6 @@ export function AgencyClientProjectsPage({
                           ) : (
                             <span className="text-[12px] leading-4 text-secondary">{project.updated}</span>
                           )}
-                        </td>
-                        <td>
-                          <div className="flex items-center gap-[10px]">
-                            {active === "Live" && project.id === 5 && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setNudgeToast("Nudge sent to creators for Hydration Bundle");
-                                  setTimeout(() => setNudgeToast(null), 3500);
-                                }}
-                                className="h-8 rounded-lg bg-[#0d0d10] px-3 text-[13px] font-medium text-white hover:bg-black transition-colors cursor-pointer"
-                              >
-                                Nudge
-                              </button>
-                            )}
-                            {active === "Upcoming" && project.id === 6 && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setNudgeToast("₹63,540 funded into escrow for Skin Quiz Leads");
-                                  setTimeout(() => setNudgeToast(null), 3500);
-                                }}
-                                className="h-8 rounded-lg bg-[#0d0d10] px-3 text-[13px] font-medium text-white hover:bg-black transition-colors cursor-pointer"
-                              >
-                                Fund
-                              </button>
-                            )}
-                            <button
-                              onClick={() => navigate(getProjectRoute(project.id))}
-                              type="button"
-                              className="inline-flex h-8 items-center gap-1 rounded-md border border-line px-2.5 text-[12px] font-medium text-ink"
-                            >
-                              <Eye size={14} />
-                              View
-                            </button>
-                            <button
-                              type="button"
-                              aria-label={`More actions for ${project.name}`}
-                              aria-expanded={actionMenuId === project.id}
-                              onClick={(event) => {
-                                setActionMenuAnchor(event.currentTarget.getBoundingClientRect());
-                                setActionMenuId((id) => (id === project.id ? null : project.id));
-                              }}
-                              className="text-secondary hover:text-ink"
-                            >
-                              <MoreHorizontal size={18} />
-                            </button>
-                            {actionMenuId === project.id && actionMenuAnchor && (
-                              <ProjectActionsMenu
-                                project={project}
-                                anchor={actionMenuAnchor}
-                                onView={() => {
-                                  navigate(getProjectRoute(project.id));
-                                  setActionMenuId(null);
-                                }}
-                                onClose={() => setActionMenuId(null)}
-                                onAction={handleAction}
-                              />
-                            )}
-                          </div>
                         </td>
                       </tr>
                     );

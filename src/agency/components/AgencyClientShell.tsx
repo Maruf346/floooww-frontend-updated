@@ -282,14 +282,14 @@ export function AgencyClientShell({
           CONTENT &amp; DATA
         </p>
 
-        {/* Custom reports */}
+        {/* Reports */}
         <Link
           to={`${ROUTES.agencyReports}?client=${clientId}`}
           onClick={closeMenu}
           className={navClass(location.pathname.startsWith(ROUTES.agencyReports))}
         >
           <FileBarChart size={18} />
-          <span>Custom reports</span>
+          <span>Reports</span>
         </Link>
 
         {/* ACCOUNT Section */}

@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Check } from "lucide-react";
 import { Button } from "@/common/components/ui/Button";
 import { TextField } from "@/common/components/ui/TextField";
@@ -8,6 +8,8 @@ import { AuthLayout } from "@/auth/components/AuthLayout";
 
 export function ResetPasswordPage() {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const role = params.get("role") === "agency" ? "agency" : params.get("role") === "creator" ? "creator" : "brand";
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [logout, setLogout] = useState(true);
@@ -22,7 +24,7 @@ export function ResetPasswordPage() {
     navigate(ROUTES.login);
   };
   return (
-    <AuthLayout>
+    <AuthLayout visual={role}>
       <form noValidate onSubmit={submit} className="w-full max-w-[440px]">
         <h1 className="font-inter-bold text-[30px] font-bold leading-[38px] tracking-[-.6px] text-ink">
           Set a new password

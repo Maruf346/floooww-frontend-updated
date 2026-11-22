@@ -11,8 +11,9 @@ import {
   CalendarDays,
   Sparkles,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { BrandShell } from "@/brand/components/BrandShell";
+import { AgencyShell } from "@/agency/components/AgencyShell";
 import { Button } from "@/common/components/ui/Button";
 import { DateRangePicker } from "@/common/components/ui/DateRangePicker";
 import { ROUTES } from "@/common/constants/routes";
@@ -31,8 +32,12 @@ interface CampaignOption {
 }
 
 const BRANDS = [
-  { id: "all", name: "All brands", meta: "2 brands · 6 campaigns · 38 creators" },
+  { id: "all", name: "All brands", meta: "5 brands · 6 campaigns · 38 creators" },
   { id: "minimalist", name: "Minimalist", meta: "1 brand · 5 campaigns · 38 creators" },
+  { id: "velvet-lip", name: "Velvet Lip Co.", meta: "1 brand · 2 campaigns · 14 creators" },
+  { id: "dewdrop", name: "Dewdrop Naturals", meta: "1 brand · 1 campaign · 8 creators" },
+  { id: "strand-studio", name: "Strand Studio", meta: "1 brand · 1 campaign · 6 creators" },
+  { id: "petal-pine", name: "Petal & Pine", meta: "1 brand · 0 campaigns · 0 creators" },
   { id: "minimalist-baby", name: "Minimalist Baby", meta: "1 brand · 1 campaign · 0 creators" },
 ];
 
@@ -249,8 +254,15 @@ const VITAMIN_C_CREATORS = [
   },
 ];
 
-export function BrandCustomReportsPage() {
-  const [selectedBrandId, setSelectedBrandId] = useState("minimalist");
+export function BrandCustomReportsPage({
+  shellComponent = "brand",
+}: {
+  shellComponent?: "brand" | "agency";
+} = {}) {
+  const [searchParams] = useSearchParams();
+  const clientParam = searchParams.get("client");
+  const initialBrand = clientParam || (shellComponent === "agency" ? "all" : "minimalist");
+  const [selectedBrandId, setSelectedBrandId] = useState(initialBrand);
   const [selectedCampaignId, setSelectedCampaignId] = useState("all");
   const [brandDropdownOpen, setBrandDropdownOpen] = useState(false);
   const [campaignDropdownOpen, setCampaignDropdownOpen] = useState(false);
@@ -325,8 +337,10 @@ export function BrandCustomReportsPage() {
     document.body.removeChild(link);
   };
 
+  const Shell = shellComponent === "agency" ? AgencyShell : BrandShell;
+
   return (
-    <BrandShell>
+    <Shell>
       <div className="min-h-screen bg-white text-neutral-900 pb-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
           {/* 1. Page Header */}
@@ -1970,6 +1984,6 @@ export function BrandCustomReportsPage() {
           </div>
         </div>
       </div>
-    </BrandShell>
+    </Shell>
   );
 }

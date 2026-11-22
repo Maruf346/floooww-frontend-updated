@@ -215,7 +215,7 @@ function AgencySidebar({
           }`}
         >
           <FileBarChart size={18} />
-          <span>Custom reports</span>
+          <span>Reports</span>
         </Link>
 
         <p className="px-3 pb-1.5 pt-4 text-[12px] font-semibold leading-4 tracking-[.06em] text-[#a3a3ac]">

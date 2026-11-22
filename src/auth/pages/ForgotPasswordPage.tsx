@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Mail } from "lucide-react";
 import { Button } from "@/common/components/ui/Button";
 import { TextField } from "@/common/components/ui/TextField";
@@ -8,6 +8,8 @@ import { AuthLayout } from "@/auth/components/AuthLayout";
 
 export function ForgotPasswordPage() {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const role = params.get("role") === "agency" ? "agency" : params.get("role") === "creator" ? "creator" : "brand";
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
@@ -20,7 +22,7 @@ export function ForgotPasswordPage() {
     setSent(true);
   };
   return (
-    <AuthLayout>
+    <AuthLayout visual={role}>
       <div className="w-full max-w-[440px]">
         {sent ? (
           <>

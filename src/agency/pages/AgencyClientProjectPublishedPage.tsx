@@ -2360,6 +2360,18 @@ export function AgencyClientProjectPublishedPage({
               </button>
               <span>/</span>
               <span className="text-secondary">{project.name}</span>
+              {tab === "Performance" && (
+                <>
+                  <span>/</span>
+                  <span className="text-secondary">{rules.objective}</span>
+                  <span>/</span>
+                  <span className="text-secondary">{rules.projectType}</span>
+                  <span>/</span>
+                  <span className="text-secondary">{rules.isGift ? "Gift exchange" : "Paid"}</span>
+                  <span>/</span>
+                  <span className="text-secondary">{rules.isLongTerm ? "Long-term" : "One-time"}</span>
+                </>
+              )}
             </div>
             <h1 className="mt-1 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">
               {project.name}
@@ -2775,18 +2787,7 @@ export function AgencyClientProjectPublishedPage({
           </section>
         ) : tab === "Performance" ? (
           <div className="mt-6 space-y-6">
-            <PerformanceReportBlocks focusMetric="Net sales" />
-            <Reveal>
-              <CustomReportCard
-                onMakeReport={() =>
-                  navigate(
-                    isAgencyClient
-                      ? ROUTES.agencyReportNew
-                      : ROUTES.brandCustomReportNew,
-                  )
-                }
-              />
-            </Reveal>
+            <PerformanceReportBlocks project={project} />
           </div>
         ) : tab !== "Overview" ? (
           <section className="mt-6 rounded-xl border border-line bg-white px-10 py-20 text-center">
