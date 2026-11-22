@@ -90,7 +90,7 @@ const BRAND_STEPS: HowItWorksStep[] = [
     slide: [
       { kind: "title", text: "New project brief" },
       { kind: "row", label: "Project", value: "Vitamin-C Serum" },
-      { kind: "row", label: "Objective", value: "Sales & conversions" },
+      { kind: "row", label: "Objective", value: "Sales" },
       { kind: "row", label: "Budget", value: "₹2,00,000" },
       { kind: "row", label: "Posts", value: "2 Reels · 1 Story" },
       { kind: "row", label: "Creators", value: "16 · 10K – 5 L followers" },

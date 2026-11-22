@@ -54,29 +54,41 @@ function StickyHowItWorks({
         className="sticky flex items-center overflow-hidden"
         style={{ top: HEADER_OFFSET, height: `calc(100dvh - ${HEADER_OFFSET}px)` }}
       >
-        <Container className="grid grid-cols-[240px_minmax(0,1fr)_280px] items-start gap-10 xl:grid-cols-[320px_544px_380px] xl:justify-center xl:gap-12 xl:px-0">
-          <Reveal className="flex w-full flex-col items-start gap-6">
-            <Eyebrow />
-            <AudienceToggle value={audience} onChange={setAudience} />
-            <StepList steps={steps} index={index} onSelect={goTo} />
-          </Reveal>
+        <Container className="grid grid-cols-1 lg:grid-cols-[1fr_544px] items-center justify-between gap-10 xl:gap-16">
+          {/* Left column: text (toggle, step number, headline, description, 5 steps) */}
+          <div className="flex w-full flex-col items-start gap-6 max-w-[500px]">
+            <Reveal className="flex w-full flex-col items-start gap-4">
+              <Eyebrow />
+              <AudienceToggle value={audience} onChange={setAudience} />
+            </Reveal>
 
-          <Reveal variants={scaleIn} delay={0.1} className="w-full">
+            <div className="w-full min-h-[160px] flex flex-col justify-center">
+              <AnimatePresence mode="wait">
+                <StepDetail
+                  key={`${audience}-${step.id}`}
+                  step={step}
+                  index={index}
+                  count={COUNT}
+                />
+              </AnimatePresence>
+            </div>
+
+            <Reveal className="w-full">
+              <StepList steps={steps} index={index} onSelect={goTo} />
+            </Reveal>
+          </div>
+
+          {/* Right column: one near-black panel */}
+          <Reveal variants={scaleIn} delay={0.1} className="w-full flex justify-center lg:justify-end">
             <ScaledFrame
               width={MEDIA_WIDTH}
               height={MEDIA_HEIGHT}
               maxHeight={viewportHeight - HEADER_OFFSET - 48}
-              className="mx-auto"
+              className="mx-auto lg:mr-0"
             >
               <HowItWorksMedia steps={steps} index={index} deckKey={audience} />
             </ScaledFrame>
           </Reveal>
-
-          <div className="self-center">
-            <AnimatePresence mode="wait">
-              <StepDetail key={`${audience}-${step.id}`} step={step} index={index} count={COUNT} />
-            </AnimatePresence>
-          </div>
         </Container>
       </div>
     </section>
@@ -102,15 +114,23 @@ function StackedHowItWorks({
       ref={ref}
       id={LANDING_SECTIONS.howItWorks.id}
       aria-label="How it works"
-      className="bg-white py-20 sm:py-24"
+      className="bg-white py-16 sm:py-20"
     >
-      <Container className="flex flex-col gap-8">
-        <Reveal className="flex flex-col items-start gap-5">
+      <Container className="flex flex-col gap-7">
+        <Reveal className="flex flex-col items-start gap-4">
           <Eyebrow />
           <AudienceToggle value={audience} onChange={setAudience} />
         </Reveal>
+
+        <div className="min-h-[130px] flex flex-col justify-center">
+          <AnimatePresence mode="wait">
+            <StepDetail key={`${audience}-${step.id}`} step={step} index={index} count={COUNT} />
+          </AnimatePresence>
+        </div>
+
         <StepList steps={steps} index={index} onSelect={setIndex} orientation="horizontal" />
-        <Reveal variants={scaleIn}>
+
+        <Reveal variants={scaleIn} className="w-full flex justify-center">
           <motion.div
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
@@ -119,18 +139,13 @@ function StackedHowItWorks({
               if (info.offset.x < -60) setIndex(index + 1);
               else if (info.offset.x > 60) setIndex(index - 1);
             }}
-            className="mx-auto max-w-[544px] cursor-grab touch-pan-y active:cursor-grabbing"
+            className="w-full max-w-[544px] cursor-grab touch-pan-y active:cursor-grabbing"
           >
             <ScaledFrame width={MEDIA_WIDTH} height={MEDIA_HEIGHT}>
               <HowItWorksMedia steps={steps} index={index} deckKey={audience} />
             </ScaledFrame>
           </motion.div>
         </Reveal>
-        <div className="mx-auto w-full max-w-[544px]">
-          <AnimatePresence mode="wait">
-            <StepDetail key={`${audience}-${step.id}`} step={step} index={index} count={COUNT} />
-          </AnimatePresence>
-        </div>
       </Container>
     </section>
   );

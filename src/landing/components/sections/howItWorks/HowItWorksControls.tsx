@@ -122,7 +122,7 @@ export function StepList({ steps, index, onSelect, orientation = "vertical" }: S
   );
 }
 
-/** Right-hand step copy: counter, 40/46 Bold title, 18/28 body. */
+/** Left-column step copy: step number, headline, description. */
 export function StepDetail({
   step,
   index,
@@ -134,19 +134,19 @@ export function StepDetail({
 }) {
   return (
     <motion.div
-      className="flex flex-col items-start gap-4"
-      initial={{ opacity: 0, y: 16 }}
+      className="flex flex-col items-start gap-2.5"
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -12 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
     >
-      <p className="font-inter-semibold text-[14px] font-semibold leading-normal tracking-[1.12px] text-primary whitespace-nowrap">
+      <p className="font-inter-semibold text-[13px] font-semibold leading-normal tracking-[1.12px] text-primary whitespace-nowrap">
         {String(index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
       </p>
-      <p className="font-inter-bold text-[30px] font-bold leading-[36px] tracking-[-0.6px] text-ink xl:text-[40px] xl:leading-[46px] xl:tracking-[-0.8px]">
+      <h3 className="font-inter-bold text-[28px] font-bold leading-[34px] tracking-[-0.5px] text-ink xl:text-[34px] xl:leading-[40px]">
         {step.title}
-      </p>
-      <p className="text-[16px] leading-[26px] text-neutral xl:text-[18px] xl:leading-7">
+      </h3>
+      <p className="text-[15px] leading-[24px] text-neutral xl:text-[16px] xl:leading-[26px]">
         {step.body}
       </p>
     </motion.div>
