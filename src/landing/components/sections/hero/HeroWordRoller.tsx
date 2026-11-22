@@ -97,9 +97,9 @@ export function HeroWordRoller({ words, className = "" }: HeroWordRollerProps) {
   if (reduceMotion) {
     return (
       <span
-        className={`relative inline-block h-[1.18em] w-full max-w-[860px] overflow-hidden leading-[1.18em] align-top text-ink select-none ${className}`}
+        className={`relative inline-block h-[1.18em] w-full max-w-[860px] overflow-hidden leading-[1.18em] align-top text-ink/75 select-none ${className}`}
       >
-        <span className="flex h-full w-full items-center justify-center text-center text-ink leading-[1.18em] whitespace-nowrap">
+        <span className="flex h-full w-full items-center justify-center text-center text-ink/75 leading-[1.18em] whitespace-nowrap">
           {words[0]}
         </span>
       </span>
@@ -111,7 +111,7 @@ export function HeroWordRoller({ words, className = "" }: HeroWordRollerProps) {
 
   return (
     <span
-      className={`relative inline-block h-[1.18em] w-full max-w-[860px] overflow-hidden leading-[1.18em] align-top text-ink select-none ${className}`}
+      className={`relative inline-block h-[1.18em] w-full max-w-[860px] overflow-hidden leading-[1.18em] align-top text-ink/75 select-none ${className}`}
       aria-label={currentAccessibleWord}
     >
       <div
@@ -126,7 +126,7 @@ export function HeroWordRoller({ words, className = "" }: HeroWordRollerProps) {
         {reelWords.map((word, idx) => (
           <span
             key={`${word}-${idx}`}
-            className="flex h-[1.18em] w-full shrink-0 items-center justify-center text-center text-ink leading-[1.18em] whitespace-nowrap"
+            className="flex h-[1.18em] w-full shrink-0 items-center justify-center text-center text-ink/75 leading-[1.18em] whitespace-nowrap"
           >
             {word}
           </span>
