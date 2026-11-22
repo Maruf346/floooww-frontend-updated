@@ -9,15 +9,15 @@ import { BLOG_COPY, BLOG_POSTS, type BlogPost } from "@/landing/data/blog";
 
 function Category({ children }: { children: string }) {
   return (
-    <span className="inline-flex self-start rounded-full bg-subtle px-[11px] py-1 font-inter-semibold text-[11px] font-semibold tracking-[0.66px] text-secondary">
+    <span className="inline-flex self-start rounded-full bg-[#f1f4ff] px-[11px] py-1 font-inter-semibold text-[11px] font-semibold tracking-[0.66px] text-ink uppercase">
       {children}
     </span>
   );
 }
 
-function ReadMore({ to, label = "Read article →" }: { to: string; label?: string }) {
+function ReadMore({ to, label = "Read more →" }: { to: string; label?: string }) {
   return (
-    <Link to={to} className="font-inter-semibold text-[13px] font-semibold text-primary hover:underline">
+    <Link to={to} className="font-inter-semibold text-[13px] font-semibold text-ink hover:text-primary transition-colors">
       {label}
     </Link>
   );
@@ -77,7 +77,7 @@ function CompactCard({ post }: { post: BlogPost }) {
         </div>
         <div className="flex items-center justify-between pt-1 text-[13px] border-t border-line-subtle">
           <time className="text-tertiary">{post.date}</time>
-          <ReadMore to={to} label="Read →" />
+          <ReadMore to={to} label="Read more →" />
         </div>
       </div>
     </article>
