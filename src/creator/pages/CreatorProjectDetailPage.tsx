@@ -9,8 +9,13 @@ export function CreatorProjectDetailPage() {
   const { projectId } = useParams<{ projectId: string }>();
   const [searchParams] = useSearchParams();
   const type = searchParams.get("type");
+  const view = searchParams.get("view");
+  const workspace = searchParams.get("workspace");
 
   if (
+    view === "workspace" ||
+    workspace === "true" ||
+    searchParams.has("tab") ||
     type === "live" ||
     type === "active" ||
     projectId === "vitamin-c-serum-live" ||

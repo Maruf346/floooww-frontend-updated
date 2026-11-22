@@ -9,6 +9,7 @@ import { CreatorUploadDeliverableModal } from "../components/CreatorUploadDelive
 import { CreatorProjectPaymentsView } from "../components/CreatorProjectPaymentsView";
 import { CreatorProjectReviewView } from "../components/CreatorProjectReviewView";
 import { CreatorProjectPerformanceView } from "../components/CreatorProjectPerformanceView";
+import { CreatorProjectUploadView } from "../components/CreatorProjectUploadView";
 import { CreatorDeliverableFilterDropdown, type DeliverableFilterOption } from "../components/CreatorDeliverableFilterDropdown";
 import { CreatorDateRangeDropdown } from "../components/CreatorDateRangeDropdown";
 import { Upload, FileVideo, X, Check } from "lucide-react";
@@ -133,14 +134,14 @@ function Logo({ className, theme = "On light" }: LogoProps) {
 export function CreatorLiveProjectDetailPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState<"overview" | "deliverables" | "payments" | "review" | "performance">(() => {
-    if (tabParam === "deliverables" || tabParam === "payments" || tabParam === "review" || tabParam === "performance") {
+  const [activeTab, setActiveTab] = useState<"overview" | "deliverables" | "upload" | "payments" | "review" | "performance">(() => {
+    if (tabParam === "deliverables" || tabParam === "upload" || tabParam === "payments" || tabParam === "review" || tabParam === "performance") {
       return tabParam;
     }
     return "overview";
   });
 
-  const handleTabChange = (tab: "overview" | "deliverables" | "payments" | "review" | "performance") => {
+  const handleTabChange = (tab: "overview" | "deliverables" | "upload" | "payments" | "review" | "performance") => {
     setActiveTab(tab);
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
@@ -212,839 +213,852 @@ export function CreatorLiveProjectDetailPage() {
   return (
     <CreatorShell>
       <div className="content-stretch flex flex-col gap-[24px] items-start pb-[40px] pt-[28px] px-[32px] relative shrink-0 w-full" data-node-id="551:913" data-name="Content">
-          <div className="content-stretch flex gap-[16px] items-end overflow-clip relative shrink-0 w-full" data-node-id="551:914" data-name="Page header">
-            <div className="content-stretch flex flex-[1_0_0] flex-col gap-[4px] items-start min-w-px overflow-clip relative" data-node-id="551:915" data-name="Left">
-              <Link to="/creator/my-projects?tab=live" className="[word-break:break-word] block cursor-pointer font-['Inter:Regular'] font-normal leading-[0] not-italic relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] hover:text-[#3b5bff] transition whitespace-nowrap" data-node-id="551:916">
-                <p className="leading-[16px] whitespace-pre">{`My projects  /  Active`}</p>
-              </Link>
-              <div className="content-stretch flex gap-[10px] items-center overflow-clip relative shrink-0" data-node-id="551:917" data-name="Title row">
-                <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[34px] not-italic relative shrink-0 text-[28px] text-[color:var(--text-primary,#0d0d10)] tracking-[-0.14px] whitespace-nowrap" data-node-id="551:918">
-                  Vitamin-C Serum
-                </p>
-                <Badge className="bg-[var(--status-success-bg,#e1fce3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" />
-              </div>
-              <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap" data-node-id="551:922">
-                Minimalist · 7 Oct – 7 Nov 2026 · fee ₹17,000
+        <div className="content-stretch flex gap-[16px] items-end overflow-clip relative shrink-0 w-full" data-node-id="551:914" data-name="Page header">
+          <div className="content-stretch flex flex-[1_0_0] flex-col gap-[4px] items-start min-w-px overflow-clip relative" data-node-id="551:915" data-name="Left">
+            <Link to="/creator/my-projects?tab=live" className="[word-break:break-word] block cursor-pointer font-['Inter:Regular'] font-normal leading-[0] not-italic relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] hover:text-[#3b5bff] transition whitespace-nowrap" data-node-id="551:916">
+              <p className="leading-[16px] whitespace-pre">{`My projects  /  Active`}</p>
+            </Link>
+            <div className="content-stretch flex gap-[10px] items-center overflow-clip relative shrink-0" data-node-id="551:917" data-name="Title row">
+              <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[34px] not-italic relative shrink-0 text-[28px] text-[color:var(--text-primary,#0d0d10)] tracking-[-0.14px] whitespace-nowrap" data-node-id="551:918">
+                Vitamin-C Serum
               </p>
+              <Badge className="bg-[var(--status-success-bg,#e1fce3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" />
             </div>
-            <div className="content-stretch flex items-center gap-[10px] overflow-clip relative shrink-0" data-node-id="551:923" data-name="Actions">
-              <Link to="/brand/messages" className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#f4f6fb] transition" data-node-id="551:924" data-name="Button">
-                <div className="relative shrink-0 size-[16px]" data-node-id="I551:924;5:30" data-name="Icon">
-                  <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon16} />
-                </div>
-                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] text-left whitespace-nowrap" data-node-id="I551:924;5:33">
-                  Message brand
+            <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap" data-node-id="551:922">
+              Minimalist · 7 Oct – 7 Nov 2026 · fee ₹17,000
+            </p>
+          </div>
+          <div className="content-stretch flex items-center gap-[10px] overflow-clip relative shrink-0" data-node-id="551:923" data-name="Actions">
+            <Link to="/brand/messages" className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#f4f6fb] transition" data-node-id="551:924" data-name="Button">
+              <div className="relative shrink-0 size-[16px]" data-node-id="I551:924;5:30" data-name="Icon">
+                <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon16} />
+              </div>
+              <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] text-left whitespace-nowrap" data-node-id="I551:924;5:33">
+                Message brand
+              </p>
+            </Link>
+            <button
+              type="button"
+              onClick={() => handleTabChange("upload")}
+              className="bg-[var(--prim-gray-900,#0d0d10)] cursor-pointer hover:bg-black/80 content-stretch flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 transition"
+              data-name="Button"
+            >
+              <Upload className="size-4 text-white" />
+              <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-white text-left whitespace-nowrap">
+                {storyV2Uploaded ? "Story v2 Uploaded" : "Upload Story v2"}
+              </p>
+            </button>
+          </div>
+        </div>
+        <div className="content-stretch flex gap-[16px] items-end relative shrink-0 w-full z-30" data-node-id="789:11646" data-name="Tab row">
+          <div className="flex flex-[1_0_0] flex-row items-end self-stretch" data-node-id="714:2957">
+            <div className="border-[#e5e7eb] border-b border-solid content-stretch flex flex-[1_0_0] gap-[28px] h-full items-start min-w-px overflow-clip relative" data-name="Tabs">
+              <button type="button" onClick={() => handleTabChange("overview")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2958" data-name="Tab · Overview">
+                <p className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[14px] whitespace-nowrap transition ${activeTab === "overview" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2959">
+                  Overview
                 </p>
-              </Link>
-              <button
-                type="button"
-                onClick={() => setIsUploadOpen(true)}
-                className="bg-[var(--prim-gray-900,#0d0d10)] cursor-pointer hover:bg-black/80 content-stretch flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 transition"
-                data-name="Button"
-              >
-                <Upload className="size-4 text-white" />
-                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-white text-left whitespace-nowrap">
-                  {storyV2Uploaded ? "Story v2 Uploaded" : "Upload Story v2"}
+                <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "overview" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2960" data-name="Rectangle" />
+              </button>
+              <button type="button" onClick={() => handleTabChange("deliverables")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2961" data-name="Tab · Deliverables">
+                <p className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[14px] text-left whitespace-nowrap transition ${activeTab === "deliverables" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2962">
+                  Deliverables
                 </p>
+                <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "deliverables" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2963" data-name="Rectangle" />
+              </button>
+              <button type="button" onClick={() => handleTabChange("upload")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-name="Tab · Upload">
+                <p className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[14px] text-left whitespace-nowrap transition ${activeTab === "upload" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#0d0d10]"}`}>
+                  Upload
+                </p>
+                <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "upload" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-name="Rectangle" />
+              </button>
+              <button type="button" onClick={() => handleTabChange("payments")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2964" data-name="Tab · Payments">
+                <p className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[14px] text-left whitespace-nowrap transition ${activeTab === "payments" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2965">
+                  Payments
+                </p>
+                <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "payments" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2966" data-name="Rectangle" />
+              </button>
+              <button type="button" onClick={() => handleTabChange("review")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2967" data-name="Tab · Review">
+                <p className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[14px] text-left whitespace-nowrap transition ${activeTab === "review" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2968">
+                  Review
+                </p>
+                <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "review" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2969" data-name="Rectangle" />
+              </button>
+              <button type="button" onClick={() => handleTabChange("performance")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2970" data-name="Tab · Performance">
+                <p className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[14px] whitespace-nowrap transition ${activeTab === "performance" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2971">
+                  Performance
+                </p>
+                <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "performance" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2972" data-name="Rectangle" />
               </button>
             </div>
           </div>
-          <div className="content-stretch flex gap-[16px] items-end relative shrink-0 w-full z-30" data-node-id="789:11646" data-name="Tab row">
-            <div className="flex flex-[1_0_0] flex-row items-end self-stretch" data-node-id="714:2957">
-              <div className="border-[#e5e7eb] border-b border-solid content-stretch flex flex-[1_0_0] gap-[28px] h-full items-start min-w-px overflow-clip relative" data-name="Tabs">
-                <button type="button" onClick={() => handleTabChange("overview")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2958" data-name="Tab · Overview">
-                  <p className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[14px] whitespace-nowrap transition ${activeTab === "overview" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2959">
-                    Overview
-                  </p>
-                  <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "overview" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2960" data-name="Rectangle" />
-                </button>
-                <button type="button" onClick={() => handleTabChange("deliverables")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2961" data-name="Tab · Deliverables">
-                  <p className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[14px] text-left whitespace-nowrap transition ${activeTab === "deliverables" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2962">
-                    Deliverables
-                  </p>
-                  <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "deliverables" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2963" data-name="Rectangle" />
-                </button>
-                <button type="button" onClick={() => handleTabChange("payments")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2964" data-name="Tab · Payments">
-                  <p className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[14px] text-left whitespace-nowrap transition ${activeTab === "payments" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2965">
-                    Payments
-                  </p>
-                  <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "payments" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2966" data-name="Rectangle" />
-                </button>
-                <button type="button" onClick={() => handleTabChange("review")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2967" data-name="Tab · Review">
-                  <p className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[14px] text-left whitespace-nowrap transition ${activeTab === "review" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2968">
-                    Review
-                  </p>
-                  <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "review" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2969" data-name="Rectangle" />
-                </button>
-                <button type="button" onClick={() => handleTabChange("performance")} className="content-stretch cursor-pointer flex flex-col gap-[10px] items-start overflow-clip relative shrink-0" data-node-id="714:2970" data-name="Tab · Performance">
-                  <p className={`[word-break:break-word] leading-[normal] not-italic relative shrink-0 text-[14px] whitespace-nowrap transition ${activeTab === "performance" ? "font-['Inter:Semi_Bold'] font-semibold text-[#3b5bff]" : "font-['Inter:Medium'] font-medium text-[#8491a3] hover:text-[#0d0d10]"}`} data-node-id="714:2971">
-                    Performance
-                  </p>
-                  <div className={`h-[2px] relative shrink-0 w-full transition ${activeTab === "performance" ? "bg-[#3b5bff]" : "bg-white opacity-0"}`} data-node-id="714:2972" data-name="Rectangle" />
-                </button>
-              </div>
-            </div>
-            <div className="flex items-center gap-[10px] shrink-0 relative z-30">
-              <CreatorDeliverableFilterDropdown
-                value={deliverableFilter}
-                onChange={setDeliverableFilter}
-              />
-              <CreatorDateRangeDropdown />
-            </div>
-          </div>
-          {activeTab === "deliverables" ? (
-            <CreatorProjectDeliverablesView
-              onOpenUploadModal={() => setIsUploadOpen(true)}
-              storyV2Uploaded={storyV2Uploaded}
-              uploadedFileName={uploadedFileName}
-              productReceived={productReceived}
-              onConfirmProduct={() => setProductReceived(true)}
-              onCounterOfferTime={(_deliverableTitle) => setIsCounterOfferOpen(true)}
-              deliverableFilter={deliverableFilter}
-              onDeliverableFilterChange={setDeliverableFilter}
+          <div className="flex items-center gap-[10px] shrink-0 relative z-30">
+            <CreatorDeliverableFilterDropdown
+              value={deliverableFilter}
+              onChange={setDeliverableFilter}
             />
-          ) : activeTab === "payments" ? (
-            <CreatorProjectPaymentsView />
-          ) : activeTab === "review" ? (
-            <CreatorProjectReviewView />
-          ) : activeTab === "performance" ? (
-            <CreatorProjectPerformanceView />
-          ) : (
-            <>
-          <div className="bg-white border border-[#e5e7eb] border-solid content-stretch flex gap-[12px] items-start overflow-clip p-[20px] relative rounded-[12px] shrink-0 w-full" data-node-id="551:949" data-name="KPI tiles">
-            <div className="bg-[var(--bg-surface,white)] border border-[var(--border-subtle,#edeff3)] border-solid content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip p-[16px] relative rounded-[var(--radius-lg,12px)]" data-node-id="551:950" data-name="KPI tile">
-              <div className="bg-[#149d46] content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-md,8px)] shrink-0 size-[36px]" data-node-id="I551:950;104:371" data-name="Icon chip">
-                <div className="relative shrink-0 size-[18px]" data-node-id="I551:950;104:372" data-name="Icon">
-                  <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon17} />
-                </div>
-              </div>
-              <div className="h-[14px] relative shrink-0 w-px" data-node-id="I551:950;104:376" data-name="Gap" />
-              <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[16px] min-w-full not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] w-[min-content]" data-node-id="I551:950;104:377">
-                Sales
-              </p>
-              <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[28px] min-w-full not-italic relative shrink-0 text-[22px] text-[color:var(--text-primary,#0d0d10)] tracking-[-0.33px] w-[min-content]" data-node-id="I551:950;104:378">
-                ₹1,42,800
-              </p>
-              <div className="h-[10px] relative shrink-0 w-px" data-node-id="I551:950;104:379" data-name="Gap" />
-              <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] min-w-full not-italic relative shrink-0 text-[12px] text-[color:var(--status-success-fg,#16a34a)] w-[min-content]" data-node-id="I551:950;104:380">
-                392 orders
-              </p>
-            </div>
-            <div className="bg-[var(--bg-surface,white)] border border-[var(--border-subtle,#edeff3)] border-solid content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip p-[16px] relative rounded-[var(--radius-lg,12px)]" data-node-id="551:967" data-name="KPI tile">
-              <div className="bg-[#3b5bff] content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-md,8px)] shrink-0 size-[36px]" data-node-id="I551:967;104:327" data-name="Icon chip">
-                <div className="relative shrink-0 size-[18px]" data-node-id="I551:967;104:328" data-name="Icon">
-                  <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon18} />
-                </div>
-              </div>
-              <div className="h-[14px] relative shrink-0 w-px" data-node-id="I551:967;104:331" data-name="Gap" />
-              <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[16px] min-w-full not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] w-[min-content]" data-node-id="I551:967;104:332">
-                Views
-              </p>
-              <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[28px] min-w-full not-italic relative shrink-0 text-[22px] text-[color:var(--text-primary,#0d0d10)] tracking-[-0.33px] w-[min-content]" data-node-id="I551:967;104:333">
-                5.6 L
-              </p>
-              <div className="h-[10px] relative shrink-0 w-px" data-node-id="I551:967;104:334" data-name="Gap" />
-              <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] min-w-full not-italic relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] w-[min-content]" data-node-id="I551:967;104:335">
-                2 Reels live
-              </p>
-            </div>
-            <div className="bg-[var(--bg-surface,white)] border border-[var(--border-subtle,#edeff3)] border-solid content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip p-[16px] relative rounded-[var(--radius-lg,12px)]" data-node-id="551:981" data-name="KPI tile">
-              <div className="bg-[#149d46] content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-md,8px)] shrink-0 size-[36px]" data-node-id="I551:981;104:371" data-name="Icon chip">
-                <div className="relative shrink-0 size-[18px]" data-node-id="I551:981;104:372" data-name="Icon">
-                  <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon19} />
-                </div>
-              </div>
-              <div className="h-[14px] relative shrink-0 w-px" data-node-id="I551:981;104:376" data-name="Gap" />
-              <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[16px] min-w-full not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] w-[min-content]" data-node-id="I551:981;104:377">
-                ROAS for the brand
-              </p>
-              <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[28px] min-w-full not-italic relative shrink-0 text-[22px] text-[color:var(--text-primary,#0d0d10)] tracking-[-0.33px] w-[min-content]" data-node-id="I551:981;104:378">
-                4.8×
-              </p>
-              <div className="h-[10px] relative shrink-0 w-px" data-node-id="I551:981;104:379" data-name="Gap" />
-              <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] min-w-full not-italic relative shrink-0 text-[12px] text-[color:var(--status-success-fg,#16a34a)] w-[min-content]" data-node-id="I551:981;104:380">
-                top in project
-              </p>
-            </div>
-            <div className="bg-[var(--bg-surface,white)] border border-[var(--border-subtle,#edeff3)] border-solid content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip p-[16px] relative rounded-[var(--radius-lg,12px)]" data-node-id="551:995" data-name="KPI tile">
-              <div className="bg-[#149d46] content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-md,8px)] shrink-0 size-[36px]" data-node-id="I551:995;104:395" data-name="Icon chip">
-                <div className="relative shrink-0 size-[18px]" data-node-id="I551:995;104:396" data-name="Icon">
-                  <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon20} />
-                </div>
-              </div>
-              <div className="h-[14px] relative shrink-0 w-px" data-node-id="I551:995;104:400" data-name="Gap" />
-              <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[16px] min-w-full not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] w-[min-content]" data-node-id="I551:995;104:401">
-                Paid to you
-              </p>
-              <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[28px] min-w-full not-italic relative shrink-0 text-[22px] text-[color:var(--text-primary,#0d0d10)] tracking-[-0.33px] w-[min-content]" data-node-id="I551:995;104:402">
-                ₹12,750
-              </p>
-              <div className="h-[10px] relative shrink-0 w-px" data-node-id="I551:995;104:403" data-name="Gap" />
-              <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] min-w-full not-italic relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] w-[min-content]" data-node-id="I551:995;104:404">
-                ₹4,250 in escrow
-              </p>
-            </div>
+            <CreatorDateRangeDropdown />
           </div>
-          <div className="bg-white border border-[#e5e7eb] border-solid content-stretch flex flex-col gap-[16px] items-start overflow-clip p-[20px] relative rounded-[12px] shrink-0 w-full" data-node-id="610:3316" data-name="Collaboration status">
-            <div className="content-stretch flex gap-[8px] items-center overflow-clip relative shrink-0 w-full" data-node-id="610:3317" data-name="Card head">
-              <div className="content-stretch flex flex-[1_0_0] gap-[8px] items-center min-w-px overflow-clip relative" data-node-id="610:3318" data-name="t">
-                <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[16px] whitespace-nowrap" data-node-id="610:3319">
-                  Status
-                </p>
-                <div className="bg-[#e1fce3] content-stretch flex items-start overflow-clip px-[8px] py-[2px] relative rounded-[999px] shrink-0" data-node-id="610:3320" data-name="Live">
-                  <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#149d46] text-[12px] whitespace-nowrap" data-node-id="610:3321">
-                    ● Live
-                  </p>
-                </div>
-              </div>
-              <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[12px] whitespace-nowrap" data-node-id="610:3322">
-                Updated 2 min ago
-              </p>
-            </div>
-            <div className="content-stretch flex items-start overflow-clip relative shrink-0 w-full" data-node-id="610:3323" data-name="Steps">
-              <div className="content-stretch flex flex-[1_0_0] flex-col gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="610:3324" data-name="Step · Invited">
-                <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="610:3325" data-name="Dot row">
-                  <div className="bg-[#149d46] content-stretch flex items-center justify-center overflow-clip relative rounded-[10px] shrink-0 size-[20px]" data-node-id="610:3326" data-name="Dot">
-                    <p className="[word-break:break-word] font-['Inter:Bold'] font-bold leading-[normal] not-italic relative shrink-0 text-[11px] text-white whitespace-nowrap" data-node-id="610:3327">
-                      ✓
-                    </p>
+        </div>
+        {activeTab === "deliverables" ? (
+          <CreatorProjectDeliverablesView
+            onOpenUploadModal={() => setIsUploadOpen(true)}
+            storyV2Uploaded={storyV2Uploaded}
+            uploadedFileName={uploadedFileName}
+            productReceived={productReceived}
+            onConfirmProduct={() => setProductReceived(true)}
+            onCounterOfferTime={(_deliverableTitle) => setIsCounterOfferOpen(true)}
+            deliverableFilter={deliverableFilter}
+            onDeliverableFilterChange={setDeliverableFilter}
+          />
+        ) : activeTab === "upload" ? (
+          <CreatorProjectUploadView
+            onSuccessSubmit={(fileName) => {
+              setUploadedFileName(fileName);
+              setStoryV2Uploaded(true);
+            }}
+          />
+        ) : activeTab === "payments" ? (
+          <CreatorProjectPaymentsView />
+        ) : activeTab === "review" ? (
+          <CreatorProjectReviewView />
+        ) : activeTab === "performance" ? (
+          <CreatorProjectPerformanceView />
+        ) : (
+          <>
+            <div className="bg-white border border-[#e5e7eb] border-solid content-stretch flex gap-[12px] items-start overflow-clip p-[20px] relative rounded-[12px] shrink-0 w-full" data-node-id="551:949" data-name="KPI tiles">
+              <div className="bg-[var(--bg-surface,white)] border border-[var(--border-subtle,#edeff3)] border-solid content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip p-[16px] relative rounded-[var(--radius-lg,12px)]" data-node-id="551:950" data-name="KPI tile">
+                <div className="bg-[#149d46] content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-md,8px)] shrink-0 size-[36px]" data-node-id="I551:950;104:371" data-name="Icon chip">
+                  <div className="relative shrink-0 size-[18px]" data-node-id="I551:950;104:372" data-name="Icon">
+                    <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon17} />
                   </div>
-                  <div className="bg-[#149d46] flex-[1_0_0] h-[2px] min-w-px relative" data-node-id="610:3328" data-name="Line" />
                 </div>
-                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[12px] w-full" data-node-id="610:3329">
-                  Invited
+                <div className="h-[14px] relative shrink-0 w-px" data-node-id="I551:950;104:376" data-name="Gap" />
+                <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[16px] min-w-full not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] w-[min-content]" data-node-id="I551:950;104:377">
+                  Sales
                 </p>
-                <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] w-full" data-node-id="610:3330">
-                  7 Oct · ₹17,000 held for you
+                <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[28px] min-w-full not-italic relative shrink-0 text-[22px] text-[color:var(--text-primary,#0d0d10)] tracking-[-0.33px] w-[min-content]" data-node-id="I551:950;104:378">
+                  ₹1,42,800
+                </p>
+                <div className="h-[10px] relative shrink-0 w-px" data-node-id="I551:950;104:379" data-name="Gap" />
+                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] min-w-full not-italic relative shrink-0 text-[12px] text-[color:var(--status-success-fg,#16a34a)] w-[min-content]" data-node-id="I551:950;104:380">
+                  392 orders
                 </p>
               </div>
-              <div className="content-stretch flex flex-[1_0_0] flex-col gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="610:3331" data-name="Step · Accepted">
-                <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="610:3332" data-name="Dot row">
-                  <div className="bg-[#149d46] content-stretch flex items-center justify-center overflow-clip relative rounded-[10px] shrink-0 size-[20px]" data-node-id="610:3333" data-name="Dot">
-                    <p className="[word-break:break-word] font-['Inter:Bold'] font-bold leading-[normal] not-italic relative shrink-0 text-[11px] text-white whitespace-nowrap" data-node-id="610:3334">
-                      ✓
-                    </p>
+              <div className="bg-[var(--bg-surface,white)] border border-[var(--border-subtle,#edeff3)] border-solid content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip p-[16px] relative rounded-[var(--radius-lg,12px)]" data-node-id="551:967" data-name="KPI tile">
+                <div className="bg-[#3b5bff] content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-md,8px)] shrink-0 size-[36px]" data-node-id="I551:967;104:327" data-name="Icon chip">
+                  <div className="relative shrink-0 size-[18px]" data-node-id="I551:967;104:328" data-name="Icon">
+                    <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon18} />
                   </div>
-                  <div className="bg-[#149d46] flex-[1_0_0] h-[2px] min-w-px relative" data-node-id="610:3335" data-name="Line" />
                 </div>
-                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[12px] w-full" data-node-id="610:3336">
-                  Accepted
+                <div className="h-[14px] relative shrink-0 w-px" data-node-id="I551:967;104:331" data-name="Gap" />
+                <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[16px] min-w-full not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] w-[min-content]" data-node-id="I551:967;104:332">
+                  Views
                 </p>
-                <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] w-full" data-node-id="610:3337">
-                  8 Oct
+                <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[28px] min-w-full not-italic relative shrink-0 text-[22px] text-[color:var(--text-primary,#0d0d10)] tracking-[-0.33px] w-[min-content]" data-node-id="I551:967;104:333">
+                  5.6 L
+                </p>
+                <div className="h-[10px] relative shrink-0 w-px" data-node-id="I551:967;104:334" data-name="Gap" />
+                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] min-w-full not-italic relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] w-[min-content]" data-node-id="I551:967;104:335">
+                  2 Reels live
                 </p>
               </div>
-              <div className="content-stretch flex flex-[1_0_0] flex-col gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="610:3338" data-name="Step · Product sent">
-                <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="610:3339" data-name="Dot row">
-                  <div className="bg-[#149d46] content-stretch flex items-center justify-center overflow-clip relative rounded-[10px] shrink-0 size-[20px]" data-node-id="610:3340" data-name="Dot">
-                    <p className="[word-break:break-word] font-['Inter:Bold'] font-bold leading-[normal] not-italic relative shrink-0 text-[11px] text-white whitespace-nowrap" data-node-id="610:3341">
-                      ✓
-                    </p>
+              <div className="bg-[var(--bg-surface,white)] border border-[var(--border-subtle,#edeff3)] border-solid content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip p-[16px] relative rounded-[var(--radius-lg,12px)]" data-node-id="551:981" data-name="KPI tile">
+                <div className="bg-[#149d46] content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-md,8px)] shrink-0 size-[36px]" data-node-id="I551:981;104:371" data-name="Icon chip">
+                  <div className="relative shrink-0 size-[18px]" data-node-id="I551:981;104:372" data-name="Icon">
+                    <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon19} />
                   </div>
-                  <div className="bg-[#149d46] flex-[1_0_0] h-[2px] min-w-px relative" data-node-id="610:3342" data-name="Line" />
                 </div>
-                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[12px] w-full" data-node-id="610:3343">
-                  Product sent
+                <div className="h-[14px] relative shrink-0 w-px" data-node-id="I551:981;104:376" data-name="Gap" />
+                <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[16px] min-w-full not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] w-[min-content]" data-node-id="I551:981;104:377">
+                  ROAS for the brand
                 </p>
-                <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] w-full" data-node-id="610:3344">
-                  9 Oct · Delhivery
+                <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[28px] min-w-full not-italic relative shrink-0 text-[22px] text-[color:var(--text-primary,#0d0d10)] tracking-[-0.33px] w-[min-content]" data-node-id="I551:981;104:378">
+                  4.8×
+                </p>
+                <div className="h-[10px] relative shrink-0 w-px" data-node-id="I551:981;104:379" data-name="Gap" />
+                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] min-w-full not-italic relative shrink-0 text-[12px] text-[color:var(--status-success-fg,#16a34a)] w-[min-content]" data-node-id="I551:981;104:380">
+                  top in project
                 </p>
               </div>
-              <div className="content-stretch flex flex-[1_0_0] flex-col gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="610:3345" data-name="Step · Delivered">
-                <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="610:3346" data-name="Dot row">
-                  <div className="bg-[#149d46] content-stretch flex items-center justify-center overflow-clip relative rounded-[10px] shrink-0 size-[20px]" data-node-id="610:3347" data-name="Dot">
-                    <p className="[word-break:break-word] font-['Inter:Bold'] font-bold leading-[normal] not-italic relative shrink-0 text-[11px] text-white whitespace-nowrap" data-node-id="610:3348">
-                      ✓
-                    </p>
+              <div className="bg-[var(--bg-surface,white)] border border-[var(--border-subtle,#edeff3)] border-solid content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip p-[16px] relative rounded-[var(--radius-lg,12px)]" data-node-id="551:995" data-name="KPI tile">
+                <div className="bg-[#149d46] content-stretch flex items-center justify-center overflow-clip relative rounded-[var(--radius-md,8px)] shrink-0 size-[36px]" data-node-id="I551:995;104:395" data-name="Icon chip">
+                  <div className="relative shrink-0 size-[18px]" data-node-id="I551:995;104:396" data-name="Icon">
+                    <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon20} />
                   </div>
-                  <div className="bg-[#149d46] flex-[1_0_0] h-[2px] min-w-px relative" data-node-id="610:3349" data-name="Line" />
                 </div>
-                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[12px] w-full" data-node-id="610:3350">
-                  Delivered
+                <div className="h-[14px] relative shrink-0 w-px" data-node-id="I551:995;104:400" data-name="Gap" />
+                <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[16px] min-w-full not-italic relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] w-[min-content]" data-node-id="I551:995;104:401">
+                  Paid to you
                 </p>
-                <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] w-full" data-node-id="610:3351">
-                  10 Oct · you confirmed
+                <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[28px] min-w-full not-italic relative shrink-0 text-[22px] text-[color:var(--text-primary,#0d0d10)] tracking-[-0.33px] w-[min-content]" data-node-id="I551:995;104:402">
+                  ₹12,750
                 </p>
-              </div>
-              <div className="content-stretch flex flex-[1_0_0] flex-col gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="610:3352" data-name="Step · In progress">
-                <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="610:3353" data-name="Dot row">
-                  <div className="relative shrink-0 size-[20px]" data-node-id="610:3354" data-name="Dot">
-                    <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgDot3} />
-                  </div>
-                  <div className="bg-[#e5e7eb] flex-[1_0_0] h-[2px] min-w-px relative" data-node-id="610:3356" data-name="Line" />
-                </div>
-                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[12px] w-full" data-node-id="610:3357">
-                  In progress
-                </p>
-                <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#3b5bff] text-[11px] w-full" data-node-id="610:3358">
-                  2 Reels live · Story changes asked
-                </p>
-              </div>
-              <div className="content-stretch flex flex-[1_0_0] flex-col gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="610:3359" data-name="Step · Next delivery">
-                <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="610:3360" data-name="Dot row">
-                  <div className="bg-white border-[#d4d7df] border-[1.5px] border-solid relative rounded-[10px] shrink-0 size-[20px]" data-node-id="610:3361" data-name="Dot" />
-                  <div className="bg-[#e5e7eb] flex-[1_0_0] h-[2px] min-w-px relative" data-node-id="610:3362" data-name="Line" />
-                </div>
-                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[12px] w-full" data-node-id="610:3363">
-                  Next delivery
-                </p>
-                <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] w-full" data-node-id="610:3364">
-                  Last-day reminder Story by 30 Oct
-                </p>
-              </div>
-              <div className="content-stretch flex flex-[1_0_0] flex-col gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="610:3365" data-name="Step · Next payment">
-                <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="610:3366" data-name="Dot row">
-                  <div className="bg-white border-[#d4d7df] border-[1.5px] border-solid relative rounded-[10px] shrink-0 size-[20px]" data-node-id="610:3367" data-name="Dot" />
-                </div>
-                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[12px] w-full" data-node-id="610:3368">
-                  Next payment
-                </p>
-                <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] w-full" data-node-id="610:3369">
-                  ₹3,000 when the results Reel is approved
+                <div className="h-[10px] relative shrink-0 w-px" data-node-id="I551:995;104:403" data-name="Gap" />
+                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] min-w-full not-italic relative shrink-0 text-[12px] text-[color:var(--text-tertiary,#a3a3ac)] w-[min-content]" data-node-id="I551:995;104:404">
+                  ₹4,250 in escrow
                 </p>
               </div>
             </div>
-          </div>
-          <div className="content-stretch flex gap-[20px] items-start overflow-clip relative shrink-0 w-full" data-node-id="714:3053" data-name="Row">
-            <div className="bg-white border border-[#e5e7eb] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[14px] items-start min-w-px overflow-clip p-[20px] relative rounded-[12px] self-stretch" data-node-id="714:2973" data-name="Deliverable progress">
-              <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="714:2974" data-name="Card head">
-                <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start leading-[normal] min-w-px not-italic overflow-clip relative whitespace-nowrap" data-node-id="714:2975" data-name="t">
-                  <p className="font-['Inter:Semi_Bold'] font-semibold relative shrink-0 text-[#070b13] text-[16px]" data-node-id="714:2976">
-                    Deliverable progress
+            <div className="bg-white border border-[#e5e7eb] border-solid content-stretch flex flex-col gap-[16px] items-start overflow-clip p-[20px] relative rounded-[12px] shrink-0 w-full" data-node-id="610:3316" data-name="Collaboration status">
+              <div className="content-stretch flex gap-[8px] items-center overflow-clip relative shrink-0 w-full" data-node-id="610:3317" data-name="Card head">
+                <div className="content-stretch flex flex-[1_0_0] gap-[8px] items-center min-w-px overflow-clip relative" data-node-id="610:3318" data-name="t">
+                  <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[16px] whitespace-nowrap" data-node-id="610:3319">
+                    Status
                   </p>
-                  <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] text-[12px]" data-node-id="714:2977">
-                    Vitamin-C Serum
+                  <div className="bg-[#e1fce3] content-stretch flex items-start overflow-clip px-[8px] py-[2px] relative rounded-[999px] shrink-0" data-node-id="610:3320" data-name="Live">
+                    <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#149d46] text-[12px] whitespace-nowrap" data-node-id="610:3321">
+                      ● Live
+                    </p>
+                  </div>
+                </div>
+                <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[12px] whitespace-nowrap" data-node-id="610:3322">
+                  Updated 2 min ago
+                </p>
+              </div>
+              <div className="content-stretch flex items-start overflow-clip relative shrink-0 w-full" data-node-id="610:3323" data-name="Steps">
+                <div className="content-stretch flex flex-[1_0_0] flex-col gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="610:3324" data-name="Step · Invited">
+                  <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="610:3325" data-name="Dot row">
+                    <div className="bg-[#149d46] content-stretch flex items-center justify-center overflow-clip relative rounded-[10px] shrink-0 size-[20px]" data-node-id="610:3326" data-name="Dot">
+                      <p className="[word-break:break-word] font-['Inter:Bold'] font-bold leading-[normal] not-italic relative shrink-0 text-[11px] text-white whitespace-nowrap" data-node-id="610:3327">
+                        ✓
+                      </p>
+                    </div>
+                    <div className="bg-[#149d46] flex-[1_0_0] h-[2px] min-w-px relative" data-node-id="610:3328" data-name="Line" />
+                  </div>
+                  <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[12px] w-full" data-node-id="610:3329">
+                    Invited
                   </p>
-                </div>
-              </div>
-              <div className="content-stretch flex gap-[16px] items-center overflow-clip relative shrink-0 w-full" data-node-id="714:2978" data-name="p">
-                <div className="overflow-clip relative shrink-0 size-[96px]" data-node-id="714:2979" data-name="Donut">
-                  <div className="absolute left-0 size-[96px] top-0" data-node-id="714:2980" data-name="Ellipse">
-                    <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgEllipse} />
-                  </div>
-                  <div className="absolute left-0 size-[96px] top-0" data-node-id="714:2981" data-name="Ellipse">
-                    <div className="absolute inset-[0_0_0_7.47%]">
-                      <img alt="" className="block max-w-none size-full" src={imgEllipse1} />
-                    </div>
-                  </div>
-                  <div className="absolute left-0 size-[96px] top-0" data-node-id="714:2982" data-name="Ellipse">
-                    <div className="absolute bottom-1/4 left-0 right-[51.08%] top-0">
-                      <img alt="" className="block max-w-none size-full" src={imgEllipse2} />
-                    </div>
-                  </div>
-                  <div className="absolute content-stretch flex flex-col items-center left-[32px] overflow-clip top-[39px]" data-node-id="714:2983" data-name="Center">
-                    <p className="[word-break:break-word] font-['Inter:Bold'] font-bold leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[15px] text-center whitespace-nowrap" data-node-id="714:2984">
-                      75%
-                    </p>
-                  </div>
-                </div>
-                <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip relative" data-node-id="714:2985" data-name="l">
-                  <div className="content-stretch flex gap-[10px] items-center overflow-clip py-[8px] relative shrink-0 w-full" data-node-id="714:2986" data-name="Legend">
-                    <div className="relative shrink-0 size-[10px]" data-node-id="714:2987" data-name="Ellipse">
-                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgEllipse3} />
-                    </div>
-                    <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[normal] min-w-px not-italic relative text-[#394357] text-[13px]" data-node-id="714:2988">
-                      Approved · paid
-                    </p>
-                    <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap" data-node-id="714:2989">
-                      2
-                    </p>
-                  </div>
-                  <div className="content-stretch flex gap-[10px] items-center overflow-clip py-[8px] relative shrink-0 w-full" data-node-id="714:2990" data-name="Legend">
-                    <div className="relative shrink-0 size-[10px]" data-node-id="714:2991" data-name="Ellipse">
-                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgEllipse4} />
-                    </div>
-                    <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[normal] min-w-px not-italic relative text-[#394357] text-[13px]" data-node-id="714:2992">
-                      Changes requested
-                    </p>
-                    <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap" data-node-id="714:2993">
-                      1
-                    </p>
-                  </div>
-                  <div className="content-stretch flex gap-[10px] items-center overflow-clip py-[8px] relative shrink-0 w-full" data-node-id="714:2994" data-name="Legend">
-                    <div className="relative shrink-0 size-[10px]" data-node-id="714:2995" data-name="Ellipse">
-                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgEllipse5} />
-                    </div>
-                    <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[normal] min-w-px not-italic relative text-[#394357] text-[13px]" data-node-id="714:2996">
-                      Not started
-                    </p>
-                    <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap" data-node-id="714:2997">
-                      0
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap" data-node-id="714:2998">
-                3 of 4 done
-              </p>
-            </div>
-            <div className="bg-white border border-[#e5e7eb] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[14px] items-start min-w-px overflow-clip p-[20px] relative rounded-[12px] self-stretch" data-node-id="714:2999" data-name="Key dates">
-              <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="714:3000" data-name="Card head">
-                <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip relative" data-node-id="714:3001" data-name="t">
-                  <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[16px] whitespace-nowrap" data-node-id="714:3002">
-                    Key dates
+                  <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] w-full" data-node-id="610:3330">
+                    7 Oct · ₹17,000 held for you
                   </p>
                 </div>
-              </div>
-              <div className="[word-break:break-word] border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center leading-[normal] not-italic overflow-clip py-[10px] relative shrink-0 text-[13px] w-full" data-node-id="714:3003" data-name="kv">
-                <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] w-[130px]" data-node-id="714:3004">
-                  Project start
-                </p>
-                <p className="flex-[1_0_0] font-['Inter:Medium'] font-medium min-w-px relative text-[#070b13]" data-node-id="714:3005">
-                  7 Oct 2026
-                </p>
-              </div>
-              <div className="[word-break:break-word] border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center leading-[normal] not-italic overflow-clip py-[10px] relative shrink-0 text-[13px] w-full" data-node-id="714:3006" data-name="kv">
-                <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] w-[130px]" data-node-id="714:3007">
-                  Last-day Story due
-                </p>
-                <p className="flex-[1_0_0] font-['Inter:Medium'] font-medium min-w-px relative text-[#070b13]" data-node-id="714:3008">
-                  30 Oct
-                </p>
-              </div>
-              <div className="[word-break:break-word] border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center leading-[normal] not-italic overflow-clip py-[10px] relative shrink-0 text-[13px] w-full" data-node-id="714:3009" data-name="kv">
-                <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] w-[130px]" data-node-id="714:3010">
-                  Story goes live
-                </p>
-                <p className="flex-[1_0_0] font-['Inter:Medium'] font-medium min-w-px relative text-[#070b13]" data-node-id="714:3011">
-                  5 Nov
-                </p>
-              </div>
-              <div className="[word-break:break-word] border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center leading-[normal] not-italic overflow-clip py-[10px] relative shrink-0 text-[13px] w-full" data-node-id="714:3012" data-name="kv">
-                <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] w-[130px]" data-node-id="714:3013">
-                  Project ends
-                </p>
-                <p className="flex-[1_0_0] font-['Inter:Medium'] font-medium min-w-px relative text-[#070b13]" data-node-id="714:3014">
-                  7 Nov 2026
-                </p>
-              </div>
-              <div className="[word-break:break-word] border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center leading-[normal] not-italic overflow-clip py-[10px] relative shrink-0 text-[13px] w-full" data-node-id="714:3015" data-name="kv">
-                <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] w-[130px]" data-node-id="714:3016">
-                  Usage rights end
-                </p>
-                <p className="flex-[1_0_0] font-['Inter:Medium'] font-medium min-w-px relative text-[#070b13]" data-node-id="714:3017">
-                  7 Dec 2026
-                </p>
+                <div className="content-stretch flex flex-[1_0_0] flex-col gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="610:3331" data-name="Step · Accepted">
+                  <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="610:3332" data-name="Dot row">
+                    <div className="bg-[#149d46] content-stretch flex items-center justify-center overflow-clip relative rounded-[10px] shrink-0 size-[20px]" data-node-id="610:3333" data-name="Dot">
+                      <p className="[word-break:break-word] font-['Inter:Bold'] font-bold leading-[normal] not-italic relative shrink-0 text-[11px] text-white whitespace-nowrap" data-node-id="610:3334">
+                        ✓
+                      </p>
+                    </div>
+                    <div className="bg-[#149d46] flex-[1_0_0] h-[2px] min-w-px relative" data-node-id="610:3335" data-name="Line" />
+                  </div>
+                  <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[12px] w-full" data-node-id="610:3336">
+                    Accepted
+                  </p>
+                  <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] w-full" data-node-id="610:3337">
+                    8 Oct
+                  </p>
+                </div>
+                <div className="content-stretch flex flex-[1_0_0] flex-col gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="610:3338" data-name="Step · Product sent">
+                  <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="610:3339" data-name="Dot row">
+                    <div className="bg-[#149d46] content-stretch flex items-center justify-center overflow-clip relative rounded-[10px] shrink-0 size-[20px]" data-node-id="610:3340" data-name="Dot">
+                      <p className="[word-break:break-word] font-['Inter:Bold'] font-bold leading-[normal] not-italic relative shrink-0 text-[11px] text-white whitespace-nowrap" data-node-id="610:3341">
+                        ✓
+                      </p>
+                    </div>
+                    <div className="bg-[#149d46] flex-[1_0_0] h-[2px] min-w-px relative" data-node-id="610:3342" data-name="Line" />
+                  </div>
+                  <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[12px] w-full" data-node-id="610:3343">
+                    Product sent
+                  </p>
+                  <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] w-full" data-node-id="610:3344">
+                    9 Oct · Delhivery
+                  </p>
+                </div>
+                <div className="content-stretch flex flex-[1_0_0] flex-col gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="610:3345" data-name="Step · Delivered">
+                  <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="610:3346" data-name="Dot row">
+                    <div className="bg-[#149d46] content-stretch flex items-center justify-center overflow-clip relative rounded-[10px] shrink-0 size-[20px]" data-node-id="610:3347" data-name="Dot">
+                      <p className="[word-break:break-word] font-['Inter:Bold'] font-bold leading-[normal] not-italic relative shrink-0 text-[11px] text-white whitespace-nowrap" data-node-id="610:3348">
+                        ✓
+                      </p>
+                    </div>
+                    <div className="bg-[#149d46] flex-[1_0_0] h-[2px] min-w-px relative" data-node-id="610:3349" data-name="Line" />
+                  </div>
+                  <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[12px] w-full" data-node-id="610:3350">
+                    Delivered
+                  </p>
+                  <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] w-full" data-node-id="610:3351">
+                    10 Oct · you confirmed
+                  </p>
+                </div>
+                <div className="content-stretch flex flex-[1_0_0] flex-col gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="610:3352" data-name="Step · In progress">
+                  <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="610:3353" data-name="Dot row">
+                    <div className="relative shrink-0 size-[20px]" data-node-id="610:3354" data-name="Dot">
+                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgDot3} />
+                    </div>
+                    <div className="bg-[#e5e7eb] flex-[1_0_0] h-[2px] min-w-px relative" data-node-id="610:3356" data-name="Line" />
+                  </div>
+                  <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[12px] w-full" data-node-id="610:3357">
+                    In progress
+                  </p>
+                  <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#3b5bff] text-[11px] w-full" data-node-id="610:3358">
+                    2 Reels live · Story changes asked
+                  </p>
+                </div>
+                <div className="content-stretch flex flex-[1_0_0] flex-col gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="610:3359" data-name="Step · Next delivery">
+                  <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="610:3360" data-name="Dot row">
+                    <div className="bg-white border-[#d4d7df] border-[1.5px] border-solid relative rounded-[10px] shrink-0 size-[20px]" data-node-id="610:3361" data-name="Dot" />
+                    <div className="bg-[#e5e7eb] flex-[1_0_0] h-[2px] min-w-px relative" data-node-id="610:3362" data-name="Line" />
+                  </div>
+                  <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[12px] w-full" data-node-id="610:3363">
+                    Next delivery
+                  </p>
+                  <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] w-full" data-node-id="610:3364">
+                    Last-day reminder Story by 30 Oct
+                  </p>
+                </div>
+                <div className="content-stretch flex flex-[1_0_0] flex-col gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="610:3365" data-name="Step · Next payment">
+                  <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="610:3366" data-name="Dot row">
+                    <div className="bg-white border-[#d4d7df] border-[1.5px] border-solid relative rounded-[10px] shrink-0 size-[20px]" data-node-id="610:3367" data-name="Dot" />
+                  </div>
+                  <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[12px] w-full" data-node-id="610:3368">
+                    Next payment
+                  </p>
+                  <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] w-full" data-node-id="610:3369">
+                    ₹3,000 when the results Reel is approved
+                  </p>
+                </div>
               </div>
             </div>
-            <div className="bg-white border border-[#e5e7eb] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[14px] items-start min-w-px overflow-clip p-[20px] relative rounded-[12px] self-stretch" data-node-id="714:3018" data-name="Quick actions">
-              <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="714:3019" data-name="Card head">
-                <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip relative" data-node-id="714:3020" data-name="t">
-                  <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[16px] whitespace-nowrap" data-node-id="714:3021">
-                    Quick actions
+            <div className="content-stretch flex gap-[20px] items-start overflow-clip relative shrink-0 w-full" data-node-id="714:3053" data-name="Row">
+              <div className="bg-white border border-[#e5e7eb] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[14px] items-start min-w-px overflow-clip p-[20px] relative rounded-[12px] self-stretch" data-node-id="714:2973" data-name="Deliverable progress">
+                <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="714:2974" data-name="Card head">
+                  <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start leading-[normal] min-w-px not-italic overflow-clip relative whitespace-nowrap" data-node-id="714:2975" data-name="t">
+                    <p className="font-['Inter:Semi_Bold'] font-semibold relative shrink-0 text-[#070b13] text-[16px]" data-node-id="714:2976">
+                      Deliverable progress
+                    </p>
+                    <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] text-[12px]" data-node-id="714:2977">
+                      Vitamin-C Serum
+                    </p>
+                  </div>
+                </div>
+                <div className="content-stretch flex gap-[16px] items-center overflow-clip relative shrink-0 w-full" data-node-id="714:2978" data-name="p">
+                  <div className="overflow-clip relative shrink-0 size-[96px]" data-node-id="714:2979" data-name="Donut">
+                    <div className="absolute left-0 size-[96px] top-0" data-node-id="714:2980" data-name="Ellipse">
+                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgEllipse} />
+                    </div>
+                    <div className="absolute left-0 size-[96px] top-0" data-node-id="714:2981" data-name="Ellipse">
+                      <div className="absolute inset-[0_0_0_7.47%]">
+                        <img alt="" className="block max-w-none size-full" src={imgEllipse1} />
+                      </div>
+                    </div>
+                    <div className="absolute left-0 size-[96px] top-0" data-node-id="714:2982" data-name="Ellipse">
+                      <div className="absolute bottom-1/4 left-0 right-[51.08%] top-0">
+                        <img alt="" className="block max-w-none size-full" src={imgEllipse2} />
+                      </div>
+                    </div>
+                    <div className="absolute content-stretch flex flex-col items-center left-[32px] overflow-clip top-[39px]" data-node-id="714:2983" data-name="Center">
+                      <p className="[word-break:break-word] font-['Inter:Bold'] font-bold leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[15px] text-center whitespace-nowrap" data-node-id="714:2984">
+                        75%
+                      </p>
+                    </div>
+                  </div>
+                  <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip relative" data-node-id="714:2985" data-name="l">
+                    <div className="content-stretch flex gap-[10px] items-center overflow-clip py-[8px] relative shrink-0 w-full" data-node-id="714:2986" data-name="Legend">
+                      <div className="relative shrink-0 size-[10px]" data-node-id="714:2987" data-name="Ellipse">
+                        <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgEllipse3} />
+                      </div>
+                      <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[normal] min-w-px not-italic relative text-[#394357] text-[13px]" data-node-id="714:2988">
+                        Approved · paid
+                      </p>
+                      <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap" data-node-id="714:2989">
+                        2
+                      </p>
+                    </div>
+                    <div className="content-stretch flex gap-[10px] items-center overflow-clip py-[8px] relative shrink-0 w-full" data-node-id="714:2990" data-name="Legend">
+                      <div className="relative shrink-0 size-[10px]" data-node-id="714:2991" data-name="Ellipse">
+                        <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgEllipse4} />
+                      </div>
+                      <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[normal] min-w-px not-italic relative text-[#394357] text-[13px]" data-node-id="714:2992">
+                        Changes requested
+                      </p>
+                      <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap" data-node-id="714:2993">
+                        1
+                      </p>
+                    </div>
+                    <div className="content-stretch flex gap-[10px] items-center overflow-clip py-[8px] relative shrink-0 w-full" data-node-id="714:2994" data-name="Legend">
+                      <div className="relative shrink-0 size-[10px]" data-node-id="714:2995" data-name="Ellipse">
+                        <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgEllipse5} />
+                      </div>
+                      <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[normal] min-w-px not-italic relative text-[#394357] text-[13px]" data-node-id="714:2996">
+                        Not started
+                      </p>
+                      <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap" data-node-id="714:2997">
+                        0
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[13px] whitespace-nowrap" data-node-id="714:2998">
+                  3 of 4 done
+                </p>
+              </div>
+              <div className="bg-white border border-[#e5e7eb] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[14px] items-start min-w-px overflow-clip p-[20px] relative rounded-[12px] self-stretch" data-node-id="714:2999" data-name="Key dates">
+                <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="714:3000" data-name="Card head">
+                  <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip relative" data-node-id="714:3001" data-name="t">
+                    <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[16px] whitespace-nowrap" data-node-id="714:3002">
+                      Key dates
+                    </p>
+                  </div>
+                </div>
+                <div className="[word-break:break-word] border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center leading-[normal] not-italic overflow-clip py-[10px] relative shrink-0 text-[13px] w-full" data-node-id="714:3003" data-name="kv">
+                  <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] w-[130px]" data-node-id="714:3004">
+                    Project start
+                  </p>
+                  <p className="flex-[1_0_0] font-['Inter:Medium'] font-medium min-w-px relative text-[#070b13]" data-node-id="714:3005">
+                    7 Oct 2026
+                  </p>
+                </div>
+                <div className="[word-break:break-word] border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center leading-[normal] not-italic overflow-clip py-[10px] relative shrink-0 text-[13px] w-full" data-node-id="714:3006" data-name="kv">
+                  <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] w-[130px]" data-node-id="714:3007">
+                    Last-day Story due
+                  </p>
+                  <p className="flex-[1_0_0] font-['Inter:Medium'] font-medium min-w-px relative text-[#070b13]" data-node-id="714:3008">
+                    30 Oct
+                  </p>
+                </div>
+                <div className="[word-break:break-word] border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center leading-[normal] not-italic overflow-clip py-[10px] relative shrink-0 text-[13px] w-full" data-node-id="714:3009" data-name="kv">
+                  <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] w-[130px]" data-node-id="714:3010">
+                    Story goes live
+                  </p>
+                  <p className="flex-[1_0_0] font-['Inter:Medium'] font-medium min-w-px relative text-[#070b13]" data-node-id="714:3011">
+                    5 Nov
+                  </p>
+                </div>
+                <div className="[word-break:break-word] border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center leading-[normal] not-italic overflow-clip py-[10px] relative shrink-0 text-[13px] w-full" data-node-id="714:3012" data-name="kv">
+                  <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] w-[130px]" data-node-id="714:3013">
+                    Project ends
+                  </p>
+                  <p className="flex-[1_0_0] font-['Inter:Medium'] font-medium min-w-px relative text-[#070b13]" data-node-id="714:3014">
+                    7 Nov 2026
+                  </p>
+                </div>
+                <div className="[word-break:break-word] border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center leading-[normal] not-italic overflow-clip py-[10px] relative shrink-0 text-[13px] w-full" data-node-id="714:3015" data-name="kv">
+                  <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] w-[130px]" data-node-id="714:3016">
+                    Usage rights end
+                  </p>
+                  <p className="flex-[1_0_0] font-['Inter:Medium'] font-medium min-w-px relative text-[#070b13]" data-node-id="714:3017">
+                    7 Dec 2026
                   </p>
                 </div>
               </div>
-              <button type="button" onClick={() => setIsUploadOpen(true)} className="bg-[var(--prim-gray-900,#0d0d10)] content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 w-full hover:bg-[#1a1a24] transition" data-node-id="714:3022" data-name="Button">
-                <div className="relative shrink-0 size-[16px]" data-node-id="I714:3022;5:6" data-name="Icon">
-                  {storyV2Uploaded ? (
-                    <Check size={16} className="text-[#16a34a]" />
-                  ) : (
-                    <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon21} />
-                  )}
+              <div className="bg-white border border-[#e5e7eb] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[14px] items-start min-w-px overflow-clip p-[20px] relative rounded-[12px] self-stretch" data-node-id="714:3018" data-name="Quick actions">
+                <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="714:3019" data-name="Card head">
+                  <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip relative" data-node-id="714:3020" data-name="t">
+                    <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[normal] not-italic relative shrink-0 text-[#070b13] text-[16px] whitespace-nowrap" data-node-id="714:3021">
+                      Quick actions
+                    </p>
+                  </div>
                 </div>
-                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-on-primary,white)] text-left whitespace-nowrap" data-node-id="I714:3022;5:9">
-                  {storyV2Uploaded ? "Story v2 submitted ✓" : "Upload Story v2"}
+                <button type="button" onClick={() => setIsUploadOpen(true)} className="bg-[var(--prim-gray-900,#0d0d10)] content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 w-full hover:bg-[#1a1a24] transition" data-node-id="714:3022" data-name="Button">
+                  <div className="relative shrink-0 size-[16px]" data-node-id="I714:3022;5:6" data-name="Icon">
+                    {storyV2Uploaded ? (
+                      <Check size={16} className="text-[#16a34a]" />
+                    ) : (
+                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon21} />
+                    )}
+                  </div>
+                  <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-on-primary,white)] text-left whitespace-nowrap" data-node-id="I714:3022;5:9">
+                    {storyV2Uploaded ? "Story v2 submitted ✓" : "Upload Story v2"}
+                  </p>
+                </button>
+                <a href="#brief-section" className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 w-full hover:bg-[#f4f6fb] transition" data-node-id="714:3030" data-name="Button">
+                  <div className="relative shrink-0 size-[16px]" data-node-id="I714:3030;5:30" data-name="Icon">
+                    <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon22} />
+                  </div>
+                  <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="I714:3030;5:33">
+                    View brief
+                  </p>
+                </a>
+                <Link to="/brand/messages" className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 w-full hover:bg-[#f4f6fb] transition" data-node-id="714:3039" data-name="Button">
+                  <div className="relative shrink-0 size-[16px]" data-node-id="I714:3039;5:30" data-name="Icon">
+                    <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon16} />
+                  </div>
+                  <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] text-left whitespace-nowrap" data-node-id="I714:3039;5:33">
+                    Message brand
+                  </p>
+                </Link>
+                <button type="button" onClick={() => setIsCounterOfferOpen(true)} className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 w-full hover:bg-[#f4f6fb] transition" data-node-id="714:3045" data-name="Button">
+                  <div className="relative shrink-0 size-[16px]" data-node-id="I714:3045;5:30" data-name="Icon">
+                    <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon23} />
+                  </div>
+                  <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="I714:3045;5:33">
+                    Counter offer time
+                  </p>
+                </button>
+                <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[12px] w-full" data-node-id="714:3052">
+                  {storyV2Uploaded ? `Story v2 (${uploadedFileName}) submitted · in review by Minimalist.` : "Minimalist approves the Story to release ₹3,000 to you."}
                 </p>
-              </button>
-              <a href="#brief-section" className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 w-full hover:bg-[#f4f6fb] transition" data-node-id="714:3030" data-name="Button">
-                <div className="relative shrink-0 size-[16px]" data-node-id="I714:3030;5:30" data-name="Icon">
-                  <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon22} />
-                </div>
-                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="I714:3030;5:33">
-                  View brief
-                </p>
-              </a>
-              <Link to="/brand/messages" className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 w-full hover:bg-[#f4f6fb] transition" data-node-id="714:3039" data-name="Button">
-                <div className="relative shrink-0 size-[16px]" data-node-id="I714:3039;5:30" data-name="Icon">
-                  <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon16} />
-                </div>
-                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] text-left whitespace-nowrap" data-node-id="I714:3039;5:33">
-                  Message brand
-                </p>
-              </Link>
-              <button type="button" onClick={() => setIsCounterOfferOpen(true)} className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[8px] h-[40px] items-center justify-center overflow-clip px-[16px] relative rounded-[var(--radius-md,8px)] shrink-0 w-full hover:bg-[#f4f6fb] transition" data-node-id="714:3045" data-name="Button">
-                <div className="relative shrink-0 size-[16px]" data-node-id="I714:3045;5:30" data-name="Icon">
-                  <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon23} />
-                </div>
-                <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="I714:3045;5:33">
-                  Counter offer time
-                </p>
-              </button>
-              <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[12px] w-full" data-node-id="714:3052">
-                {storyV2Uploaded ? `Story v2 (${uploadedFileName}) submitted · in review by Minimalist.` : "Minimalist approves the Story to release ₹3,000 to you."}
-              </p>
+              </div>
             </div>
-          </div>
-          <div className="content-stretch flex gap-[20px] items-start overflow-clip relative shrink-0 w-full" data-node-id="551:1009" data-name="Row">
-            <div className="content-stretch flex flex-[1_0_0] flex-col gap-[20px] items-start min-w-px overflow-clip relative" data-node-id="551:1010" data-name="Column">
-              <div className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-col gap-[16px] items-start overflow-clip p-[20px] relative rounded-[var(--radius-lg,12px)] shrink-0 w-full" data-node-id="551:1011" data-name="Deliverables">
-                <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="551:1012" data-name="Card head">
-                  <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start min-w-px not-italic overflow-clip relative whitespace-nowrap" data-node-id="551:1013" data-name="t">
-                    <p className="font-['Inter:Semi_Bold'] font-semibold leading-[24px] relative shrink-0 text-[16px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="551:1014">
-                      Deliverables
-                    </p>
-                    <p className="font-['Inter:Regular'] font-normal leading-[16px] relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="551:1015">
-                      4 posts · fee ₹17,000
-                    </p>
-                  </div>
-                </div>
-                <div className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-col items-start overflow-clip relative rounded-[var(--radius-lg,12px)] shrink-0 w-full" data-node-id="551:1034" data-name="Table">
-                  <div className="bg-[var(--bg-subtle,#f4f6fb)] content-stretch flex gap-[12px] items-center overflow-clip px-[16px] py-[10px] relative shrink-0 w-full" data-node-id="551:1035" data-name="Header">
-                    <div className="content-stretch flex flex-[1_0_0] items-center min-w-px relative" data-node-id="551:1037" data-name="Cell">
-                      <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Medium'] font-medium leading-[16px] min-w-px not-italic relative text-[#8491a3] text-[12px]" data-node-id="551:1036">
-                        DELIVERABLE
+            <div className="content-stretch flex gap-[20px] items-start overflow-clip relative shrink-0 w-full" data-node-id="551:1009" data-name="Row">
+              <div className="content-stretch flex flex-[1_0_0] flex-col gap-[20px] items-start min-w-px overflow-clip relative" data-node-id="551:1010" data-name="Column">
+                <div className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-col gap-[16px] items-start overflow-clip p-[20px] relative rounded-[var(--radius-lg,12px)] shrink-0 w-full" data-node-id="551:1011" data-name="Deliverables">
+                  <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="551:1012" data-name="Card head">
+                    <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start min-w-px not-italic overflow-clip relative whitespace-nowrap" data-node-id="551:1013" data-name="t">
+                      <p className="font-['Inter:Semi_Bold'] font-semibold leading-[24px] relative shrink-0 text-[16px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="551:1014">
+                        Deliverables
                       </p>
-                    </div>
-                    <div className="content-stretch flex items-center relative shrink-0 w-[121px]" data-node-id="551:1039" data-name="Cell">
-                      <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[#8491a3] text-[12px] whitespace-nowrap" data-node-id="551:1038">
-                        DATES
-                      </p>
-                    </div>
-                    <div className="content-stretch flex items-center justify-end relative shrink-0 w-[64px]" data-node-id="551:1041" data-name="Cell">
-                      <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[#8491a3] text-[12px] whitespace-nowrap" data-node-id="551:1040">
-                        FEE
-                      </p>
-                    </div>
-                    <div className="content-stretch flex items-center relative shrink-0 w-[100px]" data-node-id="551:1043" data-name="Cell">
-                      <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[#8491a3] text-[12px] whitespace-nowrap" data-node-id="551:1042">
-                        CONTENT
-                      </p>
-                    </div>
-                    <div className="content-stretch flex items-center relative shrink-0 w-[107px]" data-node-id="551:1045" data-name="Cell">
-                      <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[#8491a3] text-[12px] whitespace-nowrap" data-node-id="551:1044">
-                        PAYMENT
+                      <p className="font-['Inter:Regular'] font-normal leading-[16px] relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="551:1015">
+                        4 posts · fee ₹17,000
                       </p>
                     </div>
                   </div>
-                  <div className="border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[12px] items-center overflow-clip px-[16px] py-[12px] relative shrink-0 w-full" data-node-id="551:1046" data-name="Row">
-                    <div className="content-stretch flex flex-[1_0_0] items-center min-w-px relative" data-node-id="551:1048" data-name="Cell">
-                      <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Medium'] font-medium leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="551:1047">
-                        Festive GRWM · Reel
-                      </p>
-                    </div>
-                    <div className="content-stretch flex items-center relative shrink-0 w-[121px]" data-node-id="551:1050" data-name="Cell">
-                      <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap" data-node-id="551:1049">
-                        Live 18 Oct
-                      </p>
-                    </div>
-                    <div className="content-stretch flex items-center justify-end relative shrink-0 w-[64px]" data-node-id="551:1052" data-name="Cell">
-                      <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1051">
-                        ₹8,500
-                      </p>
-                    </div>
-                    <div className="content-stretch flex items-center relative shrink-0 w-[100px]" data-node-id="551:1053" data-name="Cell">
-                      <Badge className="bg-[var(--status-success-bg,#e1fce3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" />
-                    </div>
-                    <div className="content-stretch flex items-center relative shrink-0 w-[107px]" data-node-id="551:1054" data-name="Cell">
-                      <Badge className="bg-[var(--status-success-bg,#e1fce3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" label="Paid ₹8,500 · 19 Oct" />
-                    </div>
-                  </div>
-                  <div className="border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[12px] items-center overflow-clip px-[16px] py-[12px] relative shrink-0 w-full" data-node-id="551:1055" data-name="Row">
-                    <div className="content-stretch flex flex-[1_0_0] items-center min-w-px relative" data-node-id="551:1057" data-name="Cell">
-                      <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Medium'] font-medium leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="551:1056">
-                        Launch day · Story
-                      </p>
-                    </div>
-                    <div className="content-stretch flex items-center relative shrink-0 w-[121px]" data-node-id="551:1059" data-name="Cell">
-                      <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap" data-node-id="551:1058">
-                        Live 20 Oct
-                      </p>
-                    </div>
-                    <div className="content-stretch flex items-center justify-end relative shrink-0 w-[64px]" data-node-id="551:1061" data-name="Cell">
-                      <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1060">
-                        ₹4,250
-                      </p>
-                    </div>
-                    <div className="content-stretch flex items-center relative shrink-0 w-[100px]" data-node-id="551:1062" data-name="Cell">
-                      <Badge className="bg-[var(--status-success-bg,#e1fce3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" />
-                    </div>
-                    <div className="content-stretch flex items-center relative shrink-0 w-[107px]" data-node-id="551:1063" data-name="Cell">
-                      <Badge className="bg-[var(--status-success-bg,#e1fce3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" label="Paid ₹4,250 · 21 Oct" />
-                    </div>
-                  </div>
-                  <div className="border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[12px] items-center overflow-clip px-[16px] py-[12px] relative shrink-0 w-full" data-node-id="551:1064" data-name="Row">
-                    <div className="content-stretch flex flex-[1_0_0] items-center min-w-px relative" data-node-id="551:1066" data-name="Cell">
-                      <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Medium'] font-medium leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="551:1065">
-                        Results after 7 days · Reel
-                      </p>
-                    </div>
-                    <div className="content-stretch flex items-center relative shrink-0 w-[121px]" data-node-id="551:1068" data-name="Cell">
-                      <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap" data-node-id="551:1067">
-                        Sent 26 Oct · waiting for approval
-                      </p>
-                    </div>
-                    <div className="content-stretch flex items-center justify-end relative shrink-0 w-[64px]" data-node-id="551:1070" data-name="Cell">
-                      <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1069">
-                        ₹3,000
-                      </p>
-                    </div>
-                    <div className="content-stretch flex items-center relative shrink-0 w-[100px]" data-node-id="551:1071" data-name="Cell">
-                      <div className="bg-[#ffedd5] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" data-node-id="551:1028" data-name="Badge">
-                        <div className="relative shrink-0 size-[6px]" data-node-id="I551:1028;5:107" data-name="Dot">
-                          <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgDot1} />
-                        </div>
-                        <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[#c2410c] text-[12px] whitespace-nowrap" data-node-id="I551:1028;5:108">
-                          Waiting for approval
+                  <div className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-col items-start overflow-clip relative rounded-[var(--radius-lg,12px)] shrink-0 w-full" data-node-id="551:1034" data-name="Table">
+                    <div className="bg-[var(--bg-subtle,#f4f6fb)] content-stretch flex gap-[12px] items-center overflow-clip px-[16px] py-[10px] relative shrink-0 w-full" data-node-id="551:1035" data-name="Header">
+                      <div className="content-stretch flex flex-[1_0_0] items-center min-w-px relative" data-node-id="551:1037" data-name="Cell">
+                        <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Medium'] font-medium leading-[16px] min-w-px not-italic relative text-[#8491a3] text-[12px]" data-node-id="551:1036">
+                          DELIVERABLE
+                        </p>
+                      </div>
+                      <div className="content-stretch flex items-center relative shrink-0 w-[121px]" data-node-id="551:1039" data-name="Cell">
+                        <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[#8491a3] text-[12px] whitespace-nowrap" data-node-id="551:1038">
+                          DATES
+                        </p>
+                      </div>
+                      <div className="content-stretch flex items-center justify-end relative shrink-0 w-[64px]" data-node-id="551:1041" data-name="Cell">
+                        <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[#8491a3] text-[12px] whitespace-nowrap" data-node-id="551:1040">
+                          FEE
+                        </p>
+                      </div>
+                      <div className="content-stretch flex items-center relative shrink-0 w-[100px]" data-node-id="551:1043" data-name="Cell">
+                        <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[#8491a3] text-[12px] whitespace-nowrap" data-node-id="551:1042">
+                          CONTENT
+                        </p>
+                      </div>
+                      <div className="content-stretch flex items-center relative shrink-0 w-[107px]" data-node-id="551:1045" data-name="Cell">
+                        <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[#8491a3] text-[12px] whitespace-nowrap" data-node-id="551:1044">
+                          PAYMENT
                         </p>
                       </div>
                     </div>
-                    <div className="content-stretch flex items-center relative shrink-0 w-[107px]" data-node-id="551:1072" data-name="Cell">
-                      <Badge className="bg-[var(--status-info-bg,#f1f4ff)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" label="₹3,000 in escrow" tone="Info" />
-                    </div>
-                  </div>
-                  <div className="border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[12px] items-center overflow-clip px-[16px] py-[12px] relative shrink-0 w-full" data-node-id="1663:36" data-name="Row">
-                    <div className="content-stretch flex flex-[1_0_0] items-center min-w-px relative" data-node-id="1663:37" data-name="Cell">
-                      <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Medium'] font-medium leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="1663:38">
-                        Last-day reminder · Story
-                      </p>
-                    </div>
-                    <div className="content-stretch flex items-center relative shrink-0 w-[121px]" data-node-id="1663:39" data-name="Cell">
-                      <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap" data-node-id="1663:40">
-                        Due 30 Oct
-                      </p>
-                    </div>
-                    <div className="content-stretch flex items-center justify-end relative shrink-0 w-[64px]" data-node-id="1663:41" data-name="Cell">
-                      <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="1663:42">
-                        ₹1,250
-                      </p>
-                    </div>
-                    <div className="content-stretch flex items-center relative shrink-0 w-[100px]" data-node-id="1663:43" data-name="Cell">
-                      <div className="bg-[#edeff3] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" data-node-id="1663:44" data-name="Badge">
-                        <div className="relative shrink-0 size-[6px]" data-node-id="I1663:44;5:107" data-name="Dot">
-                          <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgDot1} />
-                        </div>
-                        <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[#394357] text-[12px] whitespace-nowrap" data-node-id="I1663:44;5:108">
-                          Not started
-                        </p>
-                      </div>
-                    </div>
-                    <div className="content-stretch flex items-center relative shrink-0 w-[107px]" data-node-id="1663:45" data-name="Cell">
-                      <Badge className="bg-[var(--status-info-bg,#f1f4ff)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" label="₹1,250 in escrow" tone="Info" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white border border-[#e5e7eb] border-solid content-stretch flex flex-col gap-[14px] items-start overflow-clip p-[20px] relative rounded-[12px] shrink-0 w-full" data-node-id="600:2860" data-name="Products for your deliverables">
-                <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] not-italic overflow-clip relative shrink-0 whitespace-nowrap" data-node-id="600:2861" data-name="Card head">
-                  <p className="font-['Inter:Semi_Bold'] font-semibold relative shrink-0 text-[#070b13] text-[16px]" data-node-id="600:2862">
-                    Products for your deliverables
-                  </p>
-                  <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] text-[12px]" data-node-id="600:2863">
-                    Posting time for a deliverable starts when its product arrives
-                  </p>
-                </div>
-                <div className="border border-[#e5e7eb] border-solid content-stretch flex flex-col items-start overflow-clip relative rounded-[10px] shrink-0 w-full" data-node-id="600:2864" data-name="List">
-                  <div className="content-stretch flex flex-col items-start overflow-clip px-[14px] py-[12px] relative shrink-0 w-full" data-node-id="600:2865" data-name="Row 1">
-                    <div className="content-stretch flex gap-[12px] items-center overflow-clip relative shrink-0 w-full" data-node-id="600:2866" data-name="r">
-                      <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] not-italic overflow-clip relative shrink-0 w-[190px] whitespace-nowrap" data-node-id="600:2867" data-name="Deliverable">
-                        <p className="font-['Inter:Medium'] font-medium relative shrink-0 text-[#070b13] text-[13px]" data-node-id="600:2868">
+                    <div className="border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[12px] items-center overflow-clip px-[16px] py-[12px] relative shrink-0 w-full" data-node-id="551:1046" data-name="Row">
+                      <div className="content-stretch flex flex-[1_0_0] items-center min-w-px relative" data-node-id="551:1048" data-name="Cell">
+                        <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Medium'] font-medium leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="551:1047">
                           Festive GRWM · Reel
                         </p>
-                        <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#394357] text-[12px]" data-node-id="600:2869">
-                          Vitamin-C Serum × 1
+                      </div>
+                      <div className="content-stretch flex items-center relative shrink-0 w-[121px]" data-node-id="551:1050" data-name="Cell">
+                        <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap" data-node-id="551:1049">
+                          Live 18 Oct
                         </p>
                       </div>
-                      <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[normal] min-w-px not-italic relative text-[#8491a3] text-[12px]" data-node-id="600:2870">
-                        Delhivery · delivered 11 Oct · you confirmed
-                      </p>
-                      <Badge className="bg-[var(--status-success-bg,#e1fce3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" label="Received" />
+                      <div className="content-stretch flex items-center justify-end relative shrink-0 w-[64px]" data-node-id="551:1052" data-name="Cell">
+                        <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1051">
+                          ₹8,500
+                        </p>
+                      </div>
+                      <div className="content-stretch flex items-center relative shrink-0 w-[100px]" data-node-id="551:1053" data-name="Cell">
+                        <Badge className="bg-[var(--status-success-bg,#e1fce3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" />
+                      </div>
+                      <div className="content-stretch flex items-center relative shrink-0 w-[107px]" data-node-id="551:1054" data-name="Cell">
+                        <Badge className="bg-[var(--status-success-bg,#e1fce3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" label="Paid ₹8,500 · 19 Oct" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="border-[#edeff3] border-solid border-t content-stretch flex flex-col items-start overflow-clip px-[14px] py-[12px] relative shrink-0 w-full" data-node-id="600:2873" data-name="Row 2">
-                    <div className="content-stretch flex gap-[12px] items-center overflow-clip relative shrink-0 w-full" data-node-id="600:2874" data-name="r">
-                      <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] not-italic overflow-clip relative shrink-0 w-[190px] whitespace-nowrap" data-node-id="600:2875" data-name="Deliverable">
-                        <p className="font-['Inter:Medium'] font-medium relative shrink-0 text-[#070b13] text-[13px]" data-node-id="600:2876">
+                    <div className="border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[12px] items-center overflow-clip px-[16px] py-[12px] relative shrink-0 w-full" data-node-id="551:1055" data-name="Row">
+                      <div className="content-stretch flex flex-[1_0_0] items-center min-w-px relative" data-node-id="551:1057" data-name="Cell">
+                        <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Medium'] font-medium leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="551:1056">
                           Launch day · Story
                         </p>
-                        <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#394357] text-[12px]" data-node-id="600:2877">
-                          Vitamin-C Serum · launch kit × 1
+                      </div>
+                      <div className="content-stretch flex items-center relative shrink-0 w-[121px]" data-node-id="551:1059" data-name="Cell">
+                        <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap" data-node-id="551:1058">
+                          Live 20 Oct
                         </p>
                       </div>
-                      <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[normal] min-w-px not-italic relative text-[#8491a3] text-[12px]" data-node-id="600:2878">
-                        Blue Dart · delivered 18 Oct · you confirmed
-                      </p>
-                      <Badge className="bg-[var(--status-success-bg,#e1fce3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" label="Received" />
+                      <div className="content-stretch flex items-center justify-end relative shrink-0 w-[64px]" data-node-id="551:1061" data-name="Cell">
+                        <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1060">
+                          ₹4,250
+                        </p>
+                      </div>
+                      <div className="content-stretch flex items-center relative shrink-0 w-[100px]" data-node-id="551:1062" data-name="Cell">
+                        <Badge className="bg-[var(--status-success-bg,#e1fce3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" />
+                      </div>
+                      <div className="content-stretch flex items-center relative shrink-0 w-[107px]" data-node-id="551:1063" data-name="Cell">
+                        <Badge className="bg-[var(--status-success-bg,#e1fce3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" label="Paid ₹4,250 · 21 Oct" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="bg-[#fffaf0] border-[#edeff3] border-solid border-t content-stretch flex flex-col gap-[10px] items-start overflow-clip px-[14px] py-[12px] relative shrink-0 w-full" data-node-id="600:2881" data-name="Row 3">
-                    <div className="content-stretch flex gap-[12px] items-center overflow-clip relative shrink-0 w-full" data-node-id="600:2882" data-name="r">
-                      <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] not-italic overflow-clip relative shrink-0 w-[190px] whitespace-nowrap" data-node-id="600:2883" data-name="Deliverable">
-                        <p className="font-['Inter:Medium'] font-medium relative shrink-0 text-[#070b13] text-[13px]" data-node-id="600:2884">
+                    <div className="border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[12px] items-center overflow-clip px-[16px] py-[12px] relative shrink-0 w-full" data-node-id="551:1064" data-name="Row">
+                      <div className="content-stretch flex flex-[1_0_0] items-center min-w-px relative" data-node-id="551:1066" data-name="Cell">
+                        <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Medium'] font-medium leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="551:1065">
                           Results after 7 days · Reel
                         </p>
-                        <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#394357] text-[12px]" data-node-id="600:2885">
-                          Vitamin-C Serum · refill × 1
+                      </div>
+                      <div className="content-stretch flex items-center relative shrink-0 w-[121px]" data-node-id="551:1068" data-name="Cell">
+                        <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap" data-node-id="551:1067">
+                          Sent 26 Oct · waiting for approval
                         </p>
                       </div>
-                      <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[normal] min-w-px not-italic relative text-[#8491a3] text-[12px]" data-node-id="600:2886">
-                        {productReceived ? "Delhivery delivered 26 Oct · you confirmed" : "Delhivery marked it delivered 26 Oct, 11:40"}
-                      </p>
-                      <Badge className={`content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0 ${productReceived ? "bg-[var(--status-success-bg,#e1fce3)]" : "bg-[var(--status-warning-bg,#feefce)]"}`} label={productReceived ? "Received" : "Confirm"} tone={productReceived ? "Success" : "Warning"} />
-                    </div>
-                    <div className="content-stretch flex gap-[10px] items-center overflow-clip relative shrink-0 w-full" data-node-id="600:2889" data-name="Actions">
-                      {!productReceived ? (
-                        <button type="button" onClick={() => setProductReceived(true)} className="bg-[var(--prim-gray-900,#0d0d10)] content-stretch cursor-pointer flex gap-[6px] h-[32px] items-center justify-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#1a1a24] transition" data-node-id="600:2890" data-name="Button">
-                          <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[18px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-on-primary,white)] whitespace-nowrap" data-node-id="I600:2890;5:21">
-                            Yes, I received it
+                      <div className="content-stretch flex items-center justify-end relative shrink-0 w-[64px]" data-node-id="551:1070" data-name="Cell">
+                        <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1069">
+                          ₹3,000
+                        </p>
+                      </div>
+                      <div className="content-stretch flex items-center relative shrink-0 w-[100px]" data-node-id="551:1071" data-name="Cell">
+                        <div className="bg-[#ffedd5] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" data-node-id="551:1028" data-name="Badge">
+                          <div className="relative shrink-0 size-[6px]" data-node-id="I551:1028;5:107" data-name="Dot">
+                            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgDot1} />
+                          </div>
+                          <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[#c2410c] text-[12px] whitespace-nowrap" data-node-id="I551:1028;5:108">
+                            Waiting for approval
                           </p>
-                        </button>
-                      ) : (
-                        <div className="bg-[#e1fce3] text-[#16a34a] font-['Inter:Medium'] text-[12px] px-[10px] py-[4px] rounded-[6px]">
-                          ✓ Confirmed by you
                         </div>
-                      )}
-                      <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#3b5bff] text-[13px] whitespace-nowrap" data-node-id="600:2895">
-                        Report a problem
+                      </div>
+                      <div className="content-stretch flex items-center relative shrink-0 w-[107px]" data-node-id="551:1072" data-name="Cell">
+                        <Badge className="bg-[var(--status-info-bg,#f1f4ff)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" label="₹3,000 in escrow" tone="Info" />
+                      </div>
+                    </div>
+                    <div className="border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[12px] items-center overflow-clip px-[16px] py-[12px] relative shrink-0 w-full" data-node-id="1663:36" data-name="Row">
+                      <div className="content-stretch flex flex-[1_0_0] items-center min-w-px relative" data-node-id="1663:37" data-name="Cell">
+                        <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Medium'] font-medium leading-[22px] min-w-px not-italic relative text-[14px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="1663:38">
+                          Last-day reminder · Story
+                        </p>
+                      </div>
+                      <div className="content-stretch flex items-center relative shrink-0 w-[121px]" data-node-id="1663:39" data-name="Cell">
+                        <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-secondary,#0d0d10)] whitespace-nowrap" data-node-id="1663:40">
+                          Due 30 Oct
+                        </p>
+                      </div>
+                      <div className="content-stretch flex items-center justify-end relative shrink-0 w-[64px]" data-node-id="1663:41" data-name="Cell">
+                        <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="1663:42">
+                          ₹1,250
+                        </p>
+                      </div>
+                      <div className="content-stretch flex items-center relative shrink-0 w-[100px]" data-node-id="1663:43" data-name="Cell">
+                        <div className="bg-[#edeff3] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" data-node-id="1663:44" data-name="Badge">
+                          <div className="relative shrink-0 size-[6px]" data-node-id="I1663:44;5:107" data-name="Dot">
+                            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgDot1} />
+                          </div>
+                          <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[#394357] text-[12px] whitespace-nowrap" data-node-id="I1663:44;5:108">
+                            Not started
+                          </p>
+                        </div>
+                      </div>
+                      <div className="content-stretch flex items-center relative shrink-0 w-[107px]" data-node-id="1663:45" data-name="Cell">
+                        <Badge className="bg-[var(--status-info-bg,#f1f4ff)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" label="₹1,250 in escrow" tone="Info" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-white border border-[#e5e7eb] border-solid content-stretch flex flex-col gap-[14px] items-start overflow-clip p-[20px] relative rounded-[12px] shrink-0 w-full" data-node-id="600:2860" data-name="Products for your deliverables">
+                  <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] not-italic overflow-clip relative shrink-0 whitespace-nowrap" data-node-id="600:2861" data-name="Card head">
+                    <p className="font-['Inter:Semi_Bold'] font-semibold relative shrink-0 text-[#070b13] text-[16px]" data-node-id="600:2862">
+                      Products for your deliverables
+                    </p>
+                    <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#8491a3] text-[12px]" data-node-id="600:2863">
+                      Posting time for a deliverable starts when its product arrives
+                    </p>
+                  </div>
+                  <div className="border border-[#e5e7eb] border-solid content-stretch flex flex-col items-start overflow-clip relative rounded-[10px] shrink-0 w-full" data-node-id="600:2864" data-name="List">
+                    <div className="content-stretch flex flex-col items-start overflow-clip px-[14px] py-[12px] relative shrink-0 w-full" data-node-id="600:2865" data-name="Row 1">
+                      <div className="content-stretch flex gap-[12px] items-center overflow-clip relative shrink-0 w-full" data-node-id="600:2866" data-name="r">
+                        <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] not-italic overflow-clip relative shrink-0 w-[190px] whitespace-nowrap" data-node-id="600:2867" data-name="Deliverable">
+                          <p className="font-['Inter:Medium'] font-medium relative shrink-0 text-[#070b13] text-[13px]" data-node-id="600:2868">
+                            Festive GRWM · Reel
+                          </p>
+                          <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#394357] text-[12px]" data-node-id="600:2869">
+                            Vitamin-C Serum × 1
+                          </p>
+                        </div>
+                        <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[normal] min-w-px not-italic relative text-[#8491a3] text-[12px]" data-node-id="600:2870">
+                          Delhivery · delivered 11 Oct · you confirmed
+                        </p>
+                        <Badge className="bg-[var(--status-success-bg,#e1fce3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" label="Received" />
+                      </div>
+                    </div>
+                    <div className="border-[#edeff3] border-solid border-t content-stretch flex flex-col items-start overflow-clip px-[14px] py-[12px] relative shrink-0 w-full" data-node-id="600:2873" data-name="Row 2">
+                      <div className="content-stretch flex gap-[12px] items-center overflow-clip relative shrink-0 w-full" data-node-id="600:2874" data-name="r">
+                        <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] not-italic overflow-clip relative shrink-0 w-[190px] whitespace-nowrap" data-node-id="600:2875" data-name="Deliverable">
+                          <p className="font-['Inter:Medium'] font-medium relative shrink-0 text-[#070b13] text-[13px]" data-node-id="600:2876">
+                            Launch day · Story
+                          </p>
+                          <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#394357] text-[12px]" data-node-id="600:2877">
+                            Vitamin-C Serum · launch kit × 1
+                          </p>
+                        </div>
+                        <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[normal] min-w-px not-italic relative text-[#8491a3] text-[12px]" data-node-id="600:2878">
+                          Blue Dart · delivered 18 Oct · you confirmed
+                        </p>
+                        <Badge className="bg-[var(--status-success-bg,#e1fce3)] content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0" label="Received" />
+                      </div>
+                    </div>
+                    <div className="bg-[#fffaf0] border-[#edeff3] border-solid border-t content-stretch flex flex-col gap-[10px] items-start overflow-clip px-[14px] py-[12px] relative shrink-0 w-full" data-node-id="600:2881" data-name="Row 3">
+                      <div className="content-stretch flex gap-[12px] items-center overflow-clip relative shrink-0 w-full" data-node-id="600:2882" data-name="r">
+                        <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] not-italic overflow-clip relative shrink-0 w-[190px] whitespace-nowrap" data-node-id="600:2883" data-name="Deliverable">
+                          <p className="font-['Inter:Medium'] font-medium relative shrink-0 text-[#070b13] text-[13px]" data-node-id="600:2884">
+                            Results after 7 days · Reel
+                          </p>
+                          <p className="font-['Inter:Regular'] font-normal relative shrink-0 text-[#394357] text-[12px]" data-node-id="600:2885">
+                            Vitamin-C Serum · refill × 1
+                          </p>
+                        </div>
+                        <p className="[word-break:break-word] flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[normal] min-w-px not-italic relative text-[#8491a3] text-[12px]" data-node-id="600:2886">
+                          {productReceived ? "Delhivery delivered 26 Oct · you confirmed" : "Delhivery marked it delivered 26 Oct, 11:40"}
+                        </p>
+                        <Badge className={`content-stretch flex gap-[6px] items-center overflow-clip px-[8px] py-[2px] relative rounded-[var(--radius-full,999px)] shrink-0 ${productReceived ? "bg-[var(--status-success-bg,#e1fce3)]" : "bg-[var(--status-warning-bg,#feefce)]"}`} label={productReceived ? "Received" : "Confirm"} tone={productReceived ? "Success" : "Warning"} />
+                      </div>
+                      <div className="content-stretch flex gap-[10px] items-center overflow-clip relative shrink-0 w-full" data-node-id="600:2889" data-name="Actions">
+                        {!productReceived ? (
+                          <button type="button" onClick={() => setProductReceived(true)} className="bg-[var(--prim-gray-900,#0d0d10)] content-stretch cursor-pointer flex gap-[6px] h-[32px] items-center justify-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#1a1a24] transition" data-node-id="600:2890" data-name="Button">
+                            <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[18px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-on-primary,white)] whitespace-nowrap" data-node-id="I600:2890;5:21">
+                              Yes, I received it
+                            </p>
+                          </button>
+                        ) : (
+                          <div className="bg-[#e1fce3] text-[#16a34a] font-['Inter:Medium'] text-[12px] px-[10px] py-[4px] rounded-[6px]">
+                            ✓ Confirmed by you
+                          </div>
+                        )}
+                        <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#3b5bff] text-[13px] whitespace-nowrap" data-node-id="600:2895">
+                          Report a problem
+                        </p>
+                        <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#3b5bff] text-[13px] whitespace-nowrap" data-node-id="600:2896">
+                          Track ↗
+                        </p>
+                        <div className="flex-[1_0_0] h-px min-w-px relative" data-node-id="600:2897" data-name="Frame" />
+                        <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#f29b07] text-[12px] whitespace-nowrap" data-node-id="600:2898">
+                          Auto-confirms today at 11:40 if you don’t
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[12px] whitespace-nowrap" data-node-id="600:2899">
+                    Your address goes only to Minimalist. Wrong item or damaged? Report it and the deadline pauses.
+                  </p>
+                </div>
+              </div>
+              <div className="content-stretch flex flex-col gap-[16px] items-start overflow-clip relative shrink-0 w-[360px]" data-node-id="551:1100" data-name="Column">
+                <div className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-col gap-[10px] items-start overflow-clip p-[20px] relative rounded-[var(--radius-lg,12px)] shrink-0 w-full" data-node-id="551:1101" data-name="Your link and code">
+                  <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="551:1102" data-name="Card head">
+                    <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start min-w-px not-italic overflow-clip relative whitespace-nowrap" data-node-id="551:1103" data-name="t">
+                      <p className="font-['Inter:Semi_Bold'] font-semibold leading-[24px] relative shrink-0 text-[16px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="551:1104">
+                        Your link and code
                       </p>
-                      <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[normal] not-italic relative shrink-0 text-[#3b5bff] text-[13px] whitespace-nowrap" data-node-id="600:2896">
-                        Track ↗
+                      <p className="font-['Inter:Regular'] font-normal leading-[16px] relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="551:1105">
+                        Use these in every post
                       </p>
-                      <div className="flex-[1_0_0] h-px min-w-px relative" data-node-id="600:2897" data-name="Frame" />
-                      <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#f29b07] text-[12px] whitespace-nowrap" data-node-id="600:2898">
-                        Auto-confirms today at 11:40 if you don’t
+                    </div>
+                  </div>
+                  <div className="[word-break:break-word] border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[10px] items-start not-italic overflow-clip py-[9px] relative shrink-0 w-full" data-node-id="551:1106" data-name="kv">
+                    <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px relative text-[13px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="551:1107">
+                      Code
+                    </p>
+                    <p className="font-['Inter:Medium'] font-medium leading-[22px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1108">
+                      ISHITA15 · 15% off
+                    </p>
+                  </div>
+                  <div className="[word-break:break-word] border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[10px] items-start not-italic overflow-clip py-[9px] relative shrink-0 w-full" data-node-id="551:1109" data-name="kv">
+                    <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px relative text-[13px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="551:1110">
+                      Link
+                    </p>
+                    <p className="font-['Inter:Medium'] font-medium leading-[22px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1111">
+                      flw.to/ishita-vcs
+                    </p>
+                  </div>
+                  <div className="[word-break:break-word] border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[10px] items-start not-italic overflow-clip py-[9px] relative shrink-0 w-full" data-node-id="551:1112" data-name="kv">
+                    <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px relative text-[13px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="551:1113">
+                      Orders from code
+                    </p>
+                    <p className="font-['Inter:Medium'] font-medium leading-[22px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1114">
+                      236
+                    </p>
+                  </div>
+                  <div className="[word-break:break-word] border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[10px] items-start not-italic overflow-clip py-[9px] relative shrink-0 w-full" data-node-id="551:1115" data-name="kv">
+                    <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px relative text-[13px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="551:1116">
+                      Orders from link
+                    </p>
+                    <p className="font-['Inter:Medium'] font-medium leading-[22px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1117">
+                      156
+                    </p>
+                  </div>
+                  <div className="content-stretch flex gap-[8px] items-start overflow-clip relative shrink-0 w-full" data-node-id="551:1118" data-name="b">
+                    <button type="button" onClick={handleCopyCode} className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[6px] h-[32px] items-center justify-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#f4f6fb] transition" data-node-id="551:1119" data-name="Button">
+                      <div className="relative shrink-0 size-[16px]" data-node-id="I551:1119;5:42" data-name="Icon">
+                        <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon24} />
+                      </div>
+                      <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[18px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="I551:1119;5:45">
+                        {copiedCode ? "Copied!" : "Copy code"}
+                      </p>
+                    </button>
+                    <button type="button" onClick={handleCopyLink} className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[6px] h-[32px] items-center justify-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#f4f6fb] transition" data-node-id="551:1126" data-name="Button">
+                      <div className="relative shrink-0 size-[16px]" data-node-id="I551:1126;5:42" data-name="Icon">
+                        <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon25} />
+                      </div>
+                      <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[18px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="I551:1126;5:45">
+                        {copiedLink ? "Copied!" : "Copy link"}
+                      </p>
+                    </button>
+                  </div>
+                </div>
+                <div className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-col gap-[6px] items-start overflow-clip p-[20px] relative rounded-[var(--radius-lg,12px)] shrink-0 w-full" data-node-id="551:1157" id="brief-section" data-name="Brief">
+                  <div className="content-stretch flex gap-[8px] items-center overflow-clip relative shrink-0 w-full" data-node-id="551:1158" data-name="Card head">
+                    <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip relative" data-node-id="551:1159" data-name="t">
+                      <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[24px] not-italic relative shrink-0 text-[16px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1160">
+                        Brief
+                      </p>
+                    </div>
+                    <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-link,#3b5bff)] whitespace-nowrap" data-node-id="551:1161">
+                      Open brief
+                    </p>
+                  </div>
+                  <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-body,#0d0d10)] w-full" data-node-id="551:1162">
+                    Show the Diwali Glow kit in your festive routine. Mention 15% off with your code. Post by the dates above.
+                  </p>
+                </div>
+                <div className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-col gap-[16px] items-start overflow-clip p-[20px] relative rounded-[var(--radius-lg,12px)] shrink-0 w-full" data-node-id="551:1073" data-name="Latest from Minimalist">
+                  <div className="[word-break:break-word] content-stretch flex gap-[8px] items-center not-italic overflow-clip relative shrink-0 w-full whitespace-nowrap" data-node-id="551:1074" data-name="Card head">
+                    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start min-w-px overflow-clip relative" data-node-id="551:1075" data-name="t">
+                      <p className="font-['Inter:Semi_Bold'] font-semibold leading-[24px] relative shrink-0 text-[16px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="551:1076">
+                        Latest from Minimalist
+                      </p>
+                      <p className="font-['Inter:Regular'] font-normal leading-[16px] relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="551:1077">
+                        Messages
+                      </p>
+                    </div>
+                    <a className="block cursor-pointer font-['Inter:Medium'] font-medium leading-[0] relative shrink-0 text-[12px] text-[color:var(--text-link,#3b5bff)]" data-node-id="551:1078">
+                      <p className="leading-[16px]">Open messages</p>
+                    </a>
+                  </div>
+                  <div className="border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[12px] items-center overflow-clip py-[12px] relative shrink-0 w-full" data-node-id="551:1086" data-name="r">
+                    <div className="bg-[var(--primary-subtle,#f1f4ff)] content-stretch flex items-center justify-center overflow-clip relative rounded-[8px] shrink-0 size-[36px]" data-node-id="551:1087" data-name="i">
+                      <div className="relative shrink-0 size-[16px]" data-node-id="551:1088" data-name="Icon">
+                        <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon26} />
+                      </div>
+                    </div>
+                    <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start min-w-px not-italic overflow-clip relative" data-node-id="551:1090" data-name="t">
+                      <p className="font-['Inter:Medium'] font-medium leading-[22px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1091">
+                        Ananya Mehta · 2 h ago
+                      </p>
+                      <p className="font-['Inter:Regular'] font-normal leading-[16px] min-w-full relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] w-[min-content]" data-node-id="551:1092">
+                        “Can you add the coupon on screen in the Story? Rest looks great.”
+                      </p>
+                    </div>
+                    <a className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[6px] h-[32px] items-center justify-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0" data-node-id="551:1079" data-name="Button">
+                      <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[18px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] text-left whitespace-nowrap" data-node-id="I551:1079;5:45">
+                        Reply
+                      </p>
+                    </a>
+                  </div>
+                  <div className="border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[12px] items-center overflow-clip py-[12px] relative shrink-0 w-full" data-node-id="551:1093" data-name="r">
+                    <div className="bg-[var(--primary-subtle,#f1f4ff)] content-stretch flex items-center justify-center overflow-clip relative rounded-[8px] shrink-0 size-[36px]" data-node-id="551:1094" data-name="i">
+                      <div className="relative shrink-0 size-[16px]" data-node-id="551:1095" data-name="Icon">
+                        <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon27} />
+                      </div>
+                    </div>
+                    <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start min-w-px not-italic overflow-clip relative" data-node-id="551:1097" data-name="t">
+                      <p className="font-['Inter:Medium'] font-medium leading-[22px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1098">
+                        Launch day Story approved · 21 Oct
+                      </p>
+                      <p className="font-['Inter:Regular'] font-normal leading-[16px] min-w-full relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] w-[min-content]" data-node-id="551:1099">
+                        ₹4,250 sent to your bank on 21 Oct
                       </p>
                     </div>
                   </div>
                 </div>
-                <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[12px] whitespace-nowrap" data-node-id="600:2899">
-                  Your address goes only to Minimalist. Wrong item or damaged? Report it and the deadline pauses.
-                </p>
               </div>
             </div>
-            <div className="content-stretch flex flex-col gap-[16px] items-start overflow-clip relative shrink-0 w-[360px]" data-node-id="551:1100" data-name="Column">
-              <div className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-col gap-[10px] items-start overflow-clip p-[20px] relative rounded-[var(--radius-lg,12px)] shrink-0 w-full" data-node-id="551:1101" data-name="Your link and code">
-                <div className="content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="551:1102" data-name="Card head">
-                  <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start min-w-px not-italic overflow-clip relative whitespace-nowrap" data-node-id="551:1103" data-name="t">
-                    <p className="font-['Inter:Semi_Bold'] font-semibold leading-[24px] relative shrink-0 text-[16px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="551:1104">
-                      Your link and code
-                    </p>
-                    <p className="font-['Inter:Regular'] font-normal leading-[16px] relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="551:1105">
-                      Use these in every post
-                    </p>
-                  </div>
-                </div>
-                <div className="[word-break:break-word] border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[10px] items-start not-italic overflow-clip py-[9px] relative shrink-0 w-full" data-node-id="551:1106" data-name="kv">
-                  <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px relative text-[13px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="551:1107">
-                    Code
-                  </p>
-                  <p className="font-['Inter:Medium'] font-medium leading-[22px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1108">
-                    ISHITA15 · 15% off
-                  </p>
-                </div>
-                <div className="[word-break:break-word] border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[10px] items-start not-italic overflow-clip py-[9px] relative shrink-0 w-full" data-node-id="551:1109" data-name="kv">
-                  <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px relative text-[13px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="551:1110">
-                    Link
-                  </p>
-                  <p className="font-['Inter:Medium'] font-medium leading-[22px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1111">
-                    flw.to/ishita-vcs
-                  </p>
-                </div>
-                <div className="[word-break:break-word] border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[10px] items-start not-italic overflow-clip py-[9px] relative shrink-0 w-full" data-node-id="551:1112" data-name="kv">
-                  <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px relative text-[13px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="551:1113">
-                    Orders from code
-                  </p>
-                  <p className="font-['Inter:Medium'] font-medium leading-[22px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1114">
-                    236
-                  </p>
-                </div>
-                <div className="[word-break:break-word] border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[10px] items-start not-italic overflow-clip py-[9px] relative shrink-0 w-full" data-node-id="551:1115" data-name="kv">
-                  <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] min-w-px relative text-[13px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="551:1116">
-                    Orders from link
-                  </p>
-                  <p className="font-['Inter:Medium'] font-medium leading-[22px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1117">
-                    156
-                  </p>
-                </div>
-                <div className="content-stretch flex gap-[8px] items-start overflow-clip relative shrink-0 w-full" data-node-id="551:1118" data-name="b">
-                  <button type="button" onClick={handleCopyCode} className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[6px] h-[32px] items-center justify-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#f4f6fb] transition" data-node-id="551:1119" data-name="Button">
-                    <div className="relative shrink-0 size-[16px]" data-node-id="I551:1119;5:42" data-name="Icon">
-                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon24} />
-                    </div>
-                    <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[18px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="I551:1119;5:45">
-                      {copiedCode ? "Copied!" : "Copy code"}
-                    </p>
-                  </button>
-                  <button type="button" onClick={handleCopyLink} className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[6px] h-[32px] items-center justify-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0 hover:bg-[#f4f6fb] transition" data-node-id="551:1126" data-name="Button">
-                    <div className="relative shrink-0 size-[16px]" data-node-id="I551:1126;5:42" data-name="Icon">
-                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon25} />
-                    </div>
-                    <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[18px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="I551:1126;5:45">
-                      {copiedLink ? "Copied!" : "Copy link"}
-                    </p>
-                  </button>
-                </div>
-              </div>
-              <div className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-col gap-[6px] items-start overflow-clip p-[20px] relative rounded-[var(--radius-lg,12px)] shrink-0 w-full" data-node-id="551:1157" id="brief-section" data-name="Brief">
-                <div className="content-stretch flex gap-[8px] items-center overflow-clip relative shrink-0 w-full" data-node-id="551:1158" data-name="Card head">
-                  <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip relative" data-node-id="551:1159" data-name="t">
-                    <p className="[word-break:break-word] font-['Inter:Semi_Bold'] font-semibold leading-[24px] not-italic relative shrink-0 text-[16px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1160">
-                      Brief
-                    </p>
-                  </div>
-                  <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] text-[color:var(--text-link,#3b5bff)] whitespace-nowrap" data-node-id="551:1161">
-                    Open brief
-                  </p>
-                </div>
-                <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[20px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-body,#0d0d10)] w-full" data-node-id="551:1162">
-                  Show the Diwali Glow kit in your festive routine. Mention 15% off with your code. Post by the dates above.
-                </p>
-              </div>
-              <div className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch flex flex-col gap-[16px] items-start overflow-clip p-[20px] relative rounded-[var(--radius-lg,12px)] shrink-0 w-full" data-node-id="551:1073" data-name="Latest from Minimalist">
-                <div className="[word-break:break-word] content-stretch flex gap-[8px] items-center not-italic overflow-clip relative shrink-0 w-full whitespace-nowrap" data-node-id="551:1074" data-name="Card head">
-                  <div className="content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start min-w-px overflow-clip relative" data-node-id="551:1075" data-name="t">
-                    <p className="font-['Inter:Semi_Bold'] font-semibold leading-[24px] relative shrink-0 text-[16px] text-[color:var(--text-primary,#0d0d10)]" data-node-id="551:1076">
-                      Latest from Minimalist
-                    </p>
-                    <p className="font-['Inter:Regular'] font-normal leading-[16px] relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)]" data-node-id="551:1077">
-                      Messages
-                    </p>
-                  </div>
-                  <a className="block cursor-pointer font-['Inter:Medium'] font-medium leading-[0] relative shrink-0 text-[12px] text-[color:var(--text-link,#3b5bff)]" data-node-id="551:1078">
-                    <p className="leading-[16px]">Open messages</p>
-                  </a>
-                </div>
-                <div className="border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[12px] items-center overflow-clip py-[12px] relative shrink-0 w-full" data-node-id="551:1086" data-name="r">
-                  <div className="bg-[var(--primary-subtle,#f1f4ff)] content-stretch flex items-center justify-center overflow-clip relative rounded-[8px] shrink-0 size-[36px]" data-node-id="551:1087" data-name="i">
-                    <div className="relative shrink-0 size-[16px]" data-node-id="551:1088" data-name="Icon">
-                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon26} />
-                    </div>
-                  </div>
-                  <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start min-w-px not-italic overflow-clip relative" data-node-id="551:1090" data-name="t">
-                    <p className="font-['Inter:Medium'] font-medium leading-[22px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1091">
-                      Ananya Mehta · 2 h ago
-                    </p>
-                    <p className="font-['Inter:Regular'] font-normal leading-[16px] min-w-full relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] w-[min-content]" data-node-id="551:1092">
-                      “Can you add the coupon on screen in the Story? Rest looks great.”
-                    </p>
-                  </div>
-                  <a className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[6px] h-[32px] items-center justify-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] shrink-0" data-node-id="551:1079" data-name="Button">
-                    <p className="[word-break:break-word] font-['Inter:Medium'] font-medium leading-[18px] not-italic relative shrink-0 text-[13px] text-[color:var(--text-primary,#0d0d10)] text-left whitespace-nowrap" data-node-id="I551:1079;5:45">
-                      Reply
-                    </p>
-                  </a>
-                </div>
-                <div className="border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[12px] items-center overflow-clip py-[12px] relative shrink-0 w-full" data-node-id="551:1093" data-name="r">
-                  <div className="bg-[var(--primary-subtle,#f1f4ff)] content-stretch flex items-center justify-center overflow-clip relative rounded-[8px] shrink-0 size-[36px]" data-node-id="551:1094" data-name="i">
-                    <div className="relative shrink-0 size-[16px]" data-node-id="551:1095" data-name="Icon">
-                      <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon27} />
-                    </div>
-                  </div>
-                  <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start min-w-px not-italic overflow-clip relative" data-node-id="551:1097" data-name="t">
-                    <p className="font-['Inter:Medium'] font-medium leading-[22px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="551:1098">
-                      Launch day Story approved · 21 Oct
-                    </p>
-                    <p className="font-['Inter:Regular'] font-normal leading-[16px] min-w-full relative shrink-0 text-[12px] text-[color:var(--text-secondary,#0d0d10)] w-[min-content]" data-node-id="551:1099">
-                      ₹4,250 sent to your bank on 21 Oct
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
           </>
-          )}
-        </div>
+        )}
+      </div>
 
       {/* Counter Offer Modal */}
       <CounterOfferModal

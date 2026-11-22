@@ -756,6 +756,13 @@ export function CreatorMyProjectsPage() {
     feeFilter,
   ]);
 
+  const getProjectLink = (row: ProjectRowData) => {
+    if (activeTab === "live" || activeTab === "completed" || row.tab === "live" || row.tab === "completed") {
+      return `${creatorProjectRoute(row.id)}?view=workspace`;
+    }
+    return creatorProjectRoute(row.id);
+  };
+
   // Tab counts
   const tabCounts = useMemo(() => {
     return {
@@ -1303,7 +1310,7 @@ export function CreatorMyProjectsPage() {
                       </div>
                       <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[3px] items-start min-w-px not-italic overflow-clip relative whitespace-nowrap" data-name="t">
                         <Link
-                          to={creatorProjectRoute(row.id)}
+                          to={getProjectLink(row)}
                           className="font-['Inter:Medium'] font-medium leading-[22px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] hover:underline"
                         >
                           {row.name}
@@ -1400,7 +1407,7 @@ export function CreatorMyProjectsPage() {
                   <div className="content-stretch flex flex-col items-start relative shrink-0 w-[96px]" data-name="Cell">
                     <div className="content-stretch flex gap-[10px] items-center relative shrink-0" data-name="a">
                       <Link
-                        to={creatorProjectRoute(row.id)}
+                        to={getProjectLink(row)}
                         className="bg-[var(--bg-surface,white)] border border-[var(--border-default,#e3e5ec)] border-solid content-stretch cursor-pointer flex gap-[6px] h-[32px] items-center justify-center overflow-clip px-[12px] relative rounded-[var(--radius-md,8px)] hover:bg-[#f4f6fb] transition"
                         data-name="Button"
                       >
@@ -1431,7 +1438,7 @@ export function CreatorMyProjectsPage() {
                             className="absolute right-0 top-full mt-1.5 z-40 w-48 rounded-[8px] border border-[#e5e7eb] bg-white p-[6px] shadow-[0px_10px_24px_rgba(0,0,0,0.08)] text-[13px] text-[#0d0d10] animate-in fade-in zoom-in-95 duration-100"
                           >
                             <Link
-                              to={creatorProjectRoute(row.id)}
+                              to={getProjectLink(row)}
                               className="flex w-full items-center justify-between rounded-[6px] px-[12px] py-[8px] text-left text-[13px] transition cursor-pointer bg-[#eff4ff] text-[#0d0d10] font-medium"
                               onClick={() => setOpenActionRowId(null)}
                             >

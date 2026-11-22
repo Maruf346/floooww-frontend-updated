@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 import {
   ArrowRight,
   BriefcaseBusiness,
@@ -95,21 +96,73 @@ function MetricTile({ tile, index }: { tile: Tile; index: number }) {
   return <motion.article variants={scaleIn} className="min-w-0 rounded-xl border border-line/70 bg-white p-4"><span className={`grid size-9 place-items-center rounded-md text-white ${iconTone}`}><tile.Icon size={18} /></span><p className="mt-3.5 truncate text-[12px] leading-4 text-secondary">{tile.label}</p><p className="mt-0.5 text-[22px] font-semibold leading-7 tracking-[-.33px] text-ink">{tile.count !== undefined ? <CountUp to={tile.count} duration={1.8} delay={index * 0.08} /> : tile.value}</p><p className="mt-2.5 truncate text-[12px] font-medium leading-4 text-tertiary">{tile.note}</p></motion.article>;
 }
 
-function CardHeader({ title, subtitle, action }: { title: string; subtitle: string; action?: string }) {
-  return <header className="flex items-start justify-between gap-3"><div><h2 className="text-[16px] font-semibold leading-6 text-ink">{title}</h2><p className="text-[12px] leading-4 text-secondary">{subtitle}</p></div>{action && <button type="button" className="inline-flex items-center gap-1 text-[12px] font-medium text-primary">{action}<ArrowRight size={14} /></button>}</header>;
+function CardHeader({ title, subtitle, action, to }: { title: string; subtitle: string; action?: string; to?: string }) {
+  return (
+    <header className="flex items-start justify-between gap-3">
+      <div>
+        <h2 className="text-[16px] font-semibold leading-6 text-ink">{title}</h2>
+        <p className="text-[12px] leading-4 text-secondary">{subtitle}</p>
+      </div>
+      {action && (
+        to ? (
+          <Link to={to} className="inline-flex items-center gap-1 text-[12px] font-medium text-primary hover:underline">
+            {action}
+            <ArrowRight size={14} />
+          </Link>
+        ) : (
+          <button type="button" className="inline-flex items-center gap-1 text-[12px] font-medium text-primary">
+            {action}
+            <ArrowRight size={14} />
+          </button>
+        )
+      )}
+    </header>
+  );
 }
 
 export function CreatorOverviewContent() {
   return <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-4 pb-10">
-    <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="text-[26px] font-bold leading-[34px] tracking-[-.13px] text-ink">Welcome, Ishita</h1><p className="mt-1 text-[13px] leading-5 text-secondary">@ishitarao{dot}5 projects{dot}1-28 Oct 2026 compared with 3-30 Sep</p></div><div className="flex flex-wrap gap-2.5"><DateRangePicker value="1 Oct - 28 Oct 2026" /><button type="button" className="inline-flex h-10 items-center gap-2 rounded-md bg-ink px-4 text-[14px] font-medium text-white"><BriefcaseBusiness size={16} />Project discovery</button></div></section>
+    <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="text-[26px] font-bold leading-[34px] tracking-[-.13px] text-ink">Welcome, Ishita</h1><p className="mt-1 text-[13px] leading-5 text-secondary">@ishitarao{dot}5 projects{dot}1-28 Oct 2026 compared with 3-30 Sep</p></div><div className="flex flex-wrap gap-2.5"><DateRangePicker value="1 Oct - 28 Oct 2026" /><Link to="/creator/projects" className="inline-flex h-10 items-center gap-2 rounded-md bg-ink px-4 text-[14px] font-medium text-white hover:bg-black/90"><BriefcaseBusiness size={16} />Project discovery</Link></div></section>
 
     <RevealGroup className="rounded-xl border border-line bg-white p-5" stagger={0.06}><div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">{tiles.map((tile, index) => <RevealItem key={tile.label} variants={scaleIn}><MetricTile tile={tile} index={index} /></RevealItem>)}</div></RevealGroup>
 
     <section className="grid items-start gap-4 xl:grid-cols-[minmax(0,2fr)_360px]">
       <div className="space-y-4">
         <RevealItem variants={scaleIn}><article className="rounded-xl border border-line bg-white p-5"><CardHeader title="To do" subtitle="5 things need you" /><div className="mt-3">{actionItems.map(({ title, body, due, tone, Icon }) => <button type="button" key={title} className="flex w-full items-center gap-3 border-t border-line/70 py-3 text-left"><span className="grid size-8 shrink-0 place-items-center rounded-md bg-subtle text-secondary"><Icon size={16} /></span><span className="min-w-0 flex-1"><span className="block truncate text-[14px] font-medium leading-[22px] text-ink">{title}</span><span className="block truncate text-[12px] leading-4 text-secondary">{body}</span></span><span className={`shrink-0 rounded-md px-2 py-[3px] text-[12px] font-medium leading-4 ${tone === "danger" ? "bg-[#fde4e3] text-[#dc2626]" : tone === "warning" ? "bg-[#feefce] text-[#d97706]" : "bg-muted text-secondary"}`}>{due}</span></button>)}</div></article></RevealItem>
-        <RevealItem variants={scaleIn}><article className="rounded-xl border border-line bg-white p-5"><CardHeader title="Your projects" subtitle="Live work, offers and past collaborations" action="All projects" /><div className="mt-3 overflow-x-auto"><table className="w-full min-w-[750px] text-left"><thead className="bg-subtle text-[12px] font-semibold leading-4 text-secondary"><tr><th className="rounded-l-md px-3 py-2.5">Project</th><th className="px-3 py-2.5">Status</th><th className="px-3 py-2.5">Deliverables</th><th className="px-3 py-2.5">Fee</th><th className="px-3 py-2.5">Progress</th><th className="rounded-r-md px-3 py-2.5" /></tr></thead><tbody>{projects.map((project) => <tr key={project.title} className="border-b border-line/70 last:border-none"><td className="px-3 py-3"><div className="flex items-center gap-2.5"><img src={project.image} alt="" className="size-9 rounded-lg object-cover" /><span><p className="text-[14px] font-medium leading-5 text-ink">{project.title}</p><p className="text-[12px] leading-4 text-secondary">{project.brand}</p></span></div></td><td className="px-3 py-3"><StatusPill label={project.status} tone={project.status === "Posting" ? "success" : project.status === "New offer" ? "info" : "neutral"} /></td><td className="px-3 py-3 text-[13px] font-medium leading-5 text-ink">{project.deliverables}</td><td className="px-3 py-3 text-[13px] font-medium leading-5 text-ink">{project.fee}</td><td className="w-[180px] px-3 py-3"><div className="flex justify-between gap-3 text-[12px] leading-4"><span className="font-medium text-ink">{project.progress}%</span><span className="truncate text-secondary">{project.note}</span></div><div className="mt-1.5"><AnimatedBar value={project.progress} className={project.progress === 100 ? "bg-[#16a34a]" : "bg-primary"} /></div></td><td className="px-3 py-3"><button type="button" className="text-primary"><ArrowRight size={16} /></button></td></tr>)}</tbody></table></div></article></RevealItem>
-        <RevealItem variants={scaleIn}><article className="rounded-xl border border-line bg-white p-5"><CardHeader title="Your content" subtitle="Went live in the last 30 days - 5 posts" action="Content" /><div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">{contentItems.map((item) => <article key={item.label} className="min-w-0"><div className="relative aspect-[.8] overflow-hidden rounded-[10px] bg-subtle"><img src={item.image} alt={`${item.label} from ${item.project}`} className="size-full object-cover" /><span className="absolute left-2 top-2 inline-flex rounded bg-white/90 p-1 text-[#dd2a7b]"><ImageIcon size={13} /></span></div><p className="mt-2 text-[12px] font-medium leading-4 text-ink">{item.label}</p><p className="mt-1 truncate text-[12px] leading-4 text-tertiary">{item.project}</p><p className="mt-1 text-[13px] font-medium leading-5 text-ink">{item.metric}</p></article>)}</div></article></RevealItem>
+        <RevealItem variants={scaleIn}><article className="rounded-xl border border-line bg-white p-5"><CardHeader title="Your projects" subtitle="Live work, offers and past collaborations" action="All projects" to="/creator/my-projects?tab=live" /><div className="mt-3 overflow-x-auto"><table className="w-full min-w-[750px] text-left"><thead className="bg-subtle text-[12px] font-semibold leading-4 text-secondary"><tr><th className="rounded-l-md px-3 py-2.5">Project</th><th className="px-3 py-2.5">Status</th><th className="px-3 py-2.5">Deliverables</th><th className="px-3 py-2.5">Fee</th><th className="px-3 py-2.5">Progress</th><th className="rounded-r-md px-3 py-2.5" /></tr></thead><tbody>{projects.map((project) => {
+          const projectLink =
+            project.title === "Vitamin-C Serum"
+              ? "/creator/projects/vitamin-c-serum?view=workspace"
+              : project.title === "Glow Squad"
+                ? "/creator/projects/glow-squad-live?view=workspace"
+                : project.status === "New offer"
+                  ? "/creator/my-projects?tab=invitations"
+                  : "/creator/projects/mist-launch?view=workspace";
+
+          return (
+            <tr key={project.title} className="border-b border-line/70 last:border-none hover:bg-[#fafbfe] transition">
+              <td className="px-3 py-3">
+                <Link to={projectLink} className="flex items-center gap-2.5 group">
+                  <img src={project.image} alt="" className="size-9 rounded-lg object-cover" />
+                  <span>
+                    <p className="text-[14px] font-medium leading-5 text-ink group-hover:text-primary transition">{project.title}</p>
+                    <p className="text-[12px] leading-4 text-secondary">{project.brand}</p>
+                  </span>
+                </Link>
+              </td>
+              <td className="px-3 py-3"><StatusPill label={project.status} tone={project.status === "Posting" ? "success" : project.status === "New offer" ? "info" : "neutral"} /></td>
+              <td className="px-3 py-3 text-[13px] font-medium leading-5 text-ink">{project.deliverables}</td>
+              <td className="px-3 py-3 text-[13px] font-medium leading-5 text-ink">{project.fee}</td>
+              <td className="w-[180px] px-3 py-3"><div className="flex justify-between gap-3 text-[12px] leading-4"><span className="font-medium text-ink">{project.progress}%</span><span className="truncate text-secondary">{project.note}</span></div><div className="mt-1.5"><AnimatedBar value={project.progress} className={project.progress === 100 ? "bg-[#16a34a]" : "bg-primary"} /></div></td>
+              <td className="px-3 py-3">
+                <Link to={projectLink} className="text-primary hover:text-primary-dark">
+                  <ArrowRight size={16} />
+                </Link>
+              </td>
+            </tr>
+          );
+        })}</tbody></table></div></article></RevealItem>
+        <RevealItem variants={scaleIn}><article className="rounded-xl border border-line bg-white p-5"><CardHeader title="Your content" subtitle="Went live in the last 30 days - 5 posts" action="Content" to="/creator/content" /><div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">{contentItems.map((item) => <article key={item.label} className="min-w-0"><div className="relative aspect-[.8] overflow-hidden rounded-[10px] bg-subtle"><img src={item.image} alt={`${item.label} from ${item.project}`} className="size-full object-cover" /><span className="absolute left-2 top-2 inline-flex rounded bg-white/90 p-1 text-[#dd2a7b]"><ImageIcon size={13} /></span></div><p className="mt-2 text-[12px] font-medium leading-4 text-ink">{item.label}</p><p className="mt-1 truncate text-[12px] leading-4 text-tertiary">{item.project}</p><p className="mt-1 text-[13px] font-medium leading-5 text-ink">{item.metric}</p></article>)}</div></article></RevealItem>
       </div>
       <aside className="space-y-4 xl:sticky xl:top-8 xl:self-start">
         <RevealItem variants={scaleIn}><article className="rounded-xl border border-line bg-white p-5"><CardHeader title="Coming up" subtitle="Dates across your projects" /><div className="mt-3 space-y-3">{upcoming.map((item) => <div key={item.title} className="flex items-center gap-3"><span className="grid w-11 shrink-0 rounded-md bg-subtle py-1 text-center"><b className="text-[14px] leading-4 text-ink">{item.day}</b><em className="not-italic text-[10px] font-medium leading-3 text-tertiary">{item.month}</em></span><span className="min-w-0"><b className="block truncate text-[13px] font-medium leading-5 text-ink">{item.title}</b><span className="block truncate text-[12px] leading-4 text-secondary">{item.detail}</span></span></div>)}</div></article></RevealItem>

@@ -52,20 +52,19 @@ function CreatorSidebar({ close, onLogout }: { close?: () => void; onLogout: () 
   const myProjectsActive =
     pathname === ROUTES.creatorMyProjects ||
     pathname.startsWith(`${ROUTES.creatorMyProjects}/`) ||
-    pathname.startsWith("/creator/project/");
+    pathname.startsWith("/creator/project/") ||
+    (pathname.startsWith("/creator/projects/") &&
+      (searchParams.get("view") === "workspace" ||
+        pathname.includes("live") ||
+        pathname.includes("vitamin-c-serum")));
 
-  const [projectsOpen, setProjectsOpen] = useState(myProjectsActive);
-
-  // Automatically close My Projects dropdown when navigating to any other route
-  useEffect(() => {
-    if (!myProjectsActive) {
-      setProjectsOpen(false);
-    }
-  }, [pathname, myProjectsActive]);
+  const [projectsOpen, setProjectsOpen] = useState(true);
 
   const navClass = "flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-[14px] transition-colors";
   const overviewActive = pathname === ROUTES.creator;
-  const discoveryActive = pathname === ROUTES.creatorProjects || pathname.startsWith(`${ROUTES.creatorProjects}/`);
+  const discoveryActive =
+    (pathname === ROUTES.creatorProjects || pathname.startsWith(`${ROUTES.creatorProjects}/`)) &&
+    !myProjectsActive;
   const contentActive = pathname === ROUTES.creatorContent;
   const performanceActive = pathname === ROUTES.creatorPerformance;
   const earningsActive = pathname === ROUTES.creatorEarnings;
@@ -76,7 +75,6 @@ function CreatorSidebar({ close, onLogout }: { close?: () => void; onLogout: () 
   const currentTab = (searchParams.get("tab") || (myProjectsActive ? "invitations" : "")).toLowerCase();
 
   const handleOtherNavClick = () => {
-    setProjectsOpen(false);
     close?.();
   };
 
