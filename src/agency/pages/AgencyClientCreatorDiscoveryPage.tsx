@@ -31,7 +31,6 @@ const initialFilters = [
   "Audience: women 18–34",
   "Location: India · metros",
   "Niche: Beauty, Skincare",
-  "Language: Kannada",
   "Fee: up to ₹20K",
   "Past results",
 ];
@@ -431,9 +430,9 @@ export function AgencyClientCreatorDiscoveryPage({
   const { clientId: paramClientId } = useParams<{ clientId?: string }>();
   const clientId = activeClientId || paramClientId || "minimalist";
 
-  const [query, setQuery] = useState("Kannada skincare creators");
+  const [query, setQuery] = useState("");
   const [filters, setFilters] = useState<string[]>(initialFilters);
-  const [showResults, setShowResults] = useState(false);
+  const [showResults, setShowResults] = useState(true);
   const [shortlisted, setShortlisted] = useState<string[]>([]);
   const [invited, setInvited] = useState<string[]>([]);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -472,7 +471,10 @@ export function AgencyClientCreatorDiscoveryPage({
   const visibleCreators = matchingCreators.filter((creator) => {
     const needle = query.trim().toLowerCase();
     return (
-      !needle || `${creator.name} ${creator.handle} ${creator.city}`.toLowerCase().includes(needle)
+      !needle ||
+      `${creator.name} ${creator.handle} ${creator.city} ${creator.summary}`
+        .toLowerCase()
+        .includes(needle)
     );
   });
 

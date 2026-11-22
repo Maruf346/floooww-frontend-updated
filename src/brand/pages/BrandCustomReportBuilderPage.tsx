@@ -913,7 +913,7 @@ export function BrandCustomReportBuilderPage() {
           initial={{ opacity: 0, y: 8 }}
           transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p className="text-[12px] leading-4 text-tertiary">Custom reports / New report</p>
+          <p className="text-[12px] leading-4 text-tertiary">Reports / New report</p>
           <div className="flex flex-wrap items-center gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">

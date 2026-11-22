@@ -1113,7 +1113,7 @@ export function AgencyCustomReportBuilderPage() {
               className="flex items-center gap-1 hover:text-ink transition cursor-pointer"
             >
               <ArrowLeft size={13} />
-              <span>Back to Custom reports</span>
+              <span>Back to Reports</span>
             </button>
             <span>/</span>
             <span className="font-medium text-[#0d0d10]">{reportTitle}</span>
