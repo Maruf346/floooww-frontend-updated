@@ -92,8 +92,10 @@ const FORMAT_OPTIONS = [
 
 const USAGE_RIGHTS_OPTIONS = [
   "Any",
-  "Organic only",
-  "Paid ads",
+  "3 months",
+  "6 months",
+  "1 month",
+  "30 days",
   "Ending in 30 days",
   "Ended",
 ] as const;
@@ -158,7 +160,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Live",
     statusCode: "live",
     statsText: "3.0 L views · 6.9% ER · 214 orders",
-    usageRightsText: "Organic · until 7 Dec",
+    usageRightsText: "3 months · until 7 Dec",
     usageRightsType: "organic_active",
     views: "3.0 L",
     viewsNumeric: 300000,
@@ -187,7 +189,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Live",
     statusCode: "live",
     statsText: "2.6 L views · 7.4% ER · 178 orders",
-    usageRightsText: "Organic · until 7 Dec",
+    usageRightsText: "3 months · until 7 Dec",
     usageRightsType: "organic_active",
     views: "2.6 L",
     viewsNumeric: 260000,
@@ -216,7 +218,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Changes requested",
     statusCode: "changes_requested",
     statsText: "“Add ISHITA15 on screen” · v2 approved 21 Oct",
-    usageRightsText: "Organic · 30 days",
+    usageRightsText: "30 days · until 30 Nov",
     usageRightsType: "organic_active",
     views: "—",
     viewsNumeric: 0,
@@ -245,7 +247,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Approved",
     statusCode: "approved",
     statsText: "Approved · goes live 1 Nov",
-    usageRightsText: "Organic · until 31 Jan",
+    usageRightsText: "3 months · until 31 Jan",
     usageRightsType: "organic_active",
     views: "Scheduled",
     viewsNumeric: 0,
@@ -273,7 +275,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Live",
     statusCode: "live",
     statsText: "1.2 L views · 6.1% ER · 88 orders",
-    usageRightsText: "Organic · until 31 Jan",
+    usageRightsText: "3 months · until 31 Jan",
     usageRightsType: "organic_active",
     views: "1.2 L",
     viewsNumeric: 120000,
@@ -302,7 +304,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Live",
     statusCode: "live",
     statsText: "42K views · 5.2% ER",
-    usageRightsText: "Organic · until 31 Jan",
+    usageRightsText: "3 months · until 31 Jan",
     usageRightsType: "organic_active",
     views: "42K",
     viewsNumeric: 42000,
@@ -330,7 +332,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Live",
     statusCode: "live",
     statsText: "1.8 L views · 58 orders",
-    usageRightsText: "Organic · ended 27 Sep",
+    usageRightsText: "30 days · ended 27 Sep",
     usageRightsType: "organic_ended",
     views: "1.8 L",
     viewsNumeric: 180000,
@@ -358,7 +360,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Live",
     statusCode: "live",
     statsText: "96K views · 6.9% ER",
-    usageRightsText: "Organic · until 12 Dec",
+    usageRightsText: "3 months · until 12 Dec",
     usageRightsType: "organic_active",
     views: "96K",
     viewsNumeric: 96000,
@@ -387,7 +389,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Used in ads",
     statusCode: "used_in_ads",
     statsText: "UGC file · 1080 × 1920 · in their ads",
-    usageRightsText: "Paid ads · until 2 Nov",
+    usageRightsText: "6 months · until 2 Nov",
     usageRightsType: "paid_ads",
     views: "4.2 L (in ads)",
     viewsNumeric: 420000,
@@ -416,7 +418,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Live",
     statusCode: "live",
     statsText: "1.1 L views · 140 orders",
-    usageRightsText: "Organic · ended 29 Aug",
+    usageRightsText: "1 month · ended 29 Aug",
     usageRightsType: "organic_ended",
     views: "1.1 L",
     viewsNumeric: 110000,
@@ -444,7 +446,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Live",
     statusCode: "live",
     statsText: "92K views · 64 orders",
-    usageRightsText: "Organic · ended 21 Jun",
+    usageRightsText: "30 days · ended 21 Jun",
     usageRightsType: "organic_ended",
     views: "92K",
     viewsNumeric: 92000,
@@ -472,7 +474,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Live",
     statusCode: "live",
     statsText: "41K views · 7.2% ER",
-    usageRightsText: "Organic · until 10 Nov",
+    usageRightsText: "1 month · until 10 Nov",
     usageRightsType: "organic_active",
     views: "41K",
     viewsNumeric: 41000,
@@ -502,7 +504,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Waiting for approval",
     statusCode: "waiting",
     statsText: "Submitted 28 Oct · Brand reviewing",
-    usageRightsText: "Organic · 30 days",
+    usageRightsText: "30 days · until 30 Nov",
     usageRightsType: "organic_active",
     liveDate: "Pending approval",
     views: "—",
@@ -530,7 +532,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Live",
     statusCode: "live",
     statsText: "1.4 L views · 5.8% ER · 72 orders",
-    usageRightsText: "Organic · until 15 Dec",
+    usageRightsText: "3 months · until 15 Dec",
     usageRightsType: "organic_active",
     views: "1.4 L",
     viewsNumeric: 140000,
@@ -559,7 +561,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Live",
     statusCode: "live",
     statsText: "88K views · 6.1% ER",
-    usageRightsText: "Organic · until 20 Dec",
+    usageRightsText: "3 months · until 20 Dec",
     usageRightsType: "organic_active",
     views: "88K",
     viewsNumeric: 88000,
@@ -588,7 +590,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Live",
     statusCode: "live",
     statsText: "64K views · 42 orders",
-    usageRightsText: "Organic · ended 27 Sep",
+    usageRightsText: "30 days · ended 27 Sep",
     usageRightsType: "organic_ended",
     views: "64K",
     viewsNumeric: 64000,
@@ -616,7 +618,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Live",
     statusCode: "live",
     statsText: "1.1 L views · 68 orders",
-    usageRightsText: "Organic · ended 21 Jun",
+    usageRightsText: "30 days · ended 21 Jun",
     usageRightsType: "organic_ended",
     views: "1.1 L",
     viewsNumeric: 110000,
@@ -644,7 +646,7 @@ const ALL_CONTENT_ITEMS: ContentItem[] = [
     status: "Live",
     statusCode: "live",
     statsText: "53K views · 6.8% ER",
-    usageRightsText: "Organic · until 10 Nov",
+    usageRightsText: "1 month · until 10 Nov",
     usageRightsType: "organic_active",
     views: "53K",
     viewsNumeric: 53000,
@@ -868,12 +870,14 @@ export default function CreatorContentPage() {
         if (filterFormat === "Other" && item.format !== "Post") return false;
       }
 
-      // Usage rights filter: ["Any", "Organic only", "Paid ads", "Ending in 30 days", "Ended"]
+      // Usage rights filter: ["Any", "3 months", "6 months", "1 month", "30 days", "Ending in 30 days", "Ended"]
       if (filterUsageRights !== "Any") {
-        if (filterUsageRights === "Organic only" && !item.usageRightsText.startsWith("Organic")) return false;
-        if (filterUsageRights === "Paid ads" && !item.usageRightsText.startsWith("Paid ads") && item.usageRightsType !== "paid_ads") return false;
+        if (filterUsageRights === "3 months" && !item.usageRightsText.startsWith("3 months")) return false;
+        if (filterUsageRights === "6 months" && !item.usageRightsText.startsWith("6 months")) return false;
+        if (filterUsageRights === "1 month" && !item.usageRightsText.startsWith("1 month")) return false;
+        if (filterUsageRights === "30 days" && !item.usageRightsText.startsWith("30 days")) return false;
         if (filterUsageRights === "Ending in 30 days" && !item.usageRightsText.includes("until") && !item.usageRightsText.includes("days")) return false;
-        if (filterUsageRights === "Ended" && item.usageRightsType !== "organic_ended" && !item.usageRightsText.includes("ended")) return false;
+        if (filterUsageRights === "Ended" && !item.usageRightsText.includes("ended")) return false;
       }
 
       return true;
@@ -1701,23 +1705,23 @@ export default function CreatorContentPage() {
                   {activeDetailItem.brand} may use it for
                 </p>
                 <p className="font-['Inter:Medium'] font-medium leading-[22px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
-                  Organic reposts on {activeDetailItem.brand}’s Instagram
+                  {activeDetailItem.usageRightsText.split(" · ")[0]} usage rights (typed by brand)
                 </p>
               </div>
               <div className="content-stretch flex gap-[8px] items-center not-italic overflow-clip relative shrink-0 w-full" data-name="kv">
                 <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] text-[13px] text-[color:var(--text-secondary,#0d0d10)]">
-                  Until
+                  Duration & end date
                 </p>
                 <p className="font-['Inter:Medium'] font-medium leading-[22px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
-                  {activeDetailItem.usageRightsText} · 37 days left
+                  {activeDetailItem.usageRightsText} · locked on invite
                 </p>
               </div>
               <div className="content-stretch flex gap-[8px] items-center not-italic overflow-clip relative shrink-0 w-full" data-name="kv">
                 <p className="flex-[1_0_0] font-['Inter:Regular'] font-normal leading-[20px] text-[13px] text-[color:var(--text-secondary,#0d0d10)]">
-                  Paid ads
+                  Status
                 </p>
                 <p className="font-['Inter:Medium'] font-medium leading-[22px] text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap">
-                  {activeDetailItem.usageRightsType === "paid_ads" ? "Included" : "Not included"}
+                  Locked on invite · can only be extended
                 </p>
               </div>
               <button

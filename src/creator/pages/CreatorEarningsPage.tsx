@@ -496,7 +496,7 @@ export default function CreatorEarningsPage() {
                 className="bg-white border border-[#edeff3] rounded-[12px] p-4 flex flex-col justify-between"
               >
                 <div className="flex items-center justify-between">
-                  <div className="size-9 rounded-[8px] bg-[#149d46] flex items-center justify-center text-white shadow-xs">
+                  <div className="size-9 rounded-[8px] bg-[#0d0d10] flex items-center justify-center text-white shadow-xs">
                     <IndianRupee className="size-4.5 stroke-[2.2]" />
                   </div>
                 </div>

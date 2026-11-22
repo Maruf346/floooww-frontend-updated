@@ -30,13 +30,13 @@ const figmaImages = [
   "https://www.figma.com/api/mcp/asset/9fbe74f9-dd47-4a6b-a8bf-961318ac3991.png",
 ] as const;
 
-type Tile = { label: string; value: string; note: string; Icon: LucideIcon; tone?: "ink" | "success"; count?: number };
+type Tile = { label: string; value: string; note: string; Icon: LucideIcon; tone?: "ink" | "success" | "warning" | "neutral"; count?: number };
 const tiles: Tile[] = [
-  { label: "Live projects", value: "2", note: "1 ends 7 Nov", Icon: FileCheck2, count: 2 },
-  { label: "Invitations", value: "4", note: "reply by 2 Nov", Icon: MailCheck, count: 4 },
-  { label: "Paid to you", value: `${rupee}12,750`, note: `${rupee}4,250 in escrow`, Icon: CircleDollarSign, tone: "ink" },
-  { label: "Content published", value: "5", note: `4 Reels${dot}1 Story`, Icon: PlaySquare, count: 5 },
-  { label: "Total views", value: "14.2 L", note: "32% more than Sep", Icon: TrendingUp },
+  { label: "Live projects", value: "2", note: "1 ends 7 Nov", Icon: FileCheck2, count: 2, tone: "neutral" },
+  { label: "Invitations", value: "4", note: "reply by 2 Nov", Icon: MailCheck, count: 4, tone: "warning" },
+  { label: "Paid to you", value: `${rupee}12,750`, note: `${rupee}4,250 in escrow`, Icon: CircleDollarSign, tone: "success" },
+  { label: "Content published", value: "5", note: `4 Reels${dot}1 Story`, Icon: PlaySquare, count: 5, tone: "neutral" },
+  { label: "Total views", value: "14.2 L", note: "32% more than Sep", Icon: TrendingUp, tone: "ink" },
   { label: "On-time score", value: "98%", note: "on 42 deliverables", Icon: CheckCircle2, tone: "success" },
 ];
 const actionItems = [
@@ -84,7 +84,14 @@ function AnimatedBar({ value, className = "bg-primary" }: { value: number; class
 }
 
 function MetricTile({ tile, index }: { tile: Tile; index: number }) {
-  const iconTone = tile.tone === "ink" ? "bg-ink" : tile.tone === "success" ? "bg-[#149d46]" : "bg-primary";
+  const iconTone =
+    tile.tone === "ink"
+      ? "bg-[#0d0d10]"
+      : tile.tone === "success"
+        ? "bg-[#149d46]"
+        : tile.tone === "warning"
+          ? "bg-[#f29b07]"
+          : "bg-[#3b5bff]";
   return <motion.article variants={scaleIn} className="min-w-0 rounded-xl border border-line/70 bg-white p-4"><span className={`grid size-9 place-items-center rounded-md text-white ${iconTone}`}><tile.Icon size={18} /></span><p className="mt-3.5 truncate text-[12px] leading-4 text-secondary">{tile.label}</p><p className="mt-0.5 text-[22px] font-semibold leading-7 tracking-[-.33px] text-ink">{tile.count !== undefined ? <CountUp to={tile.count} duration={1.8} delay={index * 0.08} /> : tile.value}</p><p className="mt-2.5 truncate text-[12px] font-medium leading-4 text-tertiary">{tile.note}</p></motion.article>;
 }
 

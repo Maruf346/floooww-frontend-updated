@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, type ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "motion/react";
-import { Download, ChevronDown, ChevronUp, Check } from "lucide-react";
+import { Download, ChevronDown, ChevronUp, Check, ArrowRight } from "lucide-react";
 import { CreatorShell } from "@/creator/components/CreatorShell";
 
 // Assets for project breakdown thumbnails
@@ -110,11 +111,10 @@ function PerformanceDropdown({
         onClick={onToggle}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        className={`bg-white flex items-center justify-between gap-2 h-[40px] px-[12px] py-[8px] rounded-[8px] cursor-pointer transition select-none w-full ${
-          isOpen
+        className={`bg-white flex items-center justify-between gap-2 h-[40px] px-[12px] py-[8px] rounded-[8px] cursor-pointer transition select-none w-full ${isOpen
             ? "border-2 border-[#0d0d10]"
             : "border border-[#e3e5ec] hover:border-[#0d0d10]"
-        }`}
+          }`}
       >
         <span className="truncate font-['Inter:Regular'] font-normal text-[13px] text-[#0d0d10] leading-[20px] text-left">
           {displayLabel}
@@ -143,11 +143,10 @@ function PerformanceDropdown({
                 role="option"
                 aria-selected={isSelected}
                 onClick={() => onSelect(option)}
-                className={`w-full flex items-center justify-between px-[10px] py-[8px] rounded-[6px] transition cursor-pointer text-left ${
-                  isSelected
+                className={`w-full flex items-center justify-between px-[10px] py-[8px] rounded-[6px] transition cursor-pointer text-left ${isSelected
                     ? "bg-[#f1f4ff] text-[#0d0d10] font-medium"
                     : "text-[#0d0d10] hover:bg-[#f8f9fb]"
-                }`}
+                  }`}
               >
                 <span className="font-['Inter:Regular'] font-normal text-[13px] leading-[20px] truncate">
                   {option}
@@ -184,9 +183,8 @@ function PerformanceScorecards({ activeMetric, onSelectMetric }: { activeMetric:
             key={card.label}
             type="button"
             onClick={() => onSelectMetric(card.label)}
-            className={`relative flex flex-col justify-start text-left h-[117px] px-[18px] pt-[18px] transition cursor-pointer select-none ${
-              isSelected ? "bg-[#f1f4ff]" : "bg-white hover:bg-[#fafbfe]"
-            } ${index < cards.length - 1 ? "border-r border-[#e5e7eb]" : ""}`}
+            className={`relative flex flex-col justify-start text-left h-[117px] px-[18px] pt-[18px] transition cursor-pointer select-none ${isSelected ? "bg-[#f1f4ff]" : "bg-white hover:bg-[#fafbfe]"
+              } ${index < cards.length - 1 ? "border-r border-[#e5e7eb]" : ""}`}
           >
             <p className="text-[13px] font-normal leading-5 text-[#8491a3]">{card.label}</p>
             <p className={`font-semibold text-[#0d0d10] ${index === 5 ? "mt-0.5 text-[22px] leading-8" : "mt-1.5 text-[20px] leading-6"}`}>
@@ -318,67 +316,159 @@ function SalesTrendSection() {
   );
 }
 
-// 3. Conversion Funnel matching Figma node 1683:10658
-function FunnelSection() {
-  const steps = [
-    { label: "Views 14.5 L", width: 420, color: "#3b5bff", note: "CTR 0.7%" },
-    { label: "Link clicks 9,570", width: 340, color: "#4f6cf7", note: "Add-to-cart rate 35%" },
-    { label: "Add to cart 3,350", width: 270, color: "#6a85f8", note: "Checkout rate 57%" },
-    { label: "Checkouts initiated 1,910", width: 215, color: "#8da2fa", note: "Purchase rate 47%" },
-    { label: "Orders 890", width: 170, color: "#149d46", note: "Conversion rate 9.3%" },
+// 3. Results vs target by project matching Figma node 2383:278008
+function ResultsVsTargetSection() {
+  const items = [
+    {
+      name: "Niacinamide Serum",
+      metric: "Engagement · rate",
+      targetText: "5.8% vs 4.5% · 129%",
+      pct: 129,
+      color: "bg-[#16a34a]",
+      widthPct: 92,
+    },
+    {
+      name: "Glow Squad",
+      metric: "Awareness · reach",
+      targetText: "9.9 of 10.8 L · 92%",
+      pct: 92,
+      color: "bg-[#f59e0b]",
+      widthPct: 65.7,
+    },
+    {
+      name: "Sunscreen Stick Launch",
+      metric: "Traffic · link clicks",
+      targetText: "6,858 of 7,700 · 89%",
+      pct: 89,
+      color: "bg-[#f59e0b]",
+      widthPct: 63.5,
+    },
+    {
+      name: "Skin Type Quiz",
+      metric: "Lead generation · leads",
+      targetText: "972 of 1,260 · 77%",
+      pct: 77,
+      color: "bg-[#f59e0b]",
+      widthPct: 55,
+    },
+    {
+      name: "Vitamin-C Serum",
+      metric: "Sales · net sales",
+      targetText: "₹1.21 of 1.78 L · 68%",
+      pct: 68,
+      color: "bg-[#f59e0b]",
+      widthPct: 48.5,
+    },
   ];
 
   return (
-    <section className="min-h-[407px] rounded-xl border border-[#e5e7eb] bg-white p-5 shadow-xs flex flex-col justify-between">
+    <section className="bg-white border border-[#e5e7eb] rounded-[12px] p-5 shadow-xs flex flex-col justify-between">
       <div>
-        <h2 className="text-[16px] font-semibold leading-6 text-[#0d0d10]">Conversion funnel</h2>
-        <p className="mt-1 text-[12px] leading-4 text-[#8491a3]">
-          From views to orders · conversion rate at each step
+        <h2 className="text-[16px] font-semibold leading-6 text-[#0d0d10]">
+          Results vs target by project
+        </h2>
+        <p className="mt-0.5 text-[12px] leading-4 text-[#8491a3]">
+          Your results against each project’s target · objectives are never added together
         </p>
       </div>
 
-      <div className="mt-4 space-y-2">
-        {steps.map((step, index) => (
-          <div
-            key={step.label}
-            className="grid grid-cols-[minmax(320px,1fr)_160px] items-center gap-4 max-[680px]:grid-cols-1"
-          >
-            <motion.svg
-              className="mx-auto h-[52px] max-w-full origin-center"
-              style={{ width: step.width }}
-              viewBox={`0 0 ${step.width} 52`}
-              role="img"
-              aria-label={step.label}
-              initial={{ opacity: 0, scaleX: 0.35 }}
-              whileInView={{ opacity: 1, scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.75, delay: index * 0.1, ease }}
-            >
-              <path
-                d={`M5 0 H${step.width - 5} Q${step.width} 0 ${step.width - 2} 5 L${step.width - 21} 47 Q${step.width - 20} 52 ${step.width - 25} 52 H25 Q20 52 19 47 L2 5 Q0 0 5 0 Z`}
-                fill={step.color}
+      {/* Legend */}
+      <div className="mt-3 flex flex-wrap items-center gap-4 text-[12px]">
+        <span className="flex items-center gap-1.5 text-[#0d0d10]">
+          <span className="size-2 rounded-full bg-[#16a34a]" />
+          On or above target
+        </span>
+        <span className="flex items-center gap-1.5 text-[#0d0d10]">
+          <span className="size-2 rounded-full bg-[#f59e0b]" />
+          Below target
+        </span>
+        <span className="text-[#a3a3ac]">
+          ┆ 100% = your target in that project
+        </span>
+      </div>
+
+      {/* Rows */}
+      <div className="mt-4 space-y-4">
+        {items.map((item, index) => (
+          <div key={item.name} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="w-[170px] shrink-0">
+              <p className="text-[13px] font-medium text-[#0d0d10] truncate">{item.name}</p>
+              <p className="text-[12px] text-[#a3a3ac]">{item.metric}</p>
+            </div>
+
+            <div className="relative flex-1 h-[10px] bg-[#edeff3] rounded-[5px] mx-0 sm:mx-3 overflow-hidden">
+              <motion.div
+                className={`h-full rounded-[5px] ${item.color}`}
+                initial={{ width: 0 }}
+                whileInView={{ width: `${Math.min(item.widthPct, 100)}%` }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.75, delay: index * 0.08, ease }}
               />
-              <text
-                x={step.width / 2}
-                y="30"
-                textAnchor="middle"
-                fill="white"
-                fontSize="12"
-                fontWeight="500"
-                fontFamily="Inter"
-              >
-                {step.label}
-              </text>
-            </motion.svg>
-            <motion.p
-              className="text-[12px] leading-4 text-[#8491a3]"
-              initial={{ opacity: 0, x: -8 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
-            >
-              {step.note}
-            </motion.p>
+              {/* 100% Target marker line */}
+              <div className="absolute top-0 bottom-0 left-[71.4%] w-px bg-[#8491a3] opacity-60" />
+            </div>
+
+            <p className="text-[13px] font-medium text-[#0d0d10] text-right shrink-0 sm:w-[150px]">
+              {item.targetText}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <p className="mt-4 text-[12px] text-[#a3a3ac] border-t border-[#f1f4f8] pt-3">
+        Your 5 paid influencer projects · gifted and UGC projects are in the table below
+      </p>
+    </section>
+  );
+}
+
+// 4. Earnings by objective matching Figma node 2383:278046
+function EarningsByObjectiveSection() {
+  const rows = [
+    { label: "Awareness · 3 projects", amount: "₹56,350 · 33%", pct: 33, color: "bg-[#3b5bff]" },
+    { label: "Engagement · 3 projects", amount: "₹30,680 · 18%", pct: 18, color: "bg-[#6366f1]" },
+    { label: "Lead generation · 3 projects", amount: "₹29,049 · 17%", pct: 17, color: "bg-[#8b5cf6]" },
+    { label: "Traffic · 3 projects", amount: "₹28,699 · 17%", pct: 17, color: "bg-[#06b6d4]" },
+    { label: "Sales · 3 projects", amount: "₹28,049 · 16%", pct: 16, color: "bg-[#149d46]" },
+  ];
+
+  return (
+    <section className="bg-white border border-[#e5e7eb] rounded-[12px] p-5 shadow-xs flex flex-col justify-between">
+      <div>
+        <h2 className="text-[16px] font-semibold leading-6 text-[#0d0d10]">
+          Earnings by objective
+        </h2>
+        <p className="mt-0.5 text-[12px] leading-4 text-[#8491a3]">
+          Fees and gifted products · to date
+        </p>
+      </div>
+
+      <div className="mt-3">
+        <p className="text-[28px] font-semibold text-[#0d0d10] tracking-[-0.14px] leading-[34px]">
+          ₹1,72,827
+        </p>
+        <p className="text-[12px] text-[#4a4a55] mt-0.5">
+          earned across 15 projects
+        </p>
+      </div>
+
+      {/* Stacked bar visualization */}
+      <div className="mt-3 flex h-2 w-full overflow-hidden rounded-full bg-[#f4f6fb] gap-0.5">
+        {rows.map((row) => (
+          <div
+            key={row.label}
+            className={`h-full ${row.color}`}
+            style={{ width: `${row.pct}%` }}
+          />
+        ))}
+      </div>
+
+      {/* Rows */}
+      <div className="mt-4 space-y-2.5 text-[13px]">
+        {rows.map((row) => (
+          <div key={row.label} className="flex items-center justify-between text-[13px] leading-5">
+            <span className="text-[#8491a3]">{row.label}</span>
+            <span className="font-medium text-[#070b13]">{row.amount}</span>
           </div>
         ))}
       </div>
@@ -386,63 +476,115 @@ function FunnelSection() {
   );
 }
 
-// 4. Revenue Waterfall matching Figma node 1683:10679
-function RevenueSection() {
-  const bars = [
-    { amount: "₹3,66,100", label: "Gross sales", color: "#dbe4ff", height: 120, tone: "text-[#0d0d10]" },
-    { amount: "− ₹29,300", label: "Returns", color: "#dc2626", height: 12, tone: "text-[#dc2626]" },
-    { amount: "₹3,36,800", label: "Net sales", color: "#3b5bff", height: 110, tone: "text-[#3b5bff]" },
-  ];
-  const rows = [
-    { label: "Orders · coupon code", value: "560" },
-    { label: "Orders · UTM link", value: "330" },
-    { label: "Average order value (AOV)", value: "₹378" },
-    { label: "Net sales ÷ your fees", value: "2.3×", isRoas: true },
-  ];
+// Project picker component matching Figma node 2383:277897 (CR-07)
+function ProjectPicker({
+  selectedProject,
+  onSelectProject,
+}: {
+  selectedProject: string;
+  onSelectProject: (proj: string) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [isOpen]);
+
+  const isAllProjects = selectedProject === "All projects · 19" || selectedProject === "All projects";
 
   return (
-    <section className="min-h-[407px] rounded-xl border border-[#e5e7eb] bg-white p-5 shadow-xs flex flex-col justify-between">
-      <div>
-        <h2 className="text-[16px] font-semibold leading-6 text-[#0d0d10]">Revenue</h2>
-        <p className="mt-1 text-[12px] leading-4 text-[#8491a3]">Gross to net sales · brands’ stores</p>
+    <div
+      className="bg-white border border-[#e3e5ec] rounded-[12px] p-4 flex flex-wrap items-end justify-between gap-4 shadow-xs"
+      data-name="Project picker"
+    >
+      <div className="flex flex-col gap-1.5 w-full sm:w-[320px] relative" ref={dropdownRef}>
+        <label className="text-[12px] font-medium text-[#0d0d10]">Project</label>
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
+          className={`bg-white border flex items-center justify-between gap-2 h-10 px-3 rounded-lg text-left cursor-pointer transition select-none w-full ${isOpen ? "border-2 border-[#0d0d10]" : "border-[#e3e5ec] hover:border-[#0d0d10]"
+            }`}
+        >
+          <span className="truncate text-[13px] text-[#0d0d10] font-normal">
+            {selectedProject}
+          </span>
+          <ChevronDown className="size-4 text-[#8491a3] shrink-0" />
+        </button>
+
+        {isOpen && (
+          <div
+            role="listbox"
+            className="absolute left-0 top-[calc(100%+6px)] z-50 w-full min-w-full bg-white border border-[#e3e5ec] rounded-lg p-1.5 shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)] flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-100 max-h-[320px] overflow-y-auto"
+          >
+            {PERFORMANCE_PROJECT_OPTIONS.map((option) => {
+              const isSelected = selectedProject === option;
+              return (
+                <button
+                  key={option}
+                  type="button"
+                  role="option"
+                  aria-selected={isSelected}
+                  onClick={() => {
+                    onSelectProject(option);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-2.5 py-2 rounded-md transition cursor-pointer text-left ${isSelected
+                      ? "bg-[#f1f4ff] text-[#0d0d10] font-medium"
+                      : "text-[#0d0d10] hover:bg-[#f8f9fb]"
+                    }`}
+                >
+                  <span className="font-normal text-[13px] leading-5 truncate">
+                    {option}
+                  </span>
+                  {isSelected && (
+                    <Check className="size-3.5 text-[#0d0d10] shrink-0 stroke-[2.2]" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      <div className="mt-4 flex h-[190px] items-end justify-around border-b border-[#e5e7eb] px-2 pb-2">
-        {bars.map((bar, index) => (
-          <div key={bar.label} className="flex h-full w-24 flex-col justify-end text-center">
-            <motion.span
-              className={`mb-2 text-[12px] font-semibold ${bar.tone}`}
-              initial={{ opacity: 0, y: 7 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
-            >
-              {bar.amount}
-            </motion.span>
-            <motion.span
-              className="origin-bottom rounded-t-[4px]"
-              style={{ backgroundColor: bar.color }}
-              initial={{ height: 0 }}
-              whileInView={{ height: bar.height }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.9, delay: index * 0.14, ease }}
-            />
-            <small className="mt-2 text-[11px] text-[#8491a3]">{bar.label}</small>
-          </div>
-        ))}
+      <div className="flex flex-wrap items-center gap-2 py-2.5">
+        <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[12px] font-medium bg-[#f1f4ff] text-[#3b5bff]">
+          {isAllProjects ? "My total performance" : selectedProject.split(" · ")[0]}
+        </span>
+        <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[12px] font-medium bg-[#f4f6fb] text-[#4a4a55]">
+          {isAllProjects ? "15 projects · 5 objectives" : "Sales · Influencer Paid"}
+        </span>
+        <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[12px] font-medium bg-[#e1fce3] text-[#16a34a]">
+          <span className="size-1.5 rounded-full bg-[#16a34a]" />
+          11 live
+        </span>
+        <span className="text-[12px] text-[#8491a3] hidden sm:inline">
+          pick a project to see it for its objective
+        </span>
       </div>
 
-      <dl className="mt-4 space-y-[8px]">
-        {rows.map((row) => (
-          <div key={row.label} className="flex justify-between gap-4 text-[12px] leading-[19px]">
-            <dt className="text-[#8491a3]">{row.label}</dt>
-            <dd className={`font-semibold ${row.isRoas ? "text-[#188a52]" : "text-[#0d0d10]"}`}>
-              {row.value}
-            </dd>
-          </div>
-        ))}
-      </dl>
-    </section>
+      <div className="flex-1" />
+
+      {!isAllProjects && (
+        <Link
+          to="/creator/projects/1"
+          className="inline-flex items-center gap-1.5 h-10 px-3.5 bg-white border border-[#e3e5ec] rounded-lg text-[13px] font-medium text-[#0d0d10] hover:bg-[#f8f9fb] transition cursor-pointer shrink-0"
+        >
+          <span>Open campaign page</span>
+          <ArrowRight className="size-4 text-[#4a4a55]" />
+        </Link>
+      )}
+    </div>
   );
 }
 
@@ -602,81 +744,80 @@ function ProjectBreakdownTable({
             ) : (
               filteredProjects.map((p) => (
                 <tr key={p.name} className="h-[80px] border-b border-[#f1f4f8] last:border-0 hover:bg-[#fafbfe] transition">
-                {/* Project */}
-                <td className="px-5">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={p.thumb}
-                      alt=""
-                      className="size-[42px] rounded-lg object-cover border border-[#e3e5ec]"
-                    />
-                    <div className="min-w-0">
-                      <p className="text-[13px] font-medium leading-5 text-[#0d0d10] truncate">
-                        {p.name}
-                      </p>
-                      <p className="text-[11px] leading-4 text-[#8491a3] truncate">
-                        {p.type}
-                      </p>
+                  {/* Project */}
+                  <td className="px-5">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={p.thumb}
+                        alt=""
+                        className="size-[42px] rounded-lg object-cover border border-[#e3e5ec]"
+                      />
+                      <div className="min-w-0">
+                        <p className="text-[13px] font-medium leading-5 text-[#0d0d10] truncate">
+                          {p.name}
+                        </p>
+                        <p className="text-[11px] leading-4 text-[#8491a3] truncate">
+                          {p.type}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </td>
+                  </td>
 
-                {/* Tracking / Brand Type */}
-                <td className="px-5 text-[12px] leading-5">
-                  <p className="font-medium text-[#0d0d10]">Coupon</p>
-                  <p className="text-[#8491a3]">UTM link</p>
-                </td>
+                  {/* Tracking / Brand Type */}
+                  <td className="px-5 text-[12px] leading-5">
+                    <p className="font-medium text-[#0d0d10]">Coupon</p>
+                    <p className="text-[#8491a3]">UTM link</p>
+                  </td>
 
-                {/* Status Badge */}
-                <td className="px-5 text-right">
-                  <span
-                    className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
-                      p.status === "Live"
-                        ? "bg-[#ecfdf3] text-[#149d46]"
-                        : p.status === "Completed"
-                        ? "bg-[#f1f4ff] text-[#3b5bff]"
-                        : "bg-[#f4f6fb] text-[#8491a3]"
-                    }`}
-                  >
-                    {p.status}
-                  </span>
-                </td>
+                  {/* Status Badge */}
+                  <td className="px-5 text-right">
+                    <span
+                      className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-[11px] font-medium ${p.status === "Live"
+                          ? "bg-[#ecfdf3] text-[#149d46]"
+                          : p.status === "Completed"
+                            ? "bg-[#f1f4ff] text-[#3b5bff]"
+                            : "bg-[#f4f6fb] text-[#8491a3]"
+                        }`}
+                    >
+                      {p.status}
+                    </span>
+                  </td>
 
-                {/* Fee */}
-                <td className="px-5 text-right text-[12px] font-medium leading-5 text-[#0d0d10]">
-                  {p.fee}
-                </td>
+                  {/* Fee */}
+                  <td className="px-5 text-right text-[12px] font-medium leading-5 text-[#0d0d10]">
+                    {p.fee}
+                  </td>
 
-                {/* Views */}
-                <td className="px-5 text-right text-[12px] font-medium leading-5 text-[#0d0d10]">
-                  {p.views}
-                </td>
+                  {/* Views */}
+                  <td className="px-5 text-right text-[12px] font-medium leading-5 text-[#0d0d10]">
+                    {p.views}
+                  </td>
 
-                {/* ER */}
-                <td className="px-5 text-right text-[12px] font-medium leading-5 text-[#0d0d10]">
-                  {p.er}
-                </td>
+                  {/* ER */}
+                  <td className="px-5 text-right text-[12px] font-medium leading-5 text-[#0d0d10]">
+                    {p.er}
+                  </td>
 
-                {/* Clicks */}
-                <td className="px-5 text-right text-[12px] font-medium leading-5 text-[#0d0d10]">
-                  {p.clicks}
-                </td>
+                  {/* Clicks */}
+                  <td className="px-5 text-right text-[12px] font-medium leading-5 text-[#0d0d10]">
+                    {p.clicks}
+                  </td>
 
-                {/* Orders */}
-                <td className="px-5 text-right text-[12px] font-medium leading-5 text-[#0d0d10]">
-                  {p.orders}
-                </td>
+                  {/* Orders */}
+                  <td className="px-5 text-right text-[12px] font-medium leading-5 text-[#0d0d10]">
+                    {p.orders}
+                  </td>
 
-                {/* Net Sales */}
-                <td className="px-5 text-right text-[12px] leading-5">
-                  <p className="font-medium text-[#0d0d10]">{p.sales}</p>
-                  {p.roi && (
-                    <p className="text-[11px] font-medium text-[#188a52]">ROAS {p.roi}</p>
-                  )}
-                </td>
-              </tr>
-            ))
-          )}
+                  {/* Net Sales */}
+                  <td className="px-5 text-right text-[12px] leading-5">
+                    <p className="font-medium text-[#0d0d10]">{p.sales}</p>
+                    {p.roi && (
+                      <p className="text-[11px] font-medium text-[#188a52]">ROAS {p.roi}</p>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -1270,98 +1411,13 @@ export default function CreatorPerformancePage() {
             </div>
           </div>
 
-          {/* Filter Bar */}
-          <div ref={toolbarRef} className="flex flex-wrap items-center gap-2.5 z-30 relative" data-name="Toolbar">
-            {/* 1. Date range */}
-            <PerformanceDropdown
-              displayLabel={formattedDateRange}
-              options={PERFORMANCE_DATE_OPTIONS}
-              selectedOption={selectedDateRange}
-              onSelect={(val) => {
-                setSelectedDateRange(val);
-                setOpenDropdown(null);
-              }}
-              isOpen={openDropdown === "date"}
-              onToggle={() => setOpenDropdown(openDropdown === "date" ? null : "date")}
-              minWidth="min-w-[190px]"
+          {/* Project Picker (CR-07) replacing the four filter chips */}
+          <Reveal delay={0.02}>
+            <ProjectPicker
+              selectedProject={selectedProject}
+              onSelectProject={setSelectedProject}
             />
-
-            {/* 2. Project */}
-            <PerformanceDropdown
-              displayLabel={selectedProject}
-              options={PERFORMANCE_PROJECT_OPTIONS}
-              selectedOption={selectedProject}
-              onSelect={(val) => {
-                setSelectedProject(val);
-                setOpenDropdown(null);
-              }}
-              isOpen={openDropdown === "project"}
-              onToggle={() => setOpenDropdown(openDropdown === "project" ? null : "project")}
-              minWidth="min-w-[180px]"
-            />
-
-            {/* 3. Brand */}
-            <PerformanceDropdown
-              displayLabel={selectedBrand}
-              options={PERFORMANCE_BRAND_OPTIONS}
-              selectedOption={selectedBrand}
-              onSelect={(val) => {
-                setSelectedBrand(val);
-                setOpenDropdown(null);
-              }}
-              isOpen={openDropdown === "brand"}
-              onToggle={() => setOpenDropdown(openDropdown === "brand" ? null : "brand")}
-              minWidth="min-w-[150px]"
-            />
-
-            {/* 4. Platform */}
-            <PerformanceDropdown
-              displayLabel={selectedPlatform}
-              options={PERFORMANCE_PLATFORM_OPTIONS}
-              selectedOption={selectedPlatform}
-              onSelect={(val) => {
-                setSelectedPlatform(val);
-                setOpenDropdown(null);
-              }}
-              isOpen={openDropdown === "platform"}
-              onToggle={() => setOpenDropdown(openDropdown === "platform" ? null : "platform")}
-              minWidth="min-w-[150px]"
-            />
-
-            {/* 5. Format */}
-            <PerformanceDropdown
-              displayLabel={selectedFormat}
-              options={PERFORMANCE_FORMAT_OPTIONS}
-              selectedOption={selectedFormat}
-              onSelect={(val) => {
-                setSelectedFormat(val);
-                setOpenDropdown(null);
-              }}
-              isOpen={openDropdown === "format"}
-              onToggle={() => setOpenDropdown(openDropdown === "format" ? null : "format")}
-              minWidth="min-w-[150px]"
-            />
-
-            {(selectedProject !== "All projects · 19" ||
-              selectedBrand !== "All brands" ||
-              selectedPlatform !== "All platforms" ||
-              selectedFormat !== "All formats" ||
-              selectedDateRange !== "Last 7 days") && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedDateRange("Last 7 days");
-                  setSelectedProject("All projects · 19");
-                  setSelectedBrand("All brands");
-                  setSelectedPlatform("All platforms");
-                  setSelectedFormat("All formats");
-                }}
-                className="text-[12px] font-medium text-[#8491a3] hover:text-[#0d0d10] underline px-2 cursor-pointer transition"
-              >
-                Reset filters
-              </button>
-            )}
-          </div>
+          </Reveal>
 
           {/* 1. Scorecards */}
           <Reveal delay={0.05}>
@@ -1376,11 +1432,11 @@ export default function CreatorPerformancePage() {
             <SalesTrendSection />
           </Reveal>
 
-          {/* 3. Conversion Funnel & Revenue Waterfall */}
+          {/* 3. Results vs Target by Project & Earnings by Objective (CR-07) */}
           <Reveal delay={0.15}>
             <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_420px] gap-6">
-              <FunnelSection />
-              <RevenueSection />
+              <ResultsVsTargetSection />
+              <EarningsByObjectiveSection />
             </div>
           </Reveal>
 

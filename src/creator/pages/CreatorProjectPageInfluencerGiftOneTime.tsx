@@ -594,7 +594,7 @@ export default function CreatorProjectPageInfluencerGiftOneTime() {
                   Usage rights
                 </p>
                 <p className="font-['Inter:Medium'] font-medium leading-[22px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="773:10252">
-                  Organic reposts on Minimalist’s Instagram for 30 days
+                  30 days · until 25 Dec (locked on invite)
                 </p>
               </div>
               <div className="[word-break:break-word] border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[10px] items-start not-italic overflow-clip py-[9px] relative shrink-0 w-full" data-node-id="773:10253" data-name="kv">

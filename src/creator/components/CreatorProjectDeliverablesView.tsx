@@ -1222,7 +1222,7 @@ export function CreatorProjectDeliverablesView({
                       Usage
                     </p>
                     <p className="flex-[1_0_0] font-['Inter:Medium'] font-medium min-w-px relative text-[#070b13]" data-node-id="715:3625">
-                      30 days organic
+                      3 months · until 7 Dec
                     </p>
                   </div>
                   <div className="border-[#edeff3] border-solid border-t content-stretch flex gap-[12px] items-center leading-[normal] not-italic overflow-clip py-[10px] relative shrink-0 text-[13px] w-full" data-node-id="715:3626" data-name="kv">
@@ -1523,7 +1523,7 @@ export function CreatorProjectDeliverablesView({
                         Deliverable set by Ananya Mehta
                       </p>
                       <p className="font-['Inter:Regular'] font-normal min-w-full relative shrink-0 text-[#8491a3] text-[12px] w-[min-content]" data-node-id="715:4958">
-                        1 Story · goes live by 5 Nov · ₹3,000 · 30 days organic
+                        1 Story · goes live by 5 Nov · ₹3,000 · 3 months (until 5 Nov)
                       </p>
                     </div>
                     <p className="[word-break:break-word] font-['Inter:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[#8491a3] text-[11px] whitespace-nowrap" data-node-id="715:4959">

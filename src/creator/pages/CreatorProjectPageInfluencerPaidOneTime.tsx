@@ -532,7 +532,7 @@ export default function CreatorProjectPageInfluencerPaidOneTime() {
                   Project ends
                 </p>
                 <p className="flex-[1_0_0] min-w-px relative text-[#070b13] text-right" data-node-id="770:9686">
-                  7 Nov 2026 · usage rights until 7 Dec
+                  7 Nov 2026 · usage rights 3 months (until 7 Dec)
                 </p>
               </div>
               <div className="bg-white content-stretch flex font-['Inter:Regular'] font-normal gap-[8px] items-start overflow-clip relative shrink-0 text-[13px] w-full" data-node-id="770:9687" data-name="r">
@@ -633,7 +633,7 @@ export default function CreatorProjectPageInfluencerPaidOneTime() {
                   Usage rights
                 </p>
                 <p className="font-['Inter:Medium'] font-medium leading-[22px] relative shrink-0 text-[14px] text-[color:var(--text-primary,#0d0d10)] whitespace-nowrap" data-node-id="766:9742">
-                  Organic reposts on Minimalist’s Instagram for 60 days
+                  3 months · until 7 Dec (locked on invite)
                 </p>
               </div>
               <div className="[word-break:break-word] border-[var(--border-subtle,#edeff3)] border-solid border-t content-stretch flex gap-[10px] items-start not-italic overflow-clip py-[9px] relative shrink-0 w-full" data-node-id="766:9746" data-name="kv">
