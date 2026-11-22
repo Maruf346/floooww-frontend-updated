@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "motion/react";
 import { Container } from "@/common/components/ui/Container";
 import { Reveal, RevealGroup, RevealItem } from "@/common/components/motion/Reveal";
-import { blogArticleRoute } from "@/common/constants/routes";
+import { ROUTES, blogArticleRoute } from "@/common/constants/routes";
 import { BLOG_COPY, BLOG_POSTS, type BlogPost } from "@/landing/data/blog";
 
 function Category({ children }: { children: string }) {
@@ -15,10 +15,10 @@ function Category({ children }: { children: string }) {
   );
 }
 
-function ReadMore({ to }: { to: string }) {
+function ReadMore({ to, label = "Read article →" }: { to: string; label?: string }) {
   return (
     <Link to={to} className="font-inter-semibold text-[13px] font-semibold text-primary hover:underline">
-      Read more →
+      {label}
     </Link>
   );
 }
@@ -44,7 +44,7 @@ function FeatureCard({ post }: { post: BlogPost }) {
         <p className="text-[15px] leading-[22px] text-tertiary">{post.description}</p>
         <div className="mt-1 flex items-center justify-between text-[13px]">
           <time className="text-tertiary">{post.date}</time>
-          <ReadMore to={to} />
+          <ReadMore to={to} label="Read article →" />
         </div>
       </div>
     </article>
@@ -71,7 +71,7 @@ function CompactCard({ post }: { post: BlogPost }) {
         </Link>
         <div className="flex items-center justify-between pt-1 text-[13px]">
           <time className="text-tertiary">{post.date}</time>
-          <ReadMore to={to} />
+          <ReadMore to={to} label="Read →" />
         </div>
       </div>
     </article>
@@ -93,13 +93,21 @@ export function BlogSection() {
             <p className="font-inter-semibold text-[12px] font-semibold tracking-[1.44px] text-secondary">
               {BLOG_COPY.eyebrow}
             </p>
-            <h2
-              id="blog-title"
-              className="mt-3 font-inter-bold text-[32px] font-bold tracking-[-0.8px] text-ink sm:text-[40px]"
-            >
-              {BLOG_COPY.title}
-            </h2>
+            <Link to={ROUTES.blog} className="group inline-block">
+              <h2
+                id="blog-title"
+                className="mt-3 font-inter-bold text-[32px] font-bold tracking-[-0.8px] text-ink sm:text-[40px] group-hover:text-primary transition-colors"
+              >
+                {BLOG_COPY.title}
+              </h2>
+            </Link>
           </div>
+          <Link
+            to={ROUTES.blog}
+            className="mr-3 hidden sm:inline-flex items-center gap-1 font-inter-semibold text-[14px] font-semibold text-primary hover:underline"
+          >
+            All articles →
+          </Link>
           <button
             type="button"
             aria-label="Previous articles"

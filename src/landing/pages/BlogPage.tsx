@@ -8,7 +8,6 @@ import {
   BLOG_CATEGORIES,
   FEATURED_POST,
   BLOG_POSTS,
-  type BlogPost,
 } from "@/landing/data/blog";
 
 export function BlogPage() {
@@ -24,14 +23,14 @@ export function BlogPage() {
     setSubmittedSearch(searchQuery.trim().toLowerCase());
   };
 
-  // Filter latest articles (excluding featured unless searching/filtering)
-  const nonFeaturedPosts = useMemo(
-    () => BLOG_POSTS.filter((post) => !post.featured),
-    []
-  );
+  const isDefaultView = selectedCategory === "All" && !submittedSearch;
 
   const filteredPosts = useMemo(() => {
-    return nonFeaturedPosts.filter((post) => {
+    const sourcePosts = isDefaultView
+      ? BLOG_POSTS.filter((post) => !post.featured)
+      : BLOG_POSTS;
+
+    return sourcePosts.filter((post) => {
       const matchesCategory =
         selectedCategory === "All" ||
         post.category.toLowerCase() === selectedCategory.toLowerCase();
@@ -42,7 +41,7 @@ export function BlogPage() {
         post.category.toLowerCase().includes(submittedSearch);
       return matchesCategory && matchesSearch;
     });
-  }, [nonFeaturedPosts, selectedCategory, submittedSearch]);
+  }, [isDefaultView, selectedCategory, submittedSearch]);
 
   const displayedPosts = filteredPosts.slice(0, visibleCount);
 
@@ -130,7 +129,7 @@ export function BlogPage() {
       </section>
 
       {/* Featured Article */}
-      {selectedCategory === "All" && !submittedSearch && (
+      {isDefaultView && (
         <section className="bg-white py-10 lg:py-14 border-b border-line-subtle">
           <Container>
             <Reveal>
@@ -207,11 +206,12 @@ export function BlogPage() {
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 border-b border-line-subtle pb-4">
             <div>
               <h2 className="font-inter-bold text-[28px] sm:text-[32px] font-bold tracking-[-1px] text-[#070b13]">
-                Latest articles
+                {isDefaultView ? "Latest articles" : "Articles"}
               </h2>
             </div>
             <p className="font-inter-regular text-[14px] text-body">
-              {displayedPosts.length} of {filteredPosts.length + (selectedCategory === "All" && !submittedSearch ? 1 : 0)} articles
+              {displayedPosts.length + (isDefaultView ? 1 : 0)} of{" "}
+              {filteredPosts.length + (isDefaultView ? 1 : 0)} articles
             </p>
           </div>
 
