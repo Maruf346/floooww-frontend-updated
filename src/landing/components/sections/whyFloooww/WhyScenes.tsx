@@ -165,7 +165,7 @@ function WorkflowScene() {
           />
         </Rise>
         <Rise order={5}>
-          <div className="flex w-full items-center justify-center rounded-[12.694px] bg-primary py-[15.233px]">
+          <div className="flex w-full items-center justify-center rounded-[12.694px] bg-[#0d0d10] py-[15.233px] hover:bg-[#1f1f26] active:bg-[#000000] cursor-pointer transition-colors">
             <p className="font-inter-semibold text-[17.772px] font-semibold text-white whitespace-nowrap">
               {scene.cta}
             </p>
