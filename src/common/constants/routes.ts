@@ -91,6 +91,8 @@ export const ROUTES = {
   creatorContent: "/creator/content",
   creatorPerformance: "/creator/performance",
   creatorEarnings: "/creator/earnings",
+  creatorDisputes: "/creator/disputes",
+  creatorDisputeDetail: "/creator/disputes/:disputeId",
   creatorMessages: "/creator/messages",
   creatorSettings: "/creator/settings",
   creatorHelp: "/creator/help",
@@ -116,6 +118,7 @@ export const brandCreatorDeliverablesRoute = (projectId: number | string, creato
   `/brand/projects/${projectId}/invited/${creatorId}/deliverables`;
 export const brandPaymentDisputeRoute = (disputeId: string) =>
   `/brand/payments/disputes/${disputeId}`;
+export const creatorDisputeRoute = (disputeId: string) => `/creator/disputes/${disputeId}`;
 export const agencyReportDetailRoute = (reportId: string) => `/agency/reports/${reportId}`;
 export const agencyClientRoute = (clientId: string) => `/agency/client/${clientId}`;
 export const agencyClientProjectsRoute = (clientId: string) =>

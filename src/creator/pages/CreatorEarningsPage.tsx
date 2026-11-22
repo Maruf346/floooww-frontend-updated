@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import {
   WalletCards,
@@ -17,8 +18,11 @@ import {
   FileText,
   X,
   ShieldCheck,
+  AlertTriangle,
 } from "lucide-react";
 import { CreatorShell } from "@/creator/components/CreatorShell";
+import { CreatorDisputesListContent } from "../components/CreatorDisputesListContent";
+import { creatorDisputeRoute, ROUTES } from "@/common/constants/routes";
 
 // Period options matching Figma node Dropdown · Period
 const PERIOD_OPTIONS = [
@@ -314,7 +318,43 @@ const PAYMENTS_DATA: PaymentRow[] = [
   },
 ];
 
+const EARNINGS_TABS = [
+  { label: "Overview", key: "overview" },
+  { label: "Projects", key: "projects" },
+  { label: "Statements", key: "statements" },
+  { label: "Where we pay you", key: "payouts" },
+  { label: "Tax details", key: "tax" },
+  { label: "Disputes", key: "disputes", badge: "2" },
+] as const;
+
 export default function CreatorEarningsPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentTab = (searchParams.get("tab") || "overview").toLowerCase();
+
+  const handleTabChange = (key: string) => {
+    if (key === "payouts") {
+      setIsPayoutModalOpen(true);
+      return;
+    }
+    if (key === "tax") {
+      setIsTaxModalOpen(true);
+      return;
+    }
+    if (key === "statements") {
+      setIsStatementModalOpen(true);
+      return;
+    }
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (key === "overview") {
+        next.delete("tab");
+      } else {
+        next.set("tab", key);
+      }
+      return next;
+    });
+  };
+
   const [selectedPeriod, setSelectedPeriod] = useState<PeriodOption>("This year");
   const [openDropdown, setOpenDropdown] = useState<"period" | "download" | null>(null);
   const [hoveredBarIndex, setHoveredBarIndex] = useState<number | null>(null);
@@ -410,7 +450,73 @@ export default function CreatorEarningsPage() {
             </div>
           </div>
 
-          {/* 2. Top Row KPI Tiles */}
+          {/* Navigation Tabs matching Figma Node 1664:53813 */}
+          <div className="border-b border-[#e5e7eb] flex items-center gap-6 overflow-x-auto">
+            {EARNINGS_TABS.map((tab) => {
+              const isActive = currentTab === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => handleTabChange(tab.key)}
+                  className={`flex items-center gap-2 pb-3 text-[14px] transition whitespace-nowrap relative cursor-pointer ${
+                    isActive
+                      ? "font-semibold text-[#3b5bff]"
+                      : "font-medium text-[#6b7280] hover:text-[#0d0d10]"
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  {tab.badge && (
+                    <span className="inline-flex items-center justify-center h-4.5 min-w-4.5 px-1.5 rounded-full text-[11px] font-semibold bg-[#feefce] text-[#d97706]">
+                      {tab.badge}
+                    </span>
+                  )}
+                  {isActive && (
+                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#3b5bff]" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {currentTab === "disputes" ? (
+            <CreatorDisputesListContent />
+          ) : (
+            <>
+              {/* Active dispute banner in overview */}
+              <div className="bg-[#feefce] border border-[#fde68a] rounded-[12px] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                <div className="flex items-center gap-3">
+                  <div className="size-8 rounded-full bg-[#f59e0b] text-white grid place-items-center shrink-0">
+                    <AlertTriangle size={16} />
+                  </div>
+                  <div>
+                    <p className="text-[14px] font-semibold text-[#92400e]">
+                      Dispute pending your reply: Velvet Lip Co. (DSP-0418)
+                    </p>
+                    <p className="text-[12px] text-[#b45309]">
+                      ₹7,500 frozen in escrow for Lip Liner Collab · Reply required by 30 Oct
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Link
+                    to={creatorDisputeRoute("DSP-0418")}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-[8px] bg-[#92400e] text-white text-[12px] font-medium hover:bg-[#78350f] transition"
+                  >
+                    <span>View dispute</span>
+                    <ArrowRight size={13} />
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => handleTabChange("disputes")}
+                    className="px-3 py-1.5 rounded-[8px] border border-[#d97706]/40 text-[12px] font-medium text-[#92400e] hover:bg-black/5 transition cursor-pointer"
+                  >
+                    All disputes (2)
+                  </button>
+                </div>
+              </div>
+
+              {/* 2. Top Row KPI Tiles */}
           <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5 shadow-xs">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {/* Tile 1: Paid in October */}
@@ -891,8 +997,10 @@ export default function CreatorEarningsPage() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
+    </div>
+  </div>
 
       {/* MODAL 1: Change Payout Details */}
       <AnimatePresence>

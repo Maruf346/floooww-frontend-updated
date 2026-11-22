@@ -516,6 +516,20 @@ export const router = createBrowserRouter(
           }),
         },
         {
+          path: ROUTES.creatorDisputes,
+          lazy: async () => ({
+            Component: (await import("@/creator/pages/CreatorDisputesListPage"))
+              .default,
+          }),
+        },
+        {
+          path: ROUTES.creatorDisputeDetail,
+          lazy: async () => ({
+            Component: (await import("@/creator/pages/CreatorDisputeDetailPage"))
+              .default,
+          }),
+        },
+        {
           path: ROUTES.creatorMessages,
           lazy: async () => ({
             Component: (await import("@/creator/pages/CreatorMessagesPage"))
