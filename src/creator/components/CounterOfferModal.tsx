@@ -116,8 +116,8 @@ export function CounterOfferModal({
     }
   };
 
-  // 11.8% platform and service fee
-  const receivedAmount = Math.round(fee * (1 - 0.118));
+  // 11% platform and service fee + 18% GST on the fee = 12.98%
+  const receivedAmount = Math.round(fee * (1 - 0.1298));
   const diffFromRange = fee - maxRange;
 
   let feeComparisonText = "";

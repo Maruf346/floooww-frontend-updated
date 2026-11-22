@@ -24,10 +24,10 @@ const roleCopy: Record<
   creator: {
     option: "I’m a creator",
     description:
-      "Find projects that fit you and get paid through escrow. A 10% fee + GST comes off only completed orders. Any email works.",
+      "Find projects that fit you and get paid through escrow. An 11% fee + GST comes off only completed orders. Any email works.",
     title: "Join as a creator",
     subtitle:
-      "Free to join. Brands pay you through escrow; a 10% fee + GST comes off only completed orders.",
+      "Free to join. Brands pay you through escrow; an 11% fee + GST comes off only completed orders.",
   },
   agency: {
     option: "I’m an agency",

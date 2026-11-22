@@ -32,6 +32,8 @@ interface SidePanelContent {
   };
   card1: {
     avatar?: string;
+    avatarText?: string;
+    isShopify?: boolean;
     title: string;
     subtitle: string;
     gaugePercent: number;
@@ -48,7 +50,9 @@ interface SidePanelContent {
   card3: {
     title: string;
     subtitle: string;
-    progressSteps: [string, string, string];
+    badge?: string;
+    captionLeft: string;
+    captionRight: string;
     completedSteps: number;
   };
 }
@@ -65,8 +69,8 @@ const PANEL_DATA: Record<AuthPanelVariant, SidePanelContent> = {
       title: "Aditi Sharma",
       subtitle: "Beauty · Mumbai · 4.2 L followers",
       gaugePercent: 96,
-      gaugeLabel: "Match",
-      tags: ["Skincare", "Reels & Stories", "High ER", "Top 5%"],
+      gaugeLabel: "% match",
+      tags: ["84% women", "18–34", "Hindi + English"],
     },
     card2: {
       label: "Tracked net sales",
@@ -76,65 +80,71 @@ const PANEL_DATA: Record<AuthPanelVariant, SidePanelContent> = {
       bars: [30, 42, 38, 55, 48, 70, 92],
     },
     card3: {
-      title: "₹1,86,000 in escrow",
-      subtitle: "Released 2 working days after approval",
-      progressSteps: ["Held in escrow", "Content approved", "Funds released"],
+      title: "₹1,86,000 held in escrow",
+      subtitle: "Released 2 days after approval",
+      badge: "Protected",
+      captionLeft: "2 of 3 posts approved",
+      captionRight: "Releases on approval",
       completedSteps: 2,
     },
   },
   "brand-onboarding": {
     headline: {
-      title: "Ready to launch\nyour first project.",
+      title: "Set up once. Run every\ncreator project from here.",
       description:
-        "Set up your brand profile, connect your store for auto-tracking, and invite your team to collaborate in real time.",
+        "Connect your store so every creator code and link is tracked to a sale, then invite your team to approve content.",
     },
     card1: {
-      avatar: ASSETS.hero.avatarMeera,
-      title: "Minimalist Squad",
-      subtitle: "Target audience fit · India metros",
-      gaugePercent: 94,
-      gaugeLabel: "Fit",
-      tags: ["Women 18–34", "Tier 1 metros", "High intent", "Verified"],
+      isShopify: true,
+      title: "Shopify connected",
+      subtitle: "Orders sync every 15 minutes",
+      gaugePercent: 100,
+      gaugeLabel: "% synced",
+      tags: ["Coupon codes", "UTM links", "Orders"],
     },
     card2: {
-      label: "Projected campaign reach",
-      liveText: "Live projection",
-      figure: "12,40,000",
-      subtext: "Across 16 invited creators",
+      label: "Tracked net sales",
+      liveText: "Live",
+      figure: "₹6,99,200",
+      subtext: "↑ 31% vs prev. 28 days",
       bars: [25, 38, 45, 60, 58, 80, 95],
     },
     card3: {
-      title: "Account launch progress",
-      subtitle: "Complete setup to start sending invites",
-      progressSteps: ["Store synced", "Team invited", "Live project"],
+      title: "3 teammates invited",
+      subtitle: "Arjun, Tanvi and Nisha can approve",
+      badge: "Team",
+      captionLeft: "2 of 3 have joined",
+      captionRight: "1 invite pending",
       completedSteps: 2,
     },
   },
   creator: {
     headline: {
-      title: "Get discovered by brands\nthat actually fit you.",
+      title: "Get discovered by brands\nthat fit you.",
       description:
-        "Brands see verified stats directly from your connected channels. Agree on deliverables upfront, and get paid safely through escrow.",
+        "See every fee up front, apply in a tap and get paid as soon as your content is approved.",
     },
     card1: {
-      avatar: ASSETS.howItWorks.avatarMeera,
+      avatarText: "MI",
       title: "Meera Iyer",
-      subtitle: "Beauty & skincare · 1.12 L followers",
-      gaugePercent: 98,
-      gaugeLabel: "Fit",
-      tags: ["Clean beauty", "4.8× avg ROI", "Hindi & English", "Fast turnaround"],
+      subtitle: "Beauty · Mumbai · 1.12 L followers",
+      gaugePercent: 96,
+      gaugeLabel: "% fit",
+      tags: ["Skincare", "Hindi + English", "Reels & Stories"],
     },
     card2: {
-      label: "Earned this month",
-      liveText: "Live",
-      figure: "₹84,500",
-      subtext: "↑ 4 active brand partnerships",
+      label: "Paid to you",
+      liveText: "Paid",
+      figure: "₹25,110",
+      subtext: "HDFC ···· 4821 · 2 Nov",
       bars: [28, 35, 42, 50, 65, 78, 90],
     },
     card3: {
-      title: "₹30,000 in escrow · Minimalist",
-      subtitle: "Payout auto-released upon draft approval",
-      progressSteps: ["In escrow", "Draft approved", "Bank payout"],
+      title: "New invite from Minimalist",
+      subtitle: "Monsoon Sunscreen · reply by 2 Nov",
+      badge: "Invite",
+      captionLeft: "Fee ₹15–20K · 3 posts",
+      captionRight: "Paid on approval",
       completedSteps: 2,
     },
   },
@@ -145,11 +155,11 @@ const PANEL_DATA: Record<AuthPanelVariant, SidePanelContent> = {
         "Switch between clients, bill your service fees and keep every creator payout safe in escrow.",
     },
     card1: {
-      avatar: ASSETS.howItWorks.brandMedia[0],
+      avatarText: "M",
       title: "Minimalist",
       subtitle: "Client · 5 live projects · 38 creators",
       gaugePercent: 86,
-      gaugeLabel: "On time",
+      gaugeLabel: "% on time",
       tags: ["Dewdrop Naturals", "Velvet Lip Co", "+ 2 clients"],
     },
     card2: {
@@ -161,8 +171,10 @@ const PANEL_DATA: Record<AuthPanelVariant, SidePanelContent> = {
     },
     card3: {
       title: "₹2,61,900 in escrow",
-      subtitle: "Creator payouts · 3 clients · Protected",
-      progressSteps: ["Invoiced", "In escrow", "Payouts released"],
+      subtitle: "Creator payouts · 3 clients",
+      badge: "Protected",
+      captionLeft: "2 of 3 client invoices paid",
+      captionRight: "Next due 1 Nov",
       completedSteps: 2,
     },
   },
@@ -306,9 +318,11 @@ function AuthSidePanel({ variant }: { variant: AuthPanelVariant }) {
   const data = PANEL_DATA[variant];
 
   return (
-    <aside className="relative hidden min-h-dvh overflow-hidden border-l border-white/10 bg-[#070b13] lg:flex lg:flex-col lg:justify-between px-10 py-10 xl:px-14 xl:py-12">
-      {/* Background subtle radial texture */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.04),transparent_55%)]" />
+    <aside className="relative hidden min-h-dvh overflow-hidden border-l border-white/10 bg-[#0d0d10] lg:flex lg:flex-col lg:justify-between px-10 py-10 xl:px-14 xl:py-12">
+      {/* Background ambient lighting ellipses from Figma (2413:740) */}
+      <div className="pointer-events-none absolute -right-[80px] -top-[120px] size-[520px] rounded-full bg-[#3b5bff]/15 blur-[120px]" />
+      <div className="pointer-events-none absolute -left-[160px] top-[500px] size-[460px] rounded-full bg-[#10b981]/10 blur-[130px]" />
+      <div className="pointer-events-none absolute left-[280px] top-[480px] size-[300px] rounded-full bg-[#3b5bff]/10 blur-[100px]" />
 
       {/* Top Headline & Description */}
       <AnimatePresence mode="wait">
@@ -331,6 +345,19 @@ function AuthSidePanel({ variant }: { variant: AuthPanelVariant }) {
 
       {/* Center 3 Redesigned Cards linked by Dotted Lines */}
       <div className="relative my-auto flex flex-col py-6">
+        {/* Right floating rail of platform icons matching Figma 2413:740 */}
+        <div className="absolute -right-2 top-1/2 -translate-y-1/2 hidden 2xl:flex flex-col gap-4 z-20">
+          {(["Instagram", "YouTube", "Snapchat", "Pinterest"] as const).map((platform) => (
+            <div
+              key={platform}
+              className="grid size-12 place-items-center rounded-[14px] bg-white shadow-[0_18px_24px_rgba(0,0,0,0.4)] transition-transform hover:scale-105"
+              title={platform}
+            >
+              <PlatformLogo platform={platform} size={24} />
+            </div>
+          ))}
+        </div>
+
         {/* Card 1: Ring Gauge and Tags */}
         <motion.div
           key={`card1-${variant}`}
@@ -347,6 +374,16 @@ function AuthSidePanel({ variant }: { variant: AuthPanelVariant }) {
                   src={data.card1.avatar}
                   alt={data.card1.title}
                 />
+              )}
+              {data.card1.avatarText && (
+                <div className="grid size-11 shrink-0 place-items-center rounded-full bg-[#f4f6fb] text-[15px] font-bold text-[#070b13]">
+                  {data.card1.avatarText}
+                </div>
+              )}
+              {data.card1.isShopify && (
+                <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-[#e1fce3] text-[#16a34a] font-bold text-[18px]">
+                  S
+                </div>
               )}
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[14px] font-semibold text-ink">
@@ -414,7 +451,7 @@ function AuthSidePanel({ variant }: { variant: AuthPanelVariant }) {
           <div className="h-full border-r-2 border-dashed border-white/25" />
         </div>
 
-        {/* Card 3: 3-part progress bar (rupee icon tile removed) */}
+        {/* Card 3: Status and Progress matching Figma */}
         <motion.div
           key={`card3-${variant}`}
           initial={{ opacity: 0, x: -16 }}
@@ -422,18 +459,37 @@ function AuthSidePanel({ variant }: { variant: AuthPanelVariant }) {
           transition={{ duration: 0.55, ease: EASE_OUT, delay: 0.4 }}
           className="relative z-10 w-full max-w-[410px] rounded-[18px] border border-white/15 bg-white p-4 shadow-[0_20px_44px_rgba(0,0,0,0.45)]"
         >
-          <div className="min-w-0">
-            <p className="text-[14px] font-semibold text-ink">
-              {data.card3.title}
-            </p>
-            <p className="text-[12px] text-[#6b7280]">
-              {data.card3.subtitle}
-            </p>
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-[14px] font-semibold text-ink">
+                {data.card3.title}
+              </p>
+              <p className="text-[12px] text-[#6b7280]">
+                {data.card3.subtitle}
+              </p>
+            </div>
+            {data.card3.badge && (
+              <span className="shrink-0 rounded-full bg-[#f5f5f7] px-2.5 py-0.5 text-[11px] font-medium text-[#576070]">
+                {data.card3.badge}
+              </span>
+            )}
           </div>
-          <ThreePartProgressBar
-            steps={data.card3.progressSteps}
-            completedCount={data.card3.completedSteps}
-          />
+          <div className="mt-3.5 space-y-2">
+            <div className="flex gap-1.5">
+              {[0, 1, 2].map((idx) => (
+                <div
+                  key={idx}
+                  className={`h-1.5 flex-1 rounded-full ${
+                    idx < data.card3.completedSteps ? "bg-[#0d0d10]" : "bg-[#e2e5eb]"
+                  }`}
+                />
+              ))}
+            </div>
+            <div className="flex justify-between text-[11px] font-medium leading-4 text-[#576070]">
+              <span>{data.card3.captionLeft}</span>
+              <span>{data.card3.captionRight}</span>
+            </div>
+          </div>
         </motion.div>
       </div>
 

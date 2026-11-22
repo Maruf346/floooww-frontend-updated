@@ -102,9 +102,9 @@ const HELP_TOPICS: HelpTopic[] = [
           "Approved payouts are credited directly to your verified bank account via IMPS/NEFT within 24 to 48 hours. You can download GST tax invoices under 'Earnings'.",
       },
       {
-        title: "Floooww creator platform fee",
+        title: "Kreyio creator platform fee",
         content:
-          "Floooww charges a flat, transparent 10% platform fee on completed collaborations, which covers escrow protection, contract drafting, and dispute mediation.",
+          "Kreyio charges a flat, transparent 11% platform fee on completed collaborations, which covers escrow protection, contract drafting, and dispute mediation.",
       },
     ],
   },

@@ -253,7 +253,7 @@ const PAYMENTS_DATA: PaymentRow[] = [
     brandColor: "bg-[#3b5bff]",
     projectAndDeliverable: "Vitamin-C Serum · Reel 2",
     fee: "₹4,250",
-    youGet: "₹3,748",
+    youGet: "₹3,698",
     status: "Paid",
     statusTone: "Success",
   },
@@ -264,7 +264,7 @@ const PAYMENTS_DATA: PaymentRow[] = [
     brandColor: "bg-[#3b5bff]",
     projectAndDeliverable: "Vitamin-C Serum · Reel 1",
     fee: "₹8,500",
-    youGet: "₹7,497",
+    youGet: "₹7,397",
     status: "Paid",
     statusTone: "Success",
   },
@@ -275,7 +275,7 @@ const PAYMENTS_DATA: PaymentRow[] = [
     brandColor: "bg-[#3b5bff]",
     projectAndDeliverable: "Vitamin-C Serum · Story",
     fee: "₹3,000",
-    youGet: "₹2,646",
+    youGet: "₹2,611",
     status: "In escrow",
     statusTone: "Info",
   },
@@ -884,7 +884,7 @@ export default function CreatorEarningsPage() {
                       <Check className="size-3 stroke-[2.5]" />
                     </div>
                     <span>
-                      Your fee minus Kreyio’s platform &amp; service fee (10% + GST) reaches your bank
+                      Your fee minus Kreyio’s platform &amp; service fee (11% + GST) reaches your bank
                     </span>
                   </div>
                 </div>

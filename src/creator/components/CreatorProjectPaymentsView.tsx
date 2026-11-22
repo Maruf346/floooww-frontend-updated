@@ -114,7 +114,7 @@ export function CreatorProjectPaymentsView() {
             Paid to you
           </p>
           <p className="font-['Inter:Semi_Bold'] font-semibold leading-[28px] text-[22px] text-[color:var(--text-primary,#0d0d10)] tracking-[-0.33px]">
-            ₹11,245
+            ₹11,095
           </p>
           <div className="h-[10px]" />
           <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[color:var(--status-success-fg,#16a34a)]">
@@ -164,11 +164,11 @@ export function CreatorProjectPaymentsView() {
             Platform &amp; service fee · Kreyio · incl. GST
           </p>
           <p className="font-['Inter:Semi_Bold'] font-semibold leading-[28px] text-[22px] text-[color:var(--text-primary,#0d0d10)] tracking-[-0.33px]">
-            ₹2,006
+            ₹2,207
           </p>
           <div className="h-[10px]" />
           <p className="font-['Inter:Medium'] font-medium leading-[16px] text-[12px] text-[color:var(--text-tertiary,#a3a3ac)]">
-            10% of your ₹17,000 fee + 18% GST on that fee
+            11% of your ₹17,000 fee + 18% GST on that fee
           </p>
         </div>
       </div>
@@ -267,7 +267,7 @@ export function CreatorProjectPaymentsView() {
                   <p className="font-['Inter:Regular'] font-normal text-[#070b13] text-[13px]">₹8,500</p>
                 </div>
                 <div className="content-stretch flex flex-col items-start relative shrink-0 w-[66px]">
-                  <p className="font-['Inter:Regular'] font-normal text-[#070b13] text-[13px]">₹7,497</p>
+                  <p className="font-['Inter:Regular'] font-normal text-[#070b13] text-[13px]">₹7,397</p>
                 </div>
                 <div className="content-stretch flex flex-col items-start relative shrink-0 w-[128px]">
                   <Badge label="Approved · paid" tone="Success" />
@@ -303,7 +303,7 @@ export function CreatorProjectPaymentsView() {
                   <p className="font-['Inter:Regular'] font-normal text-[#070b13] text-[13px]">₹4,250</p>
                 </div>
                 <div className="content-stretch flex flex-col items-start relative shrink-0 w-[66px]">
-                  <p className="font-['Inter:Regular'] font-normal text-[#070b13] text-[13px]">₹3,748</p>
+                  <p className="font-['Inter:Regular'] font-normal text-[#070b13] text-[13px]">₹3,698</p>
                 </div>
                 <div className="content-stretch flex flex-col items-start relative shrink-0 w-[128px]">
                   <Badge label="Approved · paid" tone="Success" />
@@ -339,7 +339,7 @@ export function CreatorProjectPaymentsView() {
                   <p className="font-['Inter:Regular'] font-normal text-[#070b13] text-[13px]">₹3,000</p>
                 </div>
                 <div className="content-stretch flex flex-col items-start relative shrink-0 w-[66px]">
-                  <p className="font-['Inter:Regular'] font-normal text-[#070b13] text-[13px]">₹2,646</p>
+                  <p className="font-['Inter:Regular'] font-normal text-[#070b13] text-[13px]">₹2,611</p>
                 </div>
                 <div className="content-stretch flex flex-col items-start relative shrink-0 w-[128px]">
                   <Badge label="Waiting for approval" tone="Warning" />
@@ -375,7 +375,7 @@ export function CreatorProjectPaymentsView() {
                   <p className="font-['Inter:Regular'] font-normal text-[#070b13] text-[13px]">₹1,250</p>
                 </div>
                 <div className="content-stretch flex flex-col items-start relative shrink-0 w-[66px]">
-                  <p className="font-['Inter:Regular'] font-normal text-[#070b13] text-[13px]">₹1,103</p>
+                  <p className="font-['Inter:Regular'] font-normal text-[#070b13] text-[13px]">₹1,088</p>
                 </div>
                 <div className="content-stretch flex flex-col items-start relative shrink-0 w-[128px]">
                   <Badge label="Not started" tone="Neutral" />
@@ -399,7 +399,7 @@ export function CreatorProjectPaymentsView() {
                 className="font-['Inter:Semi_Bold'] font-semibold text-[#070b13] text-[13px]"
                 data-node-id="718:4853"
               >
-                Fee ₹17,000 · ₹11,245 paid to you · ₹3,749 due from escrow · ₹2,006 platform &amp; service fee incl. GST
+                Fee ₹17,000 · ₹11,095 paid to you · ₹3,699 due from escrow · ₹2,207 platform &amp; service fee incl. GST
               </p>
               <p
                 className="font-['Inter:Regular'] font-normal text-[#8491a3] text-[12px]"
@@ -476,28 +476,28 @@ export function CreatorProjectPaymentsView() {
                 <p className="font-['Inter:Regular'] text-[#8491a3] w-[150px]">
                   Platform &amp; service fee · Kreyio · incl. GST
                 </p>
-                <p className="flex-[1_0_0] font-['Inter:Medium'] text-[#070b13]">− ₹2,006</p>
+                <p className="flex-[1_0_0] font-['Inter:Medium'] text-[#070b13]">− ₹2,207</p>
               </div>
               <div
                 className="border-[#edeff3] border-solid border-t flex gap-[12px] items-center py-[10px] w-full"
                 data-node-id="718:4869"
               >
                 <p className="font-['Inter:Regular'] text-[#8491a3] w-[150px]">You get</p>
-                <p className="flex-[1_0_0] font-['Inter:Medium'] text-[#070b13]">₹14,994</p>
+                <p className="flex-[1_0_0] font-['Inter:Medium'] text-[#070b13]">₹14,793</p>
               </div>
               <div
                 className="border-[#edeff3] border-solid border-t flex gap-[12px] items-center py-[10px] w-full"
                 data-node-id="718:4872"
               >
                 <p className="font-['Inter:Regular'] text-[#8491a3] w-[150px]">Paid so far</p>
-                <p className="flex-[1_0_0] font-['Inter:Medium'] text-[#149d46]">₹11,245</p>
+                <p className="flex-[1_0_0] font-['Inter:Medium'] text-[#149d46]">₹11,095</p>
               </div>
               <div
                 className="border-[#edeff3] border-solid border-t flex gap-[12px] items-center py-[10px] w-full"
                 data-node-id="718:4875"
               >
                 <p className="font-['Inter:Regular'] text-[#8491a3] w-[150px]">In escrow</p>
-                <p className="flex-[1_0_0] font-['Inter:Medium'] text-[#b26b00]">₹3,749</p>
+                <p className="flex-[1_0_0] font-['Inter:Medium'] text-[#b26b00]">₹3,699</p>
               </div>
             </div>
           </div>
@@ -530,7 +530,7 @@ export function CreatorProjectPaymentsView() {
                 <div className="size-2.5 rounded-full bg-[#16a34a] mt-1.5 shrink-0" />
                 <div className="flex flex-[1_0_0] flex-col gap-[2px] items-start min-w-px">
                   <p className="font-['Inter:Medium'] font-medium text-[#070b13] text-[13px]">
-                    ₹11,245 paid
+                    ₹11,095 paid
                   </p>
                   <p className="font-['Inter:Regular'] font-normal text-[#8491a3] text-[12px]">
                     Festive GRWM · Reel
@@ -549,7 +549,7 @@ export function CreatorProjectPaymentsView() {
                 <div className="size-2.5 rounded-full bg-[#16a34a] mt-1.5 shrink-0" />
                 <div className="flex flex-[1_0_0] flex-col gap-[2px] items-start min-w-px">
                   <p className="font-['Inter:Medium'] font-medium text-[#070b13] text-[13px]">
-                    ₹11,245 paid
+                    ₹11,095 paid
                   </p>
                   <p className="font-['Inter:Regular'] font-normal text-[#8491a3] text-[12px]">
                     Launch day · Story
@@ -568,7 +568,7 @@ export function CreatorProjectPaymentsView() {
                 <div className="size-2.5 rounded-full bg-[#f59e0b] mt-1.5 shrink-0" />
                 <div className="flex flex-[1_0_0] flex-col gap-[2px] items-start min-w-px">
                   <p className="font-['Inter:Medium'] font-medium text-[#070b13] text-[13px]">
-                    ₹2,646 next
+                    ₹2,611 next
                   </p>
                   <p className="font-['Inter:Regular'] font-normal text-[#8491a3] text-[12px]">
                     Results after 7 days · Reel
