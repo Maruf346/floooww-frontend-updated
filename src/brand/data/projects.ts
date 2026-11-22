@@ -17,12 +17,20 @@ export type DetailStatus =
   | "Archived"
   | "Deleted";
 
+export type ProjectObjective =
+  | "Awareness"
+  | "Engagement"
+  | "Traffic"
+  | "Lead generation"
+  | "Sales";
+
 export type Project = {
   id: number;
   name: string;
   type: string;
   platform: string;
   status: ProjectStatus;
+  objective: ProjectObjective;
   apps: number;
   approved: number;
   budget: string;
@@ -53,6 +61,7 @@ export const projects: Project[] = [
     type: "Influencer · Paid · One-time",
     platform: "Instagram · YouTube",
     status: "Live",
+    objective: "Sales",
     apps: 28,
     approved: 16,
     budget: "₹2,00,000",
@@ -75,6 +84,7 @@ export const projects: Project[] = [
     type: "UGC · Paid · One-time",
     platform: "Instagram",
     status: "Live",
+    objective: "Engagement",
     apps: 10,
     approved: 6,
     budget: "₹80,000",
@@ -98,6 +108,7 @@ export const projects: Project[] = [
     type: "Influencer · Paid · Long-term",
     platform: "Instagram · YouTube",
     status: "Live",
+    objective: "Awareness",
     apps: 14,
     approved: 6,
     budget: "₹75,000 / month",
@@ -121,6 +132,7 @@ export const projects: Project[] = [
     type: "Influencer · Paid · One-time",
     platform: "Instagram · YouTube",
     status: "Live",
+    objective: "Traffic",
     apps: 19,
     approved: 12,
     budget: "₹1,50,000",
@@ -143,6 +155,7 @@ export const projects: Project[] = [
     type: "Influencer · Gift exchange · One-time",
     platform: "Instagram",
     status: "Live",
+    objective: "Awareness",
     apps: 8,
     approved: 8,
     budget: "₹52,000",
@@ -166,6 +179,7 @@ export const projects: Project[] = [
     type: "UGC · Paid · One-time",
     platform: "Instagram · YouTube",
     status: "Upcoming",
+    objective: "Lead generation",
     apps: 7,
     approved: 3,
     budget: "₹1,20,000",
@@ -188,6 +202,7 @@ export const projects: Project[] = [
     type: "Influencer · Paid · One-time",
     platform: "Instagram",
     status: "Drafts",
+    objective: "Awareness",
     apps: 0,
     approved: 0,
     budget: "₹1,60,000",
@@ -209,6 +224,7 @@ export const projects: Project[] = [
     type: "Influencer · Gift exchange · One-time",
     platform: "Instagram",
     status: "Drafts",
+    objective: "Engagement",
     apps: 0,
     approved: 0,
     budget: "Gift",
@@ -230,6 +246,7 @@ export const projects: Project[] = [
     type: "Influencer · Paid · One-time",
     platform: "Instagram · Pinterest",
     status: "Completed",
+    objective: "Sales",
     apps: 22,
     approved: 15,
     budget: "₹1,80,000",
@@ -251,6 +268,7 @@ export const projects: Project[] = [
     type: "Influencer · Paid · One-time",
     platform: "Instagram · Snapchat",
     status: "Completed",
+    objective: "Awareness",
     apps: 18,
     approved: 12,
     budget: "₹1,10,000",
@@ -272,6 +290,7 @@ export const projects: Project[] = [
     type: "UGC · Paid · One-time",
     platform: "Instagram · YouTube",
     status: "Completed",
+    objective: "Traffic",
     apps: 12,
     approved: 9,
     budget: "₹90,000",
@@ -293,6 +312,7 @@ export const projects: Project[] = [
     type: "Influencer · Paid · One-time",
     platform: "Instagram",
     status: "Archived",
+    objective: "Awareness",
     apps: 24,
     approved: 18,
     budget: "₹1,25,000",
@@ -314,6 +334,7 @@ export const projects: Project[] = [
     type: "Influencer · Gift exchange · One-time",
     platform: "Instagram",
     status: "Archived",
+    objective: "Engagement",
     apps: 9,
     approved: 7,
     budget: "Gift",
@@ -335,6 +356,7 @@ export const projects: Project[] = [
     type: "Influencer · Gift exchange · One-time",
     platform: "Instagram",
     status: "Deleted",
+    objective: "Sales",
     apps: 0,
     approved: 0,
     budget: "Gift",
