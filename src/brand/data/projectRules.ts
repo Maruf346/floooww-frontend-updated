@@ -29,7 +29,7 @@ export function getProjectRules(project: Project) {
   const isFileBased = isUgc || isAI;
   const isGift = partnership.includes("gift");
   const isLongTerm = duration.includes("long-term");
-  const objective = objectives[project.id] ?? "Awareness";
+  const objective = project.objective || (objectives[project.id] ?? "Awareness");
   const item = isAI ? "video" : isUgc ? "file" : "post";
   const itemPlural = `${item}s`;
   const completedVerb = isFileBased ? "Delivered" : "Posted";

@@ -2159,16 +2159,14 @@ export function AgencyClientProjectPublishedPage({
     alert("Downloading campaign performance report (PDF)...");
   };
   const handleTabChange = (item: string) => {
-    if (item === "Performance" && !isAgencyClient) {
-      navigate(brandProjectPerformanceRoute(project.id));
-      return;
-    }
     setTab(item);
-    if (searchParams.get("tab")) {
-      const nextParams = new URLSearchParams(searchParams);
+    const nextParams = new URLSearchParams(searchParams);
+    if (item === "Overview") {
       nextParams.delete("tab");
-      setSearchParams(nextParams, { replace: true });
+    } else {
+      nextParams.set("tab", item);
     }
+    setSearchParams(nextParams, { replace: true });
   };
   const [invitedCreatorCount, setInvitedCreatorCount] = useState(() => {
     if (isNoCreators) return 0;
@@ -2354,24 +2352,20 @@ export function AgencyClientProjectPublishedPage({
               <button
                 type="button"
                 onClick={() => navigate(projectHomeRoute)}
-                className="hover:text-ink transition-colors cursor-pointer"
+                className="text-[#3B5BFF] font-medium hover:text-ink transition-colors cursor-pointer"
               >
                 Projects
               </button>
-              <span>/</span>
-              <span className="text-secondary">{project.name}</span>
-              {tab === "Performance" && (
-                <>
-                  <span>/</span>
-                  <span className="text-secondary">{rules.objective}</span>
-                  <span>/</span>
-                  <span className="text-secondary">{rules.projectType}</span>
-                  <span>/</span>
-                  <span className="text-secondary">{rules.isGift ? "Gift exchange" : "Paid"}</span>
-                  <span>/</span>
-                  <span className="text-secondary">{rules.isLongTerm ? "Long-term" : "One-time"}</span>
-                </>
-              )}
+              <span className="text-neutral-400">/</span>
+              <span className="text-ink font-medium">{project.name}</span>
+              <span className="text-neutral-400">/</span>
+              <span className="text-secondary">{rules.objective}</span>
+              <span className="text-neutral-400">/</span>
+              <span className="text-secondary">{project.projectType === "UGC" ? "UGC" : "Influencer"}</span>
+              <span className="text-neutral-400">/</span>
+              <span className="text-secondary">{rules.isGift ? "Gift exchange" : "Paid"}</span>
+              <span className="text-neutral-400">/</span>
+              <span className="text-secondary">{rules.isLongTerm ? "Long-term" : "One-time"}</span>
             </div>
             <h1 className="mt-1 text-[26px] font-bold leading-[34px] tracking-[-.02em] text-ink">
               {project.name}

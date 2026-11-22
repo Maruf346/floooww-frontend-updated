@@ -54,7 +54,7 @@ import {
   CustomReportCard,
   PerformanceReportBlocks,
   Reveal,
-} from "@/brand/pages/BrandProjectPerformancePage";
+} from "@/brand/components/PerformanceReportBlocks";
 import { getProject } from "@/brand/data/projects";
 import { getProjectRules } from "@/brand/data/projectRules";
 
@@ -2112,21 +2112,25 @@ export function BrandProjectPublishedPage({
     window.sessionStorage.removeItem(key);
     return requestedTab === "Invited creators" ? requestedTab : "Overview";
   });
+  useEffect(() => {
+    if (initialTab && tabs.includes(initialTab)) {
+      setTab(initialTab);
+    }
+  }, [initialTab]);
+
   const [performancePlatform, setPerformancePlatform] = useState("All platforms");
   const handleDownloadReport = () => {
     alert("Downloading campaign performance report (PDF)...");
   };
   const handleTabChange = (item: string) => {
-    if (item === "Performance") {
-      navigate(brandProjectPerformanceRoute(project.id));
-      return;
-    }
     setTab(item);
-    if (searchParams.get("tab")) {
-      const nextParams = new URLSearchParams(searchParams);
+    const nextParams = new URLSearchParams(searchParams);
+    if (item === "Overview") {
       nextParams.delete("tab");
-      setSearchParams(nextParams, { replace: true });
+    } else {
+      nextParams.set("tab", item);
     }
+    setSearchParams(nextParams, { replace: true });
   };
   const [invitedCreatorCount, setInvitedCreatorCount] = useState(() => {
     if (isNoCreators) return 0;
@@ -2312,16 +2316,16 @@ export function BrandProjectPublishedPage({
               >
                 Projects
               </button>
-              <span>/</span>
+              <span className="text-neutral-400">/</span>
               <span className="text-ink font-medium">{project.name}</span>
-              <span>/</span>
-              <span>{objective}</span>
-              <span>/</span>
-              <span>{project.projectType === "UGC" ? "UGC" : "Influencer"}</span>
-              <span>/</span>
-              <span>{project.partnership?.toLowerCase().includes("gift") ? "Gift exchange" : "Paid"}</span>
-              <span>/</span>
-              <span>
+              <span className="text-neutral-400">/</span>
+              <span className="text-secondary">{objective}</span>
+              <span className="text-neutral-400">/</span>
+              <span className="text-secondary">{project.projectType === "UGC" ? "UGC" : "Influencer"}</span>
+              <span className="text-neutral-400">/</span>
+              <span className="text-secondary">{project.partnership?.toLowerCase().includes("gift") ? "Gift exchange" : "Paid"}</span>
+              <span className="text-neutral-400">/</span>
+              <span className="text-secondary">
                 {project.duration?.toLowerCase().includes("long") || project.duration?.toLowerCase().includes("month")
                   ? "Long-term"
                   : "One-time"}
