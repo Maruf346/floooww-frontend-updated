@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "motion/react";
 import { Container } from "@/common/components/ui/Container";
 import { Reveal, RevealGroup, RevealItem } from "@/common/components/motion/Reveal";
+import { blogArticleRoute } from "@/common/constants/routes";
 import { BLOG_COPY, BLOG_POSTS, type BlogPost } from "@/landing/data/blog";
 
 function Category({ children }: { children: string }) {
@@ -13,33 +15,36 @@ function Category({ children }: { children: string }) {
   );
 }
 
-function ReadMore() {
+function ReadMore({ to }: { to: string }) {
   return (
-    <button type="button" className="font-inter-semibold text-[13px] font-semibold text-primary">
+    <Link to={to} className="font-inter-semibold text-[13px] font-semibold text-primary hover:underline">
       Read more →
-    </button>
+    </Link>
   );
 }
 
 function FeatureCard({ post }: { post: BlogPost }) {
+  const to = blogArticleRoute(post.slug);
   return (
     <article className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[24px] border border-line bg-white shadow-[0_12px_28px_rgba(8,13,38,0.04)] transition-transform duration-300 hover:-translate-y-1">
-      <div className="min-h-[220px] flex-1 overflow-hidden">
+      <Link to={to} className="min-h-[220px] flex-1 overflow-hidden block">
         <img
           src={post.image}
           alt=""
           className="size-full object-cover transition-transform duration-500 hover:scale-[1.04]"
         />
-      </div>
+      </Link>
       <div className="flex flex-col gap-3 p-7">
         <Category>{post.category}</Category>
-        <h3 className="font-inter-bold text-[24px] font-bold leading-8 tracking-[-0.39px] text-ink xl:text-[26px]">
-          {post.title}
-        </h3>
+        <Link to={to}>
+          <h3 className="font-inter-bold text-[24px] font-bold leading-8 tracking-[-0.39px] text-ink xl:text-[26px] hover:text-primary transition-colors">
+            {post.title}
+          </h3>
+        </Link>
         <p className="text-[15px] leading-[22px] text-tertiary">{post.description}</p>
         <div className="mt-1 flex items-center justify-between text-[13px]">
           <time className="text-tertiary">{post.date}</time>
-          <ReadMore />
+          <ReadMore to={to} />
         </div>
       </div>
     </article>
@@ -47,23 +52,26 @@ function FeatureCard({ post }: { post: BlogPost }) {
 }
 
 function CompactCard({ post }: { post: BlogPost }) {
+  const to = blogArticleRoute(post.slug);
   return (
     <article className="flex min-h-0 flex-1 overflow-hidden rounded-[24px] border border-line bg-white shadow-[0_12px_28px_rgba(8,13,38,0.04)] transition-transform duration-300 hover:-translate-y-1">
-      <div className="w-[38%] shrink-0 overflow-hidden sm:w-[210px]">
+      <Link to={to} className="w-[38%] shrink-0 overflow-hidden sm:w-[210px] block">
         <img
           src={post.image}
           alt=""
           className="size-full object-cover transition-transform duration-500 hover:scale-[1.04]"
         />
-      </div>
+      </Link>
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-2 p-5 sm:p-[22px]">
         <Category>{post.category}</Category>
-        <h3 className="font-inter-bold text-[18px] font-bold leading-6 tracking-[-0.27px] text-ink">
-          {post.title}
-        </h3>
+        <Link to={to}>
+          <h3 className="font-inter-bold text-[18px] font-bold leading-6 tracking-[-0.27px] text-ink hover:text-primary transition-colors">
+            {post.title}
+          </h3>
+        </Link>
         <div className="flex items-center justify-between pt-1 text-[13px]">
           <time className="text-tertiary">{post.date}</time>
-          <ReadMore />
+          <ReadMore to={to} />
         </div>
       </div>
     </article>

@@ -4,6 +4,8 @@ export const ROUTES = {
   howItWorks: "/how-it-works",
   mcp: "/mcp",
   docsMcp: "/docs/mcp",
+  blog: "/blog",
+  blogArticle: "/blog/:slug",
   faq: "/faq",
   help: "/help",
   enquiry: "/enquiry",
@@ -95,6 +97,8 @@ export const ROUTES = {
   creatorProject: "/creator/projects/:projectId",
   creatorProjectDetail: "/creator/project",
 } as const;
+
+export const blogArticleRoute = (slug: string) => `/blog/${slug}`;
 
 export const creatorProjectRoute = (projectId: number | string) =>
   `/creator/projects/${projectId}`;

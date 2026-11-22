@@ -6,6 +6,7 @@ import { Container } from "@/common/components/ui/Container";
 import { Reveal, RevealGroup, RevealItem } from "@/common/components/motion/Reveal";
 import { ROUTES } from "@/common/constants/routes";
 import { HELP_DOC_SECTIONS } from "@/landing/data/helpDocs";
+import { ResourceTabs } from "@/landing/components/layout/ResourceTabs";
 
 function Contents() {
   const [active, setActive] = useState(HELP_DOC_SECTIONS[0]?.id ?? "");
@@ -32,34 +33,6 @@ function Contents() {
         </div>
       </nav>
     </aside>
-  );
-}
-
-function ResourceTabs() {
-  return (
-    <div
-      aria-label="Resources"
-      className="flex max-w-full gap-1.5 overflow-x-auto rounded-[14px] border border-line-subtle bg-white p-[5px]"
-    >
-      <span className="shrink-0 rounded-[10px] px-3.5 py-2.5 font-inter-medium text-[13px] font-medium text-neutral">
-        Blog
-      </span>
-      <Link
-        to={ROUTES.faq}
-        className="shrink-0 rounded-[10px] px-3.5 py-2.5 font-inter-medium text-[13px] font-medium text-neutral"
-      >
-        FAQ
-      </Link>
-      <span className="shrink-0 rounded-[10px] bg-ink px-3.5 py-2.5 font-inter-medium text-[13px] font-medium text-white">
-        Help Centre
-      </span>
-      <a
-        href="mailto:hello@floooww.com"
-        className="shrink-0 rounded-[10px] px-3.5 py-2.5 font-inter-medium text-[13px] font-medium text-neutral"
-      >
-        Contact us
-      </a>
-    </div>
   );
 }
 
@@ -116,7 +89,7 @@ export function HelpCentrePage() {
               </span>
             </RevealItem>
             <RevealItem>
-              <ResourceTabs />
+              <ResourceTabs active="help" />
             </RevealItem>
           </RevealGroup>
         </Container>

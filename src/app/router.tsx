@@ -9,6 +9,8 @@ import { HelpCentrePage } from "@/landing/pages/HelpCentrePage";
 import { EnquiryPage } from "@/landing/pages/EnquiryPage";
 import { LegalPage } from "@/landing/pages/LegalPage";
 import { McpDocsPage } from "@/landing/pages/McpDocsPage";
+import { BlogPage } from "@/landing/pages/BlogPage";
+import { BlogArticlePage } from "@/landing/pages/BlogArticlePage";
 import { RootLayout } from "./RootLayout";
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
@@ -24,6 +26,9 @@ export const router = createBrowserRouter(
           children: [
             { path: "/messages", element: <Navigate to={ROUTES.brandMessages} replace /> },
             { path: "/settings", element: <Navigate to={ROUTES.brandSettings} replace /> },
+            { path: ROUTES.blog, element: <BlogPage /> },
+            { path: ROUTES.blogArticle, element: <BlogArticlePage /> },
+            { path: "/docs", element: <Navigate to={ROUTES.docsMcp} replace /> },
             { path: ROUTES.docsMcp, element: <McpDocsPage /> },
             { path: ROUTES.faq, element: <FaqDocsPage /> },
             { path: ROUTES.help, element: <HelpCentrePage /> },

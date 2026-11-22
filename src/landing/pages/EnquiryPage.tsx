@@ -4,6 +4,7 @@ import { Check, Upload } from "lucide-react";
 import { Container } from "@/common/components/ui/Container";
 import { Reveal, RevealGroup, RevealItem } from "@/common/components/motion/Reveal";
 import { ROUTES } from "@/common/constants/routes";
+import { ResourceTabs } from "@/landing/components/layout/ResourceTabs";
 
 const CONTENTS = [
   [
@@ -58,34 +59,6 @@ function Chip({
     >
       {children}
     </button>
-  );
-}
-
-function ResourceTabs() {
-  return (
-    <div
-      aria-label="Resources"
-      className="flex max-w-full gap-1.5 overflow-x-auto rounded-[14px] border border-line-subtle bg-white p-[5px]"
-    >
-      <span className="shrink-0 rounded-[10px] px-3.5 py-2.5 font-inter-medium text-[13px] font-medium text-neutral">
-        Blog
-      </span>
-      <Link
-        to={ROUTES.faq}
-        className="shrink-0 rounded-[10px] px-3.5 py-2.5 font-inter-medium text-[13px] font-medium text-neutral"
-      >
-        FAQ
-      </Link>
-      <Link
-        to={ROUTES.help}
-        className="shrink-0 rounded-[10px] px-3.5 py-2.5 font-inter-medium text-[13px] font-medium text-neutral"
-      >
-        Help Centre
-      </Link>
-      <span className="shrink-0 rounded-[10px] bg-ink px-3.5 py-2.5 font-inter-medium text-[13px] font-medium text-white">
-        Contact us
-      </span>
-    </div>
   );
 }
 
@@ -255,7 +228,7 @@ export function EnquiryPage() {
               </span>
             </RevealItem>
             <RevealItem>
-              <ResourceTabs />
+              <ResourceTabs active="enquiry" />
             </RevealItem>
           </RevealGroup>
         </Container>

@@ -100,7 +100,7 @@ export const MCP_DOC_SECTIONS: McpDocSection[] = [
       "• creators:read, search and view creators",
       "• projects:read / projects:write, view projects, create drafts, invite creators",
       "• content:read / content:write, view content, approve or request changes",
-      "• reports:read, read performance and custom reports",
+      "• reports:read, read performance and campaign reports",
       "• payments:read / payments:write, view payments, prepare releases (always confirmed in Kreyio)",
     ],
   },
