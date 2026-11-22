@@ -165,14 +165,14 @@ function EnquiryForm() {
             required
             rows={5}
             defaultValue="The creator posted after the deadline and used the wrong discount code. I’d like to request changes or a partial refund."
-            className={`${field} min-h-[140px] resize-y border-2 border-primary`}
+            className={`${field} min-h-[140px] resize-y border border-line-strong focus:border-[#3B5BFF]`}
           />
           <span className="mt-1 block font-inter-regular text-[13px] font-normal text-secondary">
             Include dates, amounts and what outcome you want.
           </span>
         </label>
-        <label className="flex cursor-pointer items-center gap-3.5 rounded-[14px] border border-dashed border-line-strong px-5 py-[18px] transition-colors hover:border-primary">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-primary-tint text-primary">
+        <label className="flex cursor-pointer items-center gap-3.5 rounded-[14px] border border-dashed border-line-strong px-5 py-[18px] transition-colors hover:border-ink">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-subtle text-ink">
             <Upload size={18} strokeWidth={2} />
           </span>
           <span>
@@ -228,12 +228,12 @@ function EnquiryForm() {
 export function EnquiryPage() {
   return (
     <>
-      <section className="bg-gradient-to-b from-[#eef3ff] to-white">
+      <section className="bg-white border-b border-line-subtle">
         <Container className="py-14 sm:py-[72px] lg:pb-[48px]">
           <RevealGroup stagger={0.1} className="flex max-w-[760px] flex-col items-start gap-3">
             <RevealItem
               as="p"
-              className="font-inter-semibold text-[12px] font-semibold tracking-[0.72px] text-primary"
+              className="font-inter-semibold text-[12px] font-semibold tracking-[0.72px] text-secondary"
             >
               RESOURCES · CONTACT US
             </RevealItem>
@@ -247,7 +247,7 @@ export function EnquiryPage() {
               until it is resolved.
             </RevealItem>
             <RevealItem className="flex flex-wrap gap-2">
-              <span className="rounded-full border border-primary-muted bg-white px-3 py-1.5 font-inter-medium text-[13px] font-medium text-primary">
+              <span className="rounded-full border border-line bg-white px-3 py-1.5 font-inter-medium text-[13px] font-medium text-secondary">
                 Last updated 8 November 2026
               </span>
               <span className="rounded-full border border-line bg-white px-3 py-1.5 font-inter-medium text-[13px] font-medium text-neutral">
@@ -274,7 +274,7 @@ export function EnquiryPage() {
                 <a
                   key={id}
                   href={`#${id}`}
-                  className="shrink-0 rounded-lg px-2.5 py-2 font-inter-regular text-[13px] leading-5 text-neutral transition hover:bg-white hover:text-primary"
+                  className="shrink-0 rounded-lg px-2.5 py-2 font-inter-regular text-[13px] leading-5 text-neutral transition hover:bg-white hover:text-[#3B5BFF]"
                 >
                   {title}
                 </a>

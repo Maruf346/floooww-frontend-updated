@@ -599,7 +599,7 @@ export function CreatorHelpCentrePage() {
                     className={`size-6 rounded-full flex items-center justify-center shrink-0 text-[11px] ${
                       msg.sender === "user"
                         ? "bg-[#0d0d10] text-white"
-                        : "bg-[#f1f4ff] text-[#014ef6]"
+                        : "bg-subtle text-[#3B5BFF]"
                     }`}
                   >
                     {msg.sender === "user" ? (
@@ -636,7 +636,7 @@ export function CreatorHelpCentrePage() {
               <button
                 type="submit"
                 disabled={!chatInput.trim()}
-                className="size-9 rounded-lg bg-[#0d0d10] text-white flex items-center justify-center hover:bg-black transition disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                className="size-9 rounded-lg bg-[#3B5BFF] text-white flex items-center justify-center hover:bg-[#2a4be6] transition disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
               >
                 <Send className="size-4" />
               </button>

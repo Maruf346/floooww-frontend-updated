@@ -48,7 +48,7 @@ export function WebErrorPage({ kind }: WebErrorPageProps) {
   const isNotFound = kind === "not-found";
 
   return (
-    <section className="flex min-h-[calc(100dvh-80px)] items-start justify-center bg-gradient-to-b from-[#eef3ff] to-white px-5 py-20 sm:px-8 sm:py-[120px] lg:px-[120px] lg:pb-[140px]">
+    <section className="flex min-h-[calc(100dvh-80px)] items-start justify-center bg-white px-5 py-20 sm:px-8 sm:py-[120px] lg:px-[120px] lg:pb-[140px]">
       <motion.div
         className="flex w-full max-w-[760px] flex-col items-center gap-6 text-center"
         initial={{ opacity: 0, y: 12 }}
@@ -56,11 +56,11 @@ export function WebErrorPage({ kind }: WebErrorPageProps) {
         transition={{ duration: 0.5, ease: EASE_OUT }}
       >
         {isMaintenance ? (
-          <p className="rounded-full border border-[#dee8fe] bg-white px-3.5 py-1.5 text-[13px] font-semibold leading-5 text-ink">
+          <p className="rounded-full border border-line bg-white px-3.5 py-1.5 text-[13px] font-semibold leading-5 text-secondary">
             Maintenance in progress · back by 2:00 am IST
           </p>
         ) : (
-          <p className="bg-gradient-to-r from-primary to-[#7399f2] bg-clip-text font-inter-bold text-[clamp(112px,18vw,160px)] font-bold leading-none tracking-[-0.05em] text-transparent">
+          <p className="font-inter-bold text-[clamp(112px,18vw,160px)] font-bold leading-none tracking-[-0.05em] text-ink">
             {content.code}
           </p>
         )}

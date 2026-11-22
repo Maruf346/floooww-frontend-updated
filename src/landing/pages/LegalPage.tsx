@@ -37,12 +37,12 @@ export function LegalPage({ kind }: { kind: LegalPageKind }) {
   const [active, setActive] = useState(document.sections[0]?.id ?? "");
   return (
     <>
-      <section className="bg-gradient-to-b from-[#eef3ff] to-white">
+      <section className="bg-white border-b border-line-subtle">
         <Container className="py-14 sm:py-[72px] lg:pb-[48px]">
           <RevealGroup stagger={0.1} className="flex max-w-[760px] flex-col items-start gap-3">
             <RevealItem
               as="p"
-              className="font-inter-semibold text-[12px] font-semibold tracking-[0.72px] text-primary"
+              className="font-inter-semibold text-[12px] font-semibold tracking-[0.72px] text-secondary"
             >
               {document.eyebrow}
             </RevealItem>
@@ -55,7 +55,7 @@ export function LegalPage({ kind }: { kind: LegalPageKind }) {
               {document.description}
             </RevealItem>
             <RevealItem>
-              <span className="rounded-full border border-primary-muted bg-white px-3 py-1.5 font-inter-medium text-[13px] font-medium text-primary">
+              <span className="rounded-full border border-line bg-white px-3 py-1.5 font-inter-medium text-[13px] font-medium text-secondary">
                 {document.updated}
               </span>
             </RevealItem>
@@ -80,7 +80,7 @@ export function LegalPage({ kind }: { kind: LegalPageKind }) {
                   key={section.id}
                   href={`#${section.id}`}
                   onClick={() => setActive(section.id)}
-                  className={`shrink-0 rounded-lg px-2.5 py-2 font-inter-regular text-[13px] leading-5 transition-colors ${active === section.id ? "bg-white text-primary" : "text-neutral hover:bg-white/70 hover:text-ink"}`}
+                  className={`shrink-0 rounded-lg px-2.5 py-2 font-inter-regular text-[13px] leading-5 transition-colors ${active === section.id ? "bg-white text-[#3B5BFF] font-medium shadow-sm" : "text-neutral hover:bg-white/70 hover:text-ink"}`}
                 >
                   {section.title}
                 </a>
