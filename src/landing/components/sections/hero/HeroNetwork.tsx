@@ -10,7 +10,7 @@ export function HeroNetwork({ width }: { width: number }) {
   const scale = width > STAGE_WIDTH ? width / STAGE_WIDTH : 1;
 
   return (
-    <HeroStage scale={scale}>
+    <HeroStage scale={scale} className="grayscale opacity-80">
       {HERO_LINES.map((line, index) => (
         <motion.div
           key={line.src}

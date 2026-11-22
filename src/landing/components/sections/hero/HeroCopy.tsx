@@ -1,8 +1,8 @@
 import { motion } from "motion/react";
-import { Typewriter } from "@/common/components/motion/Typewriter";
 import { fadeUp, staggerContainer } from "@/common/constants/motion";
 import { HERO_COPY } from "@/landing/data/hero";
 import { HeroSearch, useHeroSearch } from "./HeroSearch";
+import { HeroWordRoller } from "./HeroWordRoller";
 
 export function HeroCopy() {
   const search = useHeroSearch();
@@ -32,9 +32,7 @@ export function HeroCopy() {
       >
         <span className="leading-[1.1111] text-balance">{HERO_COPY.headline}</span>
         <span className="sr-only">{HERO_COPY.rotatingWords.join(", ")}</span>
-        <span className="block h-[1.1667em] w-full max-w-[860px] overflow-hidden leading-[1.1667em] whitespace-nowrap text-gradient-primary">
-          <Typewriter words={HERO_COPY.rotatingWords} startDelay={900} />
-        </span>
+        <HeroWordRoller words={HERO_COPY.rotatingWords} />
       </motion.h1>
 
       <motion.p

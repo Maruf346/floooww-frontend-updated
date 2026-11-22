@@ -15,7 +15,7 @@ export function HeroSection() {
     <section
       ref={sectionRef}
       aria-labelledby="hero-title"
-      className="relative isolate overflow-hidden bg-gradient-to-b from-subtle to-white"
+      className="relative isolate overflow-hidden bg-white"
     >
       <HeroNetwork width={width} />
       <HeroFloatingCards width={width} pointer={pointer} />

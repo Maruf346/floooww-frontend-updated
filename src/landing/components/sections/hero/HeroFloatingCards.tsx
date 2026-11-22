@@ -37,7 +37,6 @@ function Floater({ item, index, pointer, className, style }: FloaterProps) {
               : {
                   y: [0, -drift, 0, drift * 0.5, 0],
                   x: [0, drift * 0.35, 0, -drift * 0.35, 0],
-                  rotate: [0, 0.6, 0, -0.6, 0],
                 }
           }
           transition={{
@@ -47,13 +46,10 @@ function Floater({ item, index, pointer, className, style }: FloaterProps) {
             ease: "easeInOut",
           }}
         >
-          <div
-            className={cn("pointer-events-auto", item.box && "flex items-center justify-center")}
-            style={item.box ? { width: item.box.width, height: item.box.height } : undefined}
-          >
+          <div className="pointer-events-auto">
             <motion.div
-              style={{ rotate: item.rotate }}
-              whileHover={{ scale: 1.05, rotate: 0 }}
+              style={{ rotate: 0 }}
+              whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 220, damping: 20 }}
               className="flex-none"
             >
