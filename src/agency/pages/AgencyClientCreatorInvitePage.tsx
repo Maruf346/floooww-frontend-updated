@@ -53,7 +53,7 @@ const blank = (id: number): Deliverable => ({
   tracking: false,
   coupons: [],
   fee: "",
-  usage: "Organic",
+  usage: "3 months",
   products: [],
   shipments: [],
   brief: "",
@@ -146,7 +146,7 @@ const filledCycleDeliverables: Deliverable[] = [
     tracking: true,
     coupons: ["SQUADDIYA"],
     fee: "7500",
-    usage: "Organic",
+    usage: "3 months",
     products: ["Glow Squad kit"],
     shipments: ["Glow Squad kit · BD7731045…"],
     brief:
@@ -160,7 +160,7 @@ const filledCycleDeliverables: Deliverable[] = [
     tracking: true,
     coupons: ["SQUADDIYA"],
     fee: "2500",
-    usage: "Organic",
+    usage: "3 months",
     products: ["Glow Squad kit"],
     shipments: [],
     brief: "Link sticker to flw.to/diya-st1; mention 10% off",
@@ -173,7 +173,7 @@ const filledCycleDeliverables: Deliverable[] = [
     tracking: true,
     coupons: ["SQUADDIYA"],
     fee: "2500",
-    usage: "Organic",
+    usage: "3 months",
     products: ["Vitamin C Glow Serum"],
     shipments: [],
     brief: "Share your before/after; tag @minimalist",
@@ -1249,16 +1249,15 @@ function FieldRow({
             className="min-w-0 flex-1 bg-transparent pl-2 text-[13px] text-ink outline-none"
           />
         </label>
-        <Dropdown
-          value={value.usage}
-          options={["Organic", "Paid Ads", "Paid ads", "Perpetual"]}
-          onChange={(usage) => update({ usage })}
-          ariaLabel="Usage rights"
-          displayValue={value.usage}
-          otherLabel="Other type your own"
-          otherIcon={<PenLine size={14} />}
-          otherPlaceholder="Describe usage rights"
-        />
+        <label className="flex h-10 items-center rounded-md border border-line bg-white px-3 text-[13px] text-secondary focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15">
+          <span className="mr-2 shrink-0">Usage rights</span>
+          <input
+            value={value.usage}
+            onChange={(event) => update({ usage: event.target.value })}
+            placeholder="e.g. 3 months"
+            className="min-w-0 flex-1 bg-transparent text-[13px] text-ink outline-none placeholder:text-tertiary"
+          />
+        </label>
         <ProductDropdown
           values={value.products}
           onChange={(products) => update({ products })}
@@ -1672,6 +1671,9 @@ export function AgencyClientCreatorInvitePage({
                     </div>
                   </div>
                   <p className="mt-3 text-[12px] text-secondary">
+                    Type the usage rights for each deliverable, e.g. 3 months. They lock when you send the invite; after that you can only extend them.
+                  </p>
+                  <p className="mt-1 text-[12px] text-secondary">
                     A tracking link and coupon are made for each deliverable
                     once you pick its platform.
                   </p>

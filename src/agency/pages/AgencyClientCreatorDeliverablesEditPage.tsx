@@ -56,7 +56,6 @@ const typeOptions = [
   "1 Short · gifting",
 ];
 const platforms = ["Instagram", "YouTube", "Pinterest", "Snapchat"];
-const usageOptions = ["Organic", "Paid social · 30 days", "Paid social · 90 days", "Perpetual"];
 const productOptions = ["Glow Squad kit", "Vitamin C Glow Serum", "Festive gift set"];
 const shipmentOptions = ["Delivered 4 Nov", "Glow Squad kit · BD7731045…", "Select shipments"];
 
@@ -70,7 +69,7 @@ const firstCycle: Deliverable[] = [
     coupon: "SQUADDIYA",
     status: "Approved · locked",
     fee: "7500",
-    usage: "Organic",
+    usage: "3 months",
     product: "Glow Squad kit",
     shipping: "Delivered 4 Nov",
     brief: "Unbox the kit in the first 3 seconds; say the code at the end",
@@ -85,7 +84,7 @@ const firstCycle: Deliverable[] = [
     coupon: "SQUADDIYA",
     status: "Posted · locked",
     fee: "2500",
-    usage: "Organic",
+    usage: "3 months",
     product: "Glow Squad kit",
     shipping: "Select shipments",
     brief: "Link sticker to flw.to/diya-st1; mention 10% off",
@@ -100,7 +99,7 @@ const firstCycle: Deliverable[] = [
     coupon: "SQUADDIYA",
     status: "Not started",
     fee: "2500",
-    usage: "Organic",
+    usage: "3 months",
     product: "Glow Squad kit",
     shipping: "Select shipments",
     brief: "Show day-14 skin texture; remind that code expires end of cycle",
@@ -117,7 +116,7 @@ const secondCycle: Deliverable[] = [
     coupon: "SQUADDIYA2",
     status: "Upcoming",
     fee: "7500",
-    usage: "Organic",
+    usage: "3 months",
     product: "Glow Squad kit",
     shipping: "Glow Squad kit · BD7731045…",
     brief: "Focus on one product from the kit; mention long-term result",
@@ -131,7 +130,7 @@ const secondCycle: Deliverable[] = [
     coupon: "SQUADDIYA2",
     status: "Upcoming",
     fee: "2500",
-    usage: "Organic",
+    usage: "3 months",
     product: "Glow Squad kit",
     shipping: "Select shipments",
     brief: "Quick application before leaving; code sticker on top",
@@ -171,7 +170,7 @@ const oneTimeRows: OneTimeRow[] = [
     tracking: "flw.to/diya-c",
     coupon: "DIYA10",
     fee: "0",
-    usage: "Organic",
+    usage: "3 months",
     product: "Vitamin-C Serum (30ml)",
     shipping: "Delivered 10 Oct",
     brief: "Tease launch, show unboxing",
@@ -186,7 +185,7 @@ const oneTimeRows: OneTimeRow[] = [
     tracking: "flw.to/diya-c",
     coupon: "DIYA10",
     fee: "0",
-    usage: "Organic",
+    usage: "3 months",
     product: "Vitamin-C Serum (30ml)",
     shipping: "Delivered 10 Oct",
     brief: "Show 3-week glow, discount reminder, sticker link to buy",
@@ -194,6 +193,122 @@ const oneTimeRows: OneTimeRow[] = [
     dateChanged: true,
   },
 ];
+
+function ExtendUsageRightsModal({
+  currentUsage,
+  onClose,
+  onExtend,
+}: {
+  currentUsage: string;
+  onClose: () => void;
+  onExtend: (extendedUsage: string) => void;
+}) {
+  const match = currentUsage.match(/(\d+)/);
+  const currentMonths = match ? parseInt(match[1], 10) : 3;
+
+  const [selectedExtension, setSelectedExtension] = useState<number | null>(3);
+  const [customValue, setCustomValue] = useState("");
+  const [error, setError] = useState("");
+
+  const options = [
+    { label: "+1 month", add: 1, total: currentMonths + 1 },
+    { label: "+3 months", add: 3, total: currentMonths + 3 },
+    { label: "+6 months", add: 6, total: currentMonths + 6 },
+    { label: "+12 months", add: 12, total: currentMonths + 12 },
+  ];
+
+  const handleConfirm = () => {
+    let result = "";
+    if (selectedExtension !== null) {
+      const total = currentMonths + selectedExtension;
+      result = `${total} months`;
+    } else if (customValue.trim()) {
+      const customMatch = customValue.match(/(\d+)/);
+      if (customMatch) {
+        const val = parseInt(customMatch[1], 10);
+        if (val <= currentMonths) {
+          setError(`Usage rights cannot be shortened below current ${currentUsage}. You can only extend them.`);
+          return;
+        }
+      }
+      result = customValue.trim();
+    } else {
+      setError("Please select an extension duration.");
+      return;
+    }
+
+    onExtend(result);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="w-full max-w-md overflow-hidden rounded-xl border border-line bg-white shadow-xl"
+      >
+        <div className="p-6">
+          <h3 className="text-[18px] font-semibold text-ink">Extend usage rights</h3>
+          <p className="mt-1 text-[13px] text-secondary">
+            Current usage rights are <strong className="text-ink">{currentUsage}</strong>. Once sent, usage rights are locked and cannot be shortened. You can only extend them.
+          </p>
+
+          <div className="mt-5 space-y-2">
+            <label className="text-[12px] font-medium text-secondary">Choose extension duration</label>
+            <div className="grid grid-cols-2 gap-2">
+              {options.map((opt) => (
+                <button
+                  key={opt.add}
+                  type="button"
+                  onClick={() => {
+                    setSelectedExtension(opt.add);
+                    setCustomValue("");
+                    setError("");
+                  }}
+                  className={`flex flex-col items-start rounded-lg border p-3 text-left transition-all ${
+                    selectedExtension === opt.add
+                      ? "border-primary bg-primary-subtle text-primary"
+                      : "border-line bg-white hover:bg-subtle text-ink"
+                  }`}
+                >
+                  <span className="text-[14px] font-semibold">{opt.label}</span>
+                  <span className="text-[11px] text-secondary">Total: {opt.total} months</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <label className="text-[12px] font-medium text-secondary">Or specify custom duration</label>
+            <input
+              type="text"
+              value={customValue}
+              onChange={(e) => {
+                setCustomValue(e.target.value);
+                setSelectedExtension(null);
+                setError("");
+              }}
+              placeholder={`e.g. ${currentMonths + 6} months`}
+              className="mt-1.5 h-10 w-full rounded-md border border-line bg-white px-3 text-[13px] text-ink outline-none placeholder:text-tertiary focus:border-primary focus:ring-2 focus:ring-primary/15"
+            />
+          </div>
+
+          {error && <p className="mt-2 text-[12px] text-danger">{error}</p>}
+        </div>
+
+        <div className="flex items-center justify-end gap-2 border-t border-line bg-subtle px-6 py-3.5">
+          <Button kind="secondary" size="s" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button size="s" onClick={handleConfirm}>
+            Extend usage rights
+          </Button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
 
 export function AgencyClientCreatorDeliverablesEditPage({
   activeClientId,
@@ -219,6 +334,7 @@ export function AgencyClientCreatorDeliverablesEditPage({
 
   const [rows, setRows] = useState(oneTimeRows);
   const [editingId, setEditingId] = useState<string | null>("results");
+  const [extendingItem, setExtendingItem] = useState<{ id: string; current: string } | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
   const firstName = creator.name.split(" ")[0];
@@ -311,6 +427,31 @@ export function AgencyClientCreatorDeliverablesEditPage({
                       <p className="mt-0.5 text-[12px] text-tertiary">
                         Brief: {row.brief}
                       </p>
+                      <div className="mt-2 flex items-center gap-2">
+                        {row.added ? (
+                          <label className="flex h-9 items-center rounded-md border border-line bg-white px-2.5 text-[12px] text-secondary">
+                            <span className="mr-2 shrink-0">Usage rights</span>
+                            <input
+                              value={row.usage || "3 months"}
+                              onChange={(e) => setRows(rows.map(r => r.id === row.id ? { ...r, usage: e.target.value } : r))}
+                              placeholder="e.g. 3 months"
+                              className="w-28 bg-transparent text-[12px] text-ink outline-none"
+                            />
+                          </label>
+                        ) : (
+                          <div className="flex h-9 items-center gap-2 rounded-md border border-line bg-[#f4f6f8] px-2.5 text-[12px]">
+                            <span className="text-secondary">Usage rights:</span>
+                            <span className="font-normal text-ink">{row.usage || "3 months"}</span>
+                            <button
+                              type="button"
+                              onClick={() => setExtendingItem({ id: row.id, current: row.usage || "3 months" })}
+                              className="ml-2 text-[11px] font-medium text-primary hover:underline cursor-pointer"
+                            >
+                              Extend
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
@@ -327,6 +468,11 @@ export function AgencyClientCreatorDeliverablesEditPage({
                     </div>
                   </div>
                 ))}
+              </div>
+              <div className="p-4 border-t border-line bg-subtle/40">
+                <p className="text-[12px] text-secondary">
+                  Type the usage rights for each deliverable, e.g. 3 months. They lock when you send the invite; after that you can only extend them.
+                </p>
               </div>
             </section>
           </div>
@@ -345,6 +491,18 @@ export function AgencyClientCreatorDeliverablesEditPage({
             </div>
           </footer>
         </main>
+
+        {extendingItem && (
+          <ExtendUsageRightsModal
+            currentUsage={extendingItem.current}
+            onClose={() => setExtendingItem(null)}
+            onExtend={(nextUsage) => {
+              setRows(rows.map(r => r.id === extendingItem.id ? { ...r, usage: nextUsage } : r));
+              setNotice(`Usage rights extended to ${nextUsage}.`);
+              setExtendingItem(null);
+            }}
+          />
+        )}
 
         {notice && (
           <motion.div

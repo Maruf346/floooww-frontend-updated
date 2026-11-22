@@ -56,7 +56,6 @@ const typeOptions = [
   "1 Short · gifting",
 ];
 const platforms = ["Instagram", "YouTube", "Pinterest", "Snapchat"];
-const usageOptions = ["Organic", "Paid social · 30 days", "Paid social · 90 days", "Perpetual"];
 const productOptions = ["Glow Squad kit", "Vitamin C Glow Serum", "Festive gift set"];
 const shipmentOptions = ["Delivered 4 Nov", "Glow Squad kit · BD7731045…", "Select shipments"];
 
@@ -70,7 +69,7 @@ const firstCycle: Deliverable[] = [
     coupon: "SQUADDIYA",
     status: "Approved · locked",
     fee: "7500",
-    usage: "Organic",
+    usage: "3 months",
     product: "Glow Squad kit",
     shipping: "Delivered 4 Nov",
     brief: "Unbox the kit in the first 3 seconds; say the code at the end",
@@ -85,7 +84,7 @@ const firstCycle: Deliverable[] = [
     coupon: "SQUADDIYA",
     status: "Posted · locked",
     fee: "2500",
-    usage: "Organic",
+    usage: "3 months",
     product: "Glow Squad kit",
     shipping: "Select shipments",
     brief: "Link sticker to flw.to/diya-st1; mention 10% off",
@@ -100,7 +99,7 @@ const firstCycle: Deliverable[] = [
     coupon: "SQUADDIYA",
     status: "Not started",
     fee: "2500",
-    usage: "Organic",
+    usage: "3 months",
     product: "Vitamin C Glow Serum",
     shipping: "Select shipments",
     brief: "Share your before/after; tag @minimalist",
@@ -117,7 +116,7 @@ const secondCycle: Deliverable[] = [
     coupon: "SQUADDIYA",
     status: "Upcoming",
     fee: "7500",
-    usage: "Organic",
+    usage: "3 months",
     product: "Glow Squad kit",
     shipping: "Select shipments",
     brief: "Unbox the kit in the first 3 seconds; say the code at the end",
@@ -131,7 +130,7 @@ const secondCycle: Deliverable[] = [
     coupon: "SQUADDIYA",
     status: "Upcoming",
     fee: "2500",
-    usage: "Organic",
+    usage: "3 months",
     product: "Vitamin C Glow Serum",
     shipping: "Select shipments",
     brief: "Show a swatch of the serum on your hand, then the link sticker",
@@ -146,7 +145,7 @@ const secondCycle: Deliverable[] = [
     coupon: "SQUADDIYA",
     status: "Added · new",
     fee: "2500",
-    usage: "Organic",
+    usage: "3 months",
     product: "Festive gift set",
     shipping: "Select shipments",
     brief: "Gift-wrap the kit and show it under the tree",
@@ -161,7 +160,7 @@ const secondCycle: Deliverable[] = [
     coupon: "SQUADDIYA",
     status: "Upcoming",
     fee: "2500",
-    usage: "Organic",
+    usage: "3 months",
     product: "Vitamin C Glow Serum",
     shipping: "Select shipments",
     brief: "Share your before/after; tag @minimalist",
@@ -194,20 +193,139 @@ function StatusBadge({ status }: { status: Status }) {
   );
 }
 
+function ExtendUsageRightsModal({
+  currentUsage,
+  onClose,
+  onExtend,
+}: {
+  currentUsage: string;
+  onClose: () => void;
+  onExtend: (extendedUsage: string) => void;
+}) {
+  const match = currentUsage.match(/(\d+)/);
+  const currentMonths = match ? parseInt(match[1], 10) : 3;
+
+  const [selectedExtension, setSelectedExtension] = useState<number | null>(3);
+  const [customValue, setCustomValue] = useState("");
+  const [error, setError] = useState("");
+
+  const options = [
+    { label: "+1 month", add: 1, total: currentMonths + 1 },
+    { label: "+3 months", add: 3, total: currentMonths + 3 },
+    { label: "+6 months", add: 6, total: currentMonths + 6 },
+    { label: "+12 months", add: 12, total: currentMonths + 12 },
+  ];
+
+  const handleConfirm = () => {
+    let result = "";
+    if (selectedExtension !== null) {
+      const total = currentMonths + selectedExtension;
+      result = `${total} months`;
+    } else if (customValue.trim()) {
+      const customMatch = customValue.match(/(\d+)/);
+      if (customMatch) {
+        const val = parseInt(customMatch[1], 10);
+        if (val <= currentMonths) {
+          setError(`Usage rights cannot be shortened below current ${currentUsage}. You can only extend them.`);
+          return;
+        }
+      }
+      result = customValue.trim();
+    } else {
+      setError("Please select an extension duration.");
+      return;
+    }
+
+    onExtend(result);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="w-full max-w-md overflow-hidden rounded-xl border border-line bg-white shadow-xl"
+      >
+        <div className="p-6">
+          <h3 className="text-[18px] font-semibold text-ink">Extend usage rights</h3>
+          <p className="mt-1 text-[13px] text-secondary">
+            Current usage rights are <strong className="text-ink">{currentUsage}</strong>. Once sent, usage rights are locked and cannot be shortened. You can only extend them.
+          </p>
+
+          <div className="mt-5 space-y-2">
+            <label className="text-[12px] font-medium text-secondary">Choose extension duration</label>
+            <div className="grid grid-cols-2 gap-2">
+              {options.map((opt) => (
+                <button
+                  key={opt.add}
+                  type="button"
+                  onClick={() => {
+                    setSelectedExtension(opt.add);
+                    setCustomValue("");
+                    setError("");
+                  }}
+                  className={`flex flex-col items-start rounded-lg border p-3 text-left transition-all ${
+                    selectedExtension === opt.add
+                      ? "border-primary bg-primary-subtle text-primary"
+                      : "border-line bg-white hover:bg-subtle text-ink"
+                  }`}
+                >
+                  <span className="text-[14px] font-semibold">{opt.label}</span>
+                  <span className="text-[11px] text-secondary">Total: {opt.total} months</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <label className="text-[12px] font-medium text-secondary">Or specify custom duration</label>
+            <input
+              type="text"
+              value={customValue}
+              onChange={(e) => {
+                setCustomValue(e.target.value);
+                setSelectedExtension(null);
+                setError("");
+              }}
+              placeholder={`e.g. ${currentMonths + 6} months`}
+              className="mt-1.5 h-10 w-full rounded-md border border-line bg-white px-3 text-[13px] text-ink outline-none placeholder:text-tertiary focus:border-primary focus:ring-2 focus:ring-primary/15"
+            />
+          </div>
+
+          {error && <p className="mt-2 text-[12px] text-danger">{error}</p>}
+        </div>
+
+        <div className="flex items-center justify-end gap-2 border-t border-line bg-subtle px-6 py-3.5">
+          <Button kind="secondary" size="s" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button size="s" onClick={handleConfirm}>
+            Extend usage rights
+          </Button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 function DeliverableRow({
   item,
   editing,
   onEdit,
   onSave,
   onChange,
+  onExtend,
 }: {
   item: Deliverable;
   editing: boolean;
   onEdit: () => void;
   onSave: () => void;
   onChange: (data: Partial<Deliverable>) => void;
+  onExtend?: (id: string, current: string) => void;
 }) {
   const disabled = item.locked;
+  const isNewlyAdded = item.status === "Added · new";
   return (
     <article
       className={`border-b border-line-subtle px-4 py-3 last:border-b-0 ${editing ? "border-2 border-primary bg-white px-3.5 py-3" : item.changed ? "bg-primary-subtle/50" : "bg-white"}`}
@@ -275,30 +393,50 @@ function DeliverableRow({
         )}
       </div>
       <div
-        className={`mt-2 grid gap-2 xl:grid-cols-[150px_180px_minmax(180px,1fr)_minmax(190px,1fr)] ${disabled ? "pointer-events-none" : ""}`}
+        className="mt-2 grid gap-2 xl:grid-cols-[150px_230px_minmax(180px,1fr)_minmax(190px,1fr)]"
       >
-        <InputShell>
+        <InputShell className={disabled ? "bg-[#f3f5f7] pointer-events-none" : ""}>
           <span className="mr-2 text-secondary">Fee</span>
           <input
             inputMode="numeric"
             value={Number(item.fee).toLocaleString("en-IN")}
+            disabled={disabled}
             onChange={(event) => onChange({ fee: event.target.value.replace(/[^0-9]/g, "") })}
-            className="min-w-0 flex-1 bg-transparent outline-none"
+            className="min-w-0 flex-1 bg-transparent outline-none disabled:cursor-not-allowed"
           />
         </InputShell>
-        <Dropdown
-          value={item.usage}
-          options={usageOptions}
-          onChange={(usage) => onChange({ usage })}
-          ariaLabel="Usage rights"
-          displayValue={`Usage  ${item.usage}`}
-        />
+        {isNewlyAdded ? (
+          <label className="flex h-10 items-center rounded-md border border-line bg-white px-3 text-[13px] text-secondary focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15">
+            <span className="mr-2 shrink-0">Usage rights</span>
+            <input
+              value={item.usage || "3 months"}
+              onChange={(event) => onChange({ usage: event.target.value })}
+              placeholder="e.g. 3 months"
+              className="min-w-0 flex-1 bg-transparent text-[13px] text-ink outline-none placeholder:text-tertiary"
+            />
+          </label>
+        ) : (
+          <div className="flex h-10 min-w-0 items-center justify-between rounded-md border border-line bg-[#f4f6f8] px-3 text-[13px]">
+            <div className="flex min-w-0 items-center gap-2 truncate">
+              <span className="shrink-0 text-secondary">Usage rights</span>
+              <span className="truncate font-normal text-ink">{item.usage || "3 months"}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => onExtend?.(item.id, item.usage || "3 months")}
+              className="ml-2 shrink-0 text-[12px] font-medium text-primary hover:underline cursor-pointer"
+            >
+              Extend
+            </button>
+          </div>
+        )}
         <Dropdown
           value={item.product}
           options={productOptions}
           onChange={(product) => onChange({ product })}
           ariaLabel="Product"
           displayValue={`Product  ${item.product}`}
+          className={disabled ? "pointer-events-none opacity-80" : ""}
         />
         <Dropdown
           value={item.shipping}
@@ -306,6 +444,7 @@ function DeliverableRow({
           onChange={(shipping) => onChange({ shipping })}
           ariaLabel="Shipping"
           displayValue={`Shipping  ${item.shipping}`}
+          className={disabled ? "pointer-events-none opacity-80" : ""}
         />
       </div>
       <label
@@ -344,6 +483,7 @@ function CycleCard({
   onEdit,
   onSave,
   onChange,
+  onExtend,
   addLabel,
 }: {
   title: string;
@@ -354,6 +494,7 @@ function CycleCard({
   onEdit: (id: string | null) => void;
   onSave: () => void;
   onChange: (id: string, data: Partial<Deliverable>) => void;
+  onExtend?: (id: string, current: string) => void;
   addLabel: string;
 }) {
   return (
@@ -389,6 +530,7 @@ function CycleCard({
               onEdit={() => onEdit(editingId === item.id ? null : item.id)}
               onSave={onSave}
               onChange={(data) => onChange(item.id, data)}
+              onExtend={onExtend}
             />
           ))}
           <button
@@ -413,6 +555,7 @@ type OneTimeRow = {
   coupon: string;
   status: "Approved · locked" | "Posted · locked" | "Not started" | "Added · new";
   fee: string;
+  usage?: string;
   brief: string;
   locked?: boolean;
   added?: boolean;
@@ -428,6 +571,7 @@ const oneTimeRows: OneTimeRow[] = [
     coupon: "ISHITA15",
     status: "Approved · locked",
     fee: "8500",
+    usage: "3 months",
     brief: "Show a festive GRWM featuring Vitamin-C Serum; say code ISHITA15 at the end.",
     locked: true,
   },
@@ -440,6 +584,7 @@ const oneTimeRows: OneTimeRow[] = [
     coupon: "ISHITA15",
     status: "Posted · locked",
     fee: "4250",
+    usage: "3 months",
     brief: "Use the link sticker and mention the launch offer.",
     locked: true,
   },
@@ -452,6 +597,7 @@ const oneTimeRows: OneTimeRow[] = [
     coupon: "ISHITA15",
     status: "Not started",
     fee: "3000",
+    usage: "3 months",
     brief: "Show your results after 7 days and tag @minimalist.",
   },
   {
@@ -463,6 +609,7 @@ const oneTimeRows: OneTimeRow[] = [
     coupon: "ISHITA15",
     status: "Added · new",
     fee: "4000",
+    usage: "3 months",
     brief: "Show the full look with the kit; offer ends 7 Nov.",
     added: true,
   },
@@ -502,12 +649,14 @@ function OneTimeRowEditor({
   onEdit,
   onSave,
   onChange,
+  onExtend,
 }: {
   row: OneTimeRow;
   editing: boolean;
   onEdit: () => void;
   onSave: () => void;
   onChange: (change: Partial<OneTimeRow>) => void;
+  onExtend?: (id: string, current: string) => void;
 }) {
   const locked = row.locked;
   const fieldClass = locked ? "bg-[#f3f5f7]" : "bg-white";
@@ -588,31 +737,49 @@ function OneTimeRowEditor({
         )}
       </div>
       <div
-        className={`mt-2 grid min-w-[1080px] grid-cols-[150px_180px_260px_248px] gap-2 ${locked ? "pointer-events-none" : ""}`}
+        className="mt-2 grid min-w-[1080px] grid-cols-[150px_230px_260px_248px] gap-2"
       >
         <OneTimeControl className={fieldClass}>
           <span className="mr-2 text-secondary">Fee</span>
           <input
             value={Number(row.fee).toLocaleString("en-IN")}
+            disabled={locked}
             onChange={(event) => onChange({ fee: event.target.value.replace(/[^0-9]/g, "") })}
-            className="min-w-0 flex-1 bg-transparent outline-none"
+            className="min-w-0 flex-1 bg-transparent outline-none disabled:cursor-not-allowed"
           />
         </OneTimeControl>
-        <Dropdown
-          value="Organic"
-          options={usageOptions}
-          onChange={() => undefined}
-          ariaLabel="Usage rights"
-          displayValue="Usage  Organic"
-          className={fieldClass}
-        />
+        {row.added || row.status === "Added · new" ? (
+          <label className="flex h-10 items-center rounded-md border border-line bg-white px-3 text-[13px] text-secondary focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15">
+            <span className="mr-2 shrink-0">Usage rights</span>
+            <input
+              value={row.usage || "3 months"}
+              onChange={(event) => onChange({ usage: event.target.value })}
+              placeholder="e.g. 3 months"
+              className="min-w-0 flex-1 bg-transparent text-[13px] text-ink outline-none placeholder:text-tertiary"
+            />
+          </label>
+        ) : (
+          <div className="flex h-10 min-w-0 items-center justify-between rounded-md border border-line bg-[#f4f6f8] px-3 text-[13px]">
+            <div className="flex min-w-0 items-center gap-2 truncate">
+              <span className="shrink-0 text-secondary">Usage rights</span>
+              <span className="truncate font-normal text-ink">{row.usage || "3 months"}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => onExtend?.(row.id, row.usage || "3 months")}
+              className="ml-2 shrink-0 text-[12px] font-medium text-primary hover:underline cursor-pointer"
+            >
+              Extend
+            </button>
+          </div>
+        )}
         <Dropdown
           value="Vitamin C Glow Serum"
           options={productOptions}
           onChange={() => undefined}
           ariaLabel="Product"
           displayValue="Product  Vitamin C Glow Serum"
-          className={fieldClass}
+          className={locked ? "pointer-events-none opacity-80" : fieldClass}
         />
         <Dropdown
           value="Select shipments"
@@ -620,7 +787,7 @@ function OneTimeRowEditor({
           onChange={() => undefined}
           ariaLabel="Shipping"
           displayValue="Shipping  Select shipments"
-          className={fieldClass}
+          className={locked ? "pointer-events-none opacity-80" : fieldClass}
         />
       </div>
       <label
@@ -1025,6 +1192,8 @@ function OneTimeDeliverablesEditor({
   const [rows, setRows] = useState(oneTimeRows);
   const [editingId, setEditingId] = useState<string | null>("results");
   const [reviewing, setReviewing] = useState(false);
+  const [extendingItem, setExtendingItem] = useState<{ id: string; current: string } | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const firstName = creator.name.split(" ")[0];
   const patch = (id: string, change: Partial<OneTimeRow>) =>
     setRows((current) => current.map((row) => (row.id === id ? { ...row, ...change } : row)));
@@ -1129,6 +1298,7 @@ function OneTimeDeliverablesEditor({
                       onEdit={() => setEditingId(editingId === row.id ? null : row.id)}
                       onSave={() => setEditingId(null)}
                       onChange={(change) => patch(row.id, change)}
+                      onExtend={(id, current) => setExtendingItem({ id, current })}
                     />
                   ))}
                   <button
@@ -1141,6 +1311,7 @@ function OneTimeDeliverablesEditor({
                           id: `new-${current.length}`,
                           added: true,
                           status: "Added · new",
+                          usage: "3 months",
                         },
                       ])
                     }
@@ -1152,6 +1323,9 @@ function OneTimeDeliverablesEditor({
                 </div>
               </div>
             </section>
+            <p className="mt-3 text-[12px] text-secondary">
+              Type the usage rights for each deliverable, e.g. 3 months. They lock when you send the invite; after that you can only extend them.
+            </p>
             <section className="grid gap-4 lg:grid-cols-2">
               <div className="rounded-lg border border-line px-4 py-3">
                 <h2 className="text-[14px] font-medium text-ink">
@@ -1215,6 +1389,26 @@ function OneTimeDeliverablesEditor({
             </div>
           </footer>
         </motion.main>
+        {extendingItem && (
+          <ExtendUsageRightsModal
+            currentUsage={extendingItem.current}
+            onClose={() => setExtendingItem(null)}
+            onExtend={(nextUsage) => {
+              patch(extendingItem.id, { usage: nextUsage });
+              setNotice(`Usage rights extended to ${nextUsage}.`);
+              setExtendingItem(null);
+            }}
+          />
+        )}
+        {notice && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-lg bg-ink px-4 py-3 text-[13px] font-medium text-white shadow-lg"
+          >
+            {notice}
+          </motion.div>
+        )}
       </div>
     </BrandShell>
   );
@@ -1234,6 +1428,7 @@ export function BrandCreatorDeliverablesEditPage() {
   const [cycleOne, setCycleOne] = useState(firstCycle);
   const [cycleTwo, setCycleTwo] = useState(secondCycle);
   const [editingId, setEditingId] = useState<string | null>("cycle-2-reminder");
+  const [extendingItem, setExtendingItem] = useState<{ id: string; current: string } | null>(null);
   const [repeat, setRepeat] = useState(true);
   const [notice, setNotice] = useState("");
   const [reviewingChanges, setReviewingChanges] = useState(false);
@@ -1326,6 +1521,7 @@ export function BrandCreatorDeliverablesEditPage() {
                 onEdit={setEditingId}
                 onSave={save}
                 onChange={(id, data) => patchCycle(setCycleOne, id, data)}
+                onExtend={(id, current) => setExtendingItem({ id, current })}
                 addLabel="Add deliverable to cycle 1 · extra cost charged now"
               />
               <CycleCard
@@ -1337,6 +1533,7 @@ export function BrandCreatorDeliverablesEditPage() {
                 onEdit={setEditingId}
                 onSave={save}
                 onChange={(id, data) => patchCycle(setCycleTwo, id, data)}
+                onExtend={(id, current) => setExtendingItem({ id, current })}
                 addLabel="Add deliverable to cycle 2"
               />
               <section className="overflow-hidden rounded-lg border border-line">
@@ -1387,6 +1584,9 @@ export function BrandCreatorDeliverablesEditPage() {
                   </li>
                 </ul>
               </section>
+              <p className="mt-3 text-[12px] text-secondary">
+                Type the usage rights for each deliverable, e.g. 3 months. They lock when you send the invite; after that you can only extend them.
+              </p>
             </div>
           </div>
           <footer className="flex flex-wrap items-center justify-between gap-4 border-t border-line bg-subtle/70 px-5 py-4">
@@ -1424,6 +1624,21 @@ export function BrandCreatorDeliverablesEditPage() {
             </div>
           </footer>
         </motion.main>
+        {extendingItem && (
+          <ExtendUsageRightsModal
+            currentUsage={extendingItem.current}
+            onClose={() => setExtendingItem(null)}
+            onExtend={(nextUsage) => {
+              if (cycleOne.some((item) => item.id === extendingItem.id)) {
+                patchCycle(setCycleOne, extendingItem.id, { usage: nextUsage });
+              } else {
+                patchCycle(setCycleTwo, extendingItem.id, { usage: nextUsage });
+              }
+              setNotice(`Usage rights extended to ${nextUsage}.`);
+              setExtendingItem(null);
+            }}
+          />
+        )}
         {notice && (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
