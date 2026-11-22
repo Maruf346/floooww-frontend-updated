@@ -39,9 +39,8 @@ export function CreatorProjectPerformanceView() {
                       setPlatform(p);
                       setIsDropdownOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-1.5 text-[13px] transition cursor-pointer hover:bg-[#f1f4ff] hover:text-[#3b5bff] ${
-                      platform === p ? "font-semibold text-[#3b5bff] bg-[#f8f9fb]" : "text-[#0d0d10]"
-                    }`}
+                    className={`w-full text-left px-3 py-1.5 text-[13px] transition cursor-pointer hover:bg-[#f1f4ff] hover:text-[#3b5bff] ${platform === p ? "font-semibold text-[#3b5bff] bg-[#f8f9fb]" : "text-[#0d0d10]"
+                      }`}
                   >
                     {p}
                   </button>
@@ -62,8 +61,15 @@ export function CreatorProjectPerformanceView() {
         </div>
       </div>
 
-      {/* Performance Dashboard from Brand/Creator Mirror (Custom report omitted for creator) */}
-      <CreatorPerformanceTab creatorName="Ishita Rao" platform={platform} showCustomReport={false} />
+      {/* Performance Dashboard with 15 variants from Creator Perspective (Vitamin-C Serum is reference) */}
+      <CreatorPerformanceTab
+        creatorName="Ishita Rao"
+        platform={platform}
+        showCustomReport={false}
+        perspective="creator"
+        overrideObjective="Sales"
+        overrideTypeCategory="Influencer Paid"
+      />
     </div>
   );
 }
