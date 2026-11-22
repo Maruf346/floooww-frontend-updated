@@ -41,7 +41,7 @@ const helpTopics = [
     Icon: ShieldAlert,
   },
   {
-    title: "Performance & custom reports",
+    title: "Performance & reports",
     description: "Metrics, attribution, exports",
     Icon: FileBarChart,
   },

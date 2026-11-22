@@ -29,11 +29,11 @@ export const HELP_DOC_SECTIONS: HelpDocSection[] = [
     guides: [
       {
         title: "Create a project",
-        body: "Projects › Create new project and follow the nine steps: type, partnership, duration, details, creator requirements, deliverables, budget, payment method, review & publish. Drafts save automatically.",
+        body: "Projects › Create new project and start by choosing your Objective (Awareness, Engagement, Traffic, Lead generation, Sales), followed by type, partnership, duration, details, creator requirements, deliverables, budget, payment method, review & publish. Drafts save automatically.",
       },
       {
         title: "Set usage rights",
-        body: "In Deliverables, choose channels, duration and territory for each piece of content.",
+        body: "In Deliverables, type the usage rights for each deliverable (e.g. 3 months). They lock when you send the invite; after that you can only extend them.",
       },
       {
         title: "Pause, complete or archive",
@@ -122,8 +122,8 @@ export const HELP_DOC_SECTIONS: HelpDocSection[] = [
         body: "Settings › Connections › Shopify, then sign in to your store.",
       },
       {
-        title: "Build a custom report",
-        body: "Custom reports › New report. Set filters once, add blocks, then save, share or download.",
+        title: "Reports & performance",
+        body: "Reports. Select Brand and Campaign at the top to view scorecards, trends, platform breakdowns, and creator results tailored to that campaign's objective and type, or download an export.",
       },
     ],
   },

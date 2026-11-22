@@ -1026,9 +1026,9 @@ function AgencyClientOverviewDashboard({ clientId }: { clientId: string }) {
                   <p className="text-[12px] text-[#71717a]">
                     Connect client Shopify/WooCommerce store to tie creator clicks to actual checkout GMV.
                   </p>
-                  <p className="font-semibold text-[13px]">3. Custom Reports</p>
+                  <p className="font-semibold text-[13px]">3. Reports</p>
                   <p className="text-[12px] text-[#71717a]">
-                    Export branded executive performance PDFs directly from Agency Custom Reports.
+                    Export branded executive performance PDFs directly from Agency Reports.
                   </p>
                 </div>
               </div>

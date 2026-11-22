@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { ROUTES } from "@/common/constants/routes";
 import { WebErrorPage } from "@/common/pages/WebErrorPage";
 import { PageLoadingSkeleton } from "@/common/components/ui/PageLoadingSkeleton";
@@ -22,6 +22,8 @@ export const router = createBrowserRouter(
           element: <LandingLayout />,
           // One route for "/" and every section path, so the page never remounts between them.
           children: [
+            { path: "/messages", element: <Navigate to={ROUTES.brandMessages} replace /> },
+            { path: "/settings", element: <Navigate to={ROUTES.brandSettings} replace /> },
             { path: ROUTES.docsMcp, element: <McpDocsPage /> },
             { path: ROUTES.faq, element: <FaqDocsPage /> },
             { path: ROUTES.help, element: <HelpCentrePage /> },

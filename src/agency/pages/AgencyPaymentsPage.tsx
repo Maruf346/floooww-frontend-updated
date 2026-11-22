@@ -282,7 +282,7 @@ function DisputesBoard({ onOpen }: { onOpen: (dispute: Dispute) => void }) {
       <section className="grid gap-3 rounded-xl border border-line bg-white p-5 sm:grid-cols-3">
         <Tile
           icon={CircleAlert}
-          iconClass="bg-[#db231f]"
+          iconClass="bg-[#f29b07]"
           label="Open"
           value="2"
           detail="1 needs your reply"
@@ -290,7 +290,7 @@ function DisputesBoard({ onOpen }: { onOpen: (dispute: Dispute) => void }) {
         />
         <Tile
           icon={LockKeyhole}
-          iconClass="bg-[#db231f]"
+          iconClass="bg-[#f29b07]"
           label="Money frozen"
           value="₹15,000"
           detail="held until decided"
@@ -298,7 +298,7 @@ function DisputesBoard({ onOpen }: { onOpen: (dispute: Dispute) => void }) {
         />
         <Tile
           icon={Clock3}
-          iconClass="bg-[#db231f]"
+          iconClass="bg-primary"
           label="Avg days to resolve"
           value="4.2"
           detail="last 90 days"
@@ -611,7 +611,7 @@ function Overview({ onViewAll }: { onViewAll: () => void }) {
         />
         <Tile
           icon={ReceiptText}
-          iconClass="bg-[#070b13]"
+          iconClass="bg-primary"
           label="GST"
           value="₹35,695"
           detail="₹30,250 + ₹5,445"
@@ -619,7 +619,7 @@ function Overview({ onViewAll }: { onViewAll: () => void }) {
         />
         <Tile
           icon={CircleAlert}
-          iconClass="bg-[#db231f]"
+          iconClass="bg-[#f29b07]"
           label="Frozen in disputes"
           value="₹15,000"
           detail="2 open"

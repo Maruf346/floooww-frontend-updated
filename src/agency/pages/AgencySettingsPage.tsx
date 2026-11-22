@@ -1851,7 +1851,7 @@ export function AgencySettingsPage() {
                     {/* Bottom Explanatory Note */}
                     <div className="border-t border-[#f0f2f5] pt-3 mt-1">
                       <p className="text-[12px] text-[#8c94a0] leading-relaxed">
-                        New projects on a client you manage are added automatically. Members with access to one project only see that project everywhere, Overview, Clients, Custom reports and notifications.
+                        New projects on a client you manage are added automatically. Members with access to one project only see that project everywhere, Overview, Clients, Reports and notifications.
                       </p>
                     </div>
                   </div>

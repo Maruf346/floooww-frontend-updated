@@ -162,7 +162,7 @@ export const FAQ_DOC_SECTIONS: FaqDocSection[] = [
       },
       {
         question: "Can I export reports?",
-        answer: "Yes. Share a link or download any custom report.",
+        answer: "Yes. Download or export reports from the Reports page.",
       },
     ],
   },
