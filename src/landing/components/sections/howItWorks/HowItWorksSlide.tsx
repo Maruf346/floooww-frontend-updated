@@ -4,7 +4,7 @@ import type { SlideBlock } from "@/landing/data/howItWorks";
 
 const BUTTON =
   "flex items-center justify-center rounded-md px-3.5 py-[9px] font-inter-semibold text-[13px] font-semibold whitespace-nowrap";
-const PRIMARY_BUTTON = `${BUTTON} bg-primary text-white`;
+const PRIMARY_BUTTON = `${BUTTON} bg-[#0d0d10] text-white hover:bg-[#1f1f26]`;
 const SECONDARY_BUTTON = `${BUTTON} bg-subtle text-ink`;
 const BADGE =
   "shrink-0 rounded-full bg-success-bg px-2 py-[3px] font-inter-semibold text-[11px] font-semibold text-success whitespace-nowrap";
@@ -60,7 +60,7 @@ function Block({ block }: { block: SlideBlock }) {
                 <p className="text-[11px] text-secondary">{person.meta}</p>
               </div>
               <span className={BADGE}>{person.fit}</span>
-              <div className={PRIMARY_BUTTON}>Invite</div>
+              <div className="flex items-center justify-center rounded-md px-3 py-1 font-inter-semibold text-[12px] font-semibold whitespace-nowrap bg-[#0d0d10] text-white hover:bg-[#1f1f26]">Invite</div>
             </div>
           ))}
         </>

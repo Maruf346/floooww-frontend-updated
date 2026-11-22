@@ -12,7 +12,7 @@ import type { HowItWorksStep, SlideBlock } from "@/landing/data/howItWorks";
 
 const BUTTON =
   "flex items-center justify-center rounded-lg px-4 py-2.5 font-inter-semibold text-[13px] font-semibold whitespace-nowrap cursor-pointer transition-colors";
-const PRIMARY_BUTTON = `${BUTTON} bg-primary text-white hover:bg-primary/90`;
+const PRIMARY_BUTTON = `${BUTTON} bg-[#0d0d10] text-white hover:bg-[#1f1f26] active:bg-[#000000]`;
 const SECONDARY_BUTTON = `${BUTTON} bg-subtle text-ink hover:bg-line`;
 const BADGE =
   "shrink-0 rounded-full bg-success-bg px-2 py-0.5 font-inter-semibold text-[11px] font-semibold text-success whitespace-nowrap";
@@ -68,7 +68,7 @@ function BlockRow({ block }: { block: SlideBlock }) {
                 <p className="text-[11px] text-secondary">{person.meta}</p>
               </div>
               <span className={BADGE}>{person.fit}</span>
-              <div className="rounded-md bg-primary px-3 py-1 font-inter-semibold text-[12px] font-semibold text-white">
+              <div className="rounded-md bg-[#0d0d10] px-3 py-1 font-inter-semibold text-[12px] font-semibold text-white hover:bg-[#1f1f26] active:bg-[#000000] cursor-pointer transition-colors">
                 Invite
               </div>
             </div>
