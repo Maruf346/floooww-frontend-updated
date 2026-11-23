@@ -22,15 +22,15 @@ import { asset } from "@/common/utils/asset";
 import type { Platform } from "@/common/types";
 
 const media = {
-  festive: "https://www.figma.com/api/mcp/asset/d30d7c32-3e30-48e1-bacc-f1460f731895.png",
-  results: "https://www.figma.com/api/mcp/asset/6ea5ab70-24af-41c7-b672-e62a4b9ebfde.png",
-  routine: "https://www.figma.com/api/mcp/asset/de7f2ede-4466-4b70-a664-fbfa0707e214.png",
-  demo: "https://www.figma.com/api/mcp/asset/263f0771-5cb4-4e6a-8f3e-d7bb56fcac8d.png",
-  launch: "https://www.figma.com/api/mcp/asset/1cedd9dc-2af4-4b8f-a262-ce98cff9e973.png",
-  spf: "https://www.figma.com/api/mcp/asset/4ddb96b6-632b-4577-b4c7-a327f2319ca3.png",
-  ingredients: "https://www.figma.com/api/mcp/asset/c32995b3-3554-45d8-b354-d8b69620b257.png",
-  hindi: "https://www.figma.com/api/mcp/asset/ff59cdf1-1e18-473b-b0c1-6491ff8a7b40.png",
-  lip: "https://www.figma.com/api/mcp/asset/22cf6acf-93fb-47f7-bf82-3031ca1b29ae.png",
+  festive: asset("content/meera-last-minute-look.png"),
+  results: asset("content/ishita-results.png"),
+  routine: asset("content/nisha-routine.png"),
+  demo: asset("creator/projects/clean-beauty-ambassadors.png"),
+  launch: asset("dashboard/project-vitamin-c.png"),
+  spf: asset("creator/projects/monsoon-sunscreen.png"),
+  ingredients: asset("content/kavya-code-reminder.png"),
+  hindi: asset("dashboard/project-skin-quiz.png"),
+  lip: asset("creator/projects/rose-lip-oil.png"),
 } as const;
 
 type ContentStatus = "To review" | "Changes requested" | "Approved" | "Live" | "Ad-ready";
@@ -673,7 +673,14 @@ export function AgencyClientContentHubPage({
                         view === "list" ? "w-[180px]" : "h-[300px] w-full",
                       )}
                     >
-                      <img alt="" className="size-full object-cover" src={item.image} />
+                      <img
+                        alt={item.title}
+                        className="size-full object-cover"
+                        src={item.image}
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = asset("content/ishita-results.png");
+                        }}
+                      />
                       <span className="absolute left-2.5 top-2.5 grid size-6 place-items-center rounded-md bg-white">
                         <PlatformLogo platform={item.platform} size={14} />
                       </span>
@@ -705,9 +712,12 @@ export function AgencyClientContentHubPage({
                       </h2>
                       <p className="flex min-w-0 items-center gap-1.5 truncate text-[12px] leading-4 text-secondary">
                         <img
-                          alt=""
+                          alt={item.creator}
                           className="size-[18px] rounded-full object-cover"
                           src={asset(`creators/${item.avatar}.png`)}
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = asset("creators/ishita-rao.png");
+                          }}
                         />
                         <span className="truncate">
                           {item.creator} · {item.project}
