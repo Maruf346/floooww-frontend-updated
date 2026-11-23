@@ -122,7 +122,7 @@ const PANEL_DATA: Record<AuthPanelVariant, SidePanelContent> = {
         "See every fee up front, apply in a tap and get paid as soon as your content is approved.",
     },
     card1: {
-      avatarText: "MI",
+      avatar: ASSETS.howItWorks.avatarMeera,
       title: "Meera Iyer",
       subtitle: "Beauty · Mumbai · 1.12 L followers",
       gaugePercent: 96,
@@ -461,8 +461,12 @@ function AuthSidePanel({ variant }: { variant: AuthPanelVariant }) {
               </div>
             )}
             {data.card1.isShopify && (
-              <div className="size-[48px] rounded-[12px] bg-[#e1fce3] flex items-center justify-center font-inter-bold text-[20px] font-bold text-[#16a34a] shrink-0">
-                S
+              <div className="size-[48px] rounded-[14px] bg-[#f0f9f1] border border-[#d2edd5] flex items-center justify-center shrink-0 p-2.5">
+                <img
+                  src={ASSETS.integration.Shopify}
+                  alt="Shopify"
+                  className="size-[28px] object-contain"
+                />
               </div>
             )}
             <div className="flex flex-col gap-[3px] min-w-0 flex-1">

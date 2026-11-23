@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Check, Plus } from "lucide-react";
-import type { UserRole } from "@/common/types";
+import type { Platform, UserRole } from "@/common/types";
 import { Button } from "@/common/components/ui/Button";
 import { TextField } from "@/common/components/ui/TextField";
 import { Select } from "@/common/components/ui/Select";
@@ -9,6 +9,8 @@ import { ROUTES } from "@/common/constants/routes";
 import { AuthLayout } from "@/auth/components/AuthLayout";
 import { ROLE_HOME, parseRole } from "@/auth/data/roles";
 import { ASSETS } from "@/common/constants/assets";
+import { IntegrationLogo, type IntegrationService } from "@/common/components/brand/IntegrationLogo";
+import { PlatformLogo } from "@/common/components/brand/PlatformLogo";
 import { Progress } from "./SignupPage";
 
 type Setup = { title: string; subtitle: string; eyebrow: string };
@@ -186,6 +188,17 @@ function BrandDetails() {
   const [state, setState] = useState<string | null>("Maharashtra");
   return (
     <div className="space-y-3.5">
+      <div className="flex items-center gap-3.5 pb-1">
+        <div className="size-14 rounded-xl border border-line bg-[#f8f9fc] flex items-center justify-center overflow-hidden shrink-0">
+          <span className="font-inter-bold text-[18px] font-bold text-ink">GS</span>
+        </div>
+        <div>
+          <Button type="button" kind="secondary" size="s">
+            Upload logo
+          </Button>
+          <p className="mt-1 text-[12px] text-tertiary">PNG or SVG, square, at least 400 px</p>
+        </div>
+      </div>
       <div className="grid gap-3 sm:grid-cols-2">
         <TextField label="Brand name" required placeholder="Glowly Skincare" />
         <TextField label="Website" placeholder="glowlyskincare.in" />
@@ -281,9 +294,31 @@ function Connections({ role }: { role: UserRole }) {
             key={name}
             className="flex min-h-[62px] items-center gap-3 rounded-xl border border-line px-3.5 py-3"
           >
-            <span className="grid size-9 place-items-center rounded-lg bg-primary-subtle text-[16px] font-bold text-primary">
-              {mark}
-            </span>
+            <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#f8f9fb] border border-line-subtle overflow-hidden">
+              {role === "creator" ? (
+                creatorConnected ? (
+                  <img
+                    src={ASSETS.howItWorks.avatarMeera}
+                    alt="Meera Iyer"
+                    className="size-full object-cover"
+                  />
+                ) : (
+                  <PlatformLogo platform={name as Platform} size={22} />
+                )
+              ) : name === "Shopify" ? (
+                <img
+                  src={ASSETS.integration.Shopify}
+                  alt="Shopify"
+                  className="size-6 object-contain"
+                />
+              ) : name === "WooCommerce" ? (
+                <IntegrationLogo service="WooCommerce" className="size-6" />
+              ) : name.includes("Google") ? (
+                <IntegrationLogo service="Google Analytics" className="size-6" />
+              ) : (
+                <IntegrationLogo service="Meta" className="size-6" />
+              )}
+            </div>
             <span className="min-w-0 flex-1">
               <span className="block text-[14px] font-semibold text-ink">
                 {creatorConnected ? "Instagram · @meerabeauty" : name}
